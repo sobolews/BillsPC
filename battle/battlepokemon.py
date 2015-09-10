@@ -91,7 +91,7 @@ class BattlePokemon(object):
         if source is self.status:
             self.status = None
 
-        if __debug__: log.i('Removed %s from %s' % (source, self))
+        if __debug__: log.i('Removed %s from %s', source, self)
         return True
 
     def clear_effects(self, engine):
@@ -111,9 +111,9 @@ class BattlePokemon(object):
 
     def cure_status(self):
         if self.status in (None, Status.FNT):
-            if __debug__: log.d("Tried to cure %s's status but it was %s" % (self, self.status))
+            if __debug__: log.d("Tried to cure %s's status but it was %s", self, self.status)
         else:
-            if __debug__: log.i("%s's status (%s) was cured" % (self, self.status.name))
+            if __debug__: log.i("%s's status (%s) was cured", self, self.status.name)
             self.remove_effect(self.status)
             self.status = None
             self.is_resting = False
@@ -262,7 +262,7 @@ class BattlePokemon(object):
             return FAIL
         if self.ability == abilitydex['unburden']:
             self.set_effect(effects.Unburden())
-        if __debug__: log.i('Removed %s from %s' % (self.item, self))
+        if __debug__: log.i('Removed %s from %s', self.item, self)
         self.item = None
         return item
 
@@ -352,7 +352,7 @@ class BattlePokemon(object):
     def _debug_sanity_check(self, engine):
         for effect in self._effect_index.values():
             if effect not in self.effects:
-                log.wtf('%s: %s in _effect_index but not in effects' % effect, self)
+                log.wtf('%s: %s in _effect_index but not in effects', effect, self)
                 raise AssertionError
 
         for effect in self.effects:

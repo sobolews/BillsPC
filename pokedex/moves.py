@@ -714,7 +714,7 @@ class copycat(Move):
                 log.i('Copycat failed because the last move (%s) is in NO_COPYCAT or is None', move)
             return FAIL
 
-        if __debug__: log.i('Using %s via copycat' % move)
+        if __debug__: log.i('Using %s via copycat', move)
         if move.targets_user:
             engine.fast_use_move(user, move)
         else:
@@ -898,13 +898,13 @@ class disable(Move):
     def check_success(self, user, target, engine):
         move = target.last_move_used
         if move is None:
-            if __debug__: log.i('Disable failed because %s has not used a move' % target)
+            if __debug__: log.i('Disable failed because %s has not used a move', target)
             return FAIL
         if not target.pp.get(move):
-            if __debug__: log.i('Disable failed because %s has no pp for %s' % (target, move))
+            if __debug__: log.i('Disable failed because %s has no pp for %s', target, move)
             return FAIL
         if target.has_effect(Volatile.DISABLE):
-            if __debug__: log.i('Disable failed because %s is already disabled' % target)
+            if __debug__: log.i('Disable failed because %s is already disabled', target)
             return FAIL
 
     def on_success(self, user, target, engine):
@@ -2326,7 +2326,7 @@ class painsplit(Move):
         average_hp = ((user.hp + target.hp) // 2) or 1
         user.hp = min(user.max_hp, average_hp)
         target.hp = min(target.max_hp, average_hp)
-        if __debug__: log.i("Set %s's and %s's hp to %s" % (user, target, average_hp))
+        if __debug__: log.i("Set %s's and %s's hp to %s", user, target, average_hp)
 
 class partingshot(Move):
     def __init__(self):
@@ -3073,7 +3073,7 @@ class sleeptalk(Move):
     def on_success(self, user, _, engine):
         moves = [move for move in user.moveset if
                  move.name not in self.NO_SLEEP_TALK and not move.is_two_turn]
-        if __debug__: log.i('sleeptalk choosing randomly from %s' % moves)
+        if __debug__: log.i('sleeptalk choosing randomly from %s', moves)
 
         if moves:
             move = random.choice(moves)
@@ -3159,13 +3159,13 @@ class spikes(Move):
         foe_side = engine.get_foe_side(user)
         spikes_ = foe_side.get_effect(Hazard.SPIKES)
         if spikes_ is None:
-            if __debug__: log.i("Set spikes(layers=1) on %s's side" % foe_side.active_pokemon)
+            if __debug__: log.i("Set spikes(layers=1) on %s's side", foe_side.active_pokemon)
             foe_side.set_effect(effects.Spikes())
         else:
             if spikes_.layers == 3:
                 return FAIL
             spikes_.layers += 1
-            if __debug__: log.i("Set %s on %s's side" % (spikes_, foe_side.active_pokemon))
+            if __debug__: log.i("Set %s on %s's side", spikes_, foe_side.active_pokemon)
 
 class spikyshield(Move):
     def __init__(self):

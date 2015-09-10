@@ -199,7 +199,7 @@ class BattleEngine(object):
                 if target.hp <= 0 or user.hp <= 0 or user.status is Status.SLP:
                     break
 
-            if __debug__: log.i('Hit %d times!' % (hit+1))
+            if __debug__: log.i('Hit %d times!', hit+1)
             return damage
 
         else:
@@ -228,7 +228,7 @@ class BattleEngine(object):
             else:
                 damage = self.drain_hp(target, user, damage, move.drain, Cause.MOVE, move)
             if damage in (FAIL, 0): # TODO: is 0 an option?
-                if __debug__: log.i('Move failed in BattleEngine.damage: returned %s' % damage)
+                if __debug__: log.i('Move failed in BattleEngine.damage: returned %s', damage)
                 return FAIL
 
         user.damage_done_this_turn = damage
@@ -256,7 +256,7 @@ class BattleEngine(object):
 
         user.must_switch = move.switch_user
 
-        if __debug__: log.d('returning damage=%s' % damage)
+        if __debug__: log.d('returning damage=%s', damage)
         return damage
 
     def check_accuracy(self, user, move, target):
@@ -286,7 +286,7 @@ class BattleEngine(object):
             elif evn_boost < 0:
                 accuracy *= boost_factor[-evn_boost]
 
-        if __debug__: log.d('Using accuracy of %s' % accuracy)
+        if __debug__: log.d('Using accuracy of %s', accuracy)
         if random.randrange(100) >= int(accuracy):
             if __debug__: log.i('But it missed!')
             return FAIL
@@ -368,12 +368,12 @@ class BattleEngine(object):
         if base_power is not None:
             base_power = self.modify_base_power(user, move, target, base_power)
         if not base_power:
-            if __debug__: log.d('base_power=%s, returning damage=None' % base_power)
+            if __debug__: log.d('base_power=%s, returning damage=None', base_power)
             return None
 
         # showdown's (chain)Modify stuff just amounts to using round
         base_power = int(max(round(base_power), 1))
-        if __debug__: log.d('Using base_power of %s' % base_power)
+        if __debug__: log.d('Using base_power of %s', base_power)
 
         crit_ratio = self.get_crit_ratio(user, move)
         crit = move.always_crit or self.get_critical_hit(crit_ratio)
@@ -428,8 +428,8 @@ class BattleEngine(object):
         damage *= effectiveness
         if __debug__:
             if effectiveness != 1:
-                log.i("It's %s effective" % {0.25: 'barely', 0.5: 'not very',
-                                             2: 'super', 4: 'super duper'}[effectiveness])
+                log.i("It's %s effective", {0.25: 'barely', 0.5: 'not very',
+                                            2: 'super', 4: 'super duper'}[effectiveness])
         # TODO: burn modifier goes here now? but I think it's better as an effect :/
 
         damage = self.modify_damage(damage, user, move, target, crit, effectiveness)
@@ -556,7 +556,7 @@ class BattleEngine(object):
             return 0
 
         if cause is Cause.WEATHER and pokemon.is_immune_to(source):
-            if __debug__: log.i('Weather immunity: %s / %s' % (pokemon, source.name))
+            if __debug__: log.i('Weather immunity: %s / %s', pokemon, source.name)
             return 0
 
         for effect in pokemon.effects:
@@ -587,12 +587,11 @@ class BattleEngine(object):
         # run on_heal?
         if __debug__: prev_hp = pokemon.hp
         pokemon.hp = min(hp + pokemon.hp, pokemon.max_hp)
-        if __debug__: log.i('%s healed %d damage; hp=%d' % (pokemon, pokemon.hp - prev_hp,
-                                                            pokemon.hp))
+        if __debug__: log.i('%s healed %d damage; hp=%d', pokemon, pokemon.hp - prev_hp, pokemon.hp)
 
     def faint(self, pokemon, cause, source=None):
         if pokemon.status is Status.FNT:
-            if __debug__: log.w('Tried to faint %s twice!' % pokemon)
+            if __debug__: log.w('Tried to faint %s twice!', pokemon)
             return
         pokemon.hp = 0
         # This should be the only way to assign Status.FNT
@@ -601,7 +600,7 @@ class BattleEngine(object):
         pokemon.side.active_pokemon = None
         pokemon.is_active = False
 
-        if __debug__: log.i('%s fainted: %s (source=%s)' % (pokemon, cause, source))
+        if __debug__: log.i('%s fainted: %s (source=%s)', pokemon, cause, source)
         self.faint_queue.insert(0, pokemon)
 
         for effect in pokemon.effects:
@@ -648,7 +647,7 @@ class BattleEngine(object):
             return FAIL
 
         if pokemon.status is not None or pokemon.is_immune_to(status):
-            if __debug__: log.i('Failed to set status %s: ' % status.name +
+            if __debug__: log.i('Failed to set status %s: ', status.name +
                                 ('%%s is already statused: %s' % pokemon.status.name
                                  if pokemon.status is not None else
                                  '%s is immune') % pokemon)
@@ -677,7 +676,7 @@ class BattleEngine(object):
                     effect.duration -= 1
 
                     if effect.duration == 0:
-                        if __debug__: log.i('%s timed out' % effect)
+                        if __debug__: log.i('%s timed out', effect)
                         residuals.append(partial(effect.on_timeout, thing, self))
                         thing.remove_effect(effect.source, self)
 
@@ -703,7 +702,7 @@ class BattleEngine(object):
         assert outgoing is None or outgoing.is_active
         assert not incoming.is_fainted()
         assert outgoing is None or not outgoing.is_fainted()
-        if __debug__: log.i('Switching %s for %s' % (outgoing, incoming))
+        if __debug__: log.i('Switching %s for %s', outgoing, incoming)
 
         if outgoing is not None:
             self.switch_out(outgoing, incoming)
@@ -847,8 +846,8 @@ class BattleEngine(object):
         self.init_turn()
 
         while self.event_queue:
-            if __debug__: log.d('Event Queue: %r' % self.event_queue)
-            if __debug__: log.d('Next event: %s' % self.event_queue[-1])
+            if __debug__: log.d('Event Queue: %r', self.event_queue)
+            if __debug__: log.d('Next event: %s', self.event_queue[-1])
             self.event_queue.pop().run_event(self, self.event_queue)
 
             for side in self.battlefield.sides:
@@ -915,7 +914,7 @@ class BattleEngine(object):
                 effect.on_before_turn(actives[i], actives[not i])
 
         self.battlefield.turns += 1
-        if __debug__: log.i('\nTurn %d' % self.battlefield.turns)
+        if __debug__: log.i('\nTurn %d', self.battlefield.turns)
 
         decisions = self.get_move_decisions()
 

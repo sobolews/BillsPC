@@ -23,10 +23,10 @@ class SunnyDayWeather(BaseWeatherEffect):
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if not self.suppressed:
             if move.type is Type.FIRE:
-                if __debug__: log.i("%s boosted %s's power!" % (self, move))
+                if __debug__: log.i("%s boosted %s's power!", self, move)
                 return 1.5 * base_power
             if move.type is Type.WATER:
-                if __debug__: log.i("%s suppressed %s's power!" % (self, move))
+                if __debug__: log.i("%s suppressed %s's power!", self, move)
                 return 0.5 * base_power
         return base_power
 
@@ -39,7 +39,7 @@ class DesolateLandWeather(BaseWeatherEffect):
 
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if not self.suppressed and move.type is Type.FIRE:
-            if __debug__: log.i("%s boosted %s's power!" % (self, move))
+            if __debug__: log.i("%s boosted %s's power!", self, move)
             return 1.5 * base_power
         return base_power
 
@@ -61,10 +61,10 @@ class RainDanceWeather(BaseWeatherEffect):
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if not self.suppressed:
             if move.type is Type.WATER:
-                if __debug__: log.i("%s boosted %s's power!" % (self, move))
+                if __debug__: log.i("%s boosted %s's power!", self, move)
                 return 1.5 * base_power
             if move.type is Type.FIRE:
-                if __debug__: log.i("%s suppressed %s's power!" % (self, move))
+                if __debug__: log.i("%s suppressed %s's power!", self, move)
                 return 0.5 * base_power
         return base_power
 
@@ -73,7 +73,7 @@ class PrimordialSeaWeather(BaseWeatherEffect):
 
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if not self.suppressed and move.type is Type.WATER:
-            if __debug__: log.i("%s boosted %s's power!" % (self, move))
+            if __debug__: log.i("%s boosted %s's power!", self, move)
             return 1.5 * base_power
         return base_power
 
@@ -109,7 +109,7 @@ class SandstormWeather(BaseWeatherEffect):
 
     def on_modify_spd(self, pokemon, engine, spd):
         if not self.suppressed and Type.ROCK in pokemon.types:
-            if __debug__: log.i("Sandstorm boosted %s's spd!" % pokemon)
+            if __debug__: log.i("Sandstorm boosted %s's spd!", pokemon)
             return 1.5 * spd
         return spd
 

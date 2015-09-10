@@ -161,7 +161,7 @@ class BattleClient(object):
                 if __debug__:
                     if self.foe_name is not None:
                         log.w('Received a second (foe) player registration (%s); '
-                              'foe already named as (%s)' % (msg[2], self.foe_name))
+                              'foe already named as (%s)', msg[2], self.foe_name)
                 if self.foe_name is None:
                     if self.my_player is None:
                         self.foe_player = int(msg[1][1]) - 1
@@ -263,7 +263,7 @@ class BattleClient(object):
                 pokemon.pp[move] = move.max_pp - pp_sub
 
         elif __debug__:
-            log.w("Handling a move (%s) not in %r's moveset" % (normalize_name(msg[2]), pokemon))
+            log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
         pokemon.remove_effect(Volatile.TWOTURNMOVE, None)
 
@@ -609,7 +609,7 @@ class BattleClient(object):
             except AssertionError:
                 # mocked in tests to raise exception instead
                 log.e('My team is invalid/out of sync with the server.\n'
-                      'My team: %r\n Latest request msg: %r' % (self.my_side, self.request))
+                      'My team: %r\n Latest request msg: %r', self.my_side, self.request)
                 log.exception('Assertion failed: ')
 
     def _warn_if_stats_discrepancy(self, pokemon, stats):

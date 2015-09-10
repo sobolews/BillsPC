@@ -62,7 +62,7 @@ class BattleField(object):
             return FAIL
         if self._weather is not None:
             self.remove_effect(self._weather)
-        if __debug__: log.i('The weather became %s' % weather.name)
+        if __debug__: log.i('The weather became %s', weather.name)
         self._weather = weather
         w_effect = self.WEATHER_EFFECTS[weather]()
         if self._weather_suppressed:
@@ -75,7 +75,7 @@ class BattleField(object):
 
     def set_effect(self, effect):
         if effect.source in self._effect_index:
-            if __debug__: log.i('Tried to set effect %s but it %s already has it' % (effect, self))
+            if __debug__: log.i('Tried to set effect %s but it %s already has it', effect, self)
             return FAIL
 
         self._effect_index[effect.source] = effect
@@ -89,13 +89,13 @@ class BattleField(object):
     def remove_effect(self, source, _=None):
         effect = self._effect_index.pop(source, None)
         if effect is None:
-            if __debug__: log.d("Tried to remove nonexistent %s from battle.battlefield" % source)
+            if __debug__: log.d("Tried to remove nonexistent %s from battle.battlefield", source)
             return
 
         effect.on_end() # TODO: will any battlefield effects use on_end?
         if source in Weather:
             self._weather = None
-        if __debug__: log.i('Removed %s from battle.battlefield' % source)
+        if __debug__: log.i('Removed %s from battle.battlefield', source)
 
     def __repr__(self):
         cols = int(check_output(['stty', 'size']).split()[1]) or 80
@@ -159,7 +159,7 @@ class BattleSide(object):
             return
 
         effect.on_end() # TODO: will any battleside effects use on_end?
-        if __debug__: log.i('Removed %s from side %d' % (source, self.index))
+        if __debug__: log.i('Removed %s from side %d', source, self.index)
 
     def clear_hazards(self):
         for hazard in Hazard:

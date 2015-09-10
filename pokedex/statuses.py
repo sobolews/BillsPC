@@ -23,7 +23,7 @@ class Paralyze(BaseStatusEffect):
     @priority(1)
     def on_before_move(self, user, move, engine):
         if random.randrange(4) == 0:
-            if __debug__: log.i("%s is paralyzed; it can't move!" % user)
+            if __debug__: log.i("%s is paralyzed; it can't move!", user)
             return FAIL
 
 class Freeze(BaseStatusEffect):
@@ -35,7 +35,7 @@ class Freeze(BaseStatusEffect):
         if random.randrange(5) == 0 or move.thaw_user:
             user.cure_status()
         else:
-            if __debug__: log.i("%s is frozen!" % user)
+            if __debug__: log.i("%s is frozen!", user)
             return FAIL
 
     def on_foe_hit(self, foe, move, target, engine):
@@ -58,9 +58,9 @@ class Sleep(BaseStatusEffect):
         if self.turns_left <= 0:
             user.cure_status()
             user.sleep_turns = None
-            if __debug__: log.i('%s woke up!' % user)
+            if __debug__: log.i('%s woke up!', user)
             return
-        if __debug__: log.i("%s is sleeping: %d turns left" % (user, self.turns_left))
+        if __debug__: log.i("%s is sleeping: %d turns left", user, self.turns_left)
         self.turns_left -= 1
         user.sleep_turns -= 1
         return None if move.name == 'sleeptalk' else FAIL

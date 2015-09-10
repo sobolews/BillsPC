@@ -103,14 +103,14 @@ class Confuse(BaseEffect):
     def on_before_move(self, user, move, engine):
         if self.turns_left == 0:
             user.remove_effect(Volatile.CONFUSE)
-            if __debug__: log.i("%s's confused no more!" % user)
+            if __debug__: log.i("%s's confused no more!", user)
             return
 
-        if __debug__: log.i("%s's confusion: %d turns left" % (user, self.turns_left))
+        if __debug__: log.i("%s's confusion: %d turns left", user, self.turns_left)
         self.turns_left -= 1
 
         if random.randrange(2) == 0:
-            if __debug__: log.i('%s hurt itself in its confusion' % user)
+            if __debug__: log.i('%s hurt itself in its confusion', user)
             engine.direct_damage(user, engine.calculate_confusion_damage(user))
             return FAIL
 
@@ -120,7 +120,7 @@ class Flinch(BaseEffect):
 
     @priority(10)
     def on_before_move(self, user, move, engine):
-        if __debug__: log.i('FAIL: %s flinched' % user)
+        if __debug__: log.i('FAIL: %s flinched', user)
         return FAIL
 
 class DestinyBond(BaseEffect):
@@ -150,7 +150,7 @@ class Disable(BaseEffect):
     @priority(7)
     def on_before_move(self, user, move, engine):
         if move == self.move:
-            if __debug__: log.i("%s can't use %s because it was disabled this turn" % (user, move))
+            if __debug__: log.i("%s can't use %s because it was disabled this turn", user, move)
             return FAIL
 
 class ElectricTerrain(BaseEffect):
@@ -159,13 +159,13 @@ class ElectricTerrain(BaseEffect):
 
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if move.type is Type.ELECTRIC and not user.is_immune_to(Type.GROUND):
-            if __debug__: log.i('Electric terrain boosting power of %s from %s' % (move, user))
+            if __debug__: log.i('Electric terrain boosting power of %s from %s', move, user)
             return 1.5 * base_power
         return base_power
 
     def on_set_status(self, status, pokemon, engine):
         if status is Status.SLP and not pokemon.is_immune_to(Type.GROUND):
-            if __debug__: log.i('Electric terrain blocking %s on %s' % (status, pokemon))
+            if __debug__: log.i('Electric terrain blocking %s on %s', status, pokemon)
             return FAIL
 
 class Encore(BaseEffect):
@@ -177,15 +177,14 @@ class Encore(BaseEffect):
 
     def override_move_choice(self):
         """ Not an event; does not override BaseEffect """
-        if __debug__: log.i('Encore overriding choice with %s' % self.move)
+        if __debug__: log.i('Encore overriding choice with %s', self.move)
         return self.move
 
     @priority(0)
     def on_residual(self, pokemon, foe, engine):
         if pokemon.pp[self.move] <= 0:
             pokemon.remove_effect(Volatile.ENCORE)
-            if __debug__: log.i('Ending Encore on %s because %s has no pp left' % (pokemon,
-                                                                                   self.move))
+            if __debug__: log.i('Ending Encore on %s because %s has no pp left', pokemon, self.move)
 
     def on_get_move_choices(self, pokemon, moves):
         return [self.move] if self.move in moves else []
@@ -304,7 +303,7 @@ class LightScreen(BaseEffect):
              not crit and
              not move.infiltrates and
              foe != target)):
-            if __debug__: log.i('Light Screen halving damage from %s' % move)
+            if __debug__: log.i('Light Screen halving damage from %s', move)
             return damage / 2
         return damage
 
@@ -320,7 +319,7 @@ class Reflect(BaseEffect):
              not crit and
              not move.infiltrates and
              foe != target)):
-            if __debug__: log.i('Reflect halving %s damage from %s' % (damage, move))
+            if __debug__: log.i('Reflect halving %s damage from %s', damage, move)
             return damage / 2
         return damage
 
@@ -336,7 +335,7 @@ class MagicBounceBase(BaseEffect):
         else:
             suppressed = False
 
-        if __debug__: log.i('%s was bounced back!' % move)
+        if __debug__: log.i('%s was bounced back!', move)
         engine.use_move(target, move, foe) # Reflect the move back at the user
         if suppressed:
             foe.unsuppress_ability()
@@ -406,8 +405,7 @@ class Pursuit(BaseEffect):
         assert self.pursuiter.is_active or self.pursuiter.is_fainted()
 
         if not self.pursuiter.is_fainted() and not pokemon.has_effect(Volatile.BATONPASS):
-            if __debug__: log.i('%s caught %s switching out with pursuit!' % (self.pursuiter,
-                                                                              pokemon))
+            if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuiter, pokemon)
             engine.run_move(self.pursuiter, self.move, pokemon)
 
 class Roost(BaseEffect):

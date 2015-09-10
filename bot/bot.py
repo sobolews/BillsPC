@@ -68,7 +68,7 @@ class Bot(WebSocketClient):
                 self.battleclient = BattleClient(self.username, self.battleroom, self.send)
                 self.latest_request = None
             else:
-                log.e('Battle message received for an inactive room:\n%s' % msg_block)
+                log.e('Battle message received for an inactive room:\n%s', msg_block)
                 return
 
         # Save the most recent "request object"; use it to build team if client hasn't done so.
@@ -82,7 +82,7 @@ class Bot(WebSocketClient):
             try:
                 self.process_message(msg)
             except Exception:
-                log.exception('Exception processing msg: %s' % msg)
+                log.exception('Exception processing msg: %s', msg)
                 print 'msg:\n%s' % msg
 
         # Process the request after the next message is sent (the server always sends it one message
@@ -110,7 +110,7 @@ class Bot(WebSocketClient):
         if msg_type == 'challstr':
             return self.handle_challstr(msg)
 
-        log.e('Unhandled msg:\n%s' % msg)
+        log.e('Unhandled msg:\n%s', msg)
 
     BATTLE_MSGS = {
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
@@ -146,7 +146,7 @@ class Bot(WebSocketClient):
         r = requests.post(url, data=values)
         response = json.loads(r.text[1:])  # for reasons, the JSON response starts with a ']'
 
-        self.send('|/trn %s,0,%s' % (self.username, response['assertion']))
+        self.send('|/trn %s,0,%s', self.username, response['assertion'])
         self.logged_in = True
 
 
