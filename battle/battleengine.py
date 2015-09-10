@@ -601,11 +601,12 @@ class BattleEngine(object):
         pokemon.side.active_pokemon = None
         pokemon.is_active = False
 
+        if __debug__: log.i('%s fainted: %s (source=%s)' % (pokemon, cause, source))
+        self.faint_queue.insert(0, pokemon)
+
         for effect in pokemon.effects:
             effect.on_faint(pokemon, cause, source, self)
 
-        if __debug__: log.i('%s fainted: %s (source=%s)' % (pokemon, cause, source))
-        self.faint_queue.insert(0, pokemon)
         pokemon.clear_effects(self)
 
     def direct_damage(self, pokemon, damage):

@@ -471,6 +471,16 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
         self.assertIsNone(self.vaporeon.status)
 
+    def test_destinybond_faint_order(self):
+        self.leafeon.hp = 1
+        self.choose_move(self.leafeon, movedex['destinybond'])
+        self.choose_move(self.vaporeon, movedex['scald'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+        self.assertEqual(self.battlefield.win, self.vaporeon.side.index)
+
     # def test_destinybond_bypasses_magicguard(self):
     #     pass # TODO
 

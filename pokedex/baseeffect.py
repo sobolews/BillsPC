@@ -95,7 +95,7 @@ class BaseEffect(object):
 
     def on_faint(self, pokemon, cause, source, engine):
         """
-        Called when a pokemon faints, before it is put in the faint queue.
+        Called when a pokemon faints, after it is put in the faint queue.
         """
 
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
