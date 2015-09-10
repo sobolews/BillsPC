@@ -44,6 +44,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['return'])
         self.run_turn()
 
+        self.assertDamageTaken(self.leafeon, 50)
         self.assertIsNone(self.vaporeon.status)
         self.assertIsNone(self.leafeon.status)
 

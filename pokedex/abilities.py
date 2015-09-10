@@ -36,12 +36,13 @@ class Adaptability(AbilityEffect):
                 log.i('%s was boosted by Adaptability!', move)
 
 class Aftermath(AbilityEffect):
-    def on_faint(self, pokemon, cause, source, engine):
-        if cause is Cause.MOVE and source.makes_contact:
-            foe = engine.get_foe(pokemon)
-            if foe is not None:
-                if __debug__: log.i("%s was damaged by %s's aftermath", foe, pokemon)
-                engine.damage(foe, foe.max_hp / 4, Cause.OTHER)
+    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
+        if ((pokemon.hp <= 0 and # not pokemon.is_fainted() (BattleEngine.faint hasn't run yet)
+             cause is Cause.MOVE and
+             source.makes_contact and
+             foe is not None)):
+            if __debug__: log.i("%s was damaged by %s's aftermath", foe, pokemon)
+            engine.damage(foe, foe.max_hp / 4, Cause.OTHER)
 
 class Aerilate(AbilityEffect):
     def on_modify_move(self, move, user, engine):
