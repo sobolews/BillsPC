@@ -687,7 +687,7 @@ class confuseray(Move):
         self.is_bounceable = True
 
     def on_success(self, user, target, engine):
-        target.set_effect(effects.Confuse())
+        target.confuse(self.infiltrates)
 
 class copycat(Move):
     def __init__(self):
@@ -3411,7 +3411,7 @@ class sweetkiss(Move):
         self.is_bounceable = True
 
     def on_success(self, user, target, engine):
-        target.set_effect(effects.Confuse())
+        target.confuse(self.infiltrates)
 
 class switcheroo(Move):
     def __init__(self):

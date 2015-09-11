@@ -158,7 +158,7 @@ class TestMoves(MultiMoveTestCase):
     @patch('random.randrange', lambda _: 1) # no confusion damage
     def test_batonpass_effect(self):
         self.add_pokemon('flareon', 0)
-        self.vaporeon.set_effect(effects.Confuse())
+        self.vaporeon.confuse()
         self.vaporeon.set_effect(effects.Yawn())
         self.choose_move(self.vaporeon, movedex['batonpass'])
         self.run_turn()
@@ -2309,7 +2309,7 @@ class TestSubstitute(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['substitute'])
         self.choose_move(self.vaporeon, movedex['splash'])
         self.run_turn()
-        self.leafeon.set_effect(effects.Confuse())
+        self.leafeon.confuse()
         self.choose_move(self.leafeon, movedex['return'])
         self.run_turn()
 

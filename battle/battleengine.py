@@ -336,7 +336,7 @@ class BattleEngine(object):
         elif s_effect.volatile is Volatile.FLINCH:
             pokemon.set_effect(effects.Flinch())
         elif s_effect.volatile is Volatile.CONFUSE:
-            pokemon.set_effect(effects.Confuse())
+            pokemon.confuse(infiltrates)
         else:
             assert False, 'Tried to apply secondary effect with no boosts, volatile, or status'
 

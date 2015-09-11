@@ -1,6 +1,7 @@
 from pokedex import effects
 from pokedex.abilities import abilitydex
-from pokedex.enums import Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER
+from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
+                           SideCondition)
 from pokedex.items import itemdex
 from pokedex.stats import Boosts, PokemonStats
 from pokedex.types import effectiveness
@@ -65,6 +66,12 @@ class BattlePokemon(object):
 
         self._effect_index[effect.source] = effect
         if __debug__: log.i('Set effect %s on %s', effect, self)
+
+    def confuse(self, infiltrates=False):
+        if not infiltrates and self.side.has_effect(SideCondition.SAFEGUARD):
+            return FAIL
+
+        return self.set_effect(effects.Confuse())
 
     def has_effect(self, source):
         return source in self._effect_index

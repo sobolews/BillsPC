@@ -373,7 +373,7 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
 
     def on_end(self, pokemon, _):
         if self.duration <= 1 and pokemon.status is not Status.SLP:
-            pokemon.set_effect(Confuse())
+            pokemon.confuse(infiltrates=True)
 
 class PerishSong(BaseEffect):
     source = Volatile.PERISHSONG
