@@ -234,7 +234,7 @@ class BattleEngine(object):
         user.damage_done_this_turn = damage
 
         if move.target_status is not None:
-            if self.set_status(target, move.target_status) is FAIL:
+            if self.set_status(target, move.target_status, move.infiltrates) is FAIL:
                 return FAIL     # all target_status moves do nothing else, so fail fast
 
         if move.user_boosts is not None:
@@ -252,7 +252,7 @@ class BattleEngine(object):
             s_effects = effect.on_modify_secondaries(s_effects)
         for s_effect in s_effects:
             self.apply_secondary_effect(user if s_effect.affects_user else target,
-                                        s_effect)
+                                        s_effect, move.infiltrates)
 
         user.must_switch = move.switch_user
 
@@ -324,7 +324,7 @@ class BattleEngine(object):
             self.faint(user, Cause.SELFDESTRUCT, move) # TODO: or Cause.OTHER? any other way of
                                                        # reaching this?
 
-    def apply_secondary_effect(self, pokemon, s_effect):
+    def apply_secondary_effect(self, pokemon, s_effect, infiltrates):
         if random.randrange(100) >= s_effect.chance or pokemon.is_fainted():
             return
         if __debug__: log.d('Applying %s to %s', s_effect, pokemon)
@@ -332,7 +332,7 @@ class BattleEngine(object):
         if s_effect.boosts is not None:
             self.apply_boosts(pokemon, s_effect.boosts, s_effect.affects_user)
         elif s_effect.status is not None:
-            self.set_status(pokemon, s_effect.status)
+            self.set_status(pokemon, s_effect.status, infiltrates)
         elif s_effect.volatile is Volatile.FLINCH:
             pokemon.set_effect(effects.Flinch())
         elif s_effect.volatile is Volatile.CONFUSE:
@@ -637,7 +637,7 @@ class BattleEngine(object):
             if __debug__: log.d('Force switching %s for %s', pokemon, incoming)
             self.run_switch(pokemon, incoming)
 
-    def set_status(self, pokemon, status):
+    def set_status(self, pokemon, status, infiltrates=False):
         """
         Set `status` (enums.Status) on `pokemon`.
 
@@ -664,7 +664,7 @@ class BattleEngine(object):
             return FAIL
 
         for effect in chain(pokemon.effects, pokemon.side.effects, self.battlefield.effects):
-            if effect.on_set_status(status, pokemon, self) is FAIL:
+            if effect.on_set_status(status, pokemon, infiltrates, self) is FAIL:
                 if __debug__: log.i('Failed to set status %s: prevented by %s', status.name, effect)
                 return FAIL
 

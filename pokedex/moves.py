@@ -2543,7 +2543,7 @@ class psychoshift(Move):
             return FAIL
 
     def on_success(self, user, target, engine): # TODO: make sure blocked by substitute
-        if engine.set_status(target, user.status) is not FAIL:
+        if engine.set_status(target, user.status, self.infiltrates) is not FAIL:
             user.cure_status()
 
 class psyshock(Move):
@@ -3642,7 +3642,7 @@ class triattack(Move):
     def on_after_move_secondary(self, user, target, engine):
         roll = random.randrange(15) # {0, 1, 2} is 3/15 == 1/5 == 20% chance
         if roll < 3:
-            engine.set_status(target, self.STATUS[roll])
+            engine.set_status(target, self.STATUS[roll], self.infiltrates)
 
 class trick(Move):
     def __init__(self):

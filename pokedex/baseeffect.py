@@ -191,7 +191,7 @@ class BaseEffect(object):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         """ Called after any type of damage is done to pokemon, before it faints. """
 
-    def on_set_status(self, status, pokemon, engine):
+    def on_set_status(self, status, pokemon, infiltrates, engine):
         """
         Called before `status` is set on `pokemon`. Return FAIL to prevent it.
         The status is not self-inflicted.

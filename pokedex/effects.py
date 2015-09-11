@@ -163,7 +163,7 @@ class ElectricTerrain(BaseEffect):
             return 1.5 * base_power
         return base_power
 
-    def on_set_status(self, status, pokemon, engine):
+    def on_set_status(self, status, pokemon, infiltrates, engine):
         if status is Status.SLP and not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i('Electric terrain blocking %s on %s', status, pokemon)
             return FAIL
@@ -598,7 +598,7 @@ class Yawn(BaseEffect):
 
     @priority(0)
     def on_timeout(self, pokemon, engine):
-        engine.set_status(pokemon, Status.SLP)
+        engine.set_status(pokemon, Status.SLP, infiltrates=True) # unaffected by Safeguard
 
 class SheerForceVolatile(BaseEffect):
     """

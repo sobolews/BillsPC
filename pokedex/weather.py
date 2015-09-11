@@ -30,7 +30,7 @@ class SunnyDayWeather(BaseWeatherEffect):
                 return 0.5 * base_power
         return base_power
 
-    def on_set_status(self, status, pokemon, engine):
+    def on_set_status(self, status, pokemon, infiltrates, engine):
         if not self.suppressed and status is Status.FRZ:
             return FAIL
 
