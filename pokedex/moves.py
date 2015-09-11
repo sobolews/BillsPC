@@ -2707,11 +2707,12 @@ class rest(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        assert user.hp > 0
+    def check_success(self, user, _, engine):
         if user.hp == user.max_hp or user.status is Status.SLP:
             return FAIL
 
+    def on_success(self, user, _, engine):
+        assert user.hp > 0
         user.cure_status()
         user.status = Status.SLP
         user.set_effect(statuses.Sleep(user, 2))
