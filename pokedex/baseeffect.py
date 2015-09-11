@@ -192,7 +192,10 @@ class BaseEffect(object):
         """ Called after any type of damage is done to pokemon, before it faints. """
 
     def on_set_status(self, status, pokemon, engine):
-        """ Called before `status` is set on `pokemon`. Return FAIL to prevent it. """
+        """
+        Called before `status` is set on `pokemon`. Return FAIL to prevent it.
+        The status is not self-inflicted.
+        """
 
     def on_weather(self, pokemon, weather, engine):
         """ Called by weather effects in their on_residual handler """

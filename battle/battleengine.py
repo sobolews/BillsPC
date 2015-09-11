@@ -638,6 +638,16 @@ class BattleEngine(object):
             self.run_switch(pokemon, incoming)
 
     def set_status(self, pokemon, status):
+        """
+        Set `status` (enums.Status) on `pokemon`.
+
+        Fails if the pokemon is already statused, Sleep Clause activates, or if an effect or
+        immunity prevents it.
+
+        Do not call set_status if the status is self-inflicted (e.g. rest or toxicorb), because
+        safeguard etc. may incorrectly prevent it. Instead, set pokemon.status and use
+        pokemon.set_effect().
+        """
         assert not pokemon.is_fainted()
 
         if status is Status.SLP and any(teammate.status is Status.SLP and not teammate.is_resting
