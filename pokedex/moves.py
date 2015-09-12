@@ -861,6 +861,7 @@ class defog(Move):
 
         target.side.remove_effect(SideCondition.REFLECT)
         target.side.remove_effect(SideCondition.LIGHTSCREEN)
+        target.side.remove_effect(SideCondition.SAFEGUARD)
         target.side.clear_hazards()
         user.side.clear_hazards()
 
@@ -2887,10 +2888,11 @@ class safeguard(Move):
         self.targets_user = True
 
     def check_success(self, user, _, engine):
-        pass # TODO
+        if user.side.has_effect(SideCondition.SAFEGUARD):
+            return FAIL
 
     def on_success(self, user, _, engine):
-        pass # TODO
+        user.side.set_effect(effects.Safeguard())
 
 class scald(Move):
     def __init__(self):

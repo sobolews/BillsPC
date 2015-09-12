@@ -423,6 +423,19 @@ class Roost(BaseEffect):
         if self.lost_type:
             pokemon.types[1] = Type.FLYING
 
+class Safeguard(BaseEffect):
+    source = SideCondition.SAFEGUARD
+    duration = 5
+
+    def on_set_status(self, status, pokemon, infiltrates, engine):
+        return None if infiltrates else FAIL
+
+    def on_foe_try_hit(self, user, move, target, engine):
+        if move.name == 'yawn' and not move.infiltrates:
+            return FAIL
+
+    # confusion blocking implemented in BattlePokemon.confuse
+
 class Spikes(BaseEffect):
     source = Hazard.SPIKES
 
