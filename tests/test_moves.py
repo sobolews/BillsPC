@@ -1697,6 +1697,121 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 126)
 
+    def test_safeguard(self):
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertIsNone(self.leafeon.status)
+
+        self.engine.apply_boosts(self.leafeon, Boosts(acc=1))
+        self.choose_move(self.leafeon, movedex['toxic'])
+        self.choose_move(self.vaporeon, movedex['nuzzle'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertIsNone(self.leafeon.status)
+
+        for _ in range(3):
+            self.assertTrue(self.leafeon.side.has_effect(SideCondition.SAFEGUARD))
+            self.run_turn()
+
+        self.assertFalse(self.leafeon.side.has_effect(SideCondition.SAFEGUARD))
+
+    def test_safeguard_removed_by_defog(self):
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['substitute'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['defog'])
+        self.choose_move(self.vaporeon, movedex['nuzzle'])
+        self.run_turn()
+
+        self.assertIsNone(self.leafeon.status)
+
+        self.choose_move(self.vaporeon, movedex['defog'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['nuzzle'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.PAR)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_safeguard_infiltrator(self):
+        self.reset_leads('vaporeon', 'leafeon', p0_ability='infiltrator')
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['willowisp'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.BRN)
+
+        self.choose_move(self.leafeon, movedex['aromatherapy'])
+        self.choose_move(self.vaporeon, movedex['nuzzle'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.PAR)
+
+    def test_safeguard_yawn(self):
+        self.reset_leads('vaporeon', 'leafeon', p0_ability='infiltrator')
+        self.choose_move(self.vaporeon, movedex['safeguard'])
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.run_turn()
+
+        self.choose_move(self.vaporeon, movedex['yawn'])
+        self.choose_move(self.leafeon, movedex['yawn'])
+        self.run_turn()
+
+        self.assertTrue(self.leafeon.has_effect(Volatile.YAWN))
+        self.assertFalse(self.vaporeon.has_effect(Volatile.YAWN))
+
+        self.run_turn()
+        self.assertStatus(self.leafeon, Status.SLP)
+
+    def test_safeguard_blocks_confusion(self):
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['confuseray'])
+        self.run_turn()
+
+        self.assertFalse(self.leafeon.has_effect(Volatile.CONFUSE))
+
+    def test_safeguard_doesnt_block_infiltrator_confusion(self):
+        self.reset_leads('vaporeon', 'leafeon', p0_ability='infiltrator')
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['confuseray'])
+        self.run_turn()
+
+        self.assertTrue(self.leafeon.has_effect(Volatile.CONFUSE))
+
+    @patch('random.randint', lambda *_: 2) # two outrage turns
+    def test_safeguard_doesnt_block_outrage_confusion(self):
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['wish'])
+        self.run_turn()
+
+        self.choose_move(self.leafeon, movedex['outrage'])
+        self.choose_move(self.vaporeon, movedex['recover'])
+        self.run_turn()
+        self.assertTrue(self.leafeon.has_effect(Volatile.LOCKEDMOVE))
+        self.choose_move(self.leafeon, movedex['outrage'])
+        self.choose_move(self.vaporeon, movedex['recover'])
+        self.run_turn()
+        self.assertFalse(self.leafeon.has_effect(Volatile.LOCKEDMOVE))
+
+        self.assertTrue(self.leafeon.has_effect(Volatile.CONFUSE))
+
+    def test_safeguard_doesnt_block_rest(self):
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['rest'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)
+        self.assertTrue(self.leafeon.is_resting)
+        self.assertEqual(self.leafeon.sleep_turns, 2)
+
+    # def test_safeguard_doesnt_block_status_orbs(self):
+    #     pass # TODO: implement toxicorb, flameorb
+
     @patch('random.randint', lambda *_: 1) # one turn sleep
     def test_sleeptalk(self):
         self.reset_leads(p0_name='vaporeon', p1_name='jolteon',
