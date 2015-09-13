@@ -961,6 +961,36 @@ class TestMiscMultiTurn(MultiMoveTestCase):
     # each with both p0/p1 being faster so as to catch orderings based on order of
     # battlefield.sides
 
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_order_of_switchins_after_double_ko(self):
+        self.add_pokemon('alakazam', 0, ability='drought')
+        self.add_pokemon('slowbro', 1, ability='drizzle')
+        self.vaporeon.hp = self.leafeon.hp = 1
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.choose_move(self.leafeon, movedex['toxic'])
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+
+    def test_order_of_active_switchins(self):
+        self.add_pokemon('alakazam', 0, ability='drought')
+        self.add_pokemon('slowbro', 1, ability='drizzle')
+        self.choose_switch(self.vaporeon, self.alakazam)
+        self.choose_switch(self.leafeon, self.slowbro)
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
+
+        self.reset_leads('leafeon', 'vaporeon')
+        self.add_pokemon('alakazam', 0, ability='drought')
+        self.add_pokemon('slowbro', 1, ability='drizzle')
+        self.choose_switch(self.leafeon, self.alakazam)
+        self.choose_switch(self.vaporeon, self.slowbro)
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+
     def test_ability_doesnt_start_on_switch_into_hazard_ko(self):
         self.add_pokemon('jolteon', 0, ability='desolateland')
         self.jolteon.hp = 1
