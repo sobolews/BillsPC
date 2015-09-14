@@ -1603,6 +1603,20 @@ class TestMoves(MultiMoveTestCase):
         self.assertIsNone(self.leafeon.status)
         self.assertDamageTaken(self.leafeon, 50)
 
+    def test_rest_fails_when_already_asleep(self):
+        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+                         p0_moves=(movedex['rest'], movedex['sleeptalk']))
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['rest'])
+        self.run_turn()
+        self.assertStatus(self.vaporeon, Status.SLP)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['sleeptalk'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertStatus(self.vaporeon, Status.SLP)
+
     def test_retaliate(self):
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 0)
