@@ -1,13 +1,8 @@
 from mock import patch
 
-from battle.battleengine import BattleEngine
-from pokedex import effects, statuses
-from pokedex.abilities import abilitydex
-from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile, Hazard,
-                           PseudoWeather, SideCondition)
-from pokedex.items import itemdex
-from pokedex.moves import movedex, Move, _MAX_PP
-from pokedex.types import Type
+from pokedex import statuses
+from pokedex.enums import Status, Weather, Volatile
+from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
 
