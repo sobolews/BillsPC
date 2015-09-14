@@ -1,7 +1,7 @@
 from mock import patch
 
 from battle.battleengine import BattleEngine
-from pokedex import effects
+from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile, Hazard,
                            PseudoWeather, SideCondition)
@@ -911,3 +911,31 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDictContainsSubset({'atk': 1, 'def': 1}, self.vaporeon.boosts)
 
+    def test_insomnia(self):
+        self.reset_leads(p0_ability='insomnia', p1_ability='insomnia')
+        self.choose_move(self.leafeon, movedex['spore'])
+        self.choose_move(self.vaporeon, movedex['yawn'])
+        self.run_turn()
+
+        self.assertIsNone(self.vaporeon.status)
+        self.assertFalse(self.leafeon.has_effect(Volatile.YAWN))
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['rest'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertStatus(self.vaporeon, None)
+
+        # hack a sleep onto vaporeon, check that it wakes up anyway
+        self.vaporeon.status = Status.SLP
+        self.vaporeon._effect_index[Status.SLP] = statuses.Sleep(self.vaporeon, 2)
+        self.run_turn()
+
+        self.assertIsNone(self.vaporeon.status)
+
+    # def test_trace_insomnia_cures_sleep(self):
+    #     pass # TODO when: implement trace
+
+    # def test_mold_breaker_spore_causes_insomniac_to_sleep_then_immediately_wake(self):
+    #     pass # TODO when: implement moldbreaker

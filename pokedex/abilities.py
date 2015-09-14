@@ -446,6 +446,15 @@ class InnerFocus(AbilityEffect):
         if thing is Volatile.FLINCH:
             return True
 
+class Insomnia(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if thing is Status.SLP:
+            return True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.status is Status.SLP:
+            pokemon.cure_status()
+
 
 
 class Intimidate(AbilityEffect):
