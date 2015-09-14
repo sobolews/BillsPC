@@ -2709,7 +2709,9 @@ class rest(Move):
         self.targets_user = True
 
     def check_success(self, user, _, engine):
-        if user.hp == user.max_hp or user.status is Status.SLP:
+        if ((user.hp == user.max_hp or
+             user.status is Status.SLP or
+             user.is_immune_to(Status.SLP))):
             return FAIL
 
     def on_success(self, user, _, engine):
