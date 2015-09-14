@@ -705,6 +705,14 @@ class BattleEngine(object):
                     log.i('Residual effect: %s', residual.func.__self__)
             residual()
 
+    def run_update(self):
+        sides = self.battlefield.sides
+        actives = [side.active_pokemon for side in sides if side.active_pokemon is not None]
+
+        for pokemon in sorted(actives, key=lambda p: -self.effective_spe(p)):
+            for effect in pokemon.effects:
+                effect.on_update(pokemon, self)
+
     def run_switch(self, outgoing, incoming):
         assert outgoing is None or outgoing.side == incoming.side
         assert outgoing != incoming
@@ -736,7 +744,7 @@ class BattleEngine(object):
             if __debug__: log.i('Batonpassed %s to %s',
                                 filter(None, chain([incoming.boosts], incoming.effects)) or None,
                                 incoming)
-
+        self.run_update()
         for effect in outgoing.effects:
             effect.on_switch_out(outgoing, self)
 
@@ -859,6 +867,7 @@ class BattleEngine(object):
             if __debug__: log.d('Event Queue: %r', self.event_queue)
             if __debug__: log.d('Next event: %s', self.event_queue[-1])
             self.event_queue.pop().run_event(self, self.event_queue)
+            self.run_update()
 
             for side in self.battlefield.sides:
                 if ((side.active_pokemon is not None and
@@ -910,6 +919,7 @@ class BattleEngine(object):
 
             while switch_queue:
                 switch_queue.pop().run_event(self, switch_queue)
+                self.run_update()
 
             self.resolve_faint_queue()
 

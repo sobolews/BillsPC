@@ -206,6 +206,12 @@ class BaseEffect(object):
         e.g. GaleWings returns +1 for flying moves
         """
 
+    def on_update(self, pokemon, engine):
+        """
+        Called after each event from engine.event_queue is run, and immediately before
+        on_switch_out.
+        """
+
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__,
                            ', '.join(['%s=%s' % (attr, getattr(self, attr))
