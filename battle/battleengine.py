@@ -770,16 +770,16 @@ class BattleEngine(object):
         pokemon.must_switch = False
         if __debug__: log.i('Switched in %s on side %s', pokemon, pokemon.side.index)
 
-    def post_switch_in(self, pokemon):
-        """
-        Foe may be None (e.g. was KO'd with voltswitch)
-        """
         pokemon.set_effect(pokemon.ability())
         # pokemon.set_effect(pokemon.item) # TODO when: implement items
 
         if pokemon.status is not None:
             pokemon.set_effect(STATUS_EFFECTS[pokemon.status](pokemon))
 
+    def post_switch_in(self, pokemon):
+        """
+        Foe may be None (e.g. was KO'd with voltswitch)
+        """
         for effect in chain(sorted(pokemon.side.effects, key=lambda c: c.on_switch_in.priority,
                                    reverse=True),
                             pokemon.effects): # TODO: priority of pokemon.effects (ability vs item)?
