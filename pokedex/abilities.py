@@ -455,10 +455,14 @@ class Insomnia(AbilityEffect):
         if pokemon.status is Status.SLP:
             pokemon.cure_status()
 
-
-
 class Intimidate(AbilityEffect):
-    pass
+    def on_start(self, pokemon, engine):
+        foe = engine.get_foe(pokemon)
+        if foe is not None:
+            engine.apply_boosts(foe, Boosts(atk=-1), self_imposed=False)
+
+
+
 
 class LiquidOoze(AbilityEffect):
     pass

@@ -934,3 +934,18 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_mold_breaker_spore_causes_insomniac_to_sleep_then_immediately_wake(self):
     #     pass # TODO when: implement moldbreaker
+
+    def test_intimidate(self):
+        self.reset_leads(p0_ability='intimidate', p1_ability='competitive')
+        self.add_pokemon('flareon', 0, ability='intimidate')
+        self.add_pokemon('espeon', 1, ability='intimidate')
+
+        self.assertDictContainsSubset({'atk': -1, 'spa': 2}, self.leafeon.boosts)
+
+        self.choose_move(self.leafeon, movedex['voltswitch'])
+        self.choose_move(self.vaporeon, movedex['uturn'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.espeon, 86) # vaporeon -1 atk
+        self.assertDictContainsSubset({'atk': -1}, self.espeon.boosts)
+        self.assertDictContainsSubset({'atk': 0}, self.flareon.boosts)
