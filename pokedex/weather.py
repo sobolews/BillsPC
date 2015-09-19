@@ -20,15 +20,15 @@ class SunnyDayWeather(BaseWeatherEffect):
     def __init__(self, duration=5):
         self.duration = duration
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_damage(self, user, move, damage):
         if not self.suppressed:
             if move.type is Type.FIRE:
                 if __debug__: log.i("%s boosted %s's power!", self, move)
-                return 1.5 * base_power
+                return 1.5 * damage
             if move.type is Type.WATER:
                 if __debug__: log.i("%s suppressed %s's power!", self, move)
-                return 0.5 * base_power
-        return base_power
+                return 0.5 * damage
+        return damage
 
     def on_set_status(self, status, pokemon, infiltrates, engine):
         if not self.suppressed and status is Status.FRZ:
@@ -37,11 +37,11 @@ class SunnyDayWeather(BaseWeatherEffect):
 class DesolateLandWeather(BaseWeatherEffect):
     source = Weather.DESOLATELAND
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_damage(self, user, move, damage):
         if not self.suppressed and move.type is Type.FIRE:
             if __debug__: log.i("%s boosted %s's power!", self, move)
-            return 1.5 * base_power
-        return base_power
+            return 1.5 * damage
+        return damage
 
     def on_try_hit(self, user, move, target, engine):
         if (not self.suppressed and
@@ -58,24 +58,24 @@ class RainDanceWeather(BaseWeatherEffect):
     def __init__(self, duration=5):
         self.duration = duration
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_damage(self, user, move, damage):
         if not self.suppressed:
             if move.type is Type.WATER:
                 if __debug__: log.i("%s boosted %s's power!", self, move)
-                return 1.5 * base_power
+                return 1.5 * damage
             if move.type is Type.FIRE:
                 if __debug__: log.i("%s suppressed %s's power!", self, move)
-                return 0.5 * base_power
-        return base_power
+                return 0.5 * damage
+        return damage
 
 class PrimordialSeaWeather(BaseWeatherEffect):
     source = Weather.PRIMORDIALSEA
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_damage(self, user, move, damage):
         if not self.suppressed and move.type is Type.WATER:
             if __debug__: log.i("%s boosted %s's power!", self, move)
-            return 1.5 * base_power
-        return base_power
+            return 1.5 * damage
+        return damage
 
     def on_try_hit(self, user, move, target, engine):
         if (not self.suppressed and

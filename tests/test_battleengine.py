@@ -578,8 +578,8 @@ class TestWeather(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['flamewheel'])
         self.run_turn()
 
-        self.assertDamageTaken(self.vaporeon, 14)
-        self.assertDamageTaken(self.leafeon, 88)
+        self.assertDamageTaken(self.vaporeon, 13)
+        self.assertDamageTaken(self.leafeon, 90)
 
     @patch('random.randrange', lambda _: 1) # icebeam always freeze, don't thaw
     def test_sunnyday_freeze_immunity(self):
@@ -606,7 +606,7 @@ class TestWeather(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['flamewheel'])
         self.run_turn()
 
-        self.assertDamageTaken(self.leafeon, 88)
+        self.assertDamageTaken(self.leafeon, 90)
 
     def test_raindance_damage_modify(self):
         self.engine.battlefield.set_weather(Weather.RAINDANCE)
@@ -615,7 +615,7 @@ class TestWeather(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 40)
-        self.assertDamageTaken(self.leafeon, 32)
+        self.assertDamageTaken(self.leafeon, 30)
 
     def test_primordialsea_stops_fire_moves(self):
         self.engine.battlefield.set_weather(Weather.PRIMORDIALSEA)

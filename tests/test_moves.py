@@ -2307,14 +2307,14 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['weatherball'])
         self.run_turn()
 
-        self.assertDamageTaken(self.leafeon, 262)
+        self.assertDamageTaken(self.leafeon, 264)
 
         self.leafeon.hp = self.leafeon.max_hp
         self.choose_move(self.leafeon, movedex['raindance'])
         self.choose_move(self.vaporeon, movedex['weatherball'])
         self.run_turn()
 
-        self.assertDamageTaken(self.leafeon, 98)
+        self.assertDamageTaken(self.leafeon, 99)
 
     def test_wish(self):
         self.choose_move(self.leafeon, movedex['wish'])
