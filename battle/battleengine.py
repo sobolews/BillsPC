@@ -237,7 +237,7 @@ class BattleEngine(object):
             if self.set_status(target, move.target_status, move.infiltrates) is FAIL:
                 return FAIL     # all target_status moves do nothing else, so fail fast
 
-        if move.user_boosts is not None:
+        if move.user_boosts is not None and not user.is_fainted():
             self.apply_boosts(user, move.user_boosts, True)
 
         if move.on_success(user, target, self) is FAIL:

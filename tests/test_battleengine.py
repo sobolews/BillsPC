@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch
+from mock import patch, Mock
 
 from battle.battleengine import BattleEngine
 from battle.battlepokemon import BattlePokemon
@@ -313,6 +313,18 @@ class TestBattleEngineRunMove(TestCase):
         self.assertEqual(self.engine.battlefield.last_move_used, self.vaporeon.moveset[0])
 
 class TestBattleEngineMultiTurn(MultiMoveTestCase):
+    def test_dont_try_user_boost_if_user_fainted(self):
+        """
+        Regression: Moves with user_boosts tried to boost the user even if it fainted
+        """
+        self.reset_leads(p0_ability='aftermath')
+        self.engine.apply_boosts = Mock()
+        self.vaporeon.hp = self.leafeon.hp = 1
+        self.choose_move(self.leafeon, movedex['closecombat'])
+        self.run_turn()
+
+        self.assertFalse(self.engine.apply_boosts.called)
+
     def test_battlefield_weather_attribute_is_removed(self):
         """
         Regression: The weather effect was removed but battlefield.weather remained set
