@@ -974,3 +974,22 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 35)
         self.assertDamageTaken(self.vaporeon, 252)
+
+    def test_justified(self):
+        self.reset_leads(p0_ability='justified', p1_ability='justified')
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDictContainsSubset({'atk': 1}, self.vaporeon.boosts)
+        self.assertDictContainsSubset({'atk': 0}, self.leafeon.boosts)
+
+    def test_justified_doesnt_activate_behind_substitute(self):
+        self.reset_leads(p1_ability='justified')
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['knockoff'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['darkpulse'])
+        self.run_turn()
+
+        self.assertDictContainsSubset({'atk': 0}, self.leafeon.boosts)

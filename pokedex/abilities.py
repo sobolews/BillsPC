@@ -475,6 +475,11 @@ class IronFist(AbilityEffect):
             return base_power * 1.2
         return base_power
 
+class Justified(AbilityEffect):
+    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
+        if (cause is Cause.MOVE and source.type is Type.DARK):
+            engine.apply_boosts(pokemon, Boosts(atk=1), self_imposed=True)
+
 
 
 
