@@ -491,6 +491,9 @@ class KeenEye(AbilityEffect):
     def on_modify_move(self, move, user, engine):
         move.ignore_evasion = True
 
+class Klutz(AbilityEffect):
+    pass # TODO when: implement items
+
 
 
 

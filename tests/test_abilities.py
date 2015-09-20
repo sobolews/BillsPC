@@ -1010,3 +1010,6 @@ class TestAbilities(MultiMoveTestCase):
         self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=True)
 
         self.assertDictContainsSubset({'acc': -1}, self.vaporeon.boosts)
+
+    # def test_klutz(self):
+    #     pass # TODO when: implement items
