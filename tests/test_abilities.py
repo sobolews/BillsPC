@@ -949,3 +949,18 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.espeon, 86) # vaporeon -1 atk
         self.assertDictContainsSubset({'atk': -1}, self.espeon.boosts)
         self.assertDictContainsSubset({'atk': 0}, self.flareon.boosts)
+
+    def test_ironbarbs(self):
+        self.reset_leads(p0_ability='ironbarbs', p1_ability='ironbarbs')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 24 + (self.leafeon.max_hp / 8))
+        self.assertDamageTaken(self.vaporeon, 142 + 0) # no ironbarbs damage
+
+        self.leafeon.hp = self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['vcreate'])
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.win, self.leafeon.side.index)

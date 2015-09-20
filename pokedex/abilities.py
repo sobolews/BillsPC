@@ -461,6 +461,14 @@ class Intimidate(AbilityEffect):
         if foe is not None:
             engine.apply_boosts(foe, Boosts(atk=-1), self_imposed=False)
 
+class IronBarbs(AbilityEffect):
+    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
+        if ((cause is Cause.MOVE and
+             source.makes_contact and
+             foe is not None)):
+            if __debug__: log.i("%s was damaged by %s's IronBarbs", foe, pokemon)
+            engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
+
 
 
 
