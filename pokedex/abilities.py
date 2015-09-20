@@ -469,6 +469,12 @@ class IronBarbs(AbilityEffect):
             if __debug__: log.i("%s was damaged by %s's IronBarbs", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
 
+class IronFist(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.is_punch:
+            return base_power * 1.2
+        return base_power
+
 
 
 

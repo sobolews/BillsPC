@@ -964,3 +964,13 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
+
+    @patch('random.randrange', lambda _: 99) # no secondary effect
+    def test_ironfist(self):
+        self.reset_leads(p0_ability='ironfist', p1_ability='ironfist')
+        self.choose_move(self.leafeon, movedex['thunderpunch'])
+        self.choose_move(self.vaporeon, movedex['shadowpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 35)
+        self.assertDamageTaken(self.vaporeon, 252)
