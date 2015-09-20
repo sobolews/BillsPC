@@ -993,3 +993,20 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDictContainsSubset({'atk': 0}, self.leafeon.boosts)
+
+    @patch('random.randrange', lambda _: 99) # miss if possible
+    def test_keeneye(self):
+        self.reset_leads(p0_ability='keeneye')
+        self.engine.apply_boosts(self.leafeon, Boosts(evn=6))
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+
+        self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=False)
+
+        self.assertDictContainsSubset({'acc': 0}, self.vaporeon.boosts)
+
+        self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=True)
+
+        self.assertDictContainsSubset({'acc': -1}, self.vaporeon.boosts)

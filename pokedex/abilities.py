@@ -480,6 +480,17 @@ class Justified(AbilityEffect):
         if (cause is Cause.MOVE and source.type is Type.DARK):
             engine.apply_boosts(pokemon, Boosts(atk=1), self_imposed=True)
 
+class KeenEye(AbilityEffect):
+    def on_boost(self, pokemon, boosts, self_imposed):
+        if not self_imposed:
+            if boosts['acc'] < 0:
+                boosts['acc'] = 0
+                if __debug__: log.i("%s's acc drop was blocked by KeenEye!", pokemon)
+        return boosts
+
+    def on_modify_move(self, move, user, engine):
+        move.ignore_evasion = True
+
 
 
 

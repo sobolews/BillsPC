@@ -63,7 +63,7 @@ class Move(object):
     switch_user = False
     defensive_category = None # psyshock, psystrike, secretsword
     ignore_defensive = False  # sacredsword
-    ignore_evasion = False  # sacredsword
+    ignore_evasion = False  # sacredsword, keeneye
     is_two_turn = False       # needed for sleeptalk
     recoil = 0 # percent of 100, or -1 to indicate recoil handled elsewhere (jumpkick etc.)
     user_boosts = None
