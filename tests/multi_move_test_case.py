@@ -164,6 +164,9 @@ class MultiMoveTestCase(TestCase):
         self.assertLessEqual(pokemon.hp, 0)
         self.assertTrue(pokemon.is_fainted())
 
+    def assertBoosts(self, pokemon, boosts):
+        self.assertDictContainsSubset(boosts, pokemon.boosts)
+
     @property
     def battlefield(self):
         return self.engine.battlefield

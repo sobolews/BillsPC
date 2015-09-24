@@ -336,8 +336,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['superpower'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': -1, 'spa': 0, 'def': -1},
-                                      self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': 0, 'def': -1})
 
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_imposed=False)
         self.assertEqual(self.vaporeon.boosts['spe'], 0)
@@ -351,8 +350,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['closecombat'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'spa': 2, 'evn': -1, 'def': -1, 'spd': -1},
-                                      self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'spa': 2, 'evn': -1, 'def': -1, 'spd': -1})
 
         self.choose_move(self.leafeon, movedex['stickyweb'])
         self.run_turn()
@@ -360,8 +358,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['memento'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'spa': 4, 'atk': -2, 'spe': -1},
-                                      self.umbreon.boosts)
+        self.assertBoosts(self.umbreon, {'spa': 4, 'atk': -2, 'spe': -1})
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_compoundeyes(self):
@@ -379,14 +376,13 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['superpower'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 2, 'spa': 1, 'def': 1},
-                                      self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': 2, 'spa': 1, 'def': 1})
         self.assertDamageTaken(self.leafeon, 86)
 
         self.choose_move(self.vaporeon, movedex['agility'])
         self.run_turn()
 
-        self.assertEqual(self.vaporeon.boosts['spe'], -2)
+        self.assertBoosts(self.vaporeon, {'spe': -2})
 
     @patch('random.randrange', lambda _: 2) # cursedbody success
     def test_cursedbody(self):
@@ -467,8 +463,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['return'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 3, 'spa': -1},
-                                      self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': 3, 'spa': -1})
         self.assertDamageTaken(self.leafeon, 122)
 
     def test_deltastream(self):
@@ -520,12 +515,12 @@ class TestAbilities(MultiMoveTestCase):
     def test_download(self):
         self.reset_leads(p0_ability='download', p1_ability='download')
         self.add_pokemon('umbreon', 0, ability='download')
-        self.assertDictContainsSubset({'atk': 0, 'spa': 1}, self.vaporeon.boosts)
-        self.assertDictContainsSubset({'atk': 1, 'spa': 0}, self.leafeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': 1})
+        self.assertBoosts(self.leafeon, {'atk': 1, 'spa': 0})
         self.choose_move(self.vaporeon, movedex['voltswitch'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 0, 'spa': 1}, self.umbreon.boosts)
+        self.assertBoosts(self.umbreon, {'atk': 0, 'spa': 1})
 
     def test_drizzle(self):
         self.reset_leads(p0_ability='drizzle')
@@ -766,11 +761,11 @@ class TestAbilities(MultiMoveTestCase):
 
     def test_hypercutter(self):
         self.reset_leads(p0_ability='hypercutter', p1_ability='intimidate')
-        self.assertEqual(self.vaporeon.boosts['atk'], 0)
+        self.assertBoosts(self.vaporeon, {'atk': 0})
         self.choose_move(self.leafeon, movedex['partingshot'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 0, 'spa': -1}, self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': -1})
 
     def test_icebody(self):
         self.reset_leads(p0_ability='icebody')
@@ -811,8 +806,8 @@ class TestAbilities(MultiMoveTestCase):
         self.assertSequenceEqual(self.ditto.moveset, self.leafeon.moveset)
         self.assertListEqual(self.ditto.types, self.leafeon.types)
 
-        self.assertDictContainsSubset({'spa': 1}, self.leafeon.boosts)
-        self.assertDictContainsSubset({'spa': 2}, self.ditto.boosts)
+        self.assertBoosts(self.leafeon, {'spa': 1})
+        self.assertBoosts(self.ditto, {'spa': 2})
 
     def test_imposter_fail_to_transform_substitute(self):
         self.reset_leads()
@@ -854,7 +849,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['uturn'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 2}, self.ditto.boosts)
+        self.assertBoosts(self.ditto, {'atk': 2})
         self.assertDamageTaken(self.leafeon, 68)
 
         self.engine.apply_boosts(self.leafeon, Boosts(spe=1))
@@ -904,7 +899,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['bulkup'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 1, 'def': 1}, self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
 
     def test_insomnia(self):
         self.reset_leads(p0_ability='insomnia', p1_ability='insomnia')
@@ -940,15 +935,15 @@ class TestAbilities(MultiMoveTestCase):
         self.add_pokemon('flareon', 0, ability='intimidate')
         self.add_pokemon('espeon', 1, ability='intimidate')
 
-        self.assertDictContainsSubset({'atk': -1, 'spa': 2}, self.leafeon.boosts)
+        self.assertBoosts(self.leafeon, {'atk': -1, 'spa': 2})
 
         self.choose_move(self.leafeon, movedex['voltswitch'])
         self.choose_move(self.vaporeon, movedex['uturn'])
         self.run_turn()
 
         self.assertDamageTaken(self.espeon, 86) # vaporeon -1 atk
-        self.assertDictContainsSubset({'atk': -1}, self.espeon.boosts)
-        self.assertDictContainsSubset({'atk': 0}, self.flareon.boosts)
+        self.assertBoosts(self.espeon, {'atk': -1})
+        self.assertBoosts(self.flareon, {'atk': 0})
 
     def test_ironbarbs(self):
         self.reset_leads(p0_ability='ironbarbs', p1_ability='ironbarbs')
@@ -981,8 +976,8 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['surf'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 1}, self.vaporeon.boosts)
-        self.assertDictContainsSubset({'atk': 0}, self.leafeon.boosts)
+        self.assertBoosts(self.vaporeon, {'atk': 1})
+        self.assertBoosts(self.leafeon, {'atk': 0})
 
     def test_justified_doesnt_activate_behind_substitute(self):
         self.reset_leads(p1_ability='justified')
@@ -992,7 +987,7 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['darkpulse'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'atk': 0}, self.leafeon.boosts)
+        self.assertBoosts(self.leafeon, {'atk': 0})
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_keeneye(self):
@@ -1005,11 +1000,11 @@ class TestAbilities(MultiMoveTestCase):
 
         self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=False)
 
-        self.assertDictContainsSubset({'acc': 0}, self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'acc': 0})
 
         self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=True)
 
-        self.assertDictContainsSubset({'acc': -1}, self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'acc': -1})
 
     # def test_klutz(self):
     #     pass # TODO when: implement items
@@ -1029,7 +1024,7 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 50)
         self.assertDamageTaken(self.vaporeon, 0)
-        self.assertDictContainsSubset({'spe': 0}, self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'spe': 0})
 
     def test_lightningrod(self):
         self.reset_leads(p0_ability='lightningrod', p1_ability='lightningrod')
@@ -1038,9 +1033,9 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['thunderwave'])
         self.run_turn()
 
-        self.assertDictContainsSubset({'spa': 1}, self.leafeon.boosts)
+        self.assertBoosts(self.leafeon, {'spa': 1})
         self.assertStatus(self.leafeon, None)
-        self.assertDictContainsSubset({'spa': 1}, self.vaporeon.boosts)
+        self.assertBoosts(self.vaporeon, {'spa': 1})
         self.assertDamageTaken(self.vaporeon, 0)
 
         self.choose_move(self.leafeon, movedex['voltswitch'])
