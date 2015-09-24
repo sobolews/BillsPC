@@ -499,6 +499,13 @@ class Levitate(AbilityEffect):
         if thing is Type.GROUND:
             return True
 
+class LightningRod(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.type is Type.ELECTRIC:
+            engine.apply_boosts(target, Boosts(spa=1), self_imposed=True)
+            return FAIL
+
 
 
 class LiquidOoze(AbilityEffect):

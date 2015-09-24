@@ -1030,3 +1030,21 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 50)
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertDictContainsSubset({'spe': 0}, self.vaporeon.boosts)
+
+    def test_lightningrod(self):
+        self.reset_leads(p0_ability='lightningrod', p1_ability='lightningrod')
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['thunderbolt'])
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertDictContainsSubset({'spa': 1}, self.leafeon.boosts)
+        self.assertStatus(self.leafeon, None)
+        self.assertDictContainsSubset({'spa': 1}, self.vaporeon.boosts)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.leafeon, movedex['voltswitch'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
