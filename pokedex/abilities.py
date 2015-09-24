@@ -494,6 +494,10 @@ class KeenEye(AbilityEffect):
 class Klutz(AbilityEffect):
     pass # TODO when: implement items
 
+class Levitate(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if thing is Type.GROUND:
+            return True
 
 
 

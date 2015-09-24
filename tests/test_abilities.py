@@ -1,7 +1,7 @@
 from mock import patch
 
 from pokedex import statuses
-from pokedex.enums import Status, Weather, Volatile
+from pokedex.enums import Status, Weather, Volatile, Hazard
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
@@ -1013,3 +1013,20 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_klutz(self):
     #     pass # TODO when: implement items
+
+    def test_levitate(self):
+        self.reset_leads(p0_ability='levitate', p1_ability='levitate')
+        self.choose_move(self.leafeon, movedex['earthquake'])
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertTrue(self.leafeon.side.has_effect(Hazard.SPIKES))
+
+        self.choose_move(self.leafeon, movedex['bulldoze'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDictContainsSubset({'spe': 0}, self.vaporeon.boosts)
