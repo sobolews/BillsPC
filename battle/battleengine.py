@@ -166,6 +166,10 @@ class BattleEngine(object):
         if move.check_success(user, target, self) is FAIL:
             return FAIL # moves are responsible for logging their own failure
 
+        if target.is_immune_to_move(move) and not self.ignore_immunity(user, move, target):
+            if __debug__: log.i('%s is immune to %s', target, move)
+            return FAIL
+
         for effect in self.battlefield.effects:
             if effect.on_try_hit(user, move, target, self) is FAIL:
                 return FAIL
@@ -176,10 +180,6 @@ class BattleEngine(object):
                             target.side.effects):
             if effect.on_foe_try_hit(user, move, target, self) is FAIL:
                 return FAIL
-
-        if target.is_immune_to_move(move) and not self.ignore_immunity(user, move, target):
-            if __debug__: log.i('%s is immune to %s', target, move)
-            return FAIL
 
         move.on_try_hit(target)
 
