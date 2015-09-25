@@ -506,6 +506,15 @@ class LightningRod(AbilityEffect):
             engine.apply_boosts(target, Boosts(spa=1), self_imposed=True)
             return FAIL
 
+class Limber(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if thing is Status.PAR:
+            return True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.status is Status.PAR:
+            pokemon.cure_status()
+
 
 
 class LiquidOoze(AbilityEffect):

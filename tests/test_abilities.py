@@ -1043,3 +1043,16 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 50)
+
+    @patch('random.randrange', lambda _: 0) # bodyslam paralyzes
+    def test_limber(self):
+        self.reset_leads(p0_ability='limber', p1_ability='limber')
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.choose_move(self.leafeon, movedex['bodyslam'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertStatus(self.leafeon, None)
+
+    # def test_tracing_limber_cures_paralysis(self):
+    #     pass # TODO when: implement trace
