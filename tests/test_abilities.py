@@ -945,6 +945,7 @@ class TestAbilities(MultiMoveTestCase):
         self.assertBoosts(self.espeon, {'atk': -1})
         self.assertBoosts(self.flareon, {'atk': 0})
 
+    @patch('random.randrange', lambda _: 0) # no miss
     def test_ironbarbs(self):
         self.reset_leads(p0_ability='ironbarbs', p1_ability='ironbarbs')
         self.choose_move(self.leafeon, movedex['return'])
