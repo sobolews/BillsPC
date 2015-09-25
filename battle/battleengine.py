@@ -531,10 +531,11 @@ class BattleEngine(object):
         damage = self.damage(from_pokemon, hp, cause, source, attacker=to_pokemon)
         if not damage or damage is FAIL or to_pokemon.is_fainted():
             return damage
+        hp_drained = int(math.ceil(damage * percent / 100.0))
         if from_pokemon.ability is abilitydex['liquidooze']:
-            self.damage(to_pokemon, damage, Cause.OTHER)
+            self.damage(to_pokemon, hp_drained, Cause.OTHER)
         else:
-            self.heal(to_pokemon, int(math.ceil(damage * percent / 100.0)))
+            self.heal(to_pokemon, hp_drained)
         return damage
 
     def damage(self, pokemon, damage, cause, source=None, attacker=None):
