@@ -8,6 +8,7 @@ always removed upon switch out.  All effects run on_start when they begin and on
 are statused, the effect is removed on switch out and reapplied on switch in).
 """
 import random
+import math
 
 if __debug__: from _logging import log
 from misc.functions import priority
@@ -522,7 +523,7 @@ class Substitute(BaseEffect):
             engine.damage(foe, damage * move.recoil / 100, Cause.RECOIL)
         elif move.drain:
             if target.ability.name == 'liquidooze':
-                engine.damage(foe, damage * move.drain / 100, Cause.OTHER)
+                engine.damage(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.OTHER)
             else:
                 engine.heal(foe, damage * move.drain / 100)
         elif move.on_success_ignores_substitute:
