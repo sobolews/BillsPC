@@ -5,13 +5,14 @@ from itertools import chain
 from functools import partial
 
 from battle.battlefield import BattleField, BattleSide
+from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import BaseDecisionMaker
 from battle.events import MoveEvent, SwitchEvent, InstaSwitchEvent, ResidualEvent
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import (MoveCategory, Volatile, Status, Cause, FAIL, Type, Decision, ABILITY,
                            ITEM)
-from pokedex.moves import movedex, NO_BATONPASS
+from pokedex.moves import movedex, NO_BATONPASS, Move
 from pokedex.items import itemdex
 from pokedex.stats import Boosts
 
@@ -551,6 +552,8 @@ class BattleEngine(object):
         assert pokemon.is_active
         assert isinstance(damage, int)
         assert damage >= 0
+        assert ((isinstance(attacker, BattlePokemon) and isinstance(source, Move)) if
+                cause is Cause.MOVE else True)
 
         if damage == 0:
             if __debug__: log.w('BattleEngine.damage called with damage=0')
