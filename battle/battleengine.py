@@ -224,10 +224,7 @@ class BattleEngine(object):
             return FAIL
 
         if damage is not None:
-            if move.drain is None:
-                damage = self.damage(target, damage, Cause.MOVE, move, user)
-            else:
-                damage = self.drain_hp(target, user, damage, move.drain, Cause.MOVE, move)
+            damage = self.damage(target, damage, Cause.MOVE, move, user, move.drain)
             if damage in (FAIL, 0): # TODO: is 0 an option?
                 if __debug__: log.i('Move failed in BattleEngine.damage: returned %s', damage)
                 return FAIL
@@ -525,21 +522,7 @@ class BattleEngine(object):
     def effective_spe(self, pokemon):
         return self.modify_spe(pokemon.calculate_stat('spe'), pokemon)
 
-    def drain_hp(self, from_pokemon, to_pokemon, hp, percent, cause, source=None):
-        """
-        Damages from_pokemon, then heals to_pokemon
-        """
-        damage = self.damage(from_pokemon, hp, cause, source, attacker=to_pokemon)
-        if not damage or damage is FAIL or to_pokemon.is_fainted():
-            return damage
-        hp_drained = int(math.ceil(damage * percent / 100.0))
-        if from_pokemon.ability is abilitydex['liquidooze']:
-            self.damage(to_pokemon, hp_drained, Cause.OTHER)
-        else:
-            self.heal(to_pokemon, hp_drained)
-        return damage
-
-    def damage(self, pokemon, damage, cause, source=None, attacker=None):
+    def damage(self, pokemon, damage, cause, source=None, attacker=None, drain_pct=None):
         """
         Return FAIL or int amount of damage done.
         """
@@ -571,17 +554,22 @@ class BattleEngine(object):
         pokemon.hp -= damage
         if __debug__: log.i('%s took %s damage from (%s, %s); hp=(%s)' %
                             (pokemon, damage, cause.name, source, pokemon.hp))
+        if pokemon.hp <= 0:
+            damage += pokemon.hp
 
         for effect in pokemon.effects: # priority is unnecessary
             effect.on_after_damage(self, pokemon, damage, cause, source, attacker)
 
+        if drain_pct and not attacker.is_fainted():
+            self.heal(attacker, int(math.ceil(damage * drain_pct / 100.0)), cause=Cause.DRAIN,
+                      foe=pokemon)
+
         if pokemon.hp <= 0:
-            damage += pokemon.hp
             self.faint(pokemon, cause, source)
 
         return damage
 
-    def heal(self, pokemon, hp, cause=None): # TODO: is a heal/direct_heal distinction needed?
+    def heal(self, pokemon, hp, cause=None, source=None, foe=None):
         if pokemon.is_fainted():
             if __debug__: log.e('Tried to heal fainted pokemon: %s, cause=%s', pokemon, cause)
             return

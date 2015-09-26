@@ -32,7 +32,7 @@ Weather.TRIO = (Weather.PRIMORDIALSEA, Weather.DESOLATELAND, Weather.DELTASTREAM
 
 Cause = Enum(
     'Cause', ('MOVE', 'RESIDUAL', 'WEATHER', 'HAZARD', 'RECOIL', 'SELFDESTRUCT', 'OTHER',
-              'CONFUSE', 'DIRECT'))
+              'CONFUSE', 'DIRECT', 'DRAIN'))
 
 Decision = Enum(
     'Decision', ('MOVE', 'SWITCH', 'MEGAEVO', 'RESIDUAL', 'POSTSWITCH'))

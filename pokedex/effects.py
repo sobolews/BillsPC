@@ -290,7 +290,7 @@ class LeechSeed(BaseEffect):
     def on_residual(self, pokemon, foe, engine):
         if foe is None or foe.is_fainted():
             return
-        engine.drain_hp(pokemon, foe, pokemon.max_hp / 8, 100, Cause.RESIDUAL, self)
+        engine.damage(pokemon, pokemon.max_hp / 8, Cause.RESIDUAL, self, foe, 100)
 
 class LightScreen(BaseEffect):
     source = SideCondition.LIGHTSCREEN
@@ -522,10 +522,7 @@ class Substitute(BaseEffect):
         elif move.recoil:
             engine.damage(foe, damage * move.recoil / 100, Cause.RECOIL)
         elif move.drain:
-            if target.ability.name == 'liquidooze':
-                engine.damage(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.OTHER)
-            else:
-                engine.heal(foe, damage * move.drain / 100)
+            engine.heal(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.DRAIN, move, target)
         elif move.on_success_ignores_substitute:
             move.on_success(foe, target, engine)
 
