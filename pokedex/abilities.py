@@ -515,10 +515,14 @@ class Limber(AbilityEffect):
         if pokemon.status is Status.PAR:
             pokemon.cure_status()
 
-
-
 class LiquidOoze(AbilityEffect):
-    pass
+    def on_foe_heal(self, foe, hp, cause, engine):
+        if cause is Cause.DRAIN:
+            if __debug__: log.i('%s was hurt by LiquidOoze', foe)
+            engine.damage(foe, hp, Cause.OTHER)
+            return FAIL
+
+
 
 class MagicBounce(AbilityEffect, effects.MagicBounceBase):
     pass

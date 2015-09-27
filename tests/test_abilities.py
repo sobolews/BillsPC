@@ -1057,3 +1057,57 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_tracing_limber_cures_paralysis(self):
     #     pass # TODO when: implement trace
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_liquidooze(self):
+        self.reset_leads(p0_ability='liquidooze')
+        self.choose_move(self.leafeon, movedex['drainpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 105)
+        self.assertDamageTaken(self.leafeon, 53) # ceil(105 * 0.5)
+
+        self.choose_move(self.leafeon, movedex['leechseed'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 105 + 50)
+        self.assertDamageTaken(self.leafeon, 53 + 50)
+
+        self.reset_leads(p0_ability='liquidooze')
+        self.vaporeon.hp = self.leafeon.hp = 200
+        self.choose_move(self.leafeon, movedex['recover'])
+        self.choose_move(self.vaporeon, movedex['recover'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+    def test_liquidooze_behind_substitute(self):
+        self.reset_leads(p0_ability='liquidooze')
+        self.choose_move(self.leafeon, movedex['suckerpunch'])
+        self.choose_move(self.vaporeon, movedex['substitute'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['drainingkiss'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.get_effect(Volatile.SUBSTITUTE).hp,
+                         100 - 30)
+        self.assertDamageTaken(self.leafeon, 23) # ceil(30 * 0.75)
+
+        self.choose_move(self.leafeon, movedex['drainpunch'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.SUBSTITUTE))
+        self.assertDamageTaken(self.vaporeon, 100) # from substitute only
+        self.assertDamageTaken(self.leafeon, 23 + 35) # ceil(70 * 0.5)
+
+    def test_liquidooze_wins_tie(self):
+        self.reset_leads(p1_ability='liquidooze')
+        self.vaporeon.hp = 10
+        self.leafeon.hp = 30
+        self.choose_move(self.vaporeon, movedex['drainingkiss'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+        self.assertEqual(self.battlefield.win, self.leafeon.side.index)
