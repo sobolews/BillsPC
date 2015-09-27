@@ -329,17 +329,18 @@ class MagicBounceBase(BaseEffect):
     def on_foe_try_hit(self, foe, move, target, engine):
         if not move.is_bounceable or target == foe:
             return
-
-        if foe.ability.name == 'magicbounce':  # TODO: test vs. magicbounce
-            foe.suppress_ability() # Prevent infinite magicbouncing loop
-            suppressed = True
-        else:
-            suppressed = False
-
         if __debug__: log.i('%s was bounced back!', move)
+
+        # TODO: test vs. magicbounce
+        suppress = (foe.ability.name == 'magicbounce')
+        if suppress:
+            foe.suppress_ability(engine) # Prevent infinite magicbouncing loop
+
         engine.use_move(target, move, foe) # Reflect the move back at the user
-        if suppressed:
+
+        if suppress:
             foe.unsuppress_ability()
+
         return FAIL
 
 class MagicCoat(MagicBounceBase):
@@ -640,4 +641,3 @@ class Transformed(BaseEffect):
 
     def on_end(self, pokemon, engine):
         pokemon.revert_transform()
-
