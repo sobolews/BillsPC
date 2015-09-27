@@ -1172,7 +1172,6 @@ class TestMoves(MultiMoveTestCase):
         self.assertFalse(self.leafeon.has_effect(Volatile.ENCORE))
         self.assertFalse(self.vaporeon.has_effect(Volatile.ENCORE))
 
-
     def test_magiccoat_no_bounce_attack(self):
         self.choose_move(self.leafeon, movedex['earthquake'])
         self.choose_move(self.vaporeon, movedex['magiccoat'])
