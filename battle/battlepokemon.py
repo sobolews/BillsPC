@@ -112,11 +112,14 @@ class BattlePokemon(object):
         if __debug__: log.d("Suppressing %s's ability", self)
         self.remove_effect(ABILITY, engine)
         self.ability = abilitydex['_suppressed_']
+        self.set_effect(abilitydex['_suppressed_']())
 
     def unsuppress_ability(self):
+        assert self.ability == abilitydex['_suppressed_']
         if __debug__: log.d("Unsuppressing %s's ability", self)
-        self.set_effect(self._ability())
+        self.remove_effect(ABILITY)
         self.ability = self._ability
+        self.set_effect(self._ability())
 
     def cure_status(self):
         if self.status in (None, Status.FNT):
