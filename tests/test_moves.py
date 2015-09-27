@@ -2544,3 +2544,20 @@ class TestSubstitute(MultiMoveTestCase):
 
         self.assertIsNone(self.vaporeon.status)
         self.assertFalse(self.leafeon.boosts)
+
+    def test_substitute_drain(self):
+        self.vaporeon.hp = 100
+        self.choose_move(self.leafeon, movedex['substitute']) # 67 hp
+        self.choose_move(self.vaporeon, movedex['drainpunch'])
+        self.run_turn()
+
+        self.assertEqual(self.leafeon.get_effect(Volatile.SUBSTITUTE).hp,
+                         self.leafeon.max_hp / 4 - 37)
+        self.assertEqual(self.vaporeon.hp, 100 + 19)
+
+        self.choose_move(self.vaporeon, movedex['drainingkiss'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 100 + 19 + 23)
+        self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
