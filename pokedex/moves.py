@@ -2338,6 +2338,7 @@ class partingshot(Move):
         self.accuracy = 100
         self.switch_user = True
         self.is_sound = True
+        self.is_bounceable = True
 
     def on_success(self, user, target, engine):
         engine.apply_boosts(target, Boosts(atk=-1, spa=-1), False)
