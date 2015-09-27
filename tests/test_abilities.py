@@ -1120,3 +1120,39 @@ class TestAbilities(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
         self.assertFainted(self.vaporeon)
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
+
+    def test_magicbounce(self):
+        self.reset_leads(p0_ability='magicbounce')
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertStatus(self.leafeon, Status.PAR)
+        self.assertBoosts(self.leafeon, {'spa': -1, 'atk': -1})
+
+    def test_magicbounce_no_infinite_recursion(self):
+        self.reset_leads(p0_ability='magicbounce', p1_ability='magicbounce')
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.PAR)
+        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
+
+    def test_magicbounce_magiccoat(self):
+        self.reset_leads(p1_ability='magicbounce')
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['magiccoat'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.PAR)
+
+    def test_magicbounce_encore(self):
+        self.reset_leads(p1_ability='magicbounce')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['encore'])
+        self.run_turn()
+
+        self.assertFalse(self.leafeon.has_effect(Volatile.ENCORE))
+        self.assertFalse(self.vaporeon.has_effect(Volatile.ENCORE))

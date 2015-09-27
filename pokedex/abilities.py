@@ -522,10 +522,10 @@ class LiquidOoze(AbilityEffect):
             engine.damage(foe, hp, Cause.OTHER)
             return FAIL
 
-
-
 class MagicBounce(AbilityEffect, effects.MagicBounceBase):
     pass
+
+
 
 class Oblivious(AbilityEffect):
     pass

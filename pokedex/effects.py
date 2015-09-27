@@ -331,7 +331,6 @@ class MagicBounceBase(BaseEffect):
             return
         if __debug__: log.i('%s was bounced back!', move)
 
-        # TODO: test vs. magicbounce
         suppress = (foe.ability.name == 'magicbounce')
         if suppress:
             foe.suppress_ability(engine) # Prevent infinite magicbouncing loop
