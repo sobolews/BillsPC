@@ -98,7 +98,7 @@ class BattlePokemon(object):
         if source is self.status:
             self.status = None
 
-        if __debug__: log.i('Removed %s from %s', source, self)
+        if __debug__: log.i('Removed %s from %s', effect, self)
         return True
 
     def clear_effects(self, engine):

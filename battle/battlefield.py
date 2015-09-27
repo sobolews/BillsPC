@@ -89,13 +89,13 @@ class BattleField(object):
     def remove_effect(self, source, _=None):
         effect = self._effect_index.pop(source, None)
         if effect is None:
-            if __debug__: log.d("Tried to remove nonexistent %s from battle.battlefield", source)
+            if __debug__: log.d("Tried to remove nonexistent %s from battlefield", source)
             return
 
         effect.on_end() # TODO: will any battlefield effects use on_end?
         if source in Weather:
             self._weather = None
-        if __debug__: log.i('Removed %s from battle.battlefield', source)
+        if __debug__: log.i('Removed %s from battlefield', effect)
 
     def __repr__(self):
         cols = int(check_output(['stty', 'size']).split()[1]) or 80
@@ -159,7 +159,7 @@ class BattleSide(object):
             return
 
         effect.on_end() # TODO: will any battleside effects use on_end?
-        if __debug__: log.i('Removed %s from side %d', source, self.index)
+        if __debug__: log.i('Removed %s from side %d', effect, self.index)
 
     def clear_hazards(self):
         for hazard in Hazard:
