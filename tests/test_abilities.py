@@ -1045,6 +1045,15 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 50)
 
+    def test_lightningrod_magiccoat(self):
+        self.reset_leads(p0_ability='lightningrod')
+        self.choose_move(self.vaporeon, movedex['magiccoat'])
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.PAR)
+        self.assertBoosts(self.vaporeon, {'spa': 0})
+
     @patch('random.randrange', lambda _: 0) # bodyslam paralyzes
     def test_limber(self):
         self.reset_leads(p0_ability='limber', p1_ability='limber')
