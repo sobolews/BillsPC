@@ -109,10 +109,12 @@ class BattlePokemon(object):
 
     def suppress_ability(self, engine):
         assert self._ability == self.ability
+        if __debug__: log.d("Suppressing %s's ability", self)
         self.remove_effect(ABILITY, engine)
         self.ability = abilitydex['_suppressed_']
 
     def unsuppress_ability(self):
+        if __debug__: log.d("Unsuppressing %s's ability", self)
         self.set_effect(self._ability())
         self.ability = self._ability
 
