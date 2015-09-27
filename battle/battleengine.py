@@ -525,6 +525,8 @@ class BattleEngine(object):
     def damage(self, pokemon, damage, cause, source=None, attacker=None, drain_pct=None):
         """
         Return FAIL or int amount of damage done.
+        If the damage is caused directly by a move then source and attacker must be set.
+        Draining effects (drain moves or leechseed) pass a percent of damage to drain to attacker.
         """
         if pokemon.is_fainted():
             if __debug__:
