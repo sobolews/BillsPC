@@ -225,11 +225,18 @@ class TestAbilities(MultiMoveTestCase):
 
     def test_arenatrap_doesnt_trap_flying(self):
         self.reset_leads('vaporeon', 'pidgeot', p0_ability='arenatrap')
-        self.add_pokemon('sylveon', 1)
+        self.add_pokemon('sylveon', 1, ability='levitate')
         self.engine.init_turn()
 
         self.assertSetEqual(set(self.engine.get_switch_choices(self.pidgeot.side, self.pidgeot)),
                             {self.sylveon})
+
+        self.choose_move(self.pidgeot, movedex['uturn'])
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertSetEqual(set(self.engine.get_switch_choices(self.sylveon.side, self.sylveon)),
+                            {self.pidgeot})
 
     def test_aromaveil(self):
         self.reset_leads(p0_ability='aromaveil')
