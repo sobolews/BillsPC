@@ -1156,3 +1156,112 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertFalse(self.leafeon.has_effect(Volatile.ENCORE))
         self.assertFalse(self.vaporeon.has_effect(Volatile.ENCORE))
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_magicguard(self):
+        self.reset_leads(p0_ability='magicguard', p1_ability='magicguard')
+        # TODO: give vaporeon a lifeorb
+        self.add_pokemon('umbreon', 0, ability='magicguard')
+        self.add_pokemon('jolteon', 1, ability='magicguard')
+
+        self.battlefield.set_weather(Weather.SANDSTORM)
+        self.choose_move(self.leafeon, movedex['spikes'])
+        self.choose_move(self.vaporeon, movedex['toxicspikes'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['leechseed'])
+        self.choose_move(self.vaporeon, movedex['infestation'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 54)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.leafeon, movedex['batonpass'])
+        self.choose_move(self.vaporeon, movedex['batonpass'])
+        self.run_turn()
+
+        self.assertTrue(self.umbreon.has_effect(Volatile.LEECHSEED))
+        self.assertTrue(self.umbreon.is_active)
+        self.assertTrue(self.jolteon.is_active)
+        self.assertDamageTaken(self.umbreon, 0)
+        self.assertDamageTaken(self.jolteon, 0)
+
+        self.choose_move(self.umbreon, movedex['return'])
+        self.choose_move(self.jolteon, movedex['spikyshield'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.umbreon, 0)
+        self.assertDamageTaken(self.jolteon, 0)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_magicguard_vs_liquidooze(self): # move does damage but no heal/recoil
+        self.reset_leads(p0_ability='liquidooze', p1_ability='magicguard')
+        self.leafeon.hp = 100
+        self.choose_move(self.leafeon, movedex['leechseed'])
+        self.run_turn()
+
+        self.assertEqual(self.leafeon.hp, 100)
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+
+    def test_magicguard_vs_destinybond(self):
+        self.reset_leads(p0_ability='magicguard')
+        self.vaporeon.hp = self.leafeon.hp = 10
+        self.choose_move(self.leafeon, movedex['destinybond'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+
+    @patch('random.randrange', lambda _: 0) # no miss; confusion roll fails
+    def test_magicguard_vs_confusiondamage_perishsong_and_bellydrum(self):
+        self.reset_leads(p0_ability='magicguard', p1_ability='magicguard')
+        self.choose_move(self.leafeon, movedex['perishsong'])
+        self.choose_move(self.vaporeon, movedex['bellydrum'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 2)
+        self.assertBoosts(self.vaporeon, {'atk': 6})
+
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 200 + 145) # bellydrum + confusion damage at +6 atk
+
+        self.run_turn()
+        self.run_turn()
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+
+    def test_magicguard_vs_recoil(self):
+        self.reset_leads(p0_ability='magicguard')
+        self.choose_move(self.vaporeon, movedex['flareblitz'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+
+    def test_magicguard_with_explosion(self):
+        self.reset_leads(p0_ability='magicguard')
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 119)
+        self.assertFainted(self.vaporeon)
+
+    def test_magicguard_vs_aftermath_and_ironbarbs(self):
+        self.reset_leads(p0_ability='magicguard', p1_ability='aftermath')
+        self.add_pokemon('jolteon', 1, ability='ironbarbs')
+        self.leafeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)

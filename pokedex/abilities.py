@@ -525,6 +525,13 @@ class LiquidOoze(AbilityEffect):
 class MagicBounce(BaseAbility, effects.MagicBounceBase):
     pass
 
+class MagicGuard(AbilityEffect):
+    def on_damage(self, damage, cause, source):
+        if cause is not Cause.MOVE:
+            if __debug__: log.i('Damage from (%s, %s) was prevented by MagicGuard',
+                                cause.name, source)
+            return FAIL
+        return damage
 
 
 class Oblivious(AbilityEffect):
