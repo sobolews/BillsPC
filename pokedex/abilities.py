@@ -536,6 +536,14 @@ class MagicGuard(AbilityEffect):
 class Magician(AbilityEffect):
     pass # TODO when: implement items
 
+class MagnetPull(AbilityEffect):
+    def on_before_turn(self, pokemon, foe):
+        if Type.STEEL in foe.types and not foe.has_effect(Volatile.TRAPPED):
+            trap_effect = effects.Trapped(pokemon)
+            foe.set_effect(trap_effect)
+            pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+
+
 
 
 class Oblivious(AbilityEffect):

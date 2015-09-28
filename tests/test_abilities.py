@@ -1275,3 +1275,26 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_magician(self):
     #     pass # TODO when: implement items
+
+    def test_magnetpull(self):
+        self.reset_leads('vaporeon', 'steelix', p0_ability='magnetpull')
+        self.add_pokemon('aegislash', 1)
+        self.add_pokemon('glaceon', 1)
+        self.engine.init_turn()
+
+        self.assertSetEqual(set(self.engine.get_switch_choices(self.steelix.side, self.steelix)),
+                            set())
+
+        self.choose_move(self.steelix, movedex['voltswitch'])
+        self.run_turn()
+        self.assertTrue(self.aegislash.is_active)
+
+        self.assertSetEqual(set(self.engine.get_switch_choices(self.aegislash.side,
+                                                               self.aegislash)),
+                            {self.steelix, self.glaceon})
+
+        self.choose_switch(self.aegislash, self.glaceon)
+        self.run_turn()
+
+        self.assertSetEqual(set(self.engine.get_switch_choices(self.glaceon.side, self.glaceon)),
+                            {self.aegislash, self.steelix})
