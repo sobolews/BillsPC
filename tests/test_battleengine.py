@@ -313,6 +313,26 @@ class TestBattleEngineRunMove(TestCase):
         self.assertEqual(self.engine.battlefield.last_move_used, self.vaporeon.moveset[0])
 
 class TestBattleEngineMultiTurn(MultiMoveTestCase):
+    def test_partialtrap_then_double_batonpass(self):
+        """
+        Regression: PartialTrap was not being removed properly when both trapper and trappee
+        batonpassed in the same turn.
+        """
+        self.add_pokemon('umbreon', 0)
+        self.add_pokemon('jolteon', 1)
+        self.choose_move(self.vaporeon, movedex['infestation'])
+        self.run_turn()
+
+        self.choose_move(self.vaporeon, movedex['batonpass'])
+        self.choose_move(self.leafeon, movedex['batonpass'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.jolteon, 0)
+        self.assertFalse(self.jolteon.has_effect(Volatile.PARTIALTRAP))
+        self.assertFalse(self.leafeon.has_effect(Volatile.PARTIALTRAP))
+        self.assertFalse(self.vaporeon.has_effect(Volatile.TRAPPER))
+        self.assertFalse(self.umbreon.has_effect(Volatile.TRAPPER))
+
     def test_dont_try_user_boost_if_user_fainted(self):
         """
         Regression: Moves with user_boosts tried to boost the user even if it fainted

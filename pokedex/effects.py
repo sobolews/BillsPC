@@ -216,9 +216,9 @@ class PartialTrap(BaseEffect):
 
     @priority(11)
     def on_residual(self, pokemon, foe, engine):
-        if self.trapper.is_fainted() or not self.trapper.is_active: # TODO: is this correct behavior?
-            log.w('This PartialTrap effect should have been removed when the trapper left!')
+        if self.trapper.is_fainted() or not self.trapper.is_active:
             pokemon.remove_effect(Volatile.PARTIALTRAP)
+            return
         if __debug__: log.i("%s was hurt by PartialTrap", pokemon)
         engine.damage(pokemon, pokemon.max_hp / 8, Cause.RESIDUAL, self)
 
