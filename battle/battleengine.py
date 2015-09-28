@@ -613,7 +613,7 @@ class BattleEngine(object):
         {substitute, bellydrum, painsplit, struggle recoil, confusion damage} are direct damage
         """
         pokemon.hp -= damage
-        if pokemon.is_fainted():
+        if pokemon.hp <= 0:
             self.faint(pokemon, Cause.DIRECT)
 
     def apply_boosts(self, pokemon, boosts, self_imposed=True):
