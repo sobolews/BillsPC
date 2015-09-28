@@ -533,6 +533,10 @@ class MagicGuard(AbilityEffect):
             return FAIL
         return damage
 
+class Magician(AbilityEffect):
+    pass # TODO when: implement items
+
+
 
 class Oblivious(AbilityEffect):
     pass

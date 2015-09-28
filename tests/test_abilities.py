@@ -1265,3 +1265,6 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 0)
+
+    # def test_magician(self):
+    #     pass # TODO when: implement items
