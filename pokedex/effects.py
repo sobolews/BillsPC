@@ -287,6 +287,8 @@ class KingsShield(BaseEffect):
         return FAIL
 
 class LeechSeed(BaseEffect):
+    source = Volatile.LEECHSEED
+
     @priority(8)
     def on_residual(self, pokemon, foe, engine):
         if foe is None or foe.is_fainted():
