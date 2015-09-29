@@ -1,8 +1,16 @@
+from math import ceil
+
 def clamp_int(num, lower, upper=float('inf')):
     assert lower <= upper, 'Wrong order: (%d %d %d)' % (num, lower, upper)
     assert isinstance(num, int)
 
     return min(upper, max(lower, num))
+
+def gf_round(number):
+    """
+    GameFreak rounds *down* at 0.5
+    """
+    return int(number + 1) if number % 1 > 0.5 else int(number)
 
 def priority(n):
     """Method decorator: set the priority attribute to n"""

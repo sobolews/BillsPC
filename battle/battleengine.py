@@ -8,6 +8,7 @@ from battle.battlefield import BattleField, BattleSide
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import BaseDecisionMaker
 from battle.events import MoveEvent, SwitchEvent, InstaSwitchEvent, ResidualEvent
+from misc.functions import gf_round
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import (MoveCategory, Volatile, Status, Cause, FAIL, Type, Decision, ABILITY,
@@ -369,8 +370,7 @@ class BattleEngine(object):
             if __debug__: log.d('base_power=%s, returning damage=None', base_power)
             return None
 
-        # showdown's (chain)Modify stuff just amounts to using round
-        base_power = int(max(round(base_power), 1))
+        base_power = int(max(gf_round(base_power), 1))
         if __debug__: log.d('Using base_power of %s', base_power)
 
         crit_ratio = self.get_crit_ratio(user, move)

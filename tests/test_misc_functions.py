@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from misc.functions import clamp_int, normalize_name
+from misc.functions import clamp_int, normalize_name, gf_round
 
 class TestMisc(TestCase):
     def test_clamp_int(self):
@@ -11,6 +11,15 @@ class TestMisc(TestCase):
         if __debug__:
             with self.assertRaises(AssertionError):
                 clamp_int(0, 5, 2)
+
+    def test_gf_round(self):
+        self.assertEqual(gf_round(1), 1)
+        self.assertEqual(gf_round(1.0), 1)
+        self.assertTrue(isinstance(gf_round(1.0), int))
+        self.assertEqual(gf_round(13.1), 13)
+        self.assertEqual(gf_round(127.5), 127)
+        self.assertEqual(gf_round(1.75), 2)
+        self.assertEqual(gf_round(0.9999999999999999999999), 1)
 
     def test_normalize_name(self):
         self.assertEqual(normalize_name('p2a: Galvantula'), 'galvantula')
