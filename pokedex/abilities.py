@@ -543,6 +543,13 @@ class MagnetPull(AbilityEffect):
             foe.set_effect(trap_effect)
             pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
 
+class MarvelScale(AbilityEffect):
+    def on_modify_def(self, pokemon, engine, def_):
+        if pokemon.status is not None:
+            if __debug__: log.i("%s's defense was boosted by MarvelScale", pokemon)
+            return def_ * 1.5
+        return def_
+
 
 
 

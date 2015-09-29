@@ -1288,3 +1288,29 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertSwitchChoices(self.glaceon, {self.aegislash, self.steelix})
+
+    @patch('random.randrange', lambda _: 1) # no miss; no parahax
+    def test_marvelscale(self):
+        self.reset_leads(p0_ability='marvelscale', p1_ability='marvelscale',
+                         p0_moves=(movedex['xscissor'], movedex['drillpeck'],
+                                   movedex['poisonjab'], movedex['sleeptalk']))
+        self.choose_move(self.vaporeon, movedex['drillpeck'])
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertDamageTaken(self.leafeon, 78)
+
+        self.engine.heal(self.vaporeon, 200)
+        self.engine.heal(self.leafeon, 200)
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=1))
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.choose_move(self.leafeon, movedex['sleeppowder'])
+        self.run_turn()
+
+        self.choose_move(self.vaporeon, movedex['sleeptalk'])
+        self.choose_move(self.leafeon, movedex['boltstrike'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 242)
+        self.assertDamageTaken(self.leafeon, 54)
