@@ -550,6 +550,14 @@ class MarvelScale(AbilityEffect):
             return def_ * 1.5
         return def_
 
+class MegaLauncher(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.is_pulse:
+            if __debug__: log.i('%s was boosted by MegaLauncher!', move)
+            return base_power * 1.5
+        return base_power
+
+
 
 
 

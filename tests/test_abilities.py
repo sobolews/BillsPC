@@ -1314,3 +1314,13 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 242)
         self.assertDamageTaken(self.leafeon, 54)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_megalauncher(self):
+        self.reset_leads(p0_ability='megalauncher', p1_ability='megalauncher')
+        self.choose_move(self.vaporeon, movedex['dragonpulse'])
+        self.choose_move(self.leafeon, movedex['leafstorm'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 230)
+        self.assertDamageTaken(self.leafeon, 166)
