@@ -208,35 +208,29 @@ class TestAbilities(MultiMoveTestCase):
         self.add_pokemon('umbreon', 0)
         self.engine.init_turn()
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.leafeon.side, self.leafeon)),
-                            set())
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.vaporeon.side, self.vaporeon)),
-                            {self.umbreon})
+        self.assertSwitchChoices(self.leafeon, set())
+        self.assertSwitchChoices(self.vaporeon, {self.umbreon})
 
         self.choose_move(self.leafeon, movedex['batonpass'])
         self.run_turn()
 
         self.engine.init_turn()
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.vaporeon.side, self.vaporeon)),
-                            set())
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.flareon.side, self.flareon)),
-                            set())
+        self.assertSwitchChoices(self.vaporeon, set())
+        self.assertSwitchChoices(self.flareon, set())
 
     def test_arenatrap_doesnt_trap_flying(self):
         self.reset_leads('vaporeon', 'pidgeot', p0_ability='arenatrap')
         self.add_pokemon('sylveon', 1, ability='levitate')
         self.engine.init_turn()
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.pidgeot.side, self.pidgeot)),
-                            {self.sylveon})
+        self.assertSwitchChoices(self.pidgeot, {self.sylveon})
 
         self.choose_move(self.pidgeot, movedex['uturn'])
         self.run_turn()
         self.engine.init_turn()
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.sylveon.side, self.sylveon)),
-                            {self.pidgeot})
+        self.assertSwitchChoices(self.sylveon, {self.pidgeot})
 
     def test_aromaveil(self):
         self.reset_leads(p0_ability='aromaveil')
@@ -1282,19 +1276,15 @@ class TestAbilities(MultiMoveTestCase):
         self.add_pokemon('glaceon', 1)
         self.engine.init_turn()
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.steelix.side, self.steelix)),
-                            set())
+        self.assertSwitchChoices(self.steelix, set())
 
         self.choose_move(self.steelix, movedex['voltswitch'])
         self.run_turn()
         self.assertTrue(self.aegislash.is_active)
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.aegislash.side,
-                                                               self.aegislash)),
-                            {self.steelix, self.glaceon})
+        self.assertSwitchChoices(self.aegislash, {self.steelix, self.glaceon})
 
         self.choose_switch(self.aegislash, self.glaceon)
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_switch_choices(self.glaceon.side, self.glaceon)),
-                            {self.aegislash, self.steelix})
+        self.assertSwitchChoices(self.glaceon, {self.aegislash, self.steelix})

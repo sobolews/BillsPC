@@ -461,15 +461,13 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['return'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            {movedex['outrage']})
+        self.assertMoveChoices(self.vaporeon, {movedex['outrage']})
 
         self.choose_move(self.vaporeon, movedex['outrage'])
         self.choose_move(self.leafeon, movedex['return'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
         self.assertEqual(self.vaporeon.pp[movedex['outrage']], movedex['outrage'].max_pp - 1)
         self.assertTrue(self.vaporeon.has_effect(Volatile.CONFUSE))
 
@@ -481,8 +479,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['return'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            {movedex['outrage']})
+        self.assertMoveChoices(self.vaporeon, {movedex['outrage']})
 
     @patch('random.randint', lambda *_: 3) # three-turn outrage
     def test_locked_move_unlocks_after_protect_without_confusion(self):
@@ -493,15 +490,13 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['return'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            {movedex['outrage']})
+        self.assertMoveChoices(self.vaporeon, {movedex['outrage']})
 
         self.choose_move(self.vaporeon, movedex['outrage'])
         self.choose_move(self.leafeon, movedex['protect'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
 
     @patch('random.randint', lambda *_: 2) # two-turn outrage
@@ -515,15 +510,13 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['uturn'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            {movedex['outrage']})
+        self.assertMoveChoices(self.vaporeon, {movedex['outrage']})
 
         self.choose_move(self.vaporeon, movedex['outrage'])
         self.choose_move(self.sylveon, movedex['return'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
         self.assertTrue(self.vaporeon.has_effect(Volatile.CONFUSE))
 
     @patch('random.randint', lambda *_: 3) # three-turn outrage
@@ -541,8 +534,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.status, Status.SLP)
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
         self.assertFalse(self.vaporeon.has_effect(Volatile.LOCKEDMOVE))
-        self.assertSetEqual(set(self.engine.get_move_choices(self.vaporeon)),
-                            set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
 
     @patch('random.randint', lambda *_: 3) # three turns of confusion and sleep
     def test_confusion_counter_doesnt_decrement_while_pokemon_is_asleep(self):
@@ -860,8 +852,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['disable'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['dragonclaw'], movedex['crunch'], movedex['xscissor']})
+        self.assertMoveChoices(self.leafeon, {movedex['dragonclaw'], movedex['crunch'],
+                                              movedex['xscissor']})
 
     def test_disable_vs_copycat(self):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
@@ -873,9 +865,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['disable'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['dragonclaw'], movedex['crunch'], movedex['xscissor']})
-
+        self.assertMoveChoices(self.leafeon, {movedex['dragonclaw'], movedex['crunch'],
+                                              movedex['xscissor']})
 
     def test_encore_vs_copycat(self):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
@@ -887,8 +878,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['encore'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['copycat']})
+        self.assertMoveChoices(self.leafeon, {movedex['copycat']})
 
         self.choose_move(self.leafeon, movedex['copycat'])
         self.run_turn()
@@ -906,8 +896,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['encore'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['sleeptalk']})
+        self.assertMoveChoices(self.leafeon, {movedex['sleeptalk']})
 
         self.choose_move(self.leafeon, movedex['sleeptalk'])
         self.run_turn()

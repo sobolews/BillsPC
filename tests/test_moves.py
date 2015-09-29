@@ -211,7 +211,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertTrue(self.vaporeon.has_effect(Volatile.TWOTURNMOVE))
         # mid-twoturnmove, can only select same move
-        self.assertListEqual(self.engine.get_move_choices(self.vaporeon), [movedex['bounce']])
+        self.assertMoveChoices(self.vaporeon, {movedex['bounce']})
 
         self.choose_move(self.vaporeon, movedex['bounce'])
         self.choose_move(self.leafeon, movedex['return'])
@@ -495,17 +495,16 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['disable'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['leafblade'], movedex['uturn'], movedex['splash']})
+        self.assertMoveChoices(self.leafeon, {movedex['leafblade'], movedex['uturn'],
+                                              movedex['splash']})
 
         for _ in range(4):      # disable lasts 4 turns
             self.choose_move(self.leafeon, movedex['splash'])
             self.choose_move(self.vaporeon, movedex['splash'])
             self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['return'], movedex['leafblade'],
-                             movedex['uturn'], movedex['splash']})
+        self.assertMoveChoices(self.leafeon, {movedex['return'], movedex['leafblade'],
+                                              movedex['uturn'], movedex['splash']})
 
     def test_disable_prevents_move_used_same_turn(self):
         self.choose_move(self.leafeon, movedex['return'])
@@ -529,8 +528,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['disable'])
         self.run_turn()
 
-        self.assertListEqual(self.engine.get_move_choices(self.leafeon),
-                             [movedex['struggle']])
+        self.assertMoveChoices(self.leafeon, {movedex['struggle']})
 
     def test_disable_fails_when_pokemon_already_disabled(self):
         self.choose_move(self.leafeon, movedex['return'])
@@ -600,16 +598,14 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
 
         for _ in range(3):
-            self.assertListEqual(self.engine.get_move_choices(self.leafeon),
-                                 [movedex['return']])
+            self.assertMoveChoices(self.leafeon, {movedex['return']})
 
             self.choose_move(self.leafeon, movedex['return'])
             self.choose_move(self.vaporeon, movedex['recover'])
             self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['return'], movedex['leafblade'],
-                             movedex['uturn'], movedex['splash']})
+        self.assertMoveChoices(self.leafeon, {movedex['return'], movedex['leafblade'],
+                                              movedex['uturn'], movedex['splash']})
 
     def test_encore_overrides_move_choice(self):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
@@ -632,16 +628,14 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['encore'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.umbreon.moveset),
-                            set(self.engine.get_move_choices(self.umbreon)))
+        self.assertMoveChoices(self.umbreon, set(self.umbreon.moveset))
 
         self.umbreon.pp[movedex['toxic']] = 1
         self.choose_move(self.umbreon, movedex['toxic'])
         self.choose_move(self.vaporeon, movedex['encore'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.umbreon.moveset) - {movedex['toxic']},
-                            set(self.engine.get_move_choices(self.umbreon)))
+        self.assertMoveChoices(self.umbreon, set(self.umbreon.moveset) - {movedex['toxic']})
 
         self.choose_move(self.umbreon, movedex['encore'])
         self.choose_move(self.vaporeon, movedex['encore'])
@@ -969,21 +963,18 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['infestation'])
         self.run_turn()
 
-        self.assertEqual(self.engine.get_switch_choices(
-            self.vaporeon.side, self.vaporeon), [])
+        self.assertSwitchChoices(self.vaporeon, set())
         self.assertDamageTaken(self.vaporeon, 13 + self.vaporeon.max_hp / 8)
 
         for _ in range(3):
             self.run_turn()
+            self.assertSwitchChoices(self.vaporeon, set())
 
         self.assertDamageTaken(self.vaporeon, 13 + 4 * self.vaporeon.max_hp / 8)
-        self.assertEqual(self.engine.get_switch_choices(
-            self.vaporeon.side, self.vaporeon), [])
 
         self.run_turn()
         self.assertDamageTaken(self.vaporeon, 13 + 4 * self.vaporeon.max_hp / 8)
-        self.assertEqual(self.engine.get_switch_choices(
-            self.vaporeon.side, self.vaporeon), [self.flareon, self.umbreon])
+        self.assertSwitchChoices(self.vaporeon, {self.flareon, self.umbreon})
 
     def test_infestation_is_batonpassed_properly(self):
         self.add_pokemon('jolteon', 0)
@@ -1010,8 +1001,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertEqual(self.engine.battlefield.sides[0].active_pokemon, self.espeon)
         self.assertTrue(self.espeon.is_active)
-        self.assertListEqual(self.engine.get_switch_choices(
-            self.espeon.side, self.espeon), [self.vaporeon])
+        self.assertSwitchChoices(self.espeon, {self.vaporeon})
         self.assertDamageTaken(self.vaporeon, 13)
         for pokemon in [self.espeon, self.vaporeon, self.leafeon]:
             self.assertFalse(pokemon.has_effect(Volatile.TRAPPER))
@@ -1035,8 +1025,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['infestation'])
         self.run_turn()
 
-        self.assertEqual(self.engine.get_switch_choices(
-            self.gengar.side, self.gengar), [self.flareon])
+        self.assertSwitchChoices(self.gengar, {self.flareon})
 
     # def test_judgment(self):
     #     self.use_leads('arceus', 'leafeon', p0_item=itemdex['flameplate'])
@@ -1335,10 +1324,8 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 0)
         self.assertDamageTaken(self.vaporeon, 0)
-        self.assertSetEqual({movedex['phantomforce']},
-                            set(self.engine.get_move_choices(self.leafeon)))
-        self.assertSetEqual(set(self.engine.get_switch_choices(
-            self.leafeon.side, self.leafeon)), set())
+        self.assertMoveChoices(self.leafeon, {movedex['phantomforce']})
+        self.assertSwitchChoices(self.leafeon, set())
 
         self.choose_move(self.leafeon, movedex['phantomforce'])
         self.choose_move(self.vaporeon, movedex['protect'])
@@ -2034,8 +2021,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
 
     def test_struggle_is_only_move_choice_when_out_of_pp(self):
-        self.assertEqual(self.engine.get_move_choices(self.vaporeon),
-                         [movedex['struggle']])
+        self.assertMoveChoices(self.vaporeon, {movedex['struggle']})
 
     def test_struggle_is_only_move_choice_when_disable_taunted(self):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
@@ -2049,8 +2035,7 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
         self.assertDamageTaken(self.leafeon, 50)
 
-        self.assertListEqual(self.engine.get_move_choices(self.vaporeon),
-                             [movedex['struggle']])
+        self.assertMoveChoices(self.vaporeon, {movedex['struggle']})
 
     def test_stormthrow_always_crit(self):
         self.engine.get_critical_hit = BattleEngine.get_critical_hit
@@ -2133,8 +2118,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, movedex['taunt'])
         self.run_turn()
 
-        self.assertSetEqual(set(self.engine.get_move_choices(self.leafeon)),
-                            {movedex['dragonclaw'], movedex['xscissor']})
+        self.assertMoveChoices(self.leafeon, {movedex['dragonclaw'], movedex['xscissor']})
 
     def test_taunt_prevents_slower_status_move_same_turn(self):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',

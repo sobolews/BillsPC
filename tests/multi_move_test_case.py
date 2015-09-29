@@ -167,6 +167,12 @@ class MultiMoveTestCase(TestCase):
     def assertBoosts(self, pokemon, boosts):
         self.assertDictContainsSubset(boosts, pokemon.boosts)
 
+    def assertMoveChoices(self, pokemon, moves):
+        self.assertSetEqual(set(self.engine.get_move_choices(pokemon)), moves)
+
+    def assertSwitchChoices(self, pokemon, choices):
+        self.assertSetEqual(set(self.engine.get_switch_choices(pokemon.side, pokemon)), choices)
+
     @property
     def battlefield(self):
         return self.engine.battlefield
