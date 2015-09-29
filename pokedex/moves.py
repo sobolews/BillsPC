@@ -985,6 +985,7 @@ class dragonpulse(Move):
         self.type = Type.DRAGON
         self.accuracy = 100
         self.base_power = 85
+        self.is_pulse = True
 
 class dragontail(Move):
     def __init__(self):
