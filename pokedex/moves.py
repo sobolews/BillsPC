@@ -145,7 +145,7 @@ class Move(object):
         BattleEngine.try_move_hit.
         """
 
-    def __str__(self):
+    def __repr__(self):
         return self.name
 
 
