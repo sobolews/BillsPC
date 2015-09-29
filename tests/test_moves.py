@@ -1875,6 +1875,15 @@ class TestMoves(MultiMoveTestCase):
         self.assertFalse(self.flareon.is_active)
         self.assertTrue(self.vaporeon.is_active)
 
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_sleeppowder(self):
+        self.choose_move(self.leafeon, movedex['sleeppowder'])
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.SLP)
+        self.assertDamageTaken(self.leafeon, 0)
+
     def test_solarbeam(self):
         self.choose_move(self.vaporeon, movedex['solarbeam'])
         self.choose_move(self.leafeon, movedex['clearsmog'])

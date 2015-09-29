@@ -3056,6 +3056,7 @@ class sleeppowder(Move):
         self.category = STATUS
         self.type = Type.GRASS
         self.accuracy = 75
+        self.target_status = Status.SLP
         self.is_bounceable = True
         self.is_powder = True
 
