@@ -1523,3 +1523,28 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.leafeon, {'spe': 1})
         self.assertBoosts(self.vaporeon, {'spe': 1})
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_moxie(self):
+        self.reset_leads(p0_ability='moxie')
+        self.add_pokemon('flareon', 1)
+        self.add_pokemon('jolteon', 1)
+        self.leafeon.hp = self.flareon.hp = self.jolteon.hp = 1
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+        self.assertFainted(self.leafeon)
+
+        self.assertBoosts(self.vaporeon, {'atk': 1})
+
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+        self.assertFainted(self.flareon)
+
+        self.assertBoosts(self.vaporeon, {'atk': 1})
+
+        self.engine.init_turn()
+        self.assertFainted(self.jolteon)
+
+        self.assertBoosts(self.vaporeon, {'atk': 1})

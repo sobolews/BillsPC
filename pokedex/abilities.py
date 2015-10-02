@@ -593,6 +593,12 @@ class MotorDrive(AbilityEffect):
             engine.apply_boosts(target, Boosts(spe=1), self_imposed=True)
             return FAIL
 
+class Moxie(AbilityEffect):
+    def on_foe_faint(self, pokemon, cause, source, foe, engine):
+        if cause is Cause.MOVE:
+            if __debug__: log.i("%s's Moxie boosts its attack!", pokemon)
+            engine.apply_boosts(pokemon, Boosts(atk=1), self_imposed=True)
+
 
 
 
