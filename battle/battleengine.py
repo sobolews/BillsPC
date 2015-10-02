@@ -589,7 +589,7 @@ class BattleEngine(object):
                       foe=pokemon)
 
         if pokemon.hp <= 0:
-            self.faint(pokemon, cause, source)
+            self.faint(pokemon, cause, source, attacker)
 
         return damage
 
@@ -610,7 +610,7 @@ class BattleEngine(object):
         pokemon.hp = min(hp + pokemon.hp, pokemon.max_hp)
         if __debug__: log.i('%s healed %d damage; hp=%d', pokemon, pokemon.hp - prev_hp, pokemon.hp)
 
-    def faint(self, pokemon, cause, source=None):
+    def faint(self, pokemon, cause, source=None, attacker=None):
         if pokemon.status is Status.FNT:
             if __debug__: log.w('Tried to faint %s twice!', pokemon)
             return
@@ -626,6 +626,10 @@ class BattleEngine(object):
 
         for effect in pokemon.effects:
             effect.on_faint(pokemon, cause, source, self)
+
+        if attacker is not None and not attacker.is_fainted():
+            for effect in attacker.effects:
+                effect.on_foe_faint(attacker, cause, source, pokemon, self)
 
         pokemon.clear_effects(self)
 
