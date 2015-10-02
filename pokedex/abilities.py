@@ -561,6 +561,31 @@ class MegaLauncher(AbilityEffect):
             return base_power * 1.5
         return base_power
 
+class MoldBreaker(AbilityEffect):
+    def on_break_mold(self, target, engine):
+        if target.ability.name in MOLDS:
+            self.suppressed = True
+            target.suppress_ability(engine)
+            if __debug__: log.d("%s's %s was suppressed by moldbreaker", target, target.ability)
+        else:
+            self.suppressed = False
+
+    def on_unbreak_mold(self, target):
+        if self.suppressed and not target.is_fainted() and target.is_active:
+            target.unsuppress_ability()
+            if __debug__: log.d("%s's %s was restored", target, target._ability)
+        self.suppressed = False
+
+MOLDS = {'aromaveil', 'battlearmor', 'bigpecks', 'bulletproof', 'clearbody', 'contrary', 'damp',
+         'dryskin', 'filter', 'flashfire', 'flowergift', 'flowerveil', 'friendguard', 'furcoat',
+         'heatproof', 'heavymetal', 'hypercutter', 'immunity', 'innerfocus', 'insomnia', 'keeneye',
+         'leafguard', 'levitate', 'lightmetal', 'lightningrod', 'limber', 'magicbounce',
+         'magmaarmor', 'marvelscale', 'motordrive', 'multiscale', 'oblivious', 'overcoat',
+         'owntempo', 'sandveil', 'sapsipper', 'shellarmor', 'shielddust', 'simple', 'snowcloak',
+         'solidrock', 'soundproof', 'stickyhold', 'stormdrain', 'sturdy', 'suctioncups', 'sweetveil'
+         'tangledfeet', 'telepathy', 'thickfat', 'unaware', 'vitalspirit', 'voltabsorb',
+         'waterabsorb', 'waterveil', 'whitesmoke', 'wonderguard', 'wonderskin'}
+
 
 
 

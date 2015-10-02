@@ -109,6 +109,25 @@ class BattleEngine(object):
             self.battlefield.last_move_used = move
 
     def use_move(self, user, move, target):
+        """
+        Wrap _use_move in moldbreaker handling
+        """
+        moldbreaker = False
+        if user.ability is abilitydex['moldbreaker']:
+            moldbreaker = user.get_effect(ABILITY)
+
+        if moldbreaker:
+            user.get_effect(ABILITY).on_break_mold(target, self)
+
+        result = self._use_move(user, move, target)
+
+        if moldbreaker:
+            target = self.get_foe(user) # roar, etc. could have changed the active foe
+            moldbreaker.on_unbreak_mold(target)
+
+        return result
+
+    def _use_move(self, user, move, target):
         """ Return value not used (except for testing) """
         assert not user.is_fainted()
         assert user.is_active
@@ -638,6 +657,8 @@ class BattleEngine(object):
             incoming = random.choice(team_members)
             if __debug__: log.d('Force switching %s for %s', pokemon, incoming)
             self.run_switch(pokemon, incoming)
+            if forcer.ability is abilitydex['moldbreaker']:
+                forcer.get_effect(ABILITY).on_break_mold(incoming, self)
             self.post_switch_in(incoming)
 
     def set_status(self, pokemon, status, infiltrates=False):
