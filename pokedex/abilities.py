@@ -586,6 +586,13 @@ MOLDS = {'aromaveil', 'battlearmor', 'bigpecks', 'bulletproof', 'clearbody', 'co
          'tangledfeet', 'telepathy', 'thickfat', 'unaware', 'vitalspirit', 'voltabsorb',
          'waterabsorb', 'waterveil', 'whitesmoke', 'wonderguard', 'wonderskin'}
 
+class MotorDrive(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.type is Type.ELECTRIC:
+            engine.apply_boosts(target, Boosts(spe=1), self_imposed=True)
+            return FAIL
+
 
 
 

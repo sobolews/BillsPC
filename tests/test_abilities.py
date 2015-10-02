@@ -1514,3 +1514,12 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+
+    def test_motordrive(self):
+        self.reset_leads(p0_ability='motordrive', p1_ability='motordrive')
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['voltswitch'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'spe': 1})
+        self.assertBoosts(self.vaporeon, {'spe': 1})
