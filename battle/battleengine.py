@@ -638,6 +638,7 @@ class BattleEngine(object):
             incoming = random.choice(team_members)
             if __debug__: log.d('Force switching %s for %s', pokemon, incoming)
             self.run_switch(pokemon, incoming)
+            self.post_switch_in(incoming)
 
     def set_status(self, pokemon, status, infiltrates=False):
         """

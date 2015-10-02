@@ -313,6 +313,18 @@ class TestBattleEngineRunMove(TestCase):
         self.assertEqual(self.engine.battlefield.last_move_used, self.vaporeon.moveset[0])
 
 class TestBattleEngineMultiTurn(MultiMoveTestCase):
+    def test_force_random_switch_into_hazards(self):
+        """
+        Regression: Forcing a switch into hazards failed to active hazards' effects.
+        """
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['stealthrock'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, self.flareon.max_hp / 4)
+
     def test_partialtrap_then_double_batonpass(self):
         """
         Regression: PartialTrap was not being removed properly when both trapper and trappee
