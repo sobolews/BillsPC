@@ -631,7 +631,7 @@ class circlethrow(Move):
             return FAIL
 
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target)
+        engine.force_random_switch(target, user)
 
 class clearsmog(Move):
     def __init__(self):
@@ -1003,7 +1003,7 @@ class dragontail(Move):
             return FAIL
 
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target)
+        engine.force_random_switch(target, user)
 
 class drainingkiss(Move):
     def __init__(self):
@@ -2788,7 +2788,7 @@ class roar(Move):
             return FAIL
 
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target)
+        engine.force_random_switch(target, user)
 
 class rockblast(Move):
     def __init__(self):
@@ -3814,7 +3814,7 @@ class whirlwind(Move):
             return FAIL
 
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target)
+        engine.force_random_switch(target, user)
 
 class wildcharge(Move):
     def __init__(self):

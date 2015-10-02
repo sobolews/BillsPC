@@ -632,7 +632,7 @@ class BattleEngine(object):
                       pokemon, stat, "boosted" if val > 0 else "lowered", abs(val))
         return pokemon.boosts.update(boosts)
 
-    def force_random_switch(self, pokemon):
+    def force_random_switch(self, pokemon, forcer):
         team_members = self.get_switch_choices(pokemon.side, forced=True)
         if team_members:
             incoming = random.choice(team_members)
