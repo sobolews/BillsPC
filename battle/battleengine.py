@@ -243,8 +243,11 @@ class BattleEngine(object):
             if __debug__: log.i('Move "%s" failed in on_success', move)
             return FAIL
 
-        for effect in target.effects:
-            effect.on_foe_hit(user, move, target, self)
+        target = self.get_foe(user) #  # roar, etc. could have changed the active foe
+
+        if target is not None:
+            for effect in target.effects:
+                effect.on_foe_hit(user, move, target, self)
 
         s_effects = move.secondary_effects
         for effect in user.effects:
@@ -324,7 +327,7 @@ class BattleEngine(object):
                                                        # reaching this?
 
     def apply_secondary_effect(self, pokemon, s_effect, infiltrates):
-        if random.randrange(100) >= s_effect.chance or pokemon.is_fainted():
+        if random.randrange(100) >= s_effect.chance or pokemon is None or pokemon.is_fainted():
             return
         if __debug__: log.d('Applying %s to %s', s_effect, pokemon)
 
