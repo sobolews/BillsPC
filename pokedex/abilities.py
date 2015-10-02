@@ -427,6 +427,10 @@ class Immunity(AbilityEffect):
         if thing in (Status.PSN, Status.TOX):
             return True
 
+    def on_update(self, pokemon, engine):
+        if pokemon.status in (Status.PSN, Status.TOX):
+            pokemon.cure_status()
+
 class Imposter(AbilityEffect):
     def on_start(self, pokemon, engine):
         foe = engine.get_foe(pokemon)
