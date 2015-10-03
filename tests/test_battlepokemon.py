@@ -2,8 +2,10 @@ from unittest import TestCase
 
 from battle.battlepokemon import BattlePokemon
 from battle.battlefield import BattleSide
+from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
 from mining import create_pokedex
+from tests.multi_move_test_case import MultiMoveTestCase
 
 pokedex = create_pokedex()
 
@@ -53,3 +55,36 @@ class TestCalculateInitialStats(TestCase):
                                           movedex['trickroom']))
         self.assertDictEqual(beheeyem.stats, {'atk': 172, 'def': 172, 'max_hp': 278,
                                               'spa': 255, 'spd': 205, 'spe': 71})
+
+class TestAbilityChange(MultiMoveTestCase):
+    def test_change_ability(self):
+        self.reset_leads(p0_ability='levitate')
+        self.add_pokemon('espeon', 0)
+        self.vaporeon.change_ability(abilitydex['motordrive'])
+        self.choose_move(self.leafeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 139)
+
+        self.choose_move(self.leafeon, movedex['thunderbolt'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spe': 1})
+
+        self.choose_switch(self.vaporeon, self.espeon)
+        self.choose_move(self.leafeon, movedex['roar'])
+        self.run_turn()
+        self.assertTrue(self.vaporeon.is_active)
+
+        self.assertEqual(self.vaporeon.ability.name, 'levitate')
+
+        self.vaporeon.hp = self.vaporeon.max_hp
+        self.choose_move(self.leafeon, movedex['fusionbolt'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 278)
+
+        self.choose_move(self.leafeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 278)

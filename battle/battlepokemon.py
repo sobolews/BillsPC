@@ -1,4 +1,4 @@
-from pokedex import effects
+from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
                            SideCondition)
@@ -347,6 +347,23 @@ class BattlePokemon(object):
         self._weight = self.base_data['weight']
         self.is_transformed = False
         if __debug__: log.i("%s's transform reverted", self)
+
+    def change_ability(self, new_ability):
+        """
+        Change this pokemon's ability. This effect will only last while the pokemon is active.
+        This pokemon's original ability remains saved in self._ability.
+        """
+        assert self.is_active, "Tried to change inactive pokemon's ability"
+        assert issubclass(new_ability, abilities.BaseAbility)
+
+        if ((new_ability.name in ('illusion', 'stancechange', 'multitype') or
+             self.ability.name in ('stancechange', 'multitype'))):
+            if __debug__: log.d("Failed to change %s's %s to %s", self, self.ability, new_ability)
+            return FAIL
+
+        self.remove_effect(ABILITY)
+        self.ability = new_ability
+        self.set_effect(new_ability())
 
     def __str__(self):
         if self.name == self.base_species:
