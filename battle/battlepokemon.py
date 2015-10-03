@@ -49,6 +49,7 @@ class BattlePokemon(object):
         self.is_transformed = False
         self.illusion = False
         self.base_data = {}     # for transform
+        self._suppressed_ability = None
         self._effect_index = {}
 
     @property
@@ -108,9 +109,9 @@ class BattlePokemon(object):
         self._effect_index.clear()
 
     def suppress_ability(self, engine):
-        assert self._ability == self.ability
         if __debug__: log.d("Suppressing %s's ability", self)
         self.remove_effect(ABILITY, engine)
+        self._suppressed_ability = self.ability
         self.ability = abilitydex['_suppressed_']
         self.set_effect(abilitydex['_suppressed_']())
 
@@ -118,8 +119,9 @@ class BattlePokemon(object):
         assert self.ability == abilitydex['_suppressed_']
         if __debug__: log.d("Unsuppressing %s's ability", self)
         self.remove_effect(ABILITY)
-        self.ability = self._ability
-        self.set_effect(self._ability())
+        self.ability = self._suppressed_ability
+        self._suppressed_ability = None
+        self.set_effect(self.ability())
 
     def cure_status(self):
         if self.status in (None, Status.FNT):
@@ -325,7 +327,7 @@ class BattlePokemon(object):
 
         self.remove_effect(ABILITY)
         if other.ability.name not in ('stancechange', 'multitype', 'illusion'):
-            self.ability = self._ability = other.ability
+            self.ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
             ability_effect.on_start(self, engine)
@@ -341,7 +343,7 @@ class BattlePokemon(object):
         self.types = self.base_data['types']
         self.gender = self.base_data['gender']
         self.stats = self.base_data['stats']
-        self.ability = self._ability = self.base_data['ability']
+        self.ability = self.base_data['ability']
         self._weight = self.base_data['weight']
         self.is_transformed = False
         if __debug__: log.i("%s's transform reverted", self)

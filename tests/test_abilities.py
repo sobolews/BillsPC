@@ -803,6 +803,7 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDictContainsSubset(ditto_stats, self.leafeon.stats)
         self.assertEqual(self.ditto.weight, self.leafeon.weight)
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
+        self.assertEqual(self.ditto._ability.name, 'imposter')
         self.assertEqual(self.ditto.gender, self.leafeon.gender)
         self.assertSequenceEqual(self.ditto.moveset, self.leafeon.moveset)
         self.assertListEqual(self.ditto.types, self.leafeon.types)
@@ -841,10 +842,11 @@ class TestAbilities(MultiMoveTestCase):
 
     def test_imposter_switch_and_transform_different_foes(self):
         self.reset_leads(p1_moves=(movedex['leafblade'], movedex['uturn'],
-                                   movedex['swordsdance'], movedex['return']))
+                                   movedex['swordsdance'], movedex['return']), p1_ability='moxie')
         self.add_pokemon('ditto', 0, ability='imposter')
         self.add_pokemon('umbreon', 1, moves=(movedex['stickyweb'], movedex['splash'],
-                                              movedex['swordsdance'], movedex['foulplay']))
+                                              movedex['swordsdance'], movedex['foulplay']),
+                         ability='flowerveil')
 
         self.choose_move(self.leafeon, movedex['swordsdance'])
         self.choose_move(self.vaporeon, movedex['uturn'])
@@ -852,6 +854,7 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.ditto, {'atk': 2})
         self.assertDamageTaken(self.leafeon, 68)
+        self.assertEqual(self.ditto.ability.name, 'moxie')
 
         self.engine.apply_boosts(self.leafeon, Boosts(spe=1))
         self.choose_move(self.leafeon, movedex['uturn'])
@@ -873,13 +876,15 @@ class TestAbilities(MultiMoveTestCase):
         self.assertTrue(all(pp == 5 for pp in self.ditto.pp.values()))
         self.assertDamageTaken(self.ditto, 206)
         self.assertEqual(self.ditto.name, 'umbreon')
+        self.assertEqual(self.ditto.ability.name, 'flowerveil')
+        self.assertEqual(self.ditto._ability.name, 'imposter')
 
     def test_imposter_copy_ability(self):
         self.reset_leads('ditto', p0_ability='imposter', p1_ability='magicbounce',
                          p1_moves=(movedex['partingshot'], movedex['xscissor'],
                                    movedex['swordsdance'], movedex['return']))
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
-        self.assertEqual(self.ditto._ability, self.leafeon._ability)
+        self.assertEqual(self.ditto._ability.name, 'imposter')
 
         self.choose_move(self.ditto, movedex['partingshot'])
         self.run_turn()
