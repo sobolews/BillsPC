@@ -323,8 +323,9 @@ class BattlePokemon(object):
         if __debug__:
             if self.boosts: log.i('%s copied %r', self, self.boosts)
 
+        self.remove_effect(ABILITY)
         if other.ability.name not in ('stancechange', 'multitype', 'illusion'):
-            self.ability = other.ability
+            self.ability = self._ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
             ability_effect.on_start(self, engine)
@@ -340,7 +341,7 @@ class BattlePokemon(object):
         self.types = self.base_data['types']
         self.gender = self.base_data['gender']
         self.stats = self.base_data['stats']
-        self.ability = self.base_data['ability']
+        self.ability = self._ability = self.base_data['ability']
         self._weight = self.base_data['weight']
         self.is_transformed = False
         if __debug__: log.i("%s's transform reverted", self)

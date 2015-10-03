@@ -437,9 +437,7 @@ class Imposter(AbilityEffect):
         if foe is None:
             return FAIL
         pokemon.transform_into(foe, engine)
-
-    def on_end(self, pokemon, engine):
-        pokemon.revert_transform()
+        pokemon.set_effect(effects.Transformed())
 
 class Infiltrator(AbilityEffect):
     def on_modify_move(self, move, user, engine):

@@ -638,7 +638,7 @@ class FlashFireEffect(BaseEffect):
         return spa
 
 class Transformed(BaseEffect):
-    """ Used for movedex['transform'] only, not for imposter """
+    """ Used for transform and imposter """
     source = Volatile.TRANSFORMED
 
     def on_end(self, pokemon, engine):

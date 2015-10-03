@@ -874,6 +874,23 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.ditto, 206)
         self.assertEqual(self.ditto.name, 'umbreon')
 
+    def test_imposter_copy_ability(self):
+        self.reset_leads('ditto', p0_ability='imposter', p1_ability='magicbounce',
+                         p1_moves=(movedex['partingshot'], movedex['xscissor'],
+                                   movedex['swordsdance'], movedex['return']))
+        self.assertEqual(self.ditto.ability, self.leafeon.ability)
+        self.assertEqual(self.ditto._ability, self.leafeon._ability)
+
+        self.choose_move(self.ditto, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.ditto, {'spa': -1, 'atk': -1})
+
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'spa': -1, 'atk': -1})
+
     def test_infiltrator(self):
         self.reset_leads(p0_ability='infiltrator', p1_ability='infiltrator')
         self.choose_move(self.leafeon, movedex['substitute'])
