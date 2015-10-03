@@ -1579,3 +1579,6 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 18) # half of normal confusion damage
+
+    # def test_multiscale(self):
+    #     pass # TODO when: implement plates

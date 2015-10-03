@@ -606,6 +606,9 @@ class Multiscale(AbilityEffect):
             return damage * 0.5
         return damage
 
+class Multitype(AbilityEffect):
+    pass # TODO when: implement plates
+
 
 
 
