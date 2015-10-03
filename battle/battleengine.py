@@ -287,6 +287,9 @@ class BattleEngine(object):
         """
         accuracy = move.accuracy
 
+        for effect in user.effects:
+            accuracy = effect.on_accuracy(user, move, target, self, accuracy)
+
         for effect in target.effects:
             accuracy = effect.on_foe_accuracy(user, move, target, self, accuracy)
 

@@ -103,6 +103,13 @@ class BaseEffect(object):
         Called when `pokemon`s foe faints
         """
 
+    def on_accuracy(self, user, move, target, engine, accuracy):
+        """
+        Called when user is attacking foe.  Return accuracy in [0, 100] or None to skip accuracy
+        check.
+        """
+        return accuracy
+
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
         """
         Called when pokemon (target) with this effect is being attacked by foe.
