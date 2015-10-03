@@ -1691,3 +1691,20 @@ class TestAbilities(MultiMoveTestCase):
         test()
         self.reset_leads(p1_ability='noguard')
         test()
+
+    @patch('random.randrange', lambda _: 25) # effectspore causes poison
+    def test_overcoat(self):
+        self.reset_leads(p0_ability='overcoat', p1_ability='effectspore')
+        self.battlefield.set_weather(Weather.HAIL)
+        self.run_turn()
+        self.battlefield.set_weather(Weather.SANDSTORM)
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 2 * (self.leafeon.max_hp / 16))
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, movedex['spore'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)

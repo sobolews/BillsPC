@@ -626,6 +626,18 @@ class NoGuard(AbilityEffect):
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
         return None
 
+class Overcoat(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if any(thing is source for source in (Weather.HAIL, Weather.SANDSTORM, POWDER)):
+            if __debug__: log.d('%s damage prevented by Overcoat', thing)
+            return True
+
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.is_powder:
+            if __debug__: log.i('%s was blocked by Overcoat!', move)
+            return FAIL
+
 
 
 
