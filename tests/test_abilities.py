@@ -1636,3 +1636,30 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertBoosts(self.leafeon, {'spa': 1})
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_naturalcure(self):
+        self.reset_leads(p0_ability='naturalcure', p1_ability='naturalcure')
+        self.add_pokemon('flareon', 0, ability='naturalcure')
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['toxic'])
+        self.choose_move(self.vaporeon, movedex['darkvoid'])
+        self.run_turn()
+        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertStatus(self.leafeon, Status.SLP)
+        self.choose_switch(self.leafeon, self.espeon)
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+        self.flareon.hp -= 1
+        self.choose_move(self.flareon, movedex['rest'])
+        self.run_turn()
+        self.assertStatus(self.flareon, Status.SLP)
+        self.assertTrue(self.flareon.is_resting)
+        self.choose_switch(self.flareon, self.vaporeon)
+        self.choose_switch(self.espeon, self.leafeon)
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertStatus(self.leafeon, None)
+        self.assertStatus(self.flareon, None)
+        self.assertFalse(self.flareon.is_resting)

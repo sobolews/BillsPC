@@ -615,6 +615,10 @@ class Mummy(AbilityEffect):
             if __debug__: log.i("%s's ability was changed to Mummy!", foe)
             foe.change_ability(Mummy)
 
+class NaturalCure(AbilityEffect):
+    def on_switch_out(self, pokemon, engine):
+        pokemon.cure_status()
+
 
 
 
