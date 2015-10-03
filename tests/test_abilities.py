@@ -854,7 +854,7 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.ditto, {'atk': 2})
         self.assertDamageTaken(self.leafeon, 68)
-        self.assertEqual(self.ditto.ability.name, 'moxie')
+        self.assertAbility(self.ditto, 'moxie')
 
         self.engine.apply_boosts(self.leafeon, Boosts(spe=1))
         self.choose_move(self.leafeon, movedex['uturn'])
@@ -876,7 +876,7 @@ class TestAbilities(MultiMoveTestCase):
         self.assertTrue(all(pp == 5 for pp in self.ditto.pp.values()))
         self.assertDamageTaken(self.ditto, 206)
         self.assertEqual(self.ditto.name, 'umbreon')
-        self.assertEqual(self.ditto.ability.name, 'flowerveil')
+        self.assertAbility(self.ditto, 'flowerveil')
         self.assertEqual(self.ditto._ability.name, 'imposter')
 
     def test_imposter_copy_ability(self):

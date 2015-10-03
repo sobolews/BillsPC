@@ -12,7 +12,7 @@ from battle.decisionmakers import AutoDecisionMaker
 from battle.events import MoveEvent, SwitchEvent
 from mining import create_pokedex
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status
+from pokedex.enums import Status, ABILITY
 
 pokedex = create_pokedex()
 
@@ -172,6 +172,11 @@ class MultiMoveTestCase(TestCase):
 
     def assertSwitchChoices(self, pokemon, choices):
         self.assertSetEqual(set(self.engine.get_switch_choices(pokemon.side, pokemon)), choices)
+
+    def assertAbility(self, pokemon, ability):
+        ability = abilitydex[ability]
+        self.assertEqual(pokemon.ability, ability)
+        self.assertEqual(pokemon.get_effect(ABILITY).name, ability.name)
 
     @property
     def battlefield(self):
