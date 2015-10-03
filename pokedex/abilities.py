@@ -607,6 +607,14 @@ class Multiscale(AbilityEffect):
 class Multitype(AbilityEffect):
     pass # TODO when: implement plates
 
+class Mummy(AbilityEffect):
+    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
+        if ((cause is Cause.MOVE and
+             source.makes_contact and
+             foe is not None)):
+            if __debug__: log.i("%s's ability was changed to Mummy!", foe)
+            foe.change_ability(Mummy)
+
 
 
 

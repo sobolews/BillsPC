@@ -1604,3 +1604,35 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_multiscale(self):
     #     pass # TODO when: implement plates
+
+    def test_mummy(self):
+        self.reset_leads(p0_ability='mummy', p1_ability='lightningrod')
+        self.add_pokemon('sylveon', 0, 'flowerveil')
+        self.add_pokemon('jolteon', 1, 'levitate')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['fusionbolt'])
+        self.run_turn()
+
+        self.assertAbility(self.leafeon, 'mummy')
+        self.assertEqual(self.leafeon._ability.name, 'lightningrod')
+        self.assertDamageTaken(self.leafeon, 24)
+
+        self.choose_switch(self.vaporeon, self.sylveon)
+        self.run_turn()
+        self.choose_move(self.sylveon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 24 + 50)
+        self.assertAbility(self.sylveon, 'mummy')
+
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.choose_move(self.sylveon, movedex['whirlwind'])
+        self.run_turn()
+
+        self.assertTrue(self.leafeon.is_active)
+        self.assertAbility(self.leafeon, 'lightningrod')
+        self.assertEqual(self.leafeon._ability.name, 'lightningrod')
+        self.choose_move(self.sylveon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'spa': 1})
