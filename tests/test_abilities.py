@@ -1548,3 +1548,34 @@ class TestAbilities(MultiMoveTestCase):
         self.assertFainted(self.jolteon)
 
         self.assertBoosts(self.vaporeon, {'atk': 1})
+
+    @patch('random.randrange', lambda _: 0) # no miss; confusion damage
+    def test_multiscale(self):
+        self.reset_leads(p0_ability='multiscale', p1_ability='multiscale')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 189)
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
+
+        self.leafeon.cure_status()
+        self.choose_move(self.leafeon, movedex['milkdrink'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 25)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 189 + 142)
+        self.assertDamageTaken(self.leafeon, 25 + 50)
+
+        self.vaporeon.hp = self.vaporeon.max_hp
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 18) # half of normal confusion damage

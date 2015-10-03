@@ -599,6 +599,13 @@ class Moxie(AbilityEffect):
             if __debug__: log.i("%s's Moxie boosts its attack!", pokemon)
             engine.apply_boosts(pokemon, Boosts(atk=1), self_imposed=True)
 
+class Multiscale(AbilityEffect):
+    def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
+        if target.hp == target.max_hp:
+            if __debug__: log.i('Damage reduced by Multiscale!')
+            return damage * 0.5
+        return damage
+
 
 
 
