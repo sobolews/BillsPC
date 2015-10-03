@@ -1663,3 +1663,31 @@ class TestAbilities(MultiMoveTestCase):
         self.assertStatus(self.leafeon, None)
         self.assertStatus(self.flareon, None)
         self.assertFalse(self.flareon.is_resting)
+
+    @patch('random.randrange', lambda _: 99) # miss if possible; no secondary effect
+    def test_noguard(self):
+        def test():
+            self.engine.apply_boosts(self.vaporeon, Boosts(acc=-6))
+            self.engine.apply_boosts(self.leafeon, Boosts(acc=-4))
+            self.choose_move(self.leafeon, movedex['focusblast'])
+            self.choose_move(self.vaporeon, movedex['phantomforce'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 71)
+
+            self.choose_move(self.leafeon, movedex['focusblast'])
+            self.choose_move(self.vaporeon, movedex['phantomforce'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 2 * 71)
+            self.assertDamageTaken(self.leafeon, 44)
+
+            self.choose_move(self.vaporeon, movedex['spore'])
+            self.run_turn()
+
+            self.assertStatus(self.leafeon, None)
+
+        self.reset_leads(p0_ability='noguard')
+        test()
+        self.reset_leads(p1_ability='noguard')
+        test()

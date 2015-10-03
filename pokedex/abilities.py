@@ -619,6 +619,13 @@ class NaturalCure(AbilityEffect):
     def on_switch_out(self, pokemon, engine):
         pokemon.cure_status()
 
+class NoGuard(AbilityEffect):
+    def on_accuracy(self, foe, move, target, engine, accuracy):
+        return None
+
+    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        return None
+
 
 
 

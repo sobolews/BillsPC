@@ -72,13 +72,16 @@ class TwoTurnMoveEffect(BaseEffect):
 
 class Bounce(TwoTurnMoveEffect):
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
-        if move.name in ('thunder', 'hurricane'):
+        if ((move.name in ('thunder', 'hurricane') or
+             'noguard' in (foe.ability.name, target.ability.name))):
             return None
         return 0
 
 class PhantomForce(TwoTurnMoveEffect):
     """ Used for both phantomforce and shadowforce, since they have the same effect """
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if 'noguard' in (foe.ability.name, target.ability.name):
+            return None
         return 0
 
 class Autotomize(BaseEffect):
