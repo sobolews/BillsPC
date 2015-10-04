@@ -1032,3 +1032,12 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.run_turn()
 
         self.assertIsNone(self.battlefield.weather)
+
+    def test_drain_heal_before_on_after_damage(self):
+        self.reset_leads(p1_ability='ironbarbs')
+        self.vaporeon.hp = 50
+        self.choose_move(self.vaporeon, movedex['drainpunch'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertEqual(self.vaporeon.hp, 50 + 19 - 50)

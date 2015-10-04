@@ -583,12 +583,12 @@ class BattleEngine(object):
         if pokemon.hp <= 0:
             damage += pokemon.hp
 
-        for effect in pokemon.effects: # priority is unnecessary
-            effect.on_after_damage(self, pokemon, damage, cause, source, attacker)
-
         if drain_pct and not attacker.is_fainted():
             self.heal(attacker, int(math.ceil(damage * drain_pct / 100.0)), cause=Cause.DRAIN,
                       foe=pokemon)
+
+        for effect in pokemon.effects: # priority is unnecessary
+            effect.on_after_damage(self, pokemon, damage, cause, source, attacker)
 
         if pokemon.hp <= 0:
             self.faint(pokemon, cause, source, attacker)
