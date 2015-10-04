@@ -651,6 +651,17 @@ class Overgrow(AbilityEffect):
             return spa * 1.5
         return spa
 
+class OwnTempo(AbilityEffect):
+    def on_update(self, pokemon, engine):
+        if pokemon.has_effect(Volatile.CONFUSE):
+            if __debug__: log.i("%s's OwnTempo cured its confusion!", pokemon)
+            pokemon.remove_effect(Volatile.CONFUSE)
+
+    def on_get_immunity(self, thing):
+        if thing is Volatile.CONFUSE:
+            if __debug__: log.i("OwnTempo prevented confusion!")
+            return True
+
 
 
 

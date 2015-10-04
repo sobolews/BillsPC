@@ -1723,3 +1723,16 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 240 + 56)
+
+    def test_owntempo(self):
+        self.reset_leads(p0_ability='owntempo', p1_ability='noguard')
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
+
+        self.choose_move(self.leafeon, movedex['dynamicpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 139)
+        self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
