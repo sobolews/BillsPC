@@ -2461,7 +2461,7 @@ class poweruppunch(Move):
         self.makes_contact = True
         self.base_power = 40
         self.is_punch = True
-        self.secondary_effects = SecondaryEffect(100, Boosts(atk=1)),
+        self.secondary_effects = SecondaryEffect(100, Boosts(atk=1), affects_user=True),
 
 class powerwhip(Move):
     def __init__(self):
