@@ -1708,3 +1708,18 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertStatus(self.vaporeon, None)
+
+    def test_overgrow(self):
+        self.reset_leads(p1_ability='overgrow')
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=2))
+        self.choose_move(self.vaporeon, movedex['bugbuzz'])
+        self.choose_move(self.leafeon, movedex['energyball'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 236)
+        self.assertDamageTaken(self.vaporeon, 240)
+
+        self.choose_move(self.leafeon, movedex['ironhead'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 240 + 56)
