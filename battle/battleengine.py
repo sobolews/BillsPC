@@ -154,9 +154,8 @@ class BattleEngine(object):
 
         damage = self.try_move_hit(user, move, target)
 
-        if damage not in (FAIL, None):
+        if damage not in (FAIL, None, 0):
             if move.recoil > 0:
-                assert damage > 0, "Recoil move should have done damage if it didn't fail."
                 self.damage(user, int(round(damage * move.recoil / 100.0)) or 1, Cause.RECOIL, move)
 
             target.was_attacked_this_turn = {'move': move, 'damage': damage}

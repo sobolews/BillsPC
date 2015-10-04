@@ -545,7 +545,7 @@ class Substitute(BaseEffect):
         foe.damage_done_this_turn = damage
         foe.must_switch = move.switch_user
 
-        return damage or 0
+        return 0
 
 class Tailwind(BaseEffect):
     source = SideCondition.TAILWIND

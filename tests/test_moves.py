@@ -2553,3 +2553,28 @@ class TestSubstitute(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.hp, 100 + 19 + 23)
         self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
+
+    def test_counter_with_substitute_fails(self):
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.run_turn()
+
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, movedex['counter'])
+        self.run_turn()
+        self.assertTrue(self.leafeon.has_effect(Volatile.SUBSTITUTE))
+
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, movedex['counter'])
+        self.run_turn()
+        self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
+
+        self.assertDamageTaken(self.vaporeon, 0)
+
+    def test_recoil_vs_substitute(self):
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['doubleedge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, int(58 * 33 / 100))
