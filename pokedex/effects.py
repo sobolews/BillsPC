@@ -625,7 +625,7 @@ class SheerForceVolatile(BaseEffect):
     source = Volatile.SHEERFORCE
     duration = 1
 
-class FlashFireEffect(BaseEffect):
+class FlashFireVolatile(BaseEffect):
     source = Volatile.FLASHFIRE
 
     def on_modify_atk(self, pokemon, move, engine, atk):

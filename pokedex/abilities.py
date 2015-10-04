@@ -324,7 +324,7 @@ class FlashFire(AbilityEffect):
     @priority(0)
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.FIRE:
-            target.set_effect(effects.FlashFireEffect())
+            target.set_effect(effects.FlashFireVolatile())
             return FAIL
 
 class FlowerGift(AbilityEffect):
