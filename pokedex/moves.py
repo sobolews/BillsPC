@@ -2984,6 +2984,7 @@ class shadowforce(Move):
         self.makes_contact = True
         self.base_power = 120
         self.is_protectable = False
+        self.is_two_turn = True
 
     check_success = phantomforce.check_success.__func__
 
