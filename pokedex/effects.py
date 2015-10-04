@@ -640,6 +640,20 @@ class FlashFireVolatile(BaseEffect):
             return spa * 1.5
         return spa
 
+class ParentalBondVolatile(BaseEffect):
+    source = Volatile.PARENTALBOND
+    duration = 1
+
+    def __init__(self):
+        self.first_hit = False
+
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if not self.first_hit:
+            self.first_hit = True
+            return base_power
+        else:
+            return base_power * 0.5
+
 class Transformed(BaseEffect):
     """ Used for transform and imposter """
     source = Volatile.TRANSFORMED

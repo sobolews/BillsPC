@@ -662,6 +662,14 @@ class OwnTempo(AbilityEffect):
             if __debug__: log.i("OwnTempo prevented confusion!")
             return True
 
+class ParentalBond(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        if ((move.category is not MoveCategory.STATUS and
+             not move.is_two_turn and
+             not move.multihit and
+             not move.selfdestruct)):
+            move.multihit = (2,)
+            user.set_effect(effects.ParentalBondVolatile())
 
 
 

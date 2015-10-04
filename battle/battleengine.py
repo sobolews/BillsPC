@@ -212,7 +212,7 @@ class BattleEngine(object):
         if self.check_accuracy(user, move, target) is FAIL:
             return FAIL
 
-        if move.multihit:       # Note: all multihit moves are damaging moves with no extra effects
+        if move.multihit:
             hits = (move.multihit[-1] if user.ability is abilitydex['skilllink'] else
                     random.choice(move.multihit))
 

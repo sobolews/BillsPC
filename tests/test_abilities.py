@@ -1736,3 +1736,135 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 139)
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
+
+    def test_parentalbond(self):
+        self.reset_leads('vaporeon', 'espeon', p0_ability='parentalbond', p1_ability='justified')
+        self.choose_move(self.vaporeon, movedex['darkpulse'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.espeon, 156 + 80) # 80 + 40 BP
+        self.assertBoosts(self.espeon, {'atk': 2})
+
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+
+        self.assertEqual(self.espeon.side.get_effect(Hazard.SPIKES).layers, 1)
+
+    def test_parentalbond_break_substitute(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4 + 45) # sub + 45 BP
+        self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
+
+    def test_parentalbond_secondary_effects_trigger_twice(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.vaporeon, movedex['poweruppunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 20 + 16) # 40BP + (+1)20BP
+        self.assertBoosts(self.vaporeon, {'atk': 2})
+
+        self.leafeon.hp = 1
+        self.choose_move(self.vaporeon, movedex['poweruppunch'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertBoosts(self.vaporeon, {'atk': 3})
+
+    def test_parentalbond_fakeout_activates_steadfast_once(self):
+        self.reset_leads(p0_ability='parentalbond', p1_ability='steadfast')
+        self.choose_move(self.vaporeon, movedex['fakeout'])
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 20 + 11)
+        self.assertBoosts(self.leafeon, {'spe': 1})
+
+    @patch('random.choice', lambda _: 5) # iciclespear hits 5 times
+    def test_parentalbond_doesnt_affect_multihit(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.vaporeon, movedex['iciclespear'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 5 * 26)
+
+    def test_parentalbond_doesnt_affect_status_move(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
+
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': -1, 'spa': -1})
+
+    def test_parentalbond_doesnt_affect_selfdestruct_moves(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 119)
+        self.assertFainted(self.vaporeon)
+
+    def test_parentalbond_doesnt_affect_charge_moves(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['phantomforce'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['phantomforce'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertDamageTaken(self.leafeon, 44)
+
+    def test_parentalbond_vs_ironbarbs(self):
+        self.reset_leads(p0_ability='parentalbond', p1_ability='ironbarbs')
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50 + 26)
+        self.assertDamageTaken(self.vaporeon, 2 * (self.vaporeon.max_hp / 8))
+
+    def test_parentalbond_with_recoil_move(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.vaporeon, movedex['doubleedge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 58 + 30)
+        self.assertDamageTaken(self.vaporeon, 29)
+
+    def test_parentalbond_with_drain_move(self):
+        self.reset_leads(p0_ability='parentalbond', p1_ability='ironbarbs')
+        self.vaporeon.hp = 100
+        self.choose_move(self.vaporeon, movedex['drainpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 37 + 19)
+        self.assertEqual(self.vaporeon.hp, 100 + 19 - 50 + 10 - 50) # 29
+
+    def test_parentalbond_with_seismictoss(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.vaporeon, movedex['seismictoss'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 200)
+
+    def test_parentalbond_with_counter(self):
+        self.reset_leads(p0_ability='parentalbond')
+        self.choose_move(self.leafeon, movedex['aquajet'])
+        self.choose_move(self.vaporeon, movedex['counter'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 28)
+        self.assertDamageTaken(self.leafeon, 28 * 4)
+
+    # def test_parentalbond_breaks_sturdy(self):
+    #     pass # TODO when: implement sturdy
