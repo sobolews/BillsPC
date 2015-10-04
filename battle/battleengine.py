@@ -153,10 +153,13 @@ class BattleEngine(object):
             return FAIL
 
         damage = self.try_move_hit(user, move, target)
+        if damage is not FAIL:
+            damage, total_damage = damage
 
         if damage not in (FAIL, None, 0):
             if move.recoil > 0:
-                self.damage(user, int(round(damage * move.recoil / 100.0)) or 1, Cause.RECOIL, move)
+                self.damage(user, int(round(total_damage * move.recoil / 100.0)) or 1,
+                            Cause.RECOIL, move)
 
             target.was_attacked_this_turn = {'move': move, 'damage': damage}
 
@@ -180,6 +183,9 @@ class BattleEngine(object):
         return damage # for testing only
 
     def try_move_hit(self, user, move, target):
+        """
+        Return either FAIL, or a tuple (damage, total_damage)
+        """
         assert target is not None
 
         # moves before abilities
@@ -210,20 +216,23 @@ class BattleEngine(object):
             hits = (move.multihit[-1] if user.ability is abilitydex['skilllink'] else
                     random.choice(move.multihit))
 
+            total_damage = 0
             for hit in range(hits):
                 damage = self.move_hit(user, move, target)
                 if damage is FAIL:
                     if __debug__: log.i('Hit %d times, and failed', hit)
                     return FAIL
+                total_damage += damage or 0
 
                 if target.hp <= 0 or user.hp <= 0 or user.status is Status.SLP:
                     break
 
             if __debug__: log.i('Hit %d times!', hit+1)
-            return damage
+            return (damage, total_damage)
 
         else:
-            return self.move_hit(user, move, target)
+            damage = total_damage = self.move_hit(user, move, target)
+            return (damage, total_damage)
 
     def move_hit(self, user, move, target):
         assert target is not None
