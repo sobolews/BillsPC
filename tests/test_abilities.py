@@ -1993,3 +1993,23 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertStatus(self.leafeon, None)
         self.assertFainted(self.vaporeon)
+
+    def test_pressure(self):
+        self.reset_leads(p0_moves=(movedex['protect'], movedex['rest'],
+                                   movedex['toxic'], movedex['return']),
+                         p1_moves=(movedex['xscissor'], movedex['drillpeck'],
+                                   movedex['dragonclaw'], movedex['bulkup']),
+                         p0_ability='pressure')
+        self.choose_move(self.leafeon, movedex['xscissor'])
+        self.choose_move(self.vaporeon, movedex['protect'])
+        self.run_turn()
+
+        self.assertPpUsed(self.leafeon, 'xscissor', 2)
+        self.assertPpUsed(self.vaporeon, 'protect', 1)
+
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertPpUsed(self.leafeon, 'bulkup', 1)
+        self.assertPpUsed(self.vaporeon, 'return', 1)

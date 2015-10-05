@@ -707,11 +707,11 @@ class Prankster(AbilityEffect):
         if move.category is MoveCategory.STATUS:
             return 1
 
-
-
-
 class Pressure(AbilityEffect):
-    pass
+    pass # implemented in BattleEngine.deduct_pp
+
+
+
 
 class QuickFeet(AbilityEffect):
     pass

@@ -98,8 +98,7 @@ class BattleEngine(object):
 
         # TODO: if anything else will use on_foe_before_move, put pressure effect in there instead
         if move != movedex['struggle'] and not user.has_effect(Volatile.LOCKEDMOVE):
-            user.pp[move] -= (2 if target is not None and target.ability is abilitydex['pressure']
-                              else 1)
+            self.deduct_pp(user, move, target)
 
         self.use_move(user, move, target)
 
@@ -107,6 +106,13 @@ class BattleEngine(object):
         user.last_move_used = move
         if not move.calls_other_moves:
             self.battlefield.last_move_used = move
+
+    def deduct_pp(self, user, move, target):
+        deduction = (2 if (target is not None and
+                           target.ability is abilitydex['pressure'] and
+                           not move.targets_user)
+                     else 1)
+        user.pp[move] -= deduction
 
     def use_move(self, user, move, target):
         """

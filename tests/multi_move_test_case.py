@@ -13,6 +13,7 @@ from battle.events import MoveEvent, SwitchEvent
 from mining import create_pokedex
 from pokedex.abilities import abilitydex
 from pokedex.enums import Status, ABILITY
+from pokedex.moves import movedex
 
 pokedex = create_pokedex()
 
