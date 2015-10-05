@@ -702,6 +702,11 @@ class PoisonTouch(AbilityEffect):
         if move.makes_contact:
             move.secondary_effects += SecondaryEffect(30, status=Status.PSN),
 
+class Prankster(AbilityEffect):
+    def on_modify_priority(self, pokemon, move):
+        if move.category is MoveCategory.STATUS:
+            return 1
+
 
 
 

@@ -1959,3 +1959,36 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertBoosts(self.leafeon, {'spe': 1})
         self.assertStatus(self.leafeon, Status.PSN)
+
+    def test_prankster(self):
+        self.reset_leads(p0_ability='prankster')
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-5))
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.choose_move(self.vaporeon, movedex['taunt'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': 0})
+
+        self.vaporeon.hp = self.leafeon.hp = 1
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.win, self.leafeon.side.index)
+
+    def test_prankster_vs_priority(self):
+        self.reset_leads(p0_ability='prankster')
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-5))
+        self.choose_move(self.leafeon, movedex['fakeout'])
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
+
+        self.vaporeon.hp = 1
+        self.choose_move(self.leafeon, movedex['quickattack'])
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
+        self.assertFainted(self.vaporeon)
