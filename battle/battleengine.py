@@ -117,7 +117,7 @@ class BattleEngine(object):
             moldbreaker = user.get_effect(ABILITY)
 
         if moldbreaker:
-            user.get_effect(ABILITY).on_break_mold(target, self)
+            moldbreaker.on_break_mold(target, self)
 
         result = self._use_move(user, move, target)
 
