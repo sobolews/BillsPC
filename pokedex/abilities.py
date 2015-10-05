@@ -671,6 +671,9 @@ class ParentalBond(AbilityEffect):
             move.multihit = (2,)
             user.set_effect(effects.ParentalBondVolatile())
 
+class Pickpocket(AbilityEffect):
+    pass
+
 
 
 

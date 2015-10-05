@@ -1868,3 +1868,6 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_parentalbond_breaks_sturdy(self):
     #     pass # TODO when: implement sturdy
+
+    # def test_pickpocket(self):
+    #     pass # TODO when: implement items
