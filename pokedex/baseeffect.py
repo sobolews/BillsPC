@@ -185,7 +185,7 @@ class BaseEffect(object):
     def on_move_type(self, move):
         """ Return a Type to alter the type of a move, else None for default """
 
-    def on_damage(self, damage, cause, source):
+    def on_damage(self, pokemon, damage, cause, source, engine):
         """ Return a modified amount of damage, or FAIL """
         return damage
 

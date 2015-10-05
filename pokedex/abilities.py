@@ -528,7 +528,7 @@ class MagicBounce(BaseAbility, effects.MagicBounceBase):
     pass
 
 class MagicGuard(AbilityEffect):
-    def on_damage(self, damage, cause, source):
+    def on_damage(self, pokemon, damage, cause, source, engine):
         if cause is not Cause.MOVE:
             if __debug__: log.i('Damage from (%s, %s) was prevented by MagicGuard',
                                 cause.name, source)
