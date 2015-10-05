@@ -424,7 +424,8 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertFalse(self.leafeon.has_effect(Volatile.ATTRACT))
 
-        self.reset_leads(p0_ability='cutecharm', p1_ability='oblivious', p0_gender='F', p1_gender='M')
+        self.reset_leads(p0_ability='cutecharm', p1_ability='aromaveil',
+                         p0_gender='F', p1_gender='M')
         self.choose_move(self.leafeon, movedex['return'])
         self.choose_move(self.vaporeon, movedex['return'])
         self.run_turn()

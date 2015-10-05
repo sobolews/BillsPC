@@ -710,9 +710,6 @@ class Prankster(AbilityEffect):
 
 
 
-class Oblivious(AbilityEffect):
-    pass
-
 class Pressure(AbilityEffect):
     pass
 
