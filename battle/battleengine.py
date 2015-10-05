@@ -606,7 +606,8 @@ class BattleEngine(object):
 
     def heal(self, pokemon, hp, cause=None, source=None, foe=None):
         if pokemon.is_fainted():
-            if __debug__: log.e('Tried to heal fainted pokemon: %s, cause=%s', pokemon, cause)
+            if __debug__: log.e('Tried to heal fainted pokemon: %s, cause=%s, source=%s, foe=%s',
+                                pokemon, cause, source, foe)
             return
 
         assert isinstance(hp, int)
