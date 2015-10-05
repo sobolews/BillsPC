@@ -1874,3 +1874,21 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_pickup(self):
     #     pass # TODO when: implement items
+
+    def test_pixilate(self):
+        self.reset_leads('sylveon', 'flareon', p0_ability='pixilate', p1_ability='pixilate')
+        self.choose_move(self.flareon, movedex['substitute'])
+        self.choose_move(self.sylveon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, (self.flareon.max_hp / 4) + 75)
+        self.assertTrue(self.flareon.has_effect(Volatile.SUBSTITUTE))
+
+        self.engine.heal(self.flareon, 200)
+        self.flareon.remove_effect(Volatile.SUBSTITUTE)
+        self.choose_move(self.flareon, movedex['return'])
+        self.choose_move(self.sylveon, movedex['psyshock'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.sylveon, 201)
+        self.assertDamageTaken(self.flareon, 112)

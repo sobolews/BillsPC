@@ -677,6 +677,18 @@ class Pickpocket(AbilityEffect):
 class Pickup(AbilityEffect):
     pass
 
+class Pixilate(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        if move.type is Type.NORMAL:
+            move.type = Type.FAIRY
+            move.type_changed = True
+
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.type_changed and move.type is Type.FAIRY:
+            if __debug__: log.i('%s boosted by Pixilate!', move)
+            return base_power * 1.3
+        return base_power
+
 
 
 
