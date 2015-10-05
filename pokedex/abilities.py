@@ -11,6 +11,7 @@ from pokedex.baseeffect import BaseEffect
 from pokedex import effects
 from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, PseudoWeather,
                            ABILITY, Weather, POWDER)
+from pokedex.secondaryeffect import SecondaryEffect
 from pokedex.stats import Boosts
 
 
@@ -695,6 +696,11 @@ class PoisonHeal(AbilityEffect):
             engine.heal(pokemon, pokemon.max_hp / 8)
             return FAIL
         return damage
+
+class PoisonTouch(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        if move.makes_contact:
+            move.secondary_effects += SecondaryEffect(30, status=Status.PSN),
 
 
 

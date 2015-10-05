@@ -1926,3 +1926,36 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertEqual(self.leafeon.hp, 100)
         self.assertDamageTaken(self.vaporeon, 4 * (self.vaporeon.max_hp / 16))
+
+    def test_poisontouch(self):
+        self.reset_leads(p0_ability='poisontouch', p1_ability='steadfast')
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=1))
+        with patch('random.randrange', lambda _: 5): # icepunch freezes before poisontouch
+            self.choose_move(self.vaporeon, movedex['icepunch'])
+            self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 74)
+        self.assertStatus(self.leafeon, Status.FRZ)
+
+        self.leafeon.cure_status()
+        self.engine.heal(self.leafeon, 300)
+
+        with patch('random.randrange', lambda _: 15): # no freeze, poisontouch succeeds
+            self.choose_move(self.vaporeon, movedex['icepunch'])
+            self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 74 + self.leafeon.max_hp / 8)
+        self.assertStatus(self.leafeon, Status.PSN)
+
+        self.leafeon.cure_status()
+        self.engine.heal(self.leafeon, 300)
+
+        with patch('random.randrange', lambda _: 15): # flinch and poison
+            self.choose_move(self.vaporeon, movedex['ironhead'])
+            self.choose_move(self.leafeon, movedex['return'])
+            self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 39 + self.leafeon.max_hp / 8)
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertBoosts(self.leafeon, {'spe': 1})
+        self.assertStatus(self.leafeon, Status.PSN)
