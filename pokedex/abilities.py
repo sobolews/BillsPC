@@ -689,6 +689,13 @@ class Pixilate(AbilityEffect):
             return base_power * 1.3
         return base_power
 
+class PoisonHeal(AbilityEffect):
+    def on_damage(self, pokemon, damage, cause, source, engine):
+        if cause is Cause.RESIDUAL and source.source in (Status.PSN, Status.TOX):
+            engine.heal(pokemon, pokemon.max_hp / 8)
+            return FAIL
+        return damage
+
 
 
 

@@ -1,6 +1,7 @@
 from mock import patch
 
 from pokedex import statuses
+from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Weather, Volatile, Hazard, ABILITY
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
@@ -1892,3 +1893,36 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.sylveon, 201)
         self.assertDamageTaken(self.flareon, 112)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_poisonheal(self):
+        self.reset_leads(p0_ability='poisonheal', p1_ability='poisonheal')
+        self.add_pokemon('umbreon', 1)
+        self.choose_move(self.leafeon, movedex['toxic'])
+        self.choose_move(self.vaporeon, movedex['toxicspikes'])
+        self.run_turn()
+        self.choose_switch(self.leafeon, self.umbreon)
+        self.choose_move(self.vaporeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 0)
+        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertStatus(self.leafeon, Status.PSN)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['flamethrower'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 236 - self.leafeon.max_hp / 8)
+        self.assertDamageTaken(self.vaporeon, 142 - self.vaporeon.max_hp / 8)
+
+        self.leafeon.hp = 100
+        self.engine.heal(self.vaporeon, 400)
+        self.leafeon.change_ability(abilitydex['mummy'])
+        self.vaporeon.change_ability(abilitydex['mummy'])
+        self.leafeon.cure_status()
+        self.run_turn()
+
+        self.assertEqual(self.leafeon.hp, 100)
+        self.assertDamageTaken(self.vaporeon, 4 * (self.vaporeon.max_hp / 16))
