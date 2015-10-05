@@ -178,6 +178,10 @@ class MultiMoveTestCase(TestCase):
         self.assertEqual(pokemon.ability, ability)
         self.assertEqual(pokemon.get_effect(ABILITY).name, ability.name)
 
+    def assertPpUsed(self, pokemon, move, pp):
+        move = movedex[move]
+        self.assertEqual(pokemon.pp[move], move.max_pp - pp)
+
     @property
     def battlefield(self):
         return self.engine.battlefield
