@@ -12,6 +12,7 @@ from pokedex.enums import (Type, Status, Volatile, SideCondition, STATUS, PHYSIC
                            FAIL, PseudoWeather, Cause, Weather, Hazard, Decision, ABILITY, ITEM)
 from pokedex.items import itemdex
 from pokedex.stats import Boosts
+from pokedex.secondaryeffect import SecondaryEffect
 from pokedex.types import effectiveness
 
 _MAX_PP = {
@@ -147,22 +148,6 @@ class Move(object):
 
     def __repr__(self):
         return self.name
-
-
-class SecondaryEffect(object):
-    def __init__(self, chance, boosts=None, volatile=None, status=None, affects_user=False):
-        self.chance = chance
-        self.boosts = boosts
-        self.volatile = volatile
-        self.status = status
-        self.affects_user = affects_user
-
-    def __str__(self):
-        return (''.join(['%s%%, ' % self.chance,
-                         '%s' % self.boosts if self.boosts else '',
-                         '%s' % self.volatile if self.volatile else '',
-                         '%s' % self.status if self.status else ''])
-                .join(['<SecondaryEffect: ', '>']))
 
 # Moves are implemented alphabetically starting here.
 
