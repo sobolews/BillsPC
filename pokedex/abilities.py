@@ -674,6 +674,9 @@ class ParentalBond(AbilityEffect):
 class Pickpocket(AbilityEffect):
     pass
 
+class Pickup(AbilityEffect):
+    pass
+
 
 
 

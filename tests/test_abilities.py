@@ -1871,3 +1871,6 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_pickpocket(self):
     #     pass # TODO when: implement items
+
+    # def test_pickup(self):
+    #     pass # TODO when: implement items
