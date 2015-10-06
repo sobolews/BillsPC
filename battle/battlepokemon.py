@@ -200,8 +200,10 @@ class BattlePokemon(object):
         HP, ATK, SPA = 0, 1, 3
         hp = self._calc_hp(evs[HP], ivs[HP])
 
-        if (movedex['bellydrum'] in self.moveset and self.item is itemdex['sitrusberry'] and
-            hp % 2 == 1):
+        if (movedex['bellydrum'] in self.moveset and
+            self.item is itemdex['sitrusberry'] and
+            hp % 2 == 1
+        ):
             evs[HP] -= 4
             evs[ATK] += 4
         else:
@@ -271,8 +273,12 @@ class BattlePokemon(object):
 
     def take_item(self): # by force, e.g. from bugbite, knockoff, magician, trick etc.
         item = self.item
-        if (item is None or item.is_mega_stone or item.is_plate or item.is_drive or
-            self.ability == abilitydex['stickyhold']):
+        if (item is None or
+            item.is_mega_stone or # TODO: make an item.is_removable property
+            item.is_plate or
+            item.is_drive or
+            self.ability == abilitydex['stickyhold']
+        ):
             return FAIL
         if self.ability == abilitydex['unburden']:
             self.set_effect(effects.Unburden())

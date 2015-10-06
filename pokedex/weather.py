@@ -46,7 +46,8 @@ class DesolateLandWeather(BaseWeatherEffect):
     def on_try_hit(self, user, move, target, engine):
         if (not self.suppressed and
             move.category is not MoveCategory.STATUS and
-            move.type is Type.WATER):
+            move.type is Type.WATER
+        ):
             if __debug__: log.i('But the water move evaporated!')
             return FAIL
 
@@ -80,7 +81,8 @@ class PrimordialSeaWeather(BaseWeatherEffect):
     def on_try_hit(self, user, move, target, engine):
         if (not self.suppressed and
             move.category is not MoveCategory.STATUS and
-            move.type is Type.FIRE):
+            move.type is Type.FIRE
+        ):
             if __debug__: log.i('But the fire move fizzled out!')
             return FAIL
 

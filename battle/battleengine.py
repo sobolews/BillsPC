@@ -917,9 +917,10 @@ class BattleEngine(object):
             self.run_update()
 
             for side in self.battlefield.sides:
-                if ((side.active_pokemon is not None and
-                     side.active_pokemon.must_switch and # e.g. from voltswitch
-                     side.remaining_pokemon_on_bench > 0)):
+                if (side.active_pokemon is not None and
+                    side.active_pokemon.must_switch and # e.g. from voltswitch
+                    side.remaining_pokemon_on_bench > 0
+                ):
                     if __debug__:
                         log.d('%s must switch: getting forced switch decision', side.active_pokemon)
                     insort(self.event_queue, SwitchEvent(
@@ -999,8 +1000,7 @@ class BattleEngine(object):
             pokemon = self.faint_queue.pop()
             assert pokemon.is_fainted() and pokemon.status is Status.FNT
 
-            if ((pokemon.side.remaining_pokemon_on_bench == 0 and
-                 self.battlefield.win is None)):
+            if pokemon.side.remaining_pokemon_on_bench == 0 and self.battlefield.win is None:
                 self.battlefield.win = int(not pokemon.side.index)
                 if __debug__: log.i('Side %d wins!', self.battlefield.win)
 

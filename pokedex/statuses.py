@@ -71,7 +71,8 @@ class Burn(BaseStatusEffect):
     def on_modify_damage(self, user, move, damage):
         if (move.category is MoveCategory.PHYSICAL and
             move.name != 'facade' and
-            user.ability.name != 'guts'):
+            user.ability.name != 'guts'
+        ):
             return damage / 2
         return damage
 

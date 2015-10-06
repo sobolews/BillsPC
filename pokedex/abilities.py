@@ -285,10 +285,11 @@ class EarlyBird(AbilityEffect):
 
 class EffectSpore(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if ((cause is Cause.MOVE and
-             source.makes_contact and
-             foe.status is None and
-             not foe.is_immune_to(POWDER))):
+        if (cause is Cause.MOVE and
+            source.makes_contact and
+            foe.status is None and
+            not foe.is_immune_to(POWDER)
+        ):
             rand = random.randrange(100)
             if __debug__:
                 if rand < 30: log.i("%s's EffectSpore activated!", pokemon)
@@ -315,10 +316,11 @@ class Filter(AbilityEffect):
 
 class FlameBody(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if ((cause is Cause.MOVE and
-             source.makes_contact and
-             foe.status is None and
-             random.randrange(10) < 3)):
+        if (cause is Cause.MOVE and
+            source.makes_contact and
+            foe.status is None and
+            random.randrange(10) < 3
+        ):
             engine.set_status(foe, Status.BRN)
 
 class FlashFire(AbilityEffect):
@@ -466,9 +468,7 @@ class Intimidate(AbilityEffect):
 
 class IronBarbs(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if ((cause is Cause.MOVE and
-             source.makes_contact and
-             foe is not None)):
+        if cause is Cause.MOVE and source.makes_contact and foe is not None:
             if __debug__: log.i("%s was damaged by %s's IronBarbs", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
 
@@ -610,9 +610,7 @@ class Multitype(AbilityEffect):
 
 class Mummy(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if ((cause is Cause.MOVE and
-             source.makes_contact and
-             foe is not None)):
+        if cause is Cause.MOVE and source.makes_contact and foe is not None:
             if __debug__: log.i("%s's ability was changed to Mummy!", foe)
             foe.change_ability(Mummy)
 
@@ -665,10 +663,11 @@ class OwnTempo(AbilityEffect):
 
 class ParentalBond(AbilityEffect):
     def on_modify_move(self, move, user, engine):
-        if ((move.category is not MoveCategory.STATUS and
-             not move.is_two_turn and
-             not move.multihit and
-             not move.selfdestruct)):
+        if (move.category is not MoveCategory.STATUS and
+            not move.is_two_turn and
+            not move.multihit and
+            not move.selfdestruct
+        ):
             move.multihit = (2,)
             user.set_effect(effects.ParentalBondVolatile())
 

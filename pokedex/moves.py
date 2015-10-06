@@ -317,7 +317,8 @@ class avalanche(Move):
     def get_base_power(self, user, target, engine):
          # TODO: test this more thoroughly! (esp. with tricky abilities)
         if (user.was_attacked_this_turn is not None and
-            user.was_attacked_this_turn['damage'] > 0):
+            user.was_attacked_this_turn['damage'] > 0
+        ):
             return 120
         return 60
 
@@ -1099,7 +1100,8 @@ class encore(Move):
         last_move = target.last_move_used
         if (last_move is None or
             last_move.name in self.NO_ENCORE or
-            target.pp.get(last_move, 0) <= 0):
+            target.pp.get(last_move, 0) <= 0
+        ):
             return FAIL
 
     def on_success(self, user, target, engine):
@@ -1342,7 +1344,8 @@ class focuspunch(Move):
     def check_success(self, user, target, engine):
         if (user.was_attacked_this_turn and
             user.was_attacked_this_turn['move'].category is not STATUS and
-            user.was_attacked_this_turn['damage'] > 0):
+            user.was_attacked_this_turn['damage'] > 0
+        ):
             return FAIL
 
 class foulplay(Move):
@@ -2696,9 +2699,10 @@ class rest(Move):
         self.targets_user = True
 
     def check_success(self, user, _, engine):
-        if ((user.hp == user.max_hp or
-             user.status is Status.SLP or
-             user.is_immune_to(Status.SLP))):
+        if (user.hp == user.max_hp or
+            user.status is Status.SLP or
+            user.is_immune_to(Status.SLP)
+        ):
             return FAIL
 
     def on_success(self, user, _, engine):
@@ -3342,8 +3346,10 @@ class suckerpunch(Move):
         if not target.will_move_this_turn:
             return FAIL
         for event in engine.event_queue:
-            if (event.type is Decision.MOVE and event.pokemon is target and
-                event.move.category is not STATUS):
+            if (event.type is Decision.MOVE and
+                event.pokemon is target and
+                event.move.category is not STATUS
+            ):
                 return
         return FAIL
 

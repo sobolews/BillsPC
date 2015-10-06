@@ -243,9 +243,10 @@ class Trapper(BaseEffect):
     @priority(0)
     def on_residual(self, pokemon, foe, engine):
         """ Handle foe batonpassing partialtrap effect """
-        if ((not self.trappee == foe and
-             foe.has_effect(Volatile.PARTIALTRAP) and
-             foe.get_effect(Volatile.PARTIALTRAP).trapper == pokemon)):
+        if (not self.trappee == foe and
+            foe.has_effect(Volatile.PARTIALTRAP) and
+            foe.get_effect(Volatile.PARTIALTRAP).trapper == pokemon
+        ):
             self.trappee = foe
 
 class Trapped(BaseEffect):
@@ -306,10 +307,11 @@ class LightScreen(BaseEffect):
 
     def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
         assert foe != target    # TODO: remove check below
-        if ((move.category is MoveCategory.SPECIAL and
-             not crit and
-             not move.infiltrates and
-             foe != target)):
+        if (move.category is MoveCategory.SPECIAL and
+            not crit and
+            not move.infiltrates and
+            foe != target
+        ):
             if __debug__: log.i('Light Screen halving damage from %s', move)
             return damage / 2
         return damage
@@ -322,10 +324,11 @@ class Reflect(BaseEffect):
 
     def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
         assert foe != target    # TODO: remove check below?
-        if ((move.category is MoveCategory.PHYSICAL and
-             not crit and
-             not move.infiltrates and
-             foe != target)):
+        if (move.category is MoveCategory.PHYSICAL and
+            not crit and
+            not move.infiltrates and
+            foe != target
+        ):
             if __debug__: log.i('Reflect halving %s damage from %s', damage, move)
             return damage / 2
         return damage
@@ -501,10 +504,7 @@ class Substitute(BaseEffect):
         - Return 0 to indicate move hit the substitute (0 damage to pokemon). In this case,
           recoil/drain is taken care of here, so move_hit can exit fast (with None damage).
         """
-        if ((move.is_sound or
-             move.ignore_substitute or
-             move.infiltrates or
-             foe is target)):
+        if move.is_sound or move.ignore_substitute or move.infiltrates or foe is target:
             return None
 
         damage = engine.calculate_damage(foe, move, target)
