@@ -2013,3 +2013,19 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertPpUsed(self.leafeon, 'bulkup', 1)
         self.assertPpUsed(self.vaporeon, 'return', 1)
+
+    def test_primordialsea(self):
+        self.reset_leads()
+        self.add_pokemon('umbreon', 0, ability='primordialsea')
+        self.choose_switch(self.vaporeon, self.umbreon)
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.umbreon, 0)
+        self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)
+
+        self.choose_switch(self.umbreon, self.vaporeon)
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'spe': 1})

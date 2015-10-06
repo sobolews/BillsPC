@@ -710,6 +710,17 @@ class Prankster(AbilityEffect):
 class Pressure(AbilityEffect):
     pass # implemented in BattleEngine.deduct_pp
 
+class PrimordialSea(AbilityEffect):
+    def on_start(self, pokemon, engine):
+        engine.battlefield.set_weather(Weather.PRIMORDIALSEA)
+
+    def on_end(self, pokemon, engine):
+        if engine.battlefield.weather is not Weather.PRIMORDIALSEA:
+            return
+        foe = engine.get_foe(pokemon)
+        if foe is not None and foe.ability is not PrimordialSea:
+            engine.battlefield.clear_weather()
+
 
 
 
