@@ -313,7 +313,7 @@ class LightScreen(BaseEffect):
             foe != target
         ):
             if __debug__: log.i('Light Screen halving damage from %s', move)
-            return damage / 2
+            return damage * 0.5
         return damage
 
 class Reflect(BaseEffect):
@@ -330,7 +330,7 @@ class Reflect(BaseEffect):
             foe != target
         ):
             if __debug__: log.i('Reflect halving %s damage from %s', damage, move)
-            return damage / 2
+            return damage * 0.5
         return damage
 
 class MagicBounceBase(BaseEffect):

@@ -18,7 +18,7 @@ class Paralyze(BaseStatusEffect):
 
     def on_modify_spe(self, pokemon, engine, spe):
         if pokemon.ability.name != 'quickfeet':
-            return spe / 4
+            return spe * 0.25
         return spe
 
     @priority(1)
@@ -74,7 +74,7 @@ class Burn(BaseStatusEffect):
             move.name != 'facade' and
             user.ability.name != 'guts'
         ):
-            return damage / 2
+            return damage * 0.5
         return damage
 
     @priority(9)
