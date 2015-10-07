@@ -19,6 +19,7 @@ class Paralyze(BaseStatusEffect):
     def on_modify_spe(self, pokemon, engine, spe):
         if pokemon.ability.name != 'quickfeet':
             return spe / 4
+        return spe
 
     @priority(1)
     def on_before_move(self, user, move, engine):
