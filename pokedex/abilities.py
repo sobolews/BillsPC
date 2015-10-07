@@ -720,6 +720,11 @@ class PrimordialSea(AbilityEffect):
         if foe is not None and foe.ability is not PrimordialSea:
             engine.battlefield.clear_weather()
 
+class Protean(AbilityEffect):
+    def on_try_hit(self, user, move, _, engine):
+        if move.type is not Type['???']:
+            user.types = [move.type, None]
+
 
 
 

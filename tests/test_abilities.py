@@ -2,7 +2,7 @@ from mock import patch
 
 from pokedex import statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, Hazard, ABILITY
+from pokedex.enums import Status, Weather, Volatile, Hazard, ABILITY, Type
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
@@ -2029,3 +2029,29 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertBoosts(self.leafeon, {'spe': 1})
+
+    def test_protean(self):
+        self.reset_leads(p0_ability='protean', p1_ability='protean')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 52)
+        self.assertIn(Type.FIRE, self.leafeon.types)
+        self.assertNotIn(Type.GRASS, self.leafeon.types)
+        self.assertIn(Type.GROUND, self.vaporeon.types)
+        self.assertNotIn(Type.WATER, self.vaporeon.types)
+
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertDamageTaken(self.leafeon, 146)
+
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_move(self.leafeon, movedex['whirlwind'])
+        self.run_turn()
+
+        self.assertListEqual(self.vaporeon.types, list(self.vaporeon.pokedex_entry.types))
