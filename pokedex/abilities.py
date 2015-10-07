@@ -729,11 +729,17 @@ class PurePower(AbilityEffect):
     def on_modify_atk(self, pokemon, move, engine, atk):
         return atk * 2
 
-
-
-
 class QuickFeet(AbilityEffect):
-    pass
+    # ignorance of paralysis speed drop implemented in statuses.Paralyze
+    def on_modify_spe(self, pokemon, engine, spe):
+        if pokemon.status is not None:
+            if __debug__: log.d("%s's QuickFeet boosted its speed!", pokemon)
+            return spe * 1.5
+        return spe
+
+
+
+
 
 class Scrappy(AbilityEffect):
     pass # TODO: see BattleEngine.ignore_immunity

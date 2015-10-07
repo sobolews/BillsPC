@@ -2064,3 +2064,32 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 283)
         self.assertDamageTaken(self.leafeon, 88)
+
+    @patch('random.randrange', lambda _: 1) # no parahax
+    def test_quickfeet(self):
+        self.reset_leads(p0_ability='quickfeet')
+        self.add_pokemon('flareon', 0, ability='quickfeet')
+        self.flareon.status = Status.PAR
+        self.add_pokemon('umbreon', 0, ability='quickfeet')
+        self.umbreon.status = Status.BRN
+        self.vaporeon.hp = self.flareon.hp = self.umbreon.hp = 1
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+        self.assertFainted(self.vaporeon)
+
+        self.assertDamageTaken(self.leafeon, 0)
+
+        self.choose_move(self.flareon, movedex['raindance'])
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+        self.assertFainted(self.flareon)
+
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+
+        self.choose_move(self.umbreon, movedex['sunnyday'])
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+        self.assertFainted(self.umbreon)
+
+        self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
