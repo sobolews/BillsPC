@@ -2093,3 +2093,28 @@ class TestAbilities(MultiMoveTestCase):
         self.assertFainted(self.umbreon)
 
         self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
+
+    def test_raindish(self):
+        self.reset_leads(p0_ability='raindish', p1_ability='airlock')
+        self.add_pokemon('glaceon', 1, ability='drizzle')
+        self.add_pokemon('flareon', 1, ability='primordialsea')
+        self.choose_move(self.leafeon, movedex['nightshade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 100)
+
+        self.choose_switch(self.leafeon, self.flareon)
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 100 - self.vaporeon.max_hp / 16)
+
+        self.choose_switch(self.flareon, self.glaceon)
+        self.run_turn()
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+
+        self.assertDamageTaken(self.vaporeon, 100 - 2 * (self.vaporeon.max_hp / 16))
+
+        self.choose_switch(self.glaceon, self.leafeon)
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 100 - 2 * (self.vaporeon.max_hp / 16))

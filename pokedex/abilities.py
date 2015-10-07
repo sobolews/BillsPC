@@ -737,6 +737,11 @@ class QuickFeet(AbilityEffect):
             return spe * 1.5
         return spe
 
+class RainDish(AbilityEffect):
+    def on_weather(self, pokemon, weather, engine):
+        if weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
+            engine.heal(pokemon, pokemon.max_hp / 16)
+
 
 
 
