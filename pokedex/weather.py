@@ -10,9 +10,10 @@ class BaseWeatherEffect(BaseEffect):
 
     @priority(1)
     def on_residual(self, pokemon0, pokemon1, engine):
-        for pokemon in filter(None, (pokemon0, pokemon1)):
-            for effect in pokemon.effects:
-                effect.on_weather(pokemon, self.source, engine)
+        if not self.suppressed:
+            for pokemon in filter(None, (pokemon0, pokemon1)):
+                for effect in pokemon.effects:
+                    effect.on_weather(pokemon, self.source, engine)
 
 class SunnyDayWeather(BaseWeatherEffect):
     source = Weather.SUNNYDAY
