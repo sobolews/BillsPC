@@ -799,6 +799,7 @@ class BattleEngine(object):
 
         outgoing.clear_effects(self)
         outgoing.boosts = Boosts()
+        outgoing.types = list(outgoing.pokedex_entry.types) # protean etc. may have changed type
         outgoing.is_active = False
         outgoing.side.active_pokemon = None
         outgoing.is_switching_out = False
