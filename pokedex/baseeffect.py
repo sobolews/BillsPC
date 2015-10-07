@@ -68,7 +68,7 @@ class BaseEffect(object):
         """ This executes only if the move was successful, and is negated by Volatile.SHEERFORCE """
 
     def on_try_hit(self, user, move, target, engine):
-        """ Called for both sides; so this should only be a battlefield effect """
+        """ Called before hitting the opponent with a move. Return FAIL to fail the move """
 
     @priority(0)
     def on_foe_try_hit(self, foe, move, target, engine):

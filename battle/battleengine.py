@@ -202,11 +202,10 @@ class BattleEngine(object):
             if __debug__: log.i('%s is immune to %s', target, move)
             return FAIL
 
-        for effect in self.battlefield.effects:
+        for effect in chain(user.effects, self.battlefield.effects):
             if effect.on_try_hit(user, move, target, self) is FAIL:
                 return FAIL
 
-        # TODO: is there any use for user.effect.on_try_hit? Or just use move.check_success instead?
         for effect in chain(sorted(target.effects, key=lambda e: e.on_foe_try_hit.priority,
                                    reverse=True),
                             target.side.effects):
