@@ -2055,3 +2055,12 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertListEqual(self.vaporeon.types, list(self.vaporeon.pokedex_entry.types))
+
+    def test_purepower(self):
+        self.reset_leads(p0_ability='purepower', p1_ability='purepower')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 283)
+        self.assertDamageTaken(self.leafeon, 88)

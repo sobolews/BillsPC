@@ -725,6 +725,10 @@ class Protean(AbilityEffect):
         if move.type is not Type['???']:
             user.types = [move.type, None]
 
+class PurePower(AbilityEffect):
+    def on_modify_atk(self, pokemon, move, engine, atk):
+        return atk * 2
+
 
 
 
