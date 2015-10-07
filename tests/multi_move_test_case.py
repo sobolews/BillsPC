@@ -51,7 +51,19 @@ class TestingEngine(BattleEngine):
         self.faint_queue = LoggingFaintQueue()
 
     def get_move_decisions(self):
-        return self.testing_decisions
+        decisions = []
+        for decision_type, pokemon, action in self.testing_decisions:
+            spe = self.effective_spe(pokemon)
+
+            if decision_type == 'move':
+                move = action
+                priority = self.modify_priority(pokemon, move)
+                decisions.append(MoveEvent(pokemon, spe, priority, move))
+            elif decision_type == 'switch':
+                incoming = action
+                decisions.append(SwitchEvent(pokemon, spe, incoming))
+
+        return decisions
 
     def init_turn(self):
         super(TestingEngine, self).init_turn()
@@ -133,16 +145,13 @@ class MultiMoveTestCase(TestCase):
         """
         `pokemon` will use `move` next turn.
         """
-        spe = self.engine.effective_spe(pokemon)
-        priority = self.engine.modify_priority(pokemon, move)
-        self.engine.testing_decisions.append(MoveEvent(pokemon, spe, priority, move))
+        self.engine.testing_decisions.append(('move', pokemon, move))
 
     def choose_switch(self, outgoing, incoming):
         """
         `outgoing` will switch out for `incoming` next turn.
         """
-        spe = self.engine.effective_spe(outgoing)
-        self.engine.testing_decisions.append(SwitchEvent(outgoing, spe, incoming))
+        self.engine.testing_decisions.append(('switch', outgoing, incoming))
 
     def run_turn(self):
         self.engine.run_turn()
