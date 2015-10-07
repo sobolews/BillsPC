@@ -343,6 +343,10 @@ class BattleEngine(object):
             if __debug__: log.i('(check_success) But it failed')
             return FAIL
 
+        for effect in user.effects:
+            if effect.on_try_hit(user, move, None, self) is FAIL:
+                return FAIL
+
         user.damage_done_this_turn = 0
 
         if move.user_boosts is not None:
