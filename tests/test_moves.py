@@ -2578,3 +2578,18 @@ class TestSubstitute(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, int(58 * 33 / 100))
+
+    def test_highjumpkick_vs_substitute(self):
+        with patch('random.randrange', lambda _: 99): # miss
+            self.choose_move(self.leafeon, movedex['substitute'])
+            self.choose_move(self.vaporeon, movedex['highjumpkick'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 2)
+
+        with patch('random.randrange', lambda _: 0): # no miss
+            self.choose_move(self.vaporeon, movedex['highjumpkick'])
+            self.run_turn()
+
+            self.assertEqual(self.leafeon.get_effect(Volatile.SUBSTITUTE).hp,
+                             (self.leafeon.max_hp / 4) - 63)

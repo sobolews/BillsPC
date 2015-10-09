@@ -525,7 +525,7 @@ class Substitute(BaseEffect):
         # Run the remaining relevant effects of move_hit and damage so that move_hit can exit fast
         if move.user_boosts:
             engine.apply_boosts(foe, move.user_boosts, self_imposed=True)
-        elif move.recoil:
+        elif move.recoil > 0:
             engine.damage(foe, damage * move.recoil / 100, Cause.RECOIL)
         elif move.drain:
             engine.heal(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.DRAIN, move, target)
