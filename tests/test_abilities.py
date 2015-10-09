@@ -2150,3 +2150,21 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 60)
         self.assertDamageTaken(self.espeon, 69)
+
+    def test_regenerator(self):
+        self.reset_leads(p0_ability='regenerator', p1_ability='regenerator')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('espeon', 1)
+        self.vaporeon.hp = self.leafeon.hp = 10
+        self.choose_switch(self.leafeon, self.espeon)
+        self.choose_move(self.vaporeon, movedex['voltswitch'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 10 + self.vaporeon.max_hp / 3)
+        self.assertEqual(self.leafeon.hp, 10 + self.leafeon.max_hp / 3)
+
+        self.choose_switch(self.flareon, self.vaporeon)
+        self.choose_move(self.espeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 10 + 2 * (self.vaporeon.max_hp / 3))

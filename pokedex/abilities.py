@@ -772,6 +772,11 @@ class Refrigerate(AbilityEffect):
             return base_power * 1.3
         return base_power
 
+class Regenerator(AbilityEffect):
+    def on_switch_out(self, pokemon, engine):
+        if __debug__: log.i("%s was healed by its Regenerator!", pokemon)
+        engine.heal(pokemon, pokemon.max_hp / 3)
+
 
 
 
