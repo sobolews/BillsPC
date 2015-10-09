@@ -2132,3 +2132,21 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 200 + 167)
+
+    def test_refrigerate(self):
+        self.reset_leads('vaporeon', 'espeon', p0_ability='refrigerate', p1_ability='refrigerate')
+        self.choose_move(self.espeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.espeon, (self.espeon.max_hp / 4) + 113)
+        self.assertTrue(self.espeon.has_effect(Volatile.SUBSTITUTE))
+
+        self.engine.heal(self.espeon, 200)
+        self.espeon.remove_effect(Volatile.SUBSTITUTE)
+        self.choose_move(self.espeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['psystrike'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 60)
+        self.assertDamageTaken(self.espeon, 69)

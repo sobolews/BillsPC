@@ -760,6 +760,18 @@ class Reckless(AbilityEffect):
             return base_power * 1.2
         return base_power
 
+class Refrigerate(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        if move.type is Type.NORMAL:
+            move.type = Type.ICE
+            move.type_changed = True
+
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.type_changed and move.type is Type.ICE:
+            if __debug__: log.i('%s boosted by Refrigerate!', move)
+            return base_power * 1.3
+        return base_power
+
 
 
 
