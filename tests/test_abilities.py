@@ -2168,3 +2168,18 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertEqual(self.vaporeon.hp, 10 + 2 * (self.vaporeon.max_hp / 3))
+
+    @patch('random.randrange', lambda _: 99) # miss if possible
+    def test_rockhead(self):
+        self.reset_leads(p0_ability='rockhead', p1_ability='rockhead')
+        self.choose_move(self.leafeon, movedex['doubleedge'])
+        self.choose_move(self.vaporeon, movedex['jumpkick'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 167 + self.vaporeon.max_hp / 2)
+        self.assertDamageTaken(self.leafeon, 0)
+
+        self.choose_move(self.leafeon, movedex['struggle'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)

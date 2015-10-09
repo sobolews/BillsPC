@@ -777,6 +777,11 @@ class Regenerator(AbilityEffect):
         if __debug__: log.i("%s was healed by its Regenerator!", pokemon)
         engine.heal(pokemon, pokemon.max_hp / 3)
 
+class RockHead(AbilityEffect):
+    def on_damage(self, pokemon, damage, cause, source, engine):
+        if cause is Cause.RECOIL:
+            return FAIL
+        return damage
 
 
 
