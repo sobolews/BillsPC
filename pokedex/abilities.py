@@ -107,6 +107,7 @@ class BadDreams(AbilityEffect):
             return
 
         if foe.status is Status.SLP:
+            if __debug__: log.i("%s is hurt by %s's BadDreams", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
 
 class BattleArmor(AbilityEffect):
@@ -250,6 +251,7 @@ class Download(AbilityEffect):
             # foe stat calculation: boosted but not modified
             boosts = (Boosts(spa=1) if foe.calculate_stat('def') >= foe.calculate_stat('spd') else
                       Boosts(atk=1))
+            if __debug__: log.i("%s is boosted by its Download!", pokemon)
             engine.apply_boosts(pokemon, boosts, self_imposed=True)
 
 class Drizzle(AbilityEffect):
@@ -321,6 +323,7 @@ class FlameBody(AbilityEffect):
             foe.status is None and
             random.randrange(10) < 3
         ):
+            if __debug__: log.i("%s was burned by %s's FlameBody", foe, pokemon)
             engine.set_status(foe, Status.BRN)
 
 class FlashFire(AbilityEffect):
@@ -412,6 +415,7 @@ class IceBody(AbilityEffect):
 
     def on_weather(self, pokemon, weather, engine):
         if weather is Weather.HAIL:
+            if __debug__: log.i("%s was healed by its IceBody", pokemon)
             engine.heal(pokemon, pokemon.max_hp / 16)
 
 class Illusion(AbilityEffect):  # only used to block transform for now
@@ -464,6 +468,7 @@ class Intimidate(AbilityEffect):
     def on_start(self, pokemon, engine):
         foe = engine.get_foe(pokemon)
         if foe is not None:
+            if __debug__: log.i("%s intimidates its foe!", pokemon)
             engine.apply_boosts(foe, Boosts(atk=-1), self_imposed=False)
 
 class IronBarbs(AbilityEffect):
@@ -481,6 +486,7 @@ class IronFist(AbilityEffect):
 class Justified(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         if (cause is Cause.MOVE and source.type is Type.DARK):
+            if __debug__: log.i("%s's Justified raises its atk!", pokemon)
             engine.apply_boosts(pokemon, Boosts(atk=1), self_imposed=True)
 
 class KeenEye(AbilityEffect):
@@ -506,6 +512,7 @@ class LightningRod(AbilityEffect):
     @priority(0)
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.ELECTRIC:
+            if __debug__: log.i("%s's LightningRod raises its SpA!", target)
             engine.apply_boosts(target, Boosts(spa=1), self_imposed=True)
             return FAIL
 
@@ -589,6 +596,7 @@ class MotorDrive(AbilityEffect):
     @priority(0)
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.ELECTRIC:
+            if __debug__: log.i("%s's MotorDrive raises its speed!", target)
             engine.apply_boosts(target, Boosts(spe=1), self_imposed=True)
             return FAIL
 
@@ -692,6 +700,7 @@ class Pixilate(AbilityEffect):
 class PoisonHeal(AbilityEffect):
     def on_damage(self, pokemon, damage, cause, source, engine):
         if cause is Cause.RESIDUAL and source.source in (Status.PSN, Status.TOX):
+            if __debug__: log.i("%s was healed by its PoisonHeal", pokemon)
             engine.heal(pokemon, pokemon.max_hp / 8)
             return FAIL
         return damage
@@ -723,6 +732,7 @@ class PrimordialSea(AbilityEffect):
 class Protean(AbilityEffect):
     def on_try_hit(self, user, move, _, engine):
         if move.type is not Type['???']:
+            if __debug__: log.i("%s's type changed to %s", user, move.type.name)
             user.types = [move.type, None]
 
 class PurePower(AbilityEffect):
@@ -740,6 +750,7 @@ class QuickFeet(AbilityEffect):
 class RainDish(AbilityEffect):
     def on_weather(self, pokemon, weather, engine):
         if weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
+            if __debug__: log.i('%s was healed by its RainDish!')
             engine.heal(pokemon, pokemon.max_hp / 16)
 
 
