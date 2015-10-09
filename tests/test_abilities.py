@@ -2118,3 +2118,17 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 100 - 2 * (self.vaporeon.max_hp / 16))
+
+    def test_reckless(self):
+        self.reset_leads(p0_ability='reckless', p1_ability='reckless')
+        self.choose_move(self.leafeon, movedex['headcharge'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 200)
+        self.assertDamageTaken(self.leafeon, 50 + 50) # recoil + return
+
+        self.choose_move(self.leafeon, movedex['jumpkick'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 200 + 167)

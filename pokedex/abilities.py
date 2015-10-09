@@ -753,6 +753,13 @@ class RainDish(AbilityEffect):
             if __debug__: log.i('%s was healed by its RainDish!')
             engine.heal(pokemon, pokemon.max_hp / 16)
 
+class Reckless(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.recoil:
+            if __debug__: log.i('%s boosted by Reckless!', move)
+            return base_power * 1.2
+        return base_power
+
 
 
 
