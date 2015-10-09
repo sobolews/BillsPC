@@ -1706,7 +1706,7 @@ class highjumpkick(Move):
         self.recoil = -1
 
     def on_move_fail(self, user, engine):
-        engine.damage(user, user.max_hp / 2, Cause.RECOIL, self)
+        engine.damage(user, user.max_hp / 2, Cause.CRASH, self)
 
 class honeclaws(Move):
     def __init__(self):
@@ -1929,7 +1929,7 @@ class jumpkick(Move):
         self.recoil = -1
 
     def on_move_fail(self, user, engine):
-        engine.damage(user, user.max_hp / 2, Cause.RECOIL, self)
+        engine.damage(user, user.max_hp / 2, Cause.CRASH, self)
 
 class kingsshield(Move):
     def __init__(self):
