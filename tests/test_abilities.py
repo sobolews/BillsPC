@@ -2199,3 +2199,23 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
+
+    def test_sandrush(self):
+        self.reset_leads(p0_ability='sandrush')
+        self.add_pokemon('jolteon', 1, ability='airlock')
+        self.battlefield.set_weather(Weather.SANDSTORM)
+        self.choose_move(self.vaporeon, movedex['suckerpunch'])
+        self.choose_move(self.leafeon, movedex['suckerpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 39 + self.leafeon.max_hp / 16)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.run_turn()
+
+        self.choose_move(self.jolteon, movedex['suckerpunch'])
+        self.choose_move(self.vaporeon, movedex['suckerpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 73)

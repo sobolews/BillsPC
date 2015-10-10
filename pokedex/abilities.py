@@ -789,6 +789,17 @@ class RoughSkin(AbilityEffect):
             if __debug__: log.i("%s was damaged by %s's RoughSkin", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
 
+class SandRush(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if thing is Weather.SANDSTORM:
+            return True
+
+    def on_modify_spe(self, pokemon, engine, spe):
+        if engine.battlefield.weather is Weather.SANDSTORM:
+            if __debug__: log.d("%s's SandRush boosted its speed!", pokemon)
+            return spe * 2
+        return spe
+
 
 
 
