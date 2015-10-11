@@ -2219,3 +2219,10 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 73)
+
+    def test_sandstream(self):
+        self.reset_leads(p0_ability='sandstream', p1_ability='drizzle')
+        self.assertEqual(self.battlefield.weather, Weather.SANDSTORM)
+
+        self.reset_leads(p0_ability='sandstream', p1_ability='primordialsea')
+        self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)

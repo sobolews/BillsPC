@@ -800,6 +800,10 @@ class SandRush(AbilityEffect):
             return spe * 2
         return spe
 
+class SandStream(AbilityEffect):
+    def on_start(self, pokemon, engine):
+        engine.battlefield.set_weather(Weather.SANDSTORM)
+
 
 
 
