@@ -2226,3 +2226,27 @@ class TestAbilities(MultiMoveTestCase):
 
         self.reset_leads(p0_ability='sandstream', p1_ability='primordialsea')
         self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)
+
+    def test_sandveil(self):
+        with patch('random.randrange', lambda _: 81): # miss at 80%- accuracy
+            self.reset_leads(p0_ability='sandveil')
+            self.choose_move(self.leafeon, movedex['superfang'])
+            self.choose_move(self.vaporeon, movedex['rockslide'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 200)
+            self.assertDamageTaken(self.leafeon, 37)
+
+            self.battlefield.set_weather(Weather.SANDSTORM)
+            self.choose_move(self.leafeon, movedex['return'])
+            self.choose_move(self.vaporeon, movedex['rockslide'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.leafeon, (37 * 2) + (self.leafeon.max_hp / 16))
+            self.assertDamageTaken(self.vaporeon, 200)
+
+        with patch('random.randrange', lambda _: 99): # miss if possible
+            self.choose_move(self.leafeon, movedex['aerialace'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 200 + 84)

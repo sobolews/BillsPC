@@ -804,6 +804,18 @@ class SandStream(AbilityEffect):
     def on_start(self, pokemon, engine):
         engine.battlefield.set_weather(Weather.SANDSTORM)
 
+class SandVeil(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if thing is Weather.SANDSTORM:
+            return True
+
+    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if accuracy is None:
+            return accuracy
+        if engine.battlefield.weather is Weather.SANDSTORM:
+            return accuracy * 0.8
+        return accuracy
+
 
 
 
