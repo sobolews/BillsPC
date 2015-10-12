@@ -1,6 +1,7 @@
 import math
 import random
 from bisect import insort
+from collections import namedtuple
 from itertools import chain
 from functools import partial
 
@@ -31,6 +32,7 @@ STATUS_EFFECTS = {
     Status.FRZ: statuses.Freeze
 }
 
+Residual = namedtuple('Residual', ['holder', 'effect', 'call'])
 
 class BattleEngine(object):
     """
@@ -721,23 +723,31 @@ class BattleEngine(object):
 
                     if effect.duration == 0:
                         if __debug__: log.i('%s timed out', effect)
-                        residuals.append(partial(effect.on_timeout, thing, self))
+                        residuals.append(Residual(None, None, partial(effect.on_timeout, thing, self)))
                         thing.remove_effect(effect.source, self)
 
-        residuals.extend(partial(effect.on_residual, pokemon0, pokemon1, self)
-                         for effect in chain(pokemon0.effects if pokemon0 is not None else (),
-                                             sides[0].effects,
-                                             self.battlefield.effects))
-        residuals.extend(partial(effect.on_residual, pokemon1, pokemon0, self)
-                         for effect in chain(pokemon1.effects if pokemon1 is not None else (),
-                                             sides[1].effects))
+        for side, pokemon, foe in ((sides[0], pokemon0, pokemon1),
+                                   (sides[1], pokemon1, pokemon0)):
+            if pokemon is not None:
+                residuals.extend(Residual(pokemon, effect.source,
+                                          partial(effect.on_residual, pokemon, foe, self))
+                                 for effect in pokemon.effects)
+            residuals.extend(Residual(side, effect.source,
+                                      partial(effect.on_residual, pokemon, foe, self))
+                             for effect in side.effects)
+        residuals.extend(Residual(self.battlefield, effect.source,
+                                  partial(effect.on_residual, pokemon0, pokemon1, self))
+                         for effect in self.battlefield.effects)
 
-        for residual in sorted(residuals, key=lambda r: r.func.priority, reverse=True):
-            if __debug__:
-                if residual.func.__func__ not in (effects.BaseEffect.on_residual.__func__,
-                                                  effects.BaseEffect.on_timeout.__func__,):
-                    log.i('Residual effect: %s', residual.func.__self__)
-            residual()
+        # For each residual, check first if its effect still exists on the holder, because another
+        # residual may have removed it (e.g. shedskin and poison).
+        for residual in sorted(residuals, key=lambda r: r.call.func.priority, reverse=True):
+            if residual.holder is None or residual.holder.has_effect(residual.effect):
+                if __debug__:
+                    if residual.call.func.__func__ not in (effects.BaseEffect.on_residual.__func__,
+                                                           effects.BaseEffect.on_timeout.__func__,):
+                        log.i('Residual effect: %s', residual.call.func.__self__)
+                residual.call()
 
     def run_update(self):
         sides = self.battlefield.sides
