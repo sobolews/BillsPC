@@ -844,6 +844,14 @@ class ShadowTag(AbilityEffect):
             foe.set_effect(trap_effect)
             pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
 
+class ShedSkin(AbilityEffect):
+    @priority(-5.1)
+    def on_residual(self, pokemon, foe, engine):
+        if random.randrange(3) == 0:
+            if __debug__:
+                if pokemon.status is not None: log.i("%s was healed by ShedSkin!", pokemon)
+            pokemon.cure_status()
+
 
 
 

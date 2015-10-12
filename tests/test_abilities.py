@@ -2401,3 +2401,23 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertSwitchChoices(self.leafeon, set())
         self.assertSwitchChoices(self.ditto, {self.flareon, self.vaporeon})
+
+    def test_shedskin(self):
+        self.reset_leads(p0_ability='shedskin', p1_ability='shedskin')
+        with patch('random.randrange', lambda _: 0): # shedskin succeeds; no miss
+            self.choose_move(self.leafeon, movedex['willowisp'])
+            self.choose_move(self.vaporeon, movedex['darkvoid'])
+            self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
+        self.assertStatus(self.vaporeon, None)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        with patch('random.randrange', lambda _: 1): # shedskin fails; no miss
+            self.choose_move(self.leafeon, movedex['willowisp'])
+            self.choose_move(self.vaporeon, movedex['darkvoid'])
+            self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.SLP)
+        self.assertStatus(self.vaporeon, Status.BRN)
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
