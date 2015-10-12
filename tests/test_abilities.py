@@ -2361,3 +2361,43 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertBoosts(self.leafeon, {'def': 0})
+
+    def test_shadowtag(self):
+        self.reset_leads(p0_ability='shadowtag')
+        self.add_pokemon('jolteon', 1, ability='shadowtag')
+        self.add_pokemon('gengar', 1)
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('ditto', 0, ability='imposter')
+        self.engine.init_turn()
+
+        self.assertSwitchChoices(self.leafeon, set())
+        self.assertSwitchChoices(self.vaporeon, {self.flareon, self.ditto})
+
+        self.choose_move(self.leafeon, movedex['uturn'])
+        self.run_turn()
+        self.assertTrue(self.jolteon.is_active)
+        self.engine.init_turn()
+
+        self.assertSwitchChoices(self.jolteon, {self.leafeon, self.gengar})
+        self.assertSwitchChoices(self.vaporeon, {self.flareon, self.ditto})
+
+        self.choose_switch(self.vaporeon, self.ditto)
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertSwitchChoices(self.jolteon, {self.leafeon, self.gengar})
+        self.assertSwitchChoices(self.ditto, {self.flareon, self.vaporeon})
+
+        self.choose_switch(self.jolteon, self.gengar)
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertSwitchChoices(self.gengar, {self.leafeon, self.jolteon})
+        self.assertSwitchChoices(self.ditto, {self.flareon, self.vaporeon})
+
+        self.choose_switch(self.gengar, self.leafeon)
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertSwitchChoices(self.leafeon, set())
+        self.assertSwitchChoices(self.ditto, {self.flareon, self.vaporeon})

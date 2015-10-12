@@ -837,6 +837,13 @@ class SereneGrace(AbilityEffect):
         for s_effect in move.secondary_effects:
             s_effect.chance *= 2
 
+class ShadowTag(AbilityEffect):
+    def on_before_turn(self, pokemon, foe):
+        if not foe.has_effect(Volatile.TRAPPED) and foe.ability is not ShadowTag:
+            trap_effect = effects.Trapped(pokemon)
+            foe.set_effect(trap_effect)
+            pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+
 
 
 
