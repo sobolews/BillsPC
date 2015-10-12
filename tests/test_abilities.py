@@ -2056,6 +2056,62 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertListEqual(self.vaporeon.types, list(self.vaporeon.pokedex_entry.types))
 
+    def test_protean_vs_immunity(self):
+        self.reset_leads(p0_ability='protean', p1_ability='levitate')
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.types, [Type.GROUND, None])
+
+    def test_double_taunt_protean(self):
+        self.reset_leads(p0_ability='protean')
+        self.choose_move(self.vaporeon, movedex['taunt'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['taunt'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.types, [Type.DARK, None])
+
+    def test_protean_when_toxic_spikes_fails(self):
+        self.reset_leads(p0_ability='protean')
+        for _ in range(2):
+            self.choose_move(self.vaporeon, movedex['toxicspikes'])
+            self.run_turn()
+
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+        self.assertEqual(self.vaporeon.types, [Type.FIRE, None])
+        self.choose_move(self.vaporeon, movedex['toxicspikes'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.types, [Type.POISON, None])
+
+    def test_protean_vs_magicbounce(self):
+        self.reset_leads(p0_ability='protean', p1_ability='magicbounce')
+        self.choose_move(self.vaporeon, movedex['taunt'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.types, [Type.DARK, None])
+
+    def test_protean_second_fakeout(self):
+        self.reset_leads(p0_ability='protean')
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['fakeout'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.types, [Type.NORMAL, None])
+
+    def test_protean_suckerpunch(self):
+        self.reset_leads(p0_ability='protean')
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['suckerpunch'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.types, [Type.DARK, None])
+
     def test_purepower(self):
         self.reset_leads(p0_ability='purepower', p1_ability='purepower')
         self.choose_move(self.leafeon, movedex['return'])

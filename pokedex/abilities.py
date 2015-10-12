@@ -730,7 +730,7 @@ class PrimordialSea(AbilityEffect):
             engine.battlefield.clear_weather()
 
 class Protean(AbilityEffect):
-    def on_try_hit(self, user, move, _, engine):
+    def on_modify_move(self, move, user, engine):
         if move.type is not Type['???']:
             if __debug__: log.i("%s's type changed to %s", user, move.type.name)
             user.types = [move.type, None]
