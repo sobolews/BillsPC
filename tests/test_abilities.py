@@ -2175,6 +2175,7 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 100 - 2 * (self.vaporeon.max_hp / 16))
 
+    @patch('random.randrange', lambda _: 0) # no miss
     def test_reckless(self):
         self.reset_leads(p0_ability='reckless', p1_ability='reckless')
         self.choose_move(self.leafeon, movedex['headcharge'])
