@@ -2346,3 +2346,18 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 0)
+
+    @patch('random.randrange', lambda _: 50)
+    def test_serenegrace(self):
+        self.reset_leads(p0_ability='serenegrace', p1_ability='serenegrace')
+        self.choose_move(self.leafeon, movedex['airslash'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45)
+        self.assertDamageTaken(self.leafeon, 0)
+
+        self.choose_move(self.vaporeon, movedex['crunch'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'def': 0})

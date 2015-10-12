@@ -832,6 +832,11 @@ class Scrappy(AbilityEffect):
                 move_type, target.types[not target.types.index(Type.GHOST)] or Type['???'])
         return effectiveness
 
+class SereneGrace(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        for s_effect in move.secondary_effects:
+            s_effect.chance *= 2
+
 
 
 
