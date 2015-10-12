@@ -282,10 +282,7 @@ class BattleEngine(object):
             for effect in target.effects:
                 effect.on_foe_hit(user, move, target, self)
 
-        s_effects = move.secondary_effects
-        for effect in user.effects:
-            s_effects = effect.on_modify_secondaries(s_effects)
-        for s_effect in s_effects:
+        for s_effect in move.secondary_effects:
             self.apply_secondary_effect(user if s_effect.affects_user else target,
                                         s_effect, move.infiltrates)
 

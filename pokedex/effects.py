@@ -535,10 +535,7 @@ class Substitute(BaseEffect):
         if target.item is itemdex['airballoon']:
             target.use_item()   # TODO: use_item? or take_item?
 
-        s_effects = move.secondary_effects
-        for effect in foe.effects:
-            s_effects = effect.on_modify_secondaries(s_effects)
-        for s_effect in s_effects:
+        for s_effect in move.secondary_effects:
             if s_effect.affects_user:
                 engine.apply_secondary_effect(foe, s_effect)
 
