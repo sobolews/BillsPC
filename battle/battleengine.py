@@ -207,7 +207,7 @@ class BattleEngine(object):
             if effect.on_foe_try_hit(user, move, target, self) is FAIL:
                 return FAIL
 
-        if target.is_immune_to_move(move) and not self.ignore_immunity(user, move, target):
+        if target.is_immune_to_move(user, move):
             if __debug__: log.i('%s is immune to %s', target, move)
             return FAIL
 
@@ -389,7 +389,7 @@ class BattleEngine(object):
 
         # TODO: move immunity check up a level?
         # TODO: immunity already checked in try_move_hit, does it need to be checked here?
-        if target.is_immune_to_move(move) and not self.ignore_immunity(user, move, target):
+        if target.is_immune_to_move(user, move):
             if __debug__: log.i('FAIL: %s is immune to %s', target, move)
             return FAIL
 
@@ -480,15 +480,6 @@ class BattleEngine(object):
             base_power *= 1.25
         return base_power
 
-    # TODO: move this into a method of the ability, and only call it if user has scrappy (doesn't
-    # belong here)
-    def ignore_immunity(self, user, move, target):
-        """ Explicit check for conditions that cause immunity to be ignored """
-        # if there were more of these, I'd move it to an effect but it's not worth it for one check
-        return (user.ability is abilitydex['scrappy'] and
-                move.type in (Type.FIGHTING, Type.NORMAL) and
-                Type.GHOST in target.types)
-
     def modify_critical_hit(self, crit, target):
         if target.ability in (abilitydex['battlearmor'], abilitydex['shellarmor']):
             return False
@@ -522,9 +513,8 @@ class BattleEngine(object):
             damage = effect.on_modify_foe_damage(user, move, target, crit, effectiveness, damage)
         return damage
 
-    # TODO: is this used for anything but deltastream?
     def modify_effectiveness(self, user, move_type, target, effectiveness):
-        for effect in self.battlefield.effects:
+        for effect in chain(user.effects, self.battlefield.effects):
             effectiveness = effect.on_modify_effectiveness(user, move_type, target, effectiveness)
         return effectiveness
 

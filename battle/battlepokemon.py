@@ -221,7 +221,7 @@ class BattlePokemon(object):
 
         return evs, ivs
 
-    def is_immune_to_move(self, move):
+    def is_immune_to_move(self, user, move):
         """Return True if self is immune to move"""
         for effect in self.effects:
             immune = effect.on_get_immunity(move.type) # check type immunity first, then move
@@ -233,6 +233,9 @@ class BattlePokemon(object):
         if Type.GRASS in self.types and (move.is_powder or move == movedex['leechseed']):
             return True
         if move.category is MoveCategory.STATUS and move != movedex['thunderwave']:
+            return False
+
+        if user.ability is abilitydex['scrappy'] and move.type in (Type.FIGHTING, Type.NORMAL):
             return False
 
         return effectiveness(move.type, self) == 0

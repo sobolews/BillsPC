@@ -2323,3 +2323,26 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertBoosts(self.vaporeon, {'atk': 2})
+
+    def test_scrappy(self):
+        self.reset_leads('gengar', 'drifblim', p0_ability='scrappy', p1_ability='scrappy')
+        self.choose_move(self.gengar, movedex['earthquake'])
+        self.choose_move(self.drifblim, movedex['brickbreak'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.drifblim, 0)
+        self.assertDamageTaken(self.gengar, 40)
+
+        self.engine.heal(self.gengar, 40)
+        self.choose_move(self.gengar, movedex['substitute'])
+        self.choose_move(self.drifblim, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.gengar, (self.gengar.max_hp / 4) + 89)
+
+    def test_scrappy_aurasphere_vs_bulletproof(self):
+        self.reset_leads(p0_ability='scrappy', p1_ability='bulletproof')
+        self.choose_move(self.vaporeon, movedex['aurasphere'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)

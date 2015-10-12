@@ -13,6 +13,7 @@ from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, Ps
                            ABILITY, Weather, POWDER)
 from pokedex.secondaryeffect import SecondaryEffect
 from pokedex.stats import Boosts
+from pokedex.types import type_effectiveness
 
 
 class BaseAbility(object):
@@ -824,11 +825,15 @@ class SapSipper(AbilityEffect):
             engine.apply_boosts(target, Boosts(atk=1), self_imposed=True)
             return FAIL
 
-
-
-
 class Scrappy(AbilityEffect):
-    pass # TODO: see BattleEngine.ignore_immunity
+    def on_modify_effectiveness(self, user, move_type, target, effectiveness):
+        if move_type in (Type.FIGHTING, Type.NORMAL) and Type.GHOST in target.types:
+            return type_effectiveness(
+                move_type, target.types[not target.types.index(Type.GHOST)] or Type['???'])
+        return effectiveness
+
+
+
 
 class ShellArmor(AbilityEffect):
     pass
