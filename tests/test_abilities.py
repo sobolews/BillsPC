@@ -2307,3 +2307,19 @@ class TestAbilities(MultiMoveTestCase):
             self.run_turn()
 
             self.assertDamageTaken(self.vaporeon, 200 + 84)
+
+    def test_sapsipper(self):
+        self.reset_leads(p0_ability='sapsipper', p1_ability='magicbounce')
+        self.choose_move(self.leafeon, movedex['leafstorm'])
+        self.choose_move(self.vaporeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertBoosts(self.vaporeon, {'atk': 1})
+        self.assertDamageTaken(self.leafeon, 32)
+        self.assertBoosts(self.leafeon, {'spa': 0})
+
+        self.choose_move(self.vaporeon, movedex['leechseed'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 2})

@@ -816,6 +816,14 @@ class SandVeil(AbilityEffect):
             return accuracy * 0.8
         return accuracy
 
+class SapSipper(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.type is Type.GRASS:
+            if __debug__: log.i("%s's SapSipper raises its atk!", target)
+            engine.apply_boosts(target, Boosts(atk=1), self_imposed=True)
+            return FAIL
+
 
 
 
