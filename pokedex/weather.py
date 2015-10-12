@@ -8,7 +8,7 @@ if __debug__: from _logging import log
 class BaseWeatherEffect(BaseEffect):
     suppressed = False
 
-    @priority(1)
+    @priority(-1)
     def on_residual(self, pokemon0, pokemon1, engine):
         if not self.suppressed:
             for pokemon in filter(None, (pokemon0, pokemon1)):
@@ -91,7 +91,7 @@ class HailWeather(BaseWeatherEffect):
     source = Weather.HAIL
     duration = 5
 
-    @priority(1)
+    @priority(-1)
     def on_residual(self, pokemon0, pokemon1, engine):
         super(HailWeather, self).on_residual(pokemon0, pokemon1, engine)
         if not self.suppressed:
@@ -102,7 +102,7 @@ class SandstormWeather(BaseWeatherEffect):
     source = Weather.SANDSTORM
     duration = 5
 
-    @priority(1)
+    @priority(-1)
     def on_residual(self, pokemon0, pokemon1, engine):
         super(SandstormWeather, self).on_residual(pokemon0, pokemon1, engine)
         if not self.suppressed:

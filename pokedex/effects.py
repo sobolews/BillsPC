@@ -217,7 +217,7 @@ class PartialTrap(BaseEffect):
     def on_get_switch_choices(self, pokemon, choices):
         return choices if Type.GHOST in pokemon.types else []
 
-    @priority(11)
+    @priority(-11)
     def on_residual(self, pokemon, foe, engine):
         if self.trapper.is_fainted() or not self.trapper.is_active:
             pokemon.remove_effect(Volatile.PARTIALTRAP)
@@ -293,7 +293,7 @@ class KingsShield(BaseEffect):
 class LeechSeed(BaseEffect):
     source = Volatile.LEECHSEED
 
-    @priority(8)
+    @priority(-8)
     def on_residual(self, pokemon, foe, engine):
         if foe is None or foe.is_fainted():
             return

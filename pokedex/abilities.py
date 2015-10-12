@@ -102,7 +102,7 @@ class AuraBreak(AbilityEffect):
         engine.battlefield.remove_effect(PseudoWeather.AURABREAK)
 
 class BadDreams(AbilityEffect):
-    @priority(26.1)
+    @priority(-26.1)
     def on_residual(self, pokemon, foe, engine):
         if pokemon.is_fainted():
             return
@@ -394,7 +394,7 @@ class Hustle(AbilityEffect):
         return atk
 
 class Hydration(AbilityEffect):
-    @priority(5.1)
+    @priority(-5.1)
     def on_residual(self, pokemon, foe, engine):
         if engine.battlefield.weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
             if __debug__:

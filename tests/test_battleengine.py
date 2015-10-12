@@ -1043,3 +1043,15 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertStatus(self.vaporeon, None)
         self.assertEqual(self.vaporeon.hp, 50 + 19 - 50)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_residual_order(self):
+        self.vaporeon.hp = 51
+        self.leafeon.hp = 100
+
+        self.engine.set_status(self.vaporeon, Status.PSN)
+        self.choose_move(self.leafeon, movedex['leechseed'])
+        self.run_turn()
+
+        self.assertEqual(self.leafeon.hp, 150) # leechseed happens first
+        self.assertFainted(self.vaporeon)
