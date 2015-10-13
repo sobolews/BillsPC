@@ -858,11 +858,11 @@ class SheerForce(AbilityEffect):
             move.secondary_effects = ()
             user.set_effect(effects.SheerForceVolatile())
 
-
-
-
 class ShellArmor(AbilityEffect):
-    pass
+    pass # implemented in BattleEngine.modify_critical_hit # TODO: use effect instead?
+
+
+
 
 class SkillLink(AbilityEffect):
     pass

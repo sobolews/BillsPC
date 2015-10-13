@@ -2438,3 +2438,10 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 136 + 88)
+
+    def test_shellarmor(self):
+        self.reset_leads(p0_ability='shellarmor')
+        self.choose_move(self.leafeon, movedex['stormthrow'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 84)
