@@ -2593,3 +2593,11 @@ class TestSubstitute(MultiMoveTestCase):
 
             self.assertEqual(self.leafeon.get_effect(Volatile.SUBSTITUTE).hp,
                              (self.leafeon.max_hp / 4) - 63)
+
+    @patch('random.randrange', lambda _: 2) # triattack freeze
+    def test_triattack_secondary_vs_substitute(self):
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['triattack'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, None)

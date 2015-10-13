@@ -3634,15 +3634,14 @@ class triattack(Move):
         self.type = Type.NORMAL
         self.accuracy = 100
         self.base_power = 80
-        # no-op secondary effect to trigger secondary effect callback
-        self.secondary_effects = SecondaryEffect(0),
+        self.secondary_effects = SecondaryEffect(20, callback=self.secondary),
 
     STATUS = [Status.BRN, Status.PAR, Status.FRZ]
 
-    def on_after_move_secondary(self, user, target, engine):
-        roll = random.randrange(15) # {0, 1, 2} is 3/15 == 1/5 == 20% chance
-        if roll < 3:
-            engine.set_status(target, self.STATUS[roll], self.infiltrates)
+    def secondary(self, target, engine):
+        roll = random.randrange(3)
+        engine.apply_secondary_effect(target, SecondaryEffect(100, status=self.STATUS[roll]),
+                                      self.infiltrates)
 
 class trick(Move):
     def __init__(self):
