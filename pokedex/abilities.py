@@ -870,11 +870,11 @@ class Simple(AbilityEffect):
             boosts[stat] = val * 2
         return boosts
 
-
-
-
 class SkillLink(AbilityEffect):
-    pass
+    pass # implemented in BattleEngine.try_move_hit
+
+
+
 
 class Sniper(AbilityEffect):
     pass

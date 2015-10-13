@@ -2479,3 +2479,18 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': -6})
         self.assertBoosts(self.leafeon, {'spe': 4})
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_skilllink(self):
+        self.reset_leads(p0_ability='skilllink', p1_ability='skilllink')
+        self.choose_move(self.leafeon, movedex['tailslap'])
+        self.choose_move(self.vaporeon, movedex['bonemerang'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 36 * 5)
+        self.assertDamageTaken(self.leafeon, 12 * 2)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 36 * 5 + 142)
