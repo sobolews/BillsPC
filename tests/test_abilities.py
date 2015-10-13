@@ -2494,3 +2494,33 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 36 * 5 + 142)
+
+    def test_slowstart(self):
+        self.reset_leads(p0_ability='slowstart', p1_ability='slowstart')
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 72)
+        self.assertDamageTaken(self.leafeon, 88)
+
+        for _ in range(4):
+            self.assertTrue(self.leafeon.has_effect(Volatile.SLOWSTART))
+            self.run_turn()
+
+        self.assertFalse(self.leafeon.has_effect(Volatile.SLOWSTART))
+
+        self.choose_move(self.leafeon, movedex['uturn'])
+        self.choose_move(self.vaporeon, movedex['roar'])
+        self.run_turn()
+        self.assertTrue(self.leafeon.is_active)
+
+        self.assertDamageTaken(self.vaporeon, 72 + 98)
+
+        self.choose_move(self.vaporeon, movedex['suckerpunch'])
+        self.choose_move(self.leafeon, movedex['suckerpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 88 + 39)
+        self.assertDamageTaken(self.vaporeon, 72 + 98)

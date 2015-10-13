@@ -654,6 +654,18 @@ class ParentalBondVolatile(BaseEffect):
         else:
             return base_power * 0.5
 
+class SlowStartVolatile(BaseEffect):
+    source = Volatile.SLOWSTART
+    duration = 5
+
+    def on_modify_atk(self, pokemon, move, engine, atk):
+        if __debug__: log.i("%s's atk was halved by SlowStart", pokemon)
+        return atk * 0.5
+
+    def on_modify_spe(self, pokemon, engine, spe):
+        if __debug__: log.d("%s's spe was halved by SlowStart", pokemon)
+        return spe * 0.5
+
 class Transformed(BaseEffect):
     """ Used for transform and imposter """
     source = Volatile.TRANSFORMED

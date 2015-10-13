@@ -873,6 +873,10 @@ class Simple(AbilityEffect):
 class SkillLink(AbilityEffect):
     pass # implemented in BattleEngine.try_move_hit
 
+class SlowStart(AbilityEffect):
+    def on_start(self, pokemon, engine):
+        pokemon.set_effect(effects.SlowStartVolatile())
+
 
 
 
