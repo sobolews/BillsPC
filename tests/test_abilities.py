@@ -2463,3 +2463,19 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 35 + 45)
         self.assertStatus(self.vaporeon, None)
         self.assertStatus(self.leafeon, None)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_simple(self):
+        self.reset_leads(p0_ability='simple', p1_ability='simple')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.choose_move(self.vaporeon, movedex['leafstorm'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': -2, 'spa': -6})
+
+        self.choose_move(self.vaporeon, movedex['poweruppunch'])
+        self.choose_move(self.leafeon, movedex['autotomize'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': -6})
+        self.assertBoosts(self.leafeon, {'spe': 4})

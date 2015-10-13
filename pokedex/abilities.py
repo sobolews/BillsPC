@@ -864,6 +864,12 @@ class ShellArmor(AbilityEffect):
 class ShieldDust(AbilityEffect):
     pass # implemented in BattleEngine.apply_secondary_effect
 
+class Simple(AbilityEffect):
+    def on_boost(self, pokemon, boosts, self_imposed):
+        for stat, val in boosts.items():
+            boosts[stat] = val * 2
+        return boosts
+
 
 
 
