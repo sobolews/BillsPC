@@ -360,8 +360,12 @@ class BattleEngine(object):
                                                        # reaching this?
 
     def apply_secondary_effect(self, pokemon, s_effect, infiltrates):
-        if random.randrange(100) >= s_effect.chance or pokemon is None or pokemon.is_fainted():
+        if (random.randrange(100) >= s_effect.chance or
+            pokemon is None or
+            pokemon.is_fainted() or
+            (pokemon.ability is abilitydex['shielddust'] and not s_effect.affects_user)):
             return
+
         if __debug__: log.d('Applying %s to %s', s_effect, pokemon)
 
         if s_effect.boosts is not None:

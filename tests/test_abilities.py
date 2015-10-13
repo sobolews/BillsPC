@@ -2445,3 +2445,21 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 84)
+
+    @patch('random.randrange', lambda _: 0) # secondary effects activate if possible
+    def test_shielddust(self):
+        self.reset_leads(p0_ability='shielddust', p1_ability='shielddust')
+        self.choose_move(self.vaporeon, movedex['fakeout'])
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 35)
+
+        self.assertBoosts(self.leafeon, {'spe': 1})
+
+        self.choose_move(self.leafeon, movedex['icefang'])
+        self.choose_move(self.vaporeon, movedex['triattack'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 35 + 45)
+        self.assertStatus(self.vaporeon, None)
+        self.assertStatus(self.leafeon, None)

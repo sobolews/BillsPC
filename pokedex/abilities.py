@@ -861,6 +861,9 @@ class SheerForce(AbilityEffect):
 class ShellArmor(AbilityEffect):
     pass # implemented in BattleEngine.modify_critical_hit # TODO: use effect instead?
 
+class ShieldDust(AbilityEffect):
+    pass # implemented in BattleEngine.apply_secondary_effect
+
 
 
 
