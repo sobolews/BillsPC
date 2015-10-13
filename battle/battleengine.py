@@ -453,9 +453,6 @@ class BattleEngine(object):
 
         if crit:
             damage = int(damage * 1.5)
-            # TODO: modify a crit_multiplier move attribute in on_modify_move instead?
-            if user.ability is abilitydex['sniper']:
-                damage = int(damage * 1.5)
 
         damage = int(damage * self.damage_randomizer() / 100)
 

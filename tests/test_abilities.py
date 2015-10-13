@@ -2524,3 +2524,16 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 88 + 39)
         self.assertDamageTaken(self.vaporeon, 72 + 98)
+
+    def test_sniper(self):
+        self.reset_leads(p0_ability='sniper', p1_ability='angerpoint')
+        self.choose_move(self.vaporeon, movedex['stormthrow'])
+        self.run_turn()
+        self.assertBoosts(self.leafeon, {'atk': 6})
+
+        self.assertDamageTaken(self.leafeon, 67)
+
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 67 + 50)

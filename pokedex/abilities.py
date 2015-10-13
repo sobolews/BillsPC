@@ -877,11 +877,15 @@ class SlowStart(AbilityEffect):
     def on_start(self, pokemon, engine):
         pokemon.set_effect(effects.SlowStartVolatile())
 
-
-
-
 class Sniper(AbilityEffect):
-    pass
+    def on_modify_damage(self, user, move, damage):
+        if move.crit:
+            if __debug__: log.i("%s was boosted by %s's Sniper!", move, user)
+            return damage * 1.5
+        return damage
+
+
+
 
 class Steadfast(AbilityEffect):
     @priority(20) # must be higher than Flinch
