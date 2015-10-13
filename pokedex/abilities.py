@@ -852,6 +852,12 @@ class ShedSkin(AbilityEffect):
                 if pokemon.status is not None: log.i("%s was healed by ShedSkin!", pokemon)
             pokemon.cure_status()
 
+class SheerForce(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        if move.secondary_effects:
+            move.secondary_effects = ()
+            user.set_effect(effects.SheerForceVolatile())
+
 
 
 

@@ -622,6 +622,9 @@ class SheerForceVolatile(BaseEffect):
     source = Volatile.SHEERFORCE
     duration = 1
 
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        return base_power * 1.3
+
 class FlashFireVolatile(BaseEffect):
     source = Volatile.FLASHFIRE
 

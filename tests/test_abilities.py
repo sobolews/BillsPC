@@ -2421,3 +2421,20 @@ class TestAbilities(MultiMoveTestCase):
         self.assertStatus(self.leafeon, Status.SLP)
         self.assertStatus(self.vaporeon, Status.BRN)
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+
+    @patch('random.randrange', lambda _: 2) # triattack freezes if possible
+    def test_sheerforce(self):
+        self.reset_leads(p0_ability='sheerforce', p1_ability='sheerforce')
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.choose_move(self.vaporeon, movedex['triattack'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45)
+        self.assertFalse(self.leafeon.boosts)
+        self.assertDamageTaken(self.leafeon, 136)
+        self.assertStatus(self.leafeon, None)
+
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 136 + 88)
