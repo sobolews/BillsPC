@@ -2636,3 +2636,15 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_stancechange(self):
     #     pass # TODO when: implement forme change
+
+    @patch('random.randrange', lambda _: 0) # no miss, static success
+    def test_static(self):
+        self.reset_leads(p0_ability='static')
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+        self.assertStatus(self.vaporeon, None)
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertStatus(self.leafeon, Status.PAR)

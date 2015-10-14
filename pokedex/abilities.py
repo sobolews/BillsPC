@@ -934,6 +934,12 @@ class SpeedBoost(AbilityEffect):
 class StanceChange(AbilityEffect):
     pass # TODO when: implement forme change
 
+class Static(AbilityEffect):
+    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
+        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+            if __debug__: log.i("%s's Static activated!", pokemon)
+            engine.set_status(foe, Status.PAR)
+
 
 
 
