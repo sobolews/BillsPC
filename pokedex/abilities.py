@@ -884,6 +884,18 @@ class Sniper(AbilityEffect):
             return damage * 1.5
         return damage
 
+class SnowCloak(AbilityEffect):
+    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if accuracy is None:
+            return accuracy
+        if engine.battlefield.weather is Weather.HAIL:
+            return accuracy * 0.8
+        return accuracy
+
+    def on_get_immunity(self, thing):
+        if thing is Weather.HAIL:
+            return True
+
 
 
 

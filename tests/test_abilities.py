@@ -2537,3 +2537,14 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 67 + 50)
+
+    @patch('random.randrange', lambda _: 81) # miss on 80%- accuracy
+    def test_snowcloak(self):
+        self.reset_leads(p0_ability='snowcloak')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.battlefield.set_weather(Weather.HAIL)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 142)
