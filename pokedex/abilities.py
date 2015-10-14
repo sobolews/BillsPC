@@ -918,6 +918,13 @@ class SolidRock(AbilityEffect):
             return damage * 0.75
         return damage
 
+class Soundproof(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.is_sound:
+            if __debug__: log.i('%s was blocked by Soundproof!', move)
+            return FAIL
+
 
 
 

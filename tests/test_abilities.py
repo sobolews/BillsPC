@@ -2579,3 +2579,25 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 142)
+
+    def test_soundproof(self):
+        self.reset_leads(p0_ability='soundproof', p1_ability='soundproof')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
+
+        self.choose_move(self.leafeon, movedex['roar'])
+        self.choose_move(self.vaporeon, movedex['perishsong'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.is_active)
+        self.assertFalse(self.vaporeon.has_effect(Volatile.PERISHSONG))
+        self.assertFalse(self.leafeon.has_effect(Volatile.PERISHSONG))
+
+        self.choose_move(self.leafeon, movedex['bugbuzz'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
