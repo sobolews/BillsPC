@@ -2678,3 +2678,12 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
         self.assertBoosts(self.vaporeon, {'spa': 0})
+
+    def test_strongjaw(self):
+        self.reset_leads(p0_ability='strongjaw', p1_ability='strongjaw')
+        self.choose_move(self.leafeon, movedex['crunch'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 167)
+        self.assertDamageTaken(self.leafeon, 50)

@@ -957,6 +957,13 @@ class StormDrain(AbilityEffect):
             engine.apply_boosts(target, Boosts(spa=1), self_imposed=True)
             return FAIL
 
+class StrongJaw(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.is_bite:
+            if __debug__: log.i("%s was boosted by StrongJaw!", move)
+            return base_power * 1.5
+        return base_power
+
 
 
 
