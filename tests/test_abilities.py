@@ -2548,3 +2548,10 @@ class TestAbilities(MultiMoveTestCase):
         self.choose_move(self.leafeon, movedex['return'])
         self.run_turn()
         self.assertDamageTaken(self.vaporeon, 142)
+
+    def test_snowwarning(self):
+        self.reset_leads(p0_ability='snowwarning', p1_ability='drizzle')
+        self.assertEqual(self.battlefield.weather, Weather.HAIL)
+
+        self.reset_leads(p0_ability='snowwarning', p1_ability='primordialsea')
+        self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)

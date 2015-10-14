@@ -896,6 +896,10 @@ class SnowCloak(AbilityEffect):
         if thing is Weather.HAIL:
             return True
 
+class SnowWarning(AbilityEffect):
+    def on_start(self, pokemon, engine):
+        engine.battlefield.set_weather(Weather.HAIL)
+
 
 
 
