@@ -925,6 +925,12 @@ class Soundproof(AbilityEffect):
             if __debug__: log.i('%s was blocked by Soundproof!', move)
             return FAIL
 
+class SpeedBoost(AbilityEffect):
+    @priority(-26.1)
+    def on_residual(self, pokemon, foe, engine):
+        if pokemon.turns_out > 0:
+            engine.apply_boosts(pokemon, Boosts(spe=1))
+
 
 
 

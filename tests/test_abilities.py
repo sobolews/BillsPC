@@ -2601,3 +2601,35 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 0)
+
+    def test_speedboost(self):
+        self.reset_leads(p0_ability='speedboost')
+        self.add_pokemon('flareon', 0, ability='speedboost')
+
+        self.run_turn()
+        self.assertBoosts(self.vaporeon, {'spe': 1})
+        self.run_turn()
+        self.assertBoosts(self.vaporeon, {'spe': 2})
+
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+
+        self.assertBoosts(self.flareon, {'spe': 0})
+
+        self.run_turn()
+        self.assertBoosts(self.flareon, {'spe': 1})
+        self.run_turn()
+        self.assertBoosts(self.flareon, {'spe': 2})
+
+        self.choose_move(self.leafeon, movedex['whirlwind'])
+        self.run_turn()
+        self.assertTrue(self.vaporeon.is_active)
+
+        self.assertBoosts(self.vaporeon, {'spe': 0})
+        self.run_turn()
+        self.assertBoosts(self.vaporeon, {'spe': 1})
+
+        for _ in range(10):
+            self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spe': 6})
