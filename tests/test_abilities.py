@@ -2661,3 +2661,20 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_stickyhold(self):
     #     pass # TODO when: implement items
+
+    def test_stormdrain(self):
+        self.reset_leads(p0_ability='stormdrain', p1_ability='stormdrain')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'spa': 1})
+        self.assertStatus(self.leafeon, None)
+        self.assertBoosts(self.vaporeon, {'spa': 0})
+        self.assertDamageTaken(self.vaporeon, 142)
+
+        self.choose_move(self.leafeon, movedex['raindance'])
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+        self.assertBoosts(self.vaporeon, {'spa': 0})

@@ -949,6 +949,14 @@ class Steadfast(AbilityEffect):
 class StickyHold(AbilityEffect):
     pass # TODO when: implement items
 
+class StormDrain(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.type is Type.WATER:
+            if __debug__: log.i("%s's StormDrain raises its SpA!", target)
+            engine.apply_boosts(target, Boosts(spa=1), self_imposed=True)
+            return FAIL
+
 
 
 
