@@ -625,10 +625,6 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 142)
 
-        self.engine.heal(self.vaporeon, 400)
-        self.choose_move(self.leafeon, movedex['return'])
-        self.run_turn()
-
     @patch('random.randrange', lambda _: 2)
     def test_flamebody(self):
         self.reset_leads(p0_ability='flamebody')
