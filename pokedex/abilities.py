@@ -946,11 +946,11 @@ class Steadfast(AbilityEffect):
         if user.has_effect(Volatile.FLINCH):
             engine.apply_boosts(user, Boosts(spe=1), self_imposed=False)
 
-
-
-
 class StickyHold(AbilityEffect):
-    pass # TODO: on_try_take_item event
+    pass # TODO when: implement items
+
+
+
 
 class SuperLuck(AbilityEffect):
     pass

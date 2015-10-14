@@ -2658,3 +2658,6 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertStatus(self.leafeon, None)
         self.assertBoosts(self.vaporeon, {'spe': 1})
+
+    # def test_stickyhold(self):
+    #     pass # TODO when: implement items
