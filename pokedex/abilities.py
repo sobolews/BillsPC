@@ -900,6 +900,17 @@ class SnowWarning(AbilityEffect):
     def on_start(self, pokemon, engine):
         engine.battlefield.set_weather(Weather.HAIL)
 
+class SolarPower(AbilityEffect):
+    def on_weather(self, pokemon, weather, engine):
+        if weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
+            if __debug__: log.i('%s was hurt by its SolarPower!')
+            engine.damage(pokemon, pokemon.max_hp / 8, Cause.OTHER)
+
+    def on_modify_spa(self, pokemon, move, engine, spa):
+        if engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
+            return spa * 1.5
+        return spa
+
 
 
 

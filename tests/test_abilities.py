@@ -2555,3 +2555,18 @@ class TestAbilities(MultiMoveTestCase):
 
         self.reset_leads(p0_ability='snowwarning', p1_ability='primordialsea')
         self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)
+
+    def test_solarpower(self):
+        self.reset_leads(p0_ability='solarpower')
+        self.choose_move(self.vaporeon, movedex['vacuumwave'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 53)
+
+        self.battlefield.set_weather(Weather.SUNNYDAY)
+        self.choose_move(self.vaporeon, movedex['vacuumwave'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+        self.assertDamageTaken(self.leafeon, 53 + 79)
