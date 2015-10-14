@@ -39,7 +39,7 @@ class BattlePokemon(object):
         self.will_move_this_turn = False
         self.damage_done_this_turn = 0
         self.was_attacked_this_turn = None # when set, should be dict with keys "move" and "damage"
-        self.first_turn_out = False # for fakeout and speedboost
+        self.turns_out = 0 # for fakeout and speedboost
         self.last_move_used = None
         self.is_switching_out = False # for pursuit
         self.is_active = False

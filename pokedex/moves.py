@@ -1202,7 +1202,7 @@ class fakeout(Move):
         self.secondary_effects = SecondaryEffect(100, volatile=Volatile.FLINCH),
 
     def check_success(self, user, target, engine):
-        if not user.first_turn_out:
+        if user.turns_out > 1:
             return FAIL
 
 class fierydance(Move):

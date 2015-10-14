@@ -104,7 +104,6 @@ class BattleEngine(object):
 
         self.use_move(user, move, target)
 
-        user.first_turn_out = False
         user.last_move_used = move
         if not move.calls_other_moves:
             self.battlefield.last_move_used = move
@@ -798,6 +797,7 @@ class BattleEngine(object):
         outgoing.is_active = False
         outgoing.side.active_pokemon = None
         outgoing.is_switching_out = False
+        outgoing.turns_out = 0
 
     def switch_in(self, pokemon):
         assert pokemon in pokemon.side.team
@@ -811,7 +811,7 @@ class BattleEngine(object):
         pokemon.was_attacked_this_turn = None
         pokemon.hit_by_crit = False
         pokemon.last_move_used = None
-        pokemon.first_turn_out = True
+        pokemon.turns_out = 0
         pokemon.must_switch = False
         pokemon.ability = pokemon._ability
         if __debug__: log.i('Switched in %s on side %s', pokemon, pokemon.side.index)
@@ -977,6 +977,7 @@ class BattleEngine(object):
         actives = [side.active_pokemon for side in sides]
         for i in (0, 1): # TODO: make sure order doesn't matter here
             actives[i].will_move_this_turn = True
+            actives[i].turns_out += 1
             for effect in actives[i].effects:
                 effect.on_before_turn(actives[i], actives[not i])
 
