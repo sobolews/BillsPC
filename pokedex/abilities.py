@@ -911,6 +911,13 @@ class SolarPower(AbilityEffect):
             return spa * 1.5
         return spa
 
+class SolidRock(AbilityEffect):
+    def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
+        if effectiveness > 1:
+            if __debug__: log.i('Damage reduced by SolidRock!')
+            return damage * 0.75
+        return damage
+
 
 
 

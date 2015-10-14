@@ -2566,3 +2566,16 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
         self.assertDamageTaken(self.leafeon, 53 + 79)
+
+    def test_solidrock(self):
+        self.reset_leads(p0_ability='solidrock')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 283)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
