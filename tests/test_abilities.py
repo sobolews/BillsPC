@@ -2633,3 +2633,6 @@ class TestAbilities(MultiMoveTestCase):
             self.run_turn()
 
         self.assertBoosts(self.vaporeon, {'spe': 6})
+
+    # def test_stancechange(self):
+    #     pass # TODO when: implement forme change

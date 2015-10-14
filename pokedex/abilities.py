@@ -931,6 +931,9 @@ class SpeedBoost(AbilityEffect):
         if pokemon.turns_out > 0:
             engine.apply_boosts(pokemon, Boosts(spe=1))
 
+class StanceChange(AbilityEffect):
+    pass # TODO when: implement forme change
+
 
 
 
