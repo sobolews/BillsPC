@@ -940,14 +940,14 @@ class Static(AbilityEffect):
             if __debug__: log.i("%s's Static activated!", pokemon)
             engine.set_status(foe, Status.PAR)
 
-
-
-
 class Steadfast(AbilityEffect):
     @priority(20) # must be higher than Flinch
     def on_before_move(self, user, move, engine):
         if user.has_effect(Volatile.FLINCH):
             engine.apply_boosts(user, Boosts(spe=1), self_imposed=False)
+
+
+
 
 class StickyHold(AbilityEffect):
     pass # TODO: on_try_take_item event

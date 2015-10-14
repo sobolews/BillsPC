@@ -2648,3 +2648,13 @@ class TestAbilities(MultiMoveTestCase):
         self.assertStatus(self.vaporeon, None)
         self.assertDamageTaken(self.vaporeon, 142)
         self.assertStatus(self.leafeon, Status.PAR)
+
+    def test_steadfast(self):
+        self.reset_leads(p0_ability='steadfast')
+        self.leafeon.hp = 1
+        self.choose_move(self.leafeon, movedex['fakeout'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
+        self.assertBoosts(self.vaporeon, {'spe': 1})
