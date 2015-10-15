@@ -974,6 +974,9 @@ class Sturdy(AbilityEffect):
             return pokemon.hp - 1
         return damage
 
+class SuctionCups(AbilityEffect):
+    pass # Implemented in BattleEngine.force_random_switch
+
 
 
 

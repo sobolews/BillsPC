@@ -2726,3 +2726,30 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertEqual(self.flareon.hp, 1)
         self.assertFainted(self.jolteon)
+
+    def test_suctioncups(self):
+        self.reset_leads(p0_ability='suctioncups', p1_ability='noguard')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('jolteon', 1)
+        self.choose_move(self.leafeon, movedex['dragontail'])
+        self.choose_move(self.vaporeon, movedex['circlethrow'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 84)
+        self.assertDamageTaken(self.leafeon, 30)
+        self.assertTrue(self.vaporeon.is_active)
+        self.assertTrue(self.jolteon.is_active)
+        self.assertFalse(self.leafeon.is_active)
+
+        self.choose_move(self.jolteon, movedex['roar'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.is_active)
+        self.assertFalse(self.flareon.is_active)
+
+        self.choose_move(self.vaporeon, movedex['uturn'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.jolteon, 64)
+        self.assertFalse(self.vaporeon.is_active)
+        self.assertTrue(self.flareon.is_active)
