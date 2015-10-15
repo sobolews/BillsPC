@@ -2687,3 +2687,42 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 167)
         self.assertDamageTaken(self.leafeon, 50)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.choice', lambda _: 5) # rockblast hits 5 times
+    def test_sturdy(self):
+        self.reset_leads(p0_ability='sturdy', p1_ability='sturdy')
+        self.add_pokemon('flareon', 0, ability='sturdy')
+        self.add_pokemon('jolteon', 1, ability='sturdy')
+        self.choose_move(self.leafeon, movedex['powerwhip'])
+        self.choose_move(self.vaporeon, movedex['counter'])
+        self.run_turn()
+
+        self.assertEqual(self.leafeon.hp, 1)
+        self.assertStatus(self.leafeon, None)
+        self.assertEqual(self.vaporeon.hp, 1)
+        self.assertStatus(self.vaporeon, None)
+
+        self.engine.heal(self.vaporeon, 500)
+        self.choose_move(self.leafeon, movedex['powerwhip'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 1)
+        self.assertStatus(self.vaporeon, None)
+
+        self.choose_move(self.leafeon, movedex['destinybond'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+
+        self.engine.init_turn()
+        self.engine.apply_boosts(self.jolteon, Boosts(spa=1))
+        self.engine.apply_boosts(self.flareon, Boosts(atk=1))
+        self.choose_move(self.jolteon, movedex['hydropump'])
+        self.choose_move(self.flareon, movedex['rockblast'])
+        self.run_turn()
+
+        self.assertEqual(self.flareon.hp, 1)
+        self.assertFainted(self.jolteon)

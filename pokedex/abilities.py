@@ -964,6 +964,16 @@ class StrongJaw(AbilityEffect):
             return base_power * 1.5
         return base_power
 
+class Sturdy(AbilityEffect):
+    def on_damage(self, pokemon, damage, cause, source, engine):
+        if (pokemon.hp == pokemon.max_hp and
+            damage >= pokemon.hp and
+            cause is Cause.MOVE
+        ):
+            if __debug__: log.i("%s held on with Sturdy!", pokemon)
+            return pokemon.hp - 1
+        return damage
+
 
 
 
