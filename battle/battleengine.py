@@ -663,6 +663,9 @@ class BattleEngine(object):
         return pokemon.boosts.update(boosts)
 
     def force_random_switch(self, pokemon, forcer):
+        if pokemon.ability.name == 'suctioncups':
+            return FAIL
+
         team_members = self.get_switch_choices(pokemon.side, forced=True)
         if team_members:
             incoming = random.choice(team_members)

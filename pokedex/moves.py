@@ -612,12 +612,8 @@ class circlethrow(Move):
         self.base_power = 60
         self.priority = -6
 
-    def check_success(self, user, target, engine):
-        if target.ability.name == 'suctioncups':
-            return FAIL
-
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target, user)
+        return engine.force_random_switch(target, user)
 
 class clearsmog(Move):
     def __init__(self):
@@ -984,12 +980,8 @@ class dragontail(Move):
         self.base_power = 60
         self.priority = -6
 
-    def check_success(self, user, target, engine):
-        if target.ability.name == 'suctioncups':
-            return FAIL
-
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target, user)
+        return engine.force_random_switch(target, user)
 
 class drainingkiss(Move):
     def __init__(self):
@@ -2772,12 +2764,8 @@ class roar(Move):
         self.is_bounceable = True
         self.priority = -6
 
-    def check_success(self, user, target, engine):
-        if target.ability.name == 'suctioncups':
-            return FAIL
-
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target, user)
+        return engine.force_random_switch(target, user)
 
 class rockblast(Move):
     def __init__(self):
@@ -3800,12 +3788,8 @@ class whirlwind(Move):
         self.ignore_substitute = True
         self.priority = -6
 
-    def check_success(self, user, target, engine):
-        if target.ability.name == 'suctioncups':
-            return FAIL
-
     def on_success(self, user, target, engine):
-        engine.force_random_switch(target, user)
+        return engine.force_random_switch(target, user)
 
 class wildcharge(Move):
     def __init__(self):
