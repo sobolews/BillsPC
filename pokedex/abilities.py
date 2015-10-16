@@ -1006,6 +1006,9 @@ class SwiftSwim(AbilityEffect):
             return spe * 2
         return spe
 
+class Symbiosis(AbilityEffect): # no effect in randbats
+    pass
+
 
 
 

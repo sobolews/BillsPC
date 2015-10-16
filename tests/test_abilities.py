@@ -669,6 +669,7 @@ class TestAbilities(MultiMoveTestCase):
         self.reset_leads(p0_ability='flowerveil')
         self.reset_leads(p0_ability='frisk')
         self.reset_leads(p0_ability='illusion')
+        self.reset_leads(p0_ability='symbiosis')
 
     def test_furcoat(self):
         self.reset_leads(p0_ability='furcoat')
