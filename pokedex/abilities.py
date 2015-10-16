@@ -936,7 +936,11 @@ class StanceChange(AbilityEffect):
 
 class Static(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+        if (cause is Cause.MOVE and
+            source.makes_contact and
+            foe is not None and
+            random.randrange(10) < 3
+        ):
             if __debug__: log.i("%s's Static activated!", pokemon)
             engine.set_status(foe, Status.PAR)
 
