@@ -321,7 +321,7 @@ class FlameBody(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         if (cause is Cause.MOVE and
             source.makes_contact and
-            foe.status is None and
+            foe is not None and
             random.randrange(10) < 3
         ):
             if __debug__: log.i("%s was burned by %s's FlameBody", foe, pokemon)
