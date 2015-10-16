@@ -414,8 +414,7 @@ class BattleEngine(object):
         base_power = int(max(gf_round(base_power), 1))
         if __debug__: log.d('Using base_power of %s', base_power)
 
-        crit_ratio = self.get_crit_ratio(user, move)
-        crit = move.always_crit or self.get_critical_hit(crit_ratio)
+        crit = move.always_crit or self.get_critical_hit(move.crit_ratio)
         if crit:
             crit = move.crit = False if move.never_crit else self.modify_critical_hit(crit, target)
             if __debug__:
@@ -493,16 +492,6 @@ class BattleEngine(object):
     @staticmethod # for duck punching
     def damage_randomizer():
         return 100 - random.randrange(16)
-
-    def get_crit_ratio(self, user, move): # TODO: turn this into an "on_get_crit_ratio" handler
-        crit_ratio = move.crit_ratio
-        if user.ability is abilitydex['superluck']:
-            crit_ratio += 1
-        if user.name == "farfetch'd" and user.has_item(itemdex['stick']):
-            crit_ratio += 2
-        elif user.item in (itemdex['razorclaw'], itemdex['scopelens']):
-            crit_ratio += 1
-        return crit_ratio
 
     def modify_damage(self, damage, user, move, target, crit, effectiveness):
         for effect in chain(user.effects,
