@@ -981,6 +981,19 @@ class SuperLuck(AbilityEffect):
     def on_modify_move(self, move, user, engine):
         move.crit_ratio += 1
 
+class Swarm(AbilityEffect):
+    def on_modify_atk(self, pokemon, move, engine, atk):
+        if move.type is Type.BUG and pokemon.hp <= pokemon.max_hp / 3:
+            if __debug__: log.i('%s boosted by Swarm!', move)
+            return atk * 1.5
+        return atk
+
+    def on_modify_spa(self, pokemon, move, engine, spa):
+        if move.type is Type.BUG and pokemon.hp <= pokemon.max_hp / 3:
+            if __debug__: log.i('%s boosted by Swarm!', move)
+            return spa * 1.5
+        return spa
+
 
 
 

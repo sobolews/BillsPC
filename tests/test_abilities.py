@@ -2771,3 +2771,25 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertEqual(crit[0], 2)
+
+    def test_swarm(self):
+        self.reset_leads(p0_ability='swarm', p1_ability='swarm')
+        self.choose_move(self.leafeon, movedex['xscissor'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+        self.assertDamageTaken(self.vaporeon, 112)
+
+        self.leafeon.hp = 85
+        self.vaporeon.hp = 401
+
+        self.choose_move(self.leafeon, movedex['xscissor'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 167)
+
+        self.choose_move(self.leafeon, movedex['bugbuzz'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 167 + 80)
