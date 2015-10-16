@@ -922,28 +922,29 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
 
-    def test_insomnia(self):
-        self.reset_leads(p0_ability='insomnia', p1_ability='insomnia')
-        self.choose_move(self.leafeon, movedex['spore'])
-        self.choose_move(self.vaporeon, movedex['yawn'])
-        self.run_turn()
+    def test_insomnia_and_sweetveil(self):
+        for ability in ('insomnia', 'sweetveil'):
+            self.reset_leads(p0_ability=ability, p1_ability=ability)
+            self.choose_move(self.leafeon, movedex['spore'])
+            self.choose_move(self.vaporeon, movedex['yawn'])
+            self.run_turn()
 
-        self.assertIsNone(self.vaporeon.status)
-        self.assertFalse(self.leafeon.has_effect(Volatile.YAWN))
+            self.assertIsNone(self.vaporeon.status)
+            self.assertFalse(self.leafeon.has_effect(Volatile.YAWN))
 
-        self.choose_move(self.leafeon, movedex['return'])
-        self.choose_move(self.vaporeon, movedex['rest'])
-        self.run_turn()
+            self.choose_move(self.leafeon, movedex['return'])
+            self.choose_move(self.vaporeon, movedex['rest'])
+            self.run_turn()
 
-        self.assertDamageTaken(self.vaporeon, 142)
-        self.assertStatus(self.vaporeon, None)
+            self.assertDamageTaken(self.vaporeon, 142)
+            self.assertStatus(self.vaporeon, None)
 
-        # hack a sleep onto vaporeon, check that it wakes up anyway
-        self.vaporeon.status = Status.SLP
-        self.vaporeon._effect_index[Status.SLP] = statuses.Sleep(self.vaporeon, 2)
-        self.run_turn()
+            # hack a sleep onto vaporeon, check that it wakes up anyway
+            self.vaporeon.status = Status.SLP
+            self.vaporeon._effect_index[Status.SLP] = statuses.Sleep(self.vaporeon, 2)
+            self.run_turn()
 
-        self.assertIsNone(self.vaporeon.status)
+            self.assertIsNone(self.vaporeon.status)
 
     # def test_trace_insomnia_cures_sleep(self):
     #     pass # TODO when: implement trace

@@ -994,6 +994,11 @@ class Swarm(AbilityEffect):
             return spa * 1.5
         return spa
 
+class SweetVeil(AbilityEffect):
+    on_get_immunity = Insomnia.on_get_immunity.__func__
+
+    on_update = Insomnia.on_update.__func__
+
 
 
 
