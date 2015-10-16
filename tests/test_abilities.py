@@ -340,9 +340,9 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': 0, 'def': -1})
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_imposed=False)
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_induced=False)
         self.assertEqual(self.vaporeon.boosts['spe'], 0)
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_imposed=True)
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_induced=True)
         self.assertEqual(self.vaporeon.boosts['spe'], -3)
 
     def test_competitive(self):
@@ -1022,11 +1022,11 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 50)
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=False)
+        self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_induced=False)
 
         self.assertBoosts(self.vaporeon, {'acc': 0})
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_imposed=True)
+        self.engine.apply_boosts(self.vaporeon, Boosts(acc=-1), self_induced=True)
 
         self.assertBoosts(self.vaporeon, {'acc': -1})
 

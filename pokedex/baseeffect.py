@@ -189,7 +189,7 @@ class BaseEffect(object):
         """ Return a modified amount of damage, or FAIL """
         return damage
 
-    def on_boost(self, pokemon, boosts, self_imposed):
+    def on_boost(self, pokemon, boosts, self_induced):
         """
         Return a modified set of boosts. The order here doesn't matter because currently the
         on_boost effects are abilities, so it can be assumed that only one on_boost is in effect.

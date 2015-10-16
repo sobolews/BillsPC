@@ -638,12 +638,12 @@ class BattleEngine(object):
         if pokemon.hp <= 0:
             self.faint(pokemon, Cause.DIRECT)
 
-    def apply_boosts(self, pokemon, boosts, self_imposed=True):
+    def apply_boosts(self, pokemon, boosts, self_induced=True):
         assert not pokemon.is_fainted()
         assert pokemon.is_active
 
         # Only abilities have on_boost
-        boosts = pokemon.get_effect(ABILITY).on_boost(pokemon, boosts, self_imposed)
+        boosts = pokemon.get_effect(ABILITY).on_boost(pokemon, boosts, self_induced)
 
         if __debug__:
             for stat, val in filter(lambda x: x[1], boosts.items()):
