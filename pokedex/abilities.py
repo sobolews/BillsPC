@@ -999,6 +999,13 @@ class SweetVeil(AbilityEffect):
 
     on_update = Insomnia.on_update.__func__
 
+class SwiftSwim(AbilityEffect):
+    def on_modify_spe(self, pokemon, engine, spe):
+        if engine.battlefield.weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
+            if __debug__: log.d("%s's SwiftSwim boosted its speed!", pokemon)
+            return spe * 2
+        return spe
+
 
 
 

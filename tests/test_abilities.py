@@ -2794,3 +2794,20 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 167 + 80)
+
+    def test_swiftswim(self):
+        self.reset_leads(p0_ability='swiftswim')
+        self.choose_move(self.leafeon, movedex['suckerpunch'])
+        self.choose_move(self.vaporeon, movedex['suckerpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 112)
+        self.assertDamageTaken(self.leafeon, 0)
+
+        self.battlefield.set_weather(Weather.PRIMORDIALSEA)
+        self.choose_move(self.leafeon, movedex['suckerpunch'])
+        self.choose_move(self.vaporeon, movedex['suckerpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 39)
+        self.assertDamageTaken(self.vaporeon, 112)
