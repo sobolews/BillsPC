@@ -977,11 +977,12 @@ class Sturdy(AbilityEffect):
 class SuctionCups(AbilityEffect):
     pass # Implemented in BattleEngine.force_random_switch
 
-
-
-
 class SuperLuck(AbilityEffect):
-    pass
+    def on_modify_move(self, move, user, engine):
+        move.crit_ratio += 1
+
+
+
 
 class Unaware(AbilityEffect):
     pass

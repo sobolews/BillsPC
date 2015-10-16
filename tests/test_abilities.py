@@ -2753,3 +2753,21 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.jolteon, 64)
         self.assertFalse(self.vaporeon.is_active)
         self.assertTrue(self.flareon.is_active)
+
+    def test_superluck(self):
+        crit = [None]
+        def get_critical_hit(crit_ratio):
+            crit[0] = crit_ratio
+            return False
+
+        self.reset_leads(p0_ability='superluck', p1_ability='superluck')
+        self.engine.get_critical_hit = get_critical_hit
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertEqual(crit[0], 1)
+
+        self.choose_move(self.vaporeon, movedex['nightslash'])
+        self.run_turn()
+
+        self.assertEqual(crit[0], 2)
