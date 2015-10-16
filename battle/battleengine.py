@@ -487,7 +487,7 @@ class BattleEngine(object):
 
     @staticmethod # for duck punching
     def get_critical_hit(crit_ratio):
-        return random.randrange(CRIT_ROLL[crit_ratio]) == 0
+        return random.randrange(CRIT_ROLL[min(crit_ratio, 3)]) == 0
 
     @staticmethod # for duck punching
     def damage_randomizer():
