@@ -94,6 +94,7 @@ class Move(object):
 
     def get_base_power(self, user, target, engine):
         """ Override to return base power dynamically, else self.base_power will be used. """
+        return self.base_power
 
     def on_success(self, user, target, engine):
         """

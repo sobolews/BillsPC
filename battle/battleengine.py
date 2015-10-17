@@ -403,8 +403,6 @@ class BattleEngine(object):
             return damage
 
         base_power = move.get_base_power(user, target, self)
-        if base_power is None:
-            base_power = move.base_power
         if base_power is not None:
             base_power = self.modify_base_power(user, move, target, base_power)
         if not base_power:
