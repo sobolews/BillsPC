@@ -2881,3 +2881,24 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertStatus(self.vaporeon, Status.SLP)
         self.assertStatus(self.leafeon, None)
+
+    @patch('random.randrange', lambda _: 49) # miss at 49%- accuracy
+    def test_tangledfeet(self):
+        self.reset_leads(p0_ability='tangledfeet')
+        self.choose_move(self.leafeon, movedex['airslash'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45)
+
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.run_turn()
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45 + 142)
+
+        self.choose_move(self.leafeon, movedex['airslash'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45 + 142)

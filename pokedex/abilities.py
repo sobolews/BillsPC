@@ -1022,6 +1022,13 @@ class Synchronize(AbilityEffect):
             if __debug__: log.i("%s's Synchronize activated!", pokemon)
             engine.set_status(setter, status, pokemon)
 
+class TangledFeet(AbilityEffect):
+    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if target.has_effect(Volatile.CONFUSE):
+            if __debug__: log.i("%s's TangledFeet raised its evasion!", target)
+            return accuracy * 0.5
+        return accuracy
+
 
 
 
