@@ -1809,6 +1809,16 @@ class TestMoves(MultiMoveTestCase):
         self.assertTrue(self.leafeon.is_resting)
         self.assertEqual(self.leafeon.sleep_turns, 2)
 
+    def test_safeguard_blocks_toxicspikes(self):
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['toxicspikes'])
+        self.choose_move(self.vaporeon, movedex['safeguard'])
+        self.run_turn()
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+
+        self.assertStatus(self.flareon, None)
+
     # def test_safeguard_doesnt_block_status_orbs(self):
     #     pass # TODO: implement toxicorb, flameorb
 
