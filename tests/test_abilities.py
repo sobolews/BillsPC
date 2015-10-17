@@ -2812,3 +2812,72 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 39)
         self.assertDamageTaken(self.vaporeon, 112)
+
+    @patch('random.randrange', lambda _: 1) # no miss; no parahax
+    def test_synchronize(self):
+        self.reset_leads(p0_ability='synchronize')
+        self.add_pokemon('espeon', 1, ability='synchronize')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['toxicspikes'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.PAR)
+        self.assertStatus(self.leafeon, Status.PAR)
+
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+        self.choose_switch(self.leafeon, self.espeon)
+        self.run_turn()
+
+        self.assertStatus(self.espeon, Status.PSN)
+        self.assertStatus(self.flareon, None)
+
+        self.choose_switch(self.espeon, self.leafeon)
+        self.run_turn()
+
+        self.assertStatus(self.flareon, None)
+
+        self.reset_leads(p0_ability='synchronize', p1_ability='synchronize')
+        self.engine.set_status(self.vaporeon, Status.PSN, None)
+        self.choose_move(self.vaporeon, movedex['willowisp'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.BRN)
+        self.assertStatus(self.vaporeon, Status.PSN)
+
+    def test_synchronize_vs_safeguard(self):
+        self.reset_leads(p1_ability='synchronize')
+        self.choose_move(self.leafeon, movedex['safeguard'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.PAR)
+        self.assertStatus(self.leafeon, None)
+
+    @patch('random.randrange', lambda _: 0) # icebeam freezes
+    def test_synchronize_doesnt_activate_for_slp_or_frz(self):
+        self.reset_leads(p0_ability='synchronize')
+        self.choose_move(self.leafeon, movedex['icebeam'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.FRZ)
+        self.assertStatus(self.leafeon, None)
+
+        self.vaporeon.cure_status()
+        self.choose_move(self.leafeon, movedex['spore'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.SLP)
+        self.assertStatus(self.leafeon, None)
+
+        self.vaporeon.cure_status()
+        self.vaporeon.hp -= 1
+        self.choose_move(self.vaporeon, movedex['rest'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.SLP)
+        self.assertStatus(self.leafeon, None)

@@ -1013,6 +1013,15 @@ class SwiftSwim(AbilityEffect):
 class Symbiosis(AbilityEffect): # no effect in randbats
     pass
 
+class Synchronize(AbilityEffect):
+    def on_after_set_status(self, status, pokemon, setter, engine):
+        if (setter is not None and
+            setter != pokemon and
+            status not in (Status.FRZ, Status.SLP)
+        ):
+            if __debug__: log.i("%s's Synchronize activated!", pokemon)
+            engine.set_status(setter, status, pokemon)
+
 
 
 
