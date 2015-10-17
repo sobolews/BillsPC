@@ -1041,6 +1041,19 @@ class Teravolt(AbilityEffect):
     on_break_mold = MoldBreaker.on_break_mold.__func__
     on_unbreak_mold = MoldBreaker.on_unbreak_mold.__func__
 
+class ThickFat(AbilityEffect):
+    def on_modify_def(self, pokemon, move, engine, def_):
+        if move.type in (Type.FIRE, Type.ICE):
+            if __debug__: log.i("Damage to %s was weakened by ThickFat", pokemon)
+            return def_ * 2
+        return def_
+
+    def on_modify_spd(self, pokemon, move, engine, spd):
+        if move.type in (Type.FIRE, Type.ICE):
+            if __debug__: log.i("Damage to %s was weakened by ThickFat", pokemon)
+            return spd * 2
+        return spd
+
 
 
 

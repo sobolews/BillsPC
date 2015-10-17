@@ -2935,3 +2935,17 @@ class TestAbilities(MultiMoveTestCase):
             self.run_turn()
 
             self.assertDamageTaken(self.vaporeon, 48)
+
+    def test_thickfat(self):
+        self.reset_leads(p0_ability='thickfat', p1_ability='thickfat')
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.choose_move(self.vaporeon, movedex['hiddenpowerice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 80)
+        self.assertDamageTaken(self.vaporeon, 18)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 18 + 142)
