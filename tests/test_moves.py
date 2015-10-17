@@ -2611,3 +2611,14 @@ class TestSubstitute(MultiMoveTestCase):
         self.run_turn()
 
         self.assertStatus(self.leafeon, None)
+
+    @patch('random.randrange', lambda _: 1) # no miss; no parahax
+    def test_psychoshift_vs_substitute(self):
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['psychoshift'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.PAR)
+        self.assertStatus(self.leafeon, None)
