@@ -2902,3 +2902,28 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 45 + 142)
+
+    @patch('random.choice', lambda _: 2) # multihit hits 2 times
+    def test_technician(self):
+        self.reset_leads(p0_ability='technician', p1_ability='technician')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['quickattack'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 30)
+        self.assertDamageTaken(self.vaporeon, 142)
+
+        self.reset_leads(p0_ability='technician', p1_ability='technician')
+        self.vaporeon.hp = 134 + 126
+        self.choose_move(self.leafeon, movedex['lowkick'])
+        self.choose_move(self.vaporeon, movedex['waterspout'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 134)
+        self.assertDamageTaken(self.leafeon, 74)
+
+        self.reset_leads(p0_ability='technician', p1_ability='technician')
+        self.choose_move(self.leafeon, movedex['bulletseed'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 2 * 158)

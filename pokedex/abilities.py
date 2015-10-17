@@ -1029,6 +1029,14 @@ class TangledFeet(AbilityEffect):
             return accuracy * 0.5
         return accuracy
 
+class Technician(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        # call move.get_base_power() to ensure the original base_power is checked
+        if move.get_base_power(user, target, engine) <= 60:
+            if __debug__: log.i("%s's power was boosted by Technician!", move)
+            return base_power * 1.5
+        return base_power
+
 
 
 
