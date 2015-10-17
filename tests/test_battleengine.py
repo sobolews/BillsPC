@@ -292,24 +292,29 @@ class TestBattleEngineRunMove(TestCase):
                                       moveset=(movedex['scald'],
                                                movedex['icebeam'],
                                                movedex['rest'],
-                                               movedex['toxic']))
+                                               movedex['toxic']),
+                                      ability=abilitydex['_none_'])
         self.flareon = BattlePokemon(pokedex['flareon'], evs=(0,)*6,
                                      moveset=(movedex['flareblitz'],
                                               movedex['flamecharge'],
                                               movedex['facade'],
-                                              movedex['protect']))
+                                              movedex['protect']),
+                                     ability=abilitydex['_none_'])
         self.engine = BattleEngine([self.vaporeon], [self.flareon])
-        self.vaporeon.will_move_this_turn = True
         # make it deterministic
         self.engine.get_critical_hit = lambda crit: False
         self.engine.damage_randomizer = lambda: 100 # max damage
 
     def test_run_move_decrements_pp(self):
+        self.engine.init_battle()
+        self.vaporeon.will_move_this_turn = True
         self.engine.run_move(self.vaporeon, self.vaporeon.moveset[0], self.flareon)
         self.assertEqual(self.vaporeon.pp[self.vaporeon.moveset[0]],
                          self.vaporeon.moveset[0].max_pp - 1)
 
     def test_run_move_sets_last_move_used(self):
+        self.engine.init_battle()
+        self.vaporeon.will_move_this_turn = True
         self.engine.run_move(self.vaporeon, self.vaporeon.moveset[0], self.flareon)
         self.assertEqual(self.vaporeon.last_move_used, self.vaporeon.moveset[0])
         self.assertEqual(self.engine.battlefield.last_move_used, self.vaporeon.moveset[0])

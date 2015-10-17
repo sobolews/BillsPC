@@ -229,6 +229,16 @@ class BaseEffect(object):
         on_switch_out.
         """
 
+    def on_break_mold(self, target, engine):
+        """
+        Called whenever a move is used, and when an opponent is being forced to switch in
+        """
+
+    def on_unbreak_mold(self, target):
+        """
+        Called when use_move returns
+        """
+
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__,
                            ', '.join(['%s=%s' % (attr, getattr(self, attr))
