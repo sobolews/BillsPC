@@ -265,7 +265,7 @@ class BattleEngine(object):
         user.damage_done_this_turn = damage
 
         if move.target_status is not None:
-            if self.set_status(target, move.target_status, move.infiltrates) is FAIL:
+            if self.set_status(target, move.target_status, user) is FAIL:
                 return FAIL     # all target_status moves do nothing else, so fail fast
 
         if move.user_boosts is not None and not user.is_fainted():
@@ -283,7 +283,7 @@ class BattleEngine(object):
 
         for s_effect in move.secondary_effects:
             self.apply_secondary_effect(user if s_effect.affects_user else target,
-                                        s_effect, move.infiltrates)
+                                        s_effect, user)
 
         user.must_switch = move.switch_user
 
@@ -358,7 +358,7 @@ class BattleEngine(object):
             self.faint(user, Cause.SELFDESTRUCT, move) # TODO: or Cause.OTHER? any other way of
                                                        # reaching this?
 
-    def apply_secondary_effect(self, pokemon, s_effect, infiltrates):
+    def apply_secondary_effect(self, pokemon, s_effect, user):
         if (random.randrange(100) >= s_effect.chance or
             pokemon is None or
             pokemon.is_fainted() or
@@ -370,13 +370,13 @@ class BattleEngine(object):
         if s_effect.boosts is not None:
             self.apply_boosts(pokemon, s_effect.boosts, s_effect.affects_user)
         elif s_effect.status is not None:
-            self.set_status(pokemon, s_effect.status, infiltrates)
+            self.set_status(pokemon, s_effect.status, user)
         elif s_effect.volatile is Volatile.FLINCH:
             pokemon.set_effect(effects.Flinch())
         elif s_effect.volatile is Volatile.CONFUSE:
-            pokemon.confuse(infiltrates)
+            pokemon.confuse(user.ability is abilitydex['infiltrator'])
         elif s_effect.callback is not None:
-            s_effect.callback(pokemon, self)
+            s_effect.callback(pokemon, user, self)
         else:
             assert False, 'Tried to apply secondary effect with no boosts, volatile, or status'
 
@@ -664,18 +664,18 @@ class BattleEngine(object):
                 forcer.get_effect(ABILITY).on_break_mold(incoming, self)
             self.post_switch_in(incoming)
 
-    def set_status(self, pokemon, status, infiltrates=False):
+    def set_status(self, pokemon, status, setter):
         """
         Set `status` (enums.Status) on `pokemon`.
 
         Fails if the pokemon is already statused, Sleep Clause activates, or if an effect or
         immunity prevents it.
 
-        Do not call set_status if the status is self-inflicted (e.g. rest or toxicorb), because
-        safeguard etc. may incorrectly prevent it. Instead, set pokemon.status and use
-        pokemon.set_effect().
+        `setter` should be the pokemon causing the status (usually the foe). `setter` == `pokemon`
+        in the case of rest, toxicorb, etc., or None in the case of toxicspikes, etc.
         """
         assert not pokemon.is_fainted()
+        assert setter is None or isinstance(setter, BattlePokemon)
 
         if status is Status.SLP and any(teammate.status is Status.SLP and not teammate.is_resting
                                         for teammate in pokemon.side.team
@@ -691,7 +691,7 @@ class BattleEngine(object):
             return FAIL
 
         for effect in chain(pokemon.effects, pokemon.side.effects, self.battlefield.effects):
-            if effect.on_set_status(status, pokemon, infiltrates, self) is FAIL:
+            if effect.on_set_status(status, pokemon, setter, self) is FAIL:
                 if __debug__: log.i('Failed to set status %s: prevented by %s', status.name, effect)
                 return FAIL
 

@@ -103,9 +103,9 @@ class TestMoves(MultiMoveTestCase):
         self.add_pokemon('flareon', 1)
         self.add_pokemon('sylveon', 1)
 
-        self.engine.set_status(self.sylveon, Status.SLP)
+        self.engine.set_status(self.sylveon, Status.SLP, None)
         self.engine.faint(self.flareon, Cause.OTHER)
-        self.engine.set_status(self.leafeon, Status.PSN)
+        self.engine.set_status(self.leafeon, Status.PSN, None)
 
         self.engine.use_move(self.leafeon, movedex['aromatherapy'], self.vaporeon)
 
@@ -449,7 +449,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_destinybond_doesnt_activate_for_residual_damage(self):
         self.vaporeon.hp = 150
-        self.engine.set_status(self.vaporeon, Status.BRN)
+        self.engine.set_status(self.vaporeon, Status.BRN, None)
         self.choose_move(self.leafeon, movedex['return']) # 142 damage
         self.choose_move(self.vaporeon, movedex['destinybond'])
         self.run_turn()
@@ -708,14 +708,14 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
 
     def test_facade(self):
-        self.engine.set_status(self.vaporeon, Status.PSN)
+        self.engine.set_status(self.vaporeon, Status.PSN, None)
         self.choose_move(self.vaporeon, movedex['facade'])
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 67)
 
     def test_facade_overcomes_burn(self):
-        self.engine.set_status(self.vaporeon, Status.BRN)
+        self.engine.set_status(self.vaporeon, Status.BRN, None)
         self.choose_move(self.vaporeon, movedex['facade'])
         self.run_turn()
 
@@ -1401,7 +1401,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_psychoshift_against_immune_pokemon(self):
         self.reset_leads('muk', 'leafeon')
-        self.engine.set_status(self.leafeon, Status.PSN)
+        self.engine.set_status(self.leafeon, Status.PSN, None)
         self.choose_move(self.leafeon, movedex['psychoshift'])
         self.run_turn()
 
@@ -2284,7 +2284,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.jolteon, 0)
 
     def test_wakeupslap(self):
-        self.engine.set_status(self.vaporeon, Status.SLP)
+        self.engine.set_status(self.vaporeon, Status.SLP, None)
         self.choose_move(self.vaporeon, movedex['return'])
         self.choose_move(self.leafeon, movedex['wakeupslap'])
         self.run_turn()
@@ -2483,7 +2483,7 @@ class TestSubstitute(MultiMoveTestCase):
     def test_frozen_behind_substitute_cant_be_thawed_by_opponent(self):
         self.choose_move(self.leafeon, movedex['substitute'])
         self.run_turn()
-        self.engine.set_status(self.leafeon, Status.FRZ)
+        self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.choose_move(self.vaporeon, movedex['scald'])
         self.run_turn()
 

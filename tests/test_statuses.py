@@ -8,7 +8,7 @@ from tests.multi_move_test_case import MultiMoveTestCase
 class TestStatuses(MultiMoveTestCase):
     @patch('random.randrange', lambda *_: 1) # no parahax
     def test_paralyze_speed_drop(self):
-        self.engine.set_status(self.leafeon, Status.PAR)
+        self.engine.set_status(self.leafeon, Status.PAR, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, movedex['return'])
@@ -20,7 +20,7 @@ class TestStatuses(MultiMoveTestCase):
 
     @patch('random.randrange', lambda *_: 1) # no auto thaw
     def test_freeze_block_move(self):
-        self.engine.set_status(self.leafeon, Status.FRZ)
+        self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, movedex['return'])
@@ -32,7 +32,7 @@ class TestStatuses(MultiMoveTestCase):
 
     @patch('random.randrange', lambda *_: 0) # thaw
     def test_freeze_auto_thaw(self):
-        self.engine.set_status(self.leafeon, Status.FRZ)
+        self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, movedex['return'])
@@ -44,7 +44,7 @@ class TestStatuses(MultiMoveTestCase):
 
     @patch('random.randrange', lambda *_: 1) # no auto thaw
     def test_freeze_thaw_by_use_move(self):
-        self.engine.set_status(self.leafeon, Status.FRZ)
+        self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, movedex['flamewheel'])
@@ -57,7 +57,7 @@ class TestStatuses(MultiMoveTestCase):
     @patch('random.randrange', lambda *_: 1) # no auto thaw
     def test_freeze_thaw_by_foe_move(self):
         self.reset_leads('flareon', 'leafeon')
-        self.engine.set_status(self.flareon, Status.FRZ)
+        self.engine.set_status(self.flareon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.choose_move(self.leafeon, movedex['scald'])
         self.choose_move(self.flareon, movedex['return'])
@@ -120,14 +120,14 @@ class TestStatuses(MultiMoveTestCase):
 
     def test_burn_damage_drop(self):
         self.engine.init_turn()
-        self.engine.set_status(self.leafeon, Status.BRN)
+        self.engine.set_status(self.leafeon, Status.BRN, None)
         self.engine.run_move(self.leafeon, movedex['doubleedge'], self.vaporeon)
 
         self.assertDamageTaken(self.vaporeon, 83)
 
     def test_burn_no_spa_drop(self):
         self.engine.init_turn()
-        self.engine.set_status(self.leafeon, Status.BRN)
+        self.engine.set_status(self.leafeon, Status.BRN, None)
         self.engine.run_move(self.leafeon, movedex['dragonpulse'], self.vaporeon)
 
         self.assertDamageTaken(self.vaporeon, 51)
@@ -142,8 +142,8 @@ class TestStatuses(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 33)
 
     def test_poison_residual_damage(self):
-        self.engine.set_status(self.vaporeon, Status.PSN)
-        self.engine.set_status(self.leafeon, Status.PSN)
+        self.engine.set_status(self.vaporeon, Status.PSN, None)
+        self.engine.set_status(self.leafeon, Status.PSN, None)
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 50)

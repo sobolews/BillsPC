@@ -167,7 +167,7 @@ class TestBattleEngineMoveHit(BattleEngineMovesTestCase):
         self.assertIs(self.sylveon.status, Status.BRN)
 
     def test_move_hit_status_move_already_statused(self):
-        self.engine.set_status(self.sylveon, Status.SLP)
+        self.engine.set_status(self.sylveon, Status.SLP, None)
         damage = self.engine.move_hit(self.vaporeon, movedex['willowisp'], self.sylveon)
         self.assertEqual(damage, FAIL)
         self.assertIs(self.sylveon.status, Status.SLP)
@@ -387,7 +387,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         corresponding effect.
         """
         self.add_pokemon('umbreon', 0)
-        self.engine.set_status(self.vaporeon, Status.SLP)
+        self.engine.set_status(self.vaporeon, Status.SLP, None)
         self.choose_switch(self.vaporeon, self.umbreon)
         self.run_turn()
         self.choose_switch(self.umbreon, self.vaporeon)
@@ -861,7 +861,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                    movedex['crunch'], movedex['xscissor']))
-        self.engine.set_status(self.leafeon, Status.SLP)
+        self.engine.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, movedex['sleeptalk'])
         self.choose_move(self.vaporeon, movedex['disable'])
         self.run_turn()
@@ -903,7 +903,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                    movedex['extremespeed'], movedex['xscissor']))
-        self.engine.set_status(self.leafeon, Status.SLP)
+        self.engine.set_status(self.leafeon, Status.SLP, None)
         self.leafeon.get_effect(Status.SLP).turns_left = 3
         self.leafeon.sleep_turns = 3
         self.choose_move(self.leafeon, movedex['sleeptalk'])
@@ -921,7 +921,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                    movedex['extremespeed'], movedex['crunch']))
-        self.engine.set_status(self.leafeon, Status.SLP)
+        self.engine.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, movedex['sleeptalk'])
         self.choose_move(self.vaporeon, movedex['copycat'])
         self.run_turn()
@@ -1049,7 +1049,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.vaporeon.hp = 51
         self.leafeon.hp = 100
 
-        self.engine.set_status(self.vaporeon, Status.PSN)
+        self.engine.set_status(self.vaporeon, Status.PSN, None)
         self.choose_move(self.leafeon, movedex['leechseed'])
         self.run_turn()
 

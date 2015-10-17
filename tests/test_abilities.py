@@ -63,7 +63,7 @@ class TestAbilities(MultiMoveTestCase):
 
         self.reset_leads(p0_ability='aftermath')
         self.vaporeon.hp = 1
-        self.engine.set_status(self.vaporeon, Status.PSN)
+        self.engine.set_status(self.vaporeon, Status.PSN, None)
         self.run_turn()
         self.assertStatus(self.vaporeon, Status.FNT)
 
@@ -704,7 +704,7 @@ class TestAbilities(MultiMoveTestCase):
     @patch('random.randrange', lambda _: 1) # no parahax
     def test_guts(self):
         self.reset_leads(p0_ability='guts', p1_ability='guts')
-        self.engine.set_status(self.vaporeon, Status.BRN)
+        self.engine.set_status(self.vaporeon, Status.BRN, None)
         self.choose_move(self.vaporeon, movedex['facade'])
         self.choose_move(self.leafeon, movedex['xscissor'])
         self.run_turn()
@@ -745,7 +745,7 @@ class TestAbilities(MultiMoveTestCase):
         self.reset_leads(p0_ability='hydration')
         self.choose_move(self.leafeon, movedex['thunderwave'])
         self.choose_move(self.vaporeon, movedex['raindance'])
-        self.engine.set_status(self.leafeon, Status.PSN)
+        self.engine.set_status(self.leafeon, Status.PSN, None)
         self.run_turn()
 
         self.assertStatus(self.vaporeon, None)
@@ -1433,7 +1433,7 @@ class TestAbilities(MultiMoveTestCase):
             self.choose_move(self.vaporeon, movedex['facade'])
             self.run_turn()
 
-            set_status.assert_called_with(self.vaporeon, Status.TOX, False)
+            set_status.assert_called_with(self.vaporeon, Status.TOX, self.leafeon)
             self.assertStatus(self.vaporeon, None)
             self.assertDamageTaken(self.leafeon, 34)
 
@@ -1453,7 +1453,7 @@ class TestAbilities(MultiMoveTestCase):
             self.choose_move(self.vaporeon, movedex['return'])
             self.run_turn()
 
-            set_status.assert_called_with(self.vaporeon, Status.SLP, False)
+            set_status.assert_called_with(self.vaporeon, Status.SLP, self.leafeon)
             self.assertStatus(self.vaporeon, None)
             self.assertDamageTaken(self.leafeon, 50)
 
@@ -1479,7 +1479,7 @@ class TestAbilities(MultiMoveTestCase):
             self.choose_move(self.vaporeon, movedex['return'])
             self.run_turn()
 
-            set_status.assert_called_with(self.vaporeon, Status.PAR, False)
+            set_status.assert_called_with(self.vaporeon, Status.PAR, self.leafeon)
             self.assertStatus(self.vaporeon, None)
             self.assertDamageTaken(self.leafeon, 50)
 

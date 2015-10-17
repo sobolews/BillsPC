@@ -2526,7 +2526,7 @@ class psychoshift(Move):
             return FAIL
 
     def on_success(self, user, target, engine): # TODO: make sure blocked by substitute
-        if engine.set_status(target, user.status, self.infiltrates) is not FAIL:
+        if engine.set_status(target, user.status, user) is not FAIL:
             user.cure_status()
 
 class psyshock(Move):
@@ -3626,10 +3626,10 @@ class triattack(Move):
 
     STATUS = [Status.BRN, Status.PAR, Status.FRZ]
 
-    def secondary(self, target, engine):
+    def secondary(self, target, user, engine):
         roll = random.randrange(3)
         engine.apply_secondary_effect(target, SecondaryEffect(100, status=self.STATUS[roll]),
-                                      self.infiltrates)
+                                      user)
 
 class trick(Move):
     def __init__(self):

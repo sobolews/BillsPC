@@ -167,7 +167,7 @@ class ElectricTerrain(BaseEffect):
             return 1.5 * base_power
         return base_power
 
-    def on_set_status(self, status, pokemon, infiltrates, engine):
+    def on_set_status(self, status, pokemon, setter, engine):
         if status is Status.SLP and not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i('Electric terrain blocking %s on %s', status, pokemon)
             return FAIL
@@ -437,8 +437,12 @@ class Safeguard(BaseEffect):
     source = SideCondition.SAFEGUARD
     duration = 5
 
-    def on_set_status(self, status, pokemon, infiltrates, engine):
-        return None if infiltrates else FAIL
+    def on_set_status(self, status, pokemon, setter, engine):
+        if (setter is None or
+            setter != pokemon and
+            setter.ability.name != 'infiltrator'
+        ):
+            return FAIL
 
     def on_foe_try_hit(self, user, move, target, engine):
         if move.name == 'yawn' and not move.infiltrates:
@@ -537,7 +541,7 @@ class Substitute(BaseEffect):
 
         for s_effect in move.secondary_effects:
             if s_effect.affects_user:
-                engine.apply_secondary_effect(foe, s_effect)
+                engine.apply_secondary_effect(foe, s_effect, foe)
 
         foe.damage_done_this_turn = damage
         foe.must_switch = move.switch_user
@@ -589,7 +593,8 @@ class ToxicSpikes(BaseEffect):
                 if __debug__: log.i('The toxicspikes disappeared!')
             else:
                 if __debug__: log.i("%s was poisoned by ToxicSpikes", pokemon)
-                engine.set_status(pokemon, Status.PSN if self.layers == 1 else Status.TOX)
+                engine.set_status(pokemon, Status.PSN if self.layers == 1 else Status.TOX,
+                                  setter=None)
 
 class Wish(BaseEffect):
     source = SideCondition.WISH
@@ -612,7 +617,7 @@ class Yawn(BaseEffect):
 
     @priority(0)
     def on_timeout(self, pokemon, engine):
-        engine.set_status(pokemon, Status.SLP, infiltrates=True) # unaffected by Safeguard
+        engine.set_status(pokemon, Status.SLP, setter=pokemon) # unaffected by Safeguard
 
 class SheerForceVolatile(BaseEffect):
     """

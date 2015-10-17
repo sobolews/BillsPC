@@ -204,10 +204,9 @@ class BaseEffect(object):
         Called before the foe heals. Return FAIL to prevent healing.
         """
 
-    def on_set_status(self, status, pokemon, infiltrates, engine):
+    def on_set_status(self, status, pokemon, setter, engine):
         """
         Called before `status` is set on `pokemon`. Return FAIL to prevent it.
-        The status is not self-inflicted.
         """
 
     def on_weather(self, pokemon, weather, engine):

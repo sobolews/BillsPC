@@ -297,11 +297,11 @@ class EffectSpore(AbilityEffect):
             if __debug__:
                 if rand < 30: log.i("%s's EffectSpore activated!", pokemon)
             if rand < 11:   # 11% chance
-                engine.set_status(foe, Status.SLP)
+                engine.set_status(foe, Status.SLP, pokemon)
             elif rand < 21: # 10% chance
-                engine.set_status(foe, Status.PAR)
+                engine.set_status(foe, Status.PAR, pokemon)
             elif rand < 30: # 9% chance
-                engine.set_status(foe, Status.PSN)
+                engine.set_status(foe, Status.PSN, pokemon)
 
 class FairyAura(AbilityEffect):
     def on_start(self, pokemon, engine):
@@ -325,7 +325,7 @@ class FlameBody(AbilityEffect):
             random.randrange(10) < 3
         ):
             if __debug__: log.i("%s was burned by %s's FlameBody", foe, pokemon)
-            engine.set_status(foe, Status.BRN)
+            engine.set_status(foe, Status.BRN, pokemon)
 
 class FlashFire(AbilityEffect):
     @priority(0)
@@ -942,7 +942,7 @@ class Static(AbilityEffect):
             random.randrange(10) < 3
         ):
             if __debug__: log.i("%s's Static activated!", pokemon)
-            engine.set_status(foe, Status.PAR)
+            engine.set_status(foe, Status.PAR, pokemon)
 
 class Steadfast(AbilityEffect):
     @priority(20) # must be higher than Flinch

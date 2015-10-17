@@ -31,7 +31,7 @@ class SunnyDayWeather(BaseWeatherEffect):
                 return 0.5 * damage
         return damage
 
-    def on_set_status(self, status, pokemon, infiltrates, engine):
+    def on_set_status(self, status, pokemon, setter, engine):
         if not self.suppressed and status is Status.FRZ:
             return FAIL
 
