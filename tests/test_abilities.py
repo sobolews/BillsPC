@@ -2927,3 +2927,11 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 2 * 158)
+
+    def test_moldbreaker_aliases(self):
+        for ability in ('teravolt', 'turboblaze'):
+            self.reset_leads(p0_ability='bulletproof', p1_ability=ability)
+            self.choose_move(self.leafeon, movedex['aurasphere'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 48)

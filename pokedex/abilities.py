@@ -1037,8 +1037,16 @@ class Technician(AbilityEffect):
             return base_power * 1.5
         return base_power
 
+class Teravolt(AbilityEffect):
+    on_break_mold = MoldBreaker.on_break_mold.__func__
+    on_unbreak_mold = MoldBreaker.on_unbreak_mold.__func__
 
 
+
+
+class TurboBlaze(AbilityEffect):
+    on_break_mold = MoldBreaker.on_break_mold.__func__
+    on_unbreak_mold = MoldBreaker.on_unbreak_mold.__func__
 
 class Unaware(AbilityEffect):
     pass
