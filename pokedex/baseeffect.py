@@ -124,7 +124,7 @@ class BaseEffect(object):
         """ Return modified spe """
         return spe
 
-    def on_modify_spd(self, pokemon, engine, spd):
+    def on_modify_spd(self, pokemon, move, engine, spd):
         """ Return modified spd """
         return spd
 
@@ -136,7 +136,7 @@ class BaseEffect(object):
         """ Return modified atk """
         return atk
 
-    def on_modify_def(self, pokemon, engine, def_):
+    def on_modify_def(self, pokemon, move, engine, def_):
         """ Return modified def """
         return def_
 

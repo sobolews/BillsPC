@@ -342,7 +342,7 @@ class FlowerGift(AbilityEffect):
             return atk * 1.5
         return atk
 
-    def on_modify_spd(self, pokemon, engine, spd):
+    def on_modify_spd(self, pokemon, move, engine, spd):
         if engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
             if __debug__: log.i("%s's spd boosted by FlowerGift", pokemon)
             return spd * 1.5
@@ -358,7 +358,7 @@ class Frisk(AbilityEffect): # client only
     pass
 
 class FurCoat(AbilityEffect):
-    def on_modify_def(self, pokemon, engine, def_):
+    def on_modify_def(self, pokemon, move, engine, def_):
         return def_ * 2
 
 class GaleWings(AbilityEffect):
@@ -555,7 +555,7 @@ class MagnetPull(AbilityEffect):
             pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
 
 class MarvelScale(AbilityEffect):
-    def on_modify_def(self, pokemon, engine, def_):
+    def on_modify_def(self, pokemon, move, engine, def_):
         if pokemon.status is not None:
             if __debug__: log.i("%s's defense was boosted by MarvelScale", pokemon)
             return def_ * 1.5

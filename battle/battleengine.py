@@ -511,13 +511,13 @@ class BattleEngine(object):
 
     def modify_def(self, def_, user, move, target):
         for effect in target.effects:
-            def_ = effect.on_modify_def(target, self, def_)
+            def_ = effect.on_modify_def(target, move, self, def_)
         return def_
 
     def modify_spd(self, spd, user, move, target):
         for effect in chain(target.effects,
                             self.battlefield.effects):
-            spd = effect.on_modify_spd(target, self, spd)
+            spd = effect.on_modify_spd(target, move, self, spd)
         return spd
 
     def modify_spe(self, spe, pokemon):

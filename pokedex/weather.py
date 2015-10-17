@@ -110,7 +110,7 @@ class SandstormWeather(BaseWeatherEffect):
                                                  # in case they both faint: need to sort by speed?
                 engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.SANDSTORM)
 
-    def on_modify_spd(self, pokemon, engine, spd):
+    def on_modify_spd(self, pokemon, move, engine, spd):
         if not self.suppressed and Type.ROCK in pokemon.types:
             if __debug__: log.i("Sandstorm boosted %s's spd!", pokemon)
             return 1.5 * spd
