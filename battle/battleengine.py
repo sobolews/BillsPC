@@ -698,6 +698,9 @@ class BattleEngine(object):
         pokemon.status = status
         pokemon.set_effect(STATUS_EFFECTS[status](pokemon))
 
+        for effect in pokemon.effects:
+            effect.on_after_set_status(status, pokemon, setter, self)
+
     def run_residual(self):
         if __debug__: log.i('Between turns')
         sides = self.battlefield.sides

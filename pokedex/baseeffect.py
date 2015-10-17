@@ -209,6 +209,11 @@ class BaseEffect(object):
         Called before `status` is set on `pokemon`. Return FAIL to prevent it.
         """
 
+    def on_after_set_status(self, status, pokemon, setter, engine):
+        """
+        Called after `status is successfully set on `pokemon`
+        """
+
     def on_weather(self, pokemon, weather, engine):
         """ Called by weather effects in their on_residual handler """
 
