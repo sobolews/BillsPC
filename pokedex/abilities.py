@@ -1060,6 +1060,19 @@ class TintedLens(AbilityEffect):
             return damage * 2
         return damage
 
+class Torrent(AbilityEffect):
+    def on_modify_atk(self, pokemon, move, engine, atk):
+        if move.type is Type.WATER and pokemon.hp <= pokemon.max_hp / 3:
+            if __debug__: log.i('%s boosted by Torrent!', move)
+            return atk * 1.5
+        return atk
+
+    def on_modify_spa(self, pokemon, move, engine, spa):
+        if move.type is Type.WATER and pokemon.hp <= pokemon.max_hp / 3:
+            if __debug__: log.i('%s boosted by Torrent!', move)
+            return spa * 1.5
+        return spa
+
 
 
 

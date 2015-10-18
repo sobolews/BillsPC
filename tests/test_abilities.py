@@ -2958,3 +2958,26 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 88)
         self.assertDamageTaken(self.leafeon, 158)
+
+    def test_torrent(self):
+        self.reset_leads(p0_ability='torrent', p1_ability='torrent')
+        self.vaporeon.hp = 100
+        self.choose_move(self.leafeon, movedex['surf'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+        self.assertEqual(self.vaporeon.hp, 100 - 27)
+
+        self.engine.heal(self.leafeon, 400)
+        self.vaporeon.hp = 50
+
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 132)
+
+        self.choose_move(self.vaporeon, movedex['waterfall'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 132 + 43)
