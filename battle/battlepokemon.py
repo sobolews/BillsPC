@@ -339,7 +339,7 @@ class BattlePokemon(object):
             self.ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
-            ability_effect.on_start(self, engine)
+            ability_effect.start(self, engine)
 
         self.is_transformed = True
 

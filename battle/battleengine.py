@@ -819,7 +819,7 @@ class BattleEngine(object):
         if pokemon.is_fainted():
             return
 
-        pokemon.get_effect(ABILITY).on_start(pokemon, self)
+        pokemon.get_effect(ABILITY).start(pokemon, self)
         # pokemon.get_effect(ITEM).on_start(pokemon, self) # TODO when: implement items
 
     def get_move_decisions(self): # TODO: deal with mega evolution decision

@@ -26,6 +26,12 @@ class BaseAbility(object):
             return self.__name__
 
     source = ABILITY
+    started = False
+
+    def start(self, pokemon, engine):
+        if not self.started:
+            self.on_start(pokemon, engine)
+            self.started = True
 
 class AbilityEffect(BaseAbility, BaseEffect):
     pass
