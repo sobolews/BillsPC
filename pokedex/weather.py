@@ -21,7 +21,7 @@ class SunnyDayWeather(BaseWeatherEffect):
     def __init__(self, duration=5):
         self.duration = duration
 
-    def on_modify_damage(self, user, move, damage):
+    def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed:
             if move.type is Type.FIRE:
                 if __debug__: log.i("%s boosted %s's power!", self, move)
@@ -38,7 +38,7 @@ class SunnyDayWeather(BaseWeatherEffect):
 class DesolateLandWeather(BaseWeatherEffect):
     source = Weather.DESOLATELAND
 
-    def on_modify_damage(self, user, move, damage):
+    def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed and move.type is Type.FIRE:
             if __debug__: log.i("%s boosted %s's power!", self, move)
             return 1.5 * damage
@@ -60,7 +60,7 @@ class RainDanceWeather(BaseWeatherEffect):
     def __init__(self, duration=5):
         self.duration = duration
 
-    def on_modify_damage(self, user, move, damage):
+    def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed:
             if move.type is Type.WATER:
                 if __debug__: log.i("%s boosted %s's power!", self, move)
@@ -73,7 +73,7 @@ class RainDanceWeather(BaseWeatherEffect):
 class PrimordialSeaWeather(BaseWeatherEffect):
     source = Weather.PRIMORDIALSEA
 
-    def on_modify_damage(self, user, move, damage):
+    def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed and move.type is Type.WATER:
             if __debug__: log.i("%s boosted %s's power!", self, move)
             return 1.5 * damage

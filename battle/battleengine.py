@@ -488,7 +488,7 @@ class BattleEngine(object):
         for effect in chain(user.effects,
                             user.side.effects,
                             self.battlefield.effects):
-            damage = effect.on_modify_damage(user, move, damage)
+            damage = effect.on_modify_damage(user, move, damage, effectiveness)
         for effect in chain(target.effects,
                             target.side.effects):
             damage = effect.on_modify_foe_damage(user, move, target, crit, effectiveness, damage)

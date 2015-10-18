@@ -69,7 +69,7 @@ class Sleep(BaseStatusEffect):
 class Burn(BaseStatusEffect):
     source = Status.BRN
 
-    def on_modify_damage(self, user, move, damage):
+    def on_modify_damage(self, user, move, damage, effectiveness):
         if (move.category is MoveCategory.PHYSICAL and
             move.name != 'facade' and
             user.ability.name != 'guts'

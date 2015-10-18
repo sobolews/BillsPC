@@ -165,7 +165,7 @@ class BaseEffect(object):
           "foe" is side1.active_pokemon, and either may be None
         """
 
-    def on_modify_damage(self, user, move, damage):
+    def on_modify_damage(self, user, move, damage, effectiveness):
         """ Modify the final result about to be returned from a damage calculation """
         return damage
 
