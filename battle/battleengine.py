@@ -772,7 +772,7 @@ class BattleEngine(object):
             if __debug__: log.i('Batonpassed %s to %s',
                                 filter(None, chain([incoming.boosts], incoming.effects)) or None,
                                 incoming)
-        self.run_update()
+
         for effect in outgoing.effects:
             effect.on_switch_out(outgoing, self)
 
@@ -881,6 +881,7 @@ class BattleEngine(object):
             self.switch_in(lead)
         for lead in leads:
             self.post_switch_in(lead)
+        self.run_update()
 
     def run_battle(self):
         """ Return winner's side (0 or 1) """
