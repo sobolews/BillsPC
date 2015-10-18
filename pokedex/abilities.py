@@ -1080,6 +1080,15 @@ class ToughClaws(AbilityEffect):
             return base_power * 1.3
         return base_power
 
+class ToxicBoost(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if (user.status in (Status.PSN, Status.TOX) and
+            move.category is MoveCategory.PHYSICAL
+        ):
+            if __debug__: log.i("%s's power was boosted by ToxicBoost!", move)
+            return base_power * 1.5
+        return base_power
+
 
 
 

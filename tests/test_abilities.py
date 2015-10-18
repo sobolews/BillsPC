@@ -2990,3 +2990,23 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 88)
         self.assertDamageTaken(self.vaporeon, 185)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_toxicboost(self):
+        self.reset_leads(p0_ability='toxicboost', p1_ability='toxicboost')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142 + 212)
+
+        self.engine.set_status(self.vaporeon, Status.PSN, None)
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 88 + (6 * (self.leafeon.max_hp / 16)))
