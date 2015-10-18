@@ -2981,3 +2981,12 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 132 + 43)
+
+    def test_toughclaws(self):
+        self.reset_leads(p0_ability='toughclaws', p1_ability='toughclaws')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 88)
+        self.assertDamageTaken(self.vaporeon, 185)

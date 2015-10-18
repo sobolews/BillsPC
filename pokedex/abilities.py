@@ -1073,6 +1073,13 @@ class Torrent(AbilityEffect):
             return spa * 1.5
         return spa
 
+class ToughClaws(AbilityEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.makes_contact:
+            if __debug__: log.i("%s's power was boosted by ToughClaws!", move)
+            return base_power * 1.3
+        return base_power
+
 
 
 
