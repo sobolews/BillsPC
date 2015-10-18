@@ -2949,3 +2949,12 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 18 + 142)
+
+    def test_tintedlens(self):
+        self.reset_leads(p0_ability='tintedlens', p1_ability='tintedlens')
+        self.choose_move(self.leafeon, movedex['eruption'])
+        self.choose_move(self.vaporeon, movedex['hiddenpowerice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 88)
+        self.assertDamageTaken(self.leafeon, 158)

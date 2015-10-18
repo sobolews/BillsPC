@@ -1054,6 +1054,12 @@ class ThickFat(AbilityEffect):
             return spd * 2
         return spd
 
+class TintedLens(AbilityEffect):
+    def on_modify_damage(self, user, move, damage, effectiveness):
+        if effectiveness < 1:
+            return damage * 2
+        return damage
+
 
 
 
