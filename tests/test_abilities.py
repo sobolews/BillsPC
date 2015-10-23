@@ -3010,3 +3010,175 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 88 + (6 * (self.leafeon.max_hp / 16)))
+
+    def test_trace(self):
+        self.reset_leads(p0_ability='trace', p1_ability='adaptability')
+        self.engine.init_turn()
+
+        self.assertAbility(self.vaporeon, 'adaptability')
+
+        self.reset_leads(p0_ability='trace', p1_ability='illusion')
+        self.engine.init_turn()
+
+        self.assertAbility(self.vaporeon, 'trace')
+
+    def test_trace_untraceable_then_switch(self):
+        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.add_pokemon('espeon', 1, ability='hugepower')
+
+        self.choose_switch(self.leafeon, self.espeon)
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertAbility(self.vaporeon, 'hugepower')
+        self.assertDamageTaken(self.espeon, 184)
+
+    def test_trace_untraceable_then_force_switch(self):
+        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.add_pokemon('espeon', 1, ability='hugepower')
+
+        self.choose_move(self.vaporeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertAbility(self.vaporeon, 'hugepower')
+
+    def test_trace_untraceable_then_untraceable_then_traceable(self):
+        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.add_pokemon('jolteon', 1, ability='illusion')
+        self.add_pokemon('espeon', 1, ability='hugepower')
+
+        self.choose_move(self.leafeon, movedex['voltswitch'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertAbility(self.vaporeon, 'trace')
+        self.assertDamageTaken(self.jolteon, 93)
+
+        self.choose_switch(self.jolteon, self.espeon)
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertAbility(self.vaporeon, 'hugepower')
+        self.assertDamageTaken(self.espeon, 184)
+
+    def test_trace_untraceable_then_switch_into_spikes_ko(self):
+        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.add_pokemon('jolteon', 1, ability='aftermath')
+        self.add_pokemon('espeon', 1, ability='aerilate')
+        self.leafeon.hp = self.jolteon.hp = 1
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.choose_move(self.vaporeon, movedex['pursuit'])
+        self.run_turn()
+        self.assertFainted(self.leafeon)
+        self.engine.init_turn()
+        self.assertFainted(self.jolteon)
+        self.assertTrue(self.espeon.is_active)
+
+        self.assertAbility(self.vaporeon, 'aftermath')
+
+    def test_trace_substitute(self):
+        self.reset_leads(p1_ability='airlock')
+        self.add_pokemon('flareon', 0, ability='trace')
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['voltswitch'])
+        self.run_turn()
+        self.assertTrue(self.flareon.is_active)
+
+        self.assertAbility(self.flareon, 'airlock')
+
+    def test_trace_again_after_switch_out(self):
+        self.reset_leads(p0_ability='trace', p1_ability='analytic')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('jolteon', 1, ability='angerpoint')
+        self.engine.init_turn()
+        self.assertAbility(self.vaporeon, 'analytic')
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.run_turn()
+        self.choose_switch(self.flareon, self.vaporeon)
+        self.run_turn()
+
+        self.assertAbility(self.vaporeon, 'angerpoint')
+
+    def test_trace_then_suppress_with_moldbreaker(self):
+        self.reset_leads(p0_ability='trace', p1_ability='motordrive')
+        self.add_pokemon('jolteon', 1, ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+        self.choose_move(self.jolteon, movedex['fusionbolt'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 272)
+        self.assertEqual(self.vaporeon._ability.name, 'trace')
+        self.assertAbility(self.vaporeon, 'motordrive')
+
+    def test_tracing_levitate_doesnt_block_hazards(self):
+        self.reset_leads(p1_ability='levitate')
+        self.add_pokemon('flareon', 0, ability='trace')
+        self.choose_move(self.leafeon, movedex['spikes'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['toxicspikes'])
+        self.choose_move(self.vaporeon, movedex['voltswitch'])
+        self.run_turn()
+        self.assertTrue(self.flareon.is_active)
+
+        self.assertStatus(self.flareon, Status.PSN)
+        self.assertDamageTaken(self.flareon, 2 * (self.flareon.max_hp / 8)) # spikes + psn
+
+    def test_tracing_levitate_on_between_turn_switch_in_doesnt_block_hazards(self):
+        self.reset_leads(p1_ability='levitate')
+        self.add_pokemon('flareon', 0, ability='trace')
+        self.choose_move(self.leafeon, movedex['spikes'])
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertDamageTaken(self.flareon, self.flareon.max_hp / 8)
+
+    def test_trace_ability_with_on_update(self):
+        self.reset_leads(p0_ability='trace', p1_ability='noguard')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('jolteon', 1, ability='immunity')
+        self.choose_move(self.leafeon, movedex['toxic'])
+        self.run_turn()
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.assertEqual(self.vaporeon.status, Status.TOX)
+        self.run_turn()
+        self.choose_switch(self.flareon, self.vaporeon)
+        self.run_turn()
+        self.assertAbility(self.vaporeon, 'immunity')
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 16) # 1 turn of toxic
+
+    def test_trace_regenerator(self):
+        self.reset_leads(p0_ability='trace', p1_ability='regenerator')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['voltswitch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142 - (self.vaporeon.max_hp / 3))
+
+    def test_trace_ability_with_on_start(self):
+        self.reset_leads(p0_ability='trace', p1_ability='intimidate')
+        self.add_pokemon('flareon', 0, ability='trace')
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': -2})
+        self.assertDamageTaken(self.flareon, 72)
+
+    def test_faster_switch_into_tracer_traces_outgoing_opponent(self):
+        self.reset_leads(p0_ability='aurabreak')
+        self.add_pokemon('flareon', 0, ability='baddreams')
+        self.add_pokemon('jolteon', 1, ability='trace')
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+
+        self.assertAbility(self.jolteon, 'aurabreak')

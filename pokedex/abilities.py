@@ -1095,6 +1095,17 @@ class ToxicBoost(AbilityEffect):
             return base_power * 1.5
         return base_power
 
+class Trace(AbilityEffect):
+    def on_update(self, pokemon, engine):
+        foe = engine.get_foe(pokemon)
+        if foe is not None and foe.ability.name not in NO_TRACE:
+            if __debug__: log.i("%s traced %s's %s!", pokemon, foe, foe.ability)
+            pokemon.change_ability(foe.ability, engine)
+            pokemon.get_effect(ABILITY).on_update(pokemon, engine)
+
+NO_TRACE = {'flowergift', 'forecast', 'illusion', 'imposter',
+            'multitype', 'stancechange', 'trace', 'zenmode'}
+
 
 
 
