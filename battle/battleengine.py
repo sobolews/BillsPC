@@ -406,6 +406,8 @@ class BattleEngine(object):
             if __debug__: log.d('base_power=%s, returning damage=None', base_power)
             return None
 
+        assert move.category in (PHYSICAL, SPECIAL)
+
         base_power = int(max(gf_round(base_power), 1))
         if __debug__: log.d('Using base_power of %s', base_power)
 
