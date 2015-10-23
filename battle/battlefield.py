@@ -165,6 +165,12 @@ class BattleSide(object):
         for hazard in Hazard:
             self.remove_effect(hazard)
 
+    def update(self, engine):
+        pokemon = self.active_pokemon
+        if pokemon is not None:
+            for effect in pokemon.effects:
+                effect.on_update(pokemon, engine)
+
     def __str__(self):
         return 'Side %d: [%s]' % (self.index, ', '.join(str(p) for p in self.team))
 

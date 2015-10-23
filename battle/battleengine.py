@@ -898,8 +898,10 @@ class BattleEngine(object):
         while self.event_queue:
             if __debug__: log.d('Event Queue: %r', self.event_queue)
             if __debug__: log.d('Next event: %s', self.event_queue[-1])
-            self.event_queue.pop().run_event(self, self.event_queue)
-            self.run_update()
+            event = self.event_queue.pop()
+            event.run_event(self, self.event_queue)
+            if event.type is not Decision.SWITCH:
+                self.run_update()
 
             for side in self.battlefield.sides:
                 if (side.active_pokemon is not None and
@@ -951,8 +953,10 @@ class BattleEngine(object):
                     pokemon.hit_by_crit = False
 
             while switch_queue:
-                switch_queue.pop().run_event(self, switch_queue)
-                self.run_update()
+                event = switch_queue.pop()
+                event.run_event(self, switch_queue)
+                if event.type is Decision.SWITCH:
+                    self.get_foe_side(event.incoming).update(self)
 
             self.resolve_faint_queue()
 
