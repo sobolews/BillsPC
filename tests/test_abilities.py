@@ -3277,3 +3277,6 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertDamageTaken(self.leafeon, 116)
+
+    # def test_unburden(self):
+    #     pass # TODO when: implement items

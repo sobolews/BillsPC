@@ -1129,10 +1129,9 @@ class Unaware(AbilityEffect):
         move.ignore_offensive_boosts = True
         move.ignore_accuracy_boosts = True
 
-
-
 class Unburden(AbilityEffect):
-    pass
+    pass # TODO when: implement items
+
 
 
 class _suppressed_(AbilityEffect):
