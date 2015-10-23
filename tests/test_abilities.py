@@ -3182,3 +3182,60 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertAbility(self.jolteon, 'aurabreak')
+
+    @patch('random.randint', lambda *_: 1) # 1 sleep turn
+    def test_truant(self):
+        self.reset_leads(p0_ability='truant')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': 2, 'def': 2})
+        self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
+
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': 3, 'def': 3})
+        self.assertBoosts(self.vaporeon, {'atk': 2, 'def': 2})
+
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': 4, 'def': 4})
+        self.assertBoosts(self.vaporeon, {'atk': 2, 'def': 2})
+
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_move(self.leafeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, 96)
+
+        self.choose_switch(self.flareon, self.vaporeon)
+        self.choose_move(self.leafeon, movedex['spore'])
+        self.run_turn()
+        self.assertEqual(self.vaporeon.sleep_turns, 1)
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.run_turn()
+        self.assertEqual(self.vaporeon.sleep_turns, 0)
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
+
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})

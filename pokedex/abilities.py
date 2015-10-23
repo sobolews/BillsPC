@@ -1106,6 +1106,14 @@ class Trace(AbilityEffect):
 NO_TRACE = {'flowergift', 'forecast', 'illusion', 'imposter',
             'multitype', 'stancechange', 'trace', 'zenmode'}
 
+class Truant(AbilityEffect):
+    @priority(9)
+    def on_before_move(self, user, move, engine):
+        if user.has_effect(Volatile.TRUANT):
+            if __debug__: log.i('%s is loafing around!', user)
+            return FAIL
+        user.set_effect(effects.TruantVolatile())
+
 
 
 

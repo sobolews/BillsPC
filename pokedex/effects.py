@@ -671,6 +671,10 @@ class SlowStartVolatile(BaseEffect):
         if __debug__: log.d("%s's spe was halved by SlowStart", pokemon)
         return spe * 0.5
 
+class TruantVolatile(BaseEffect):
+    source = Volatile.TRUANT
+    duration = 2
+
 class Transformed(BaseEffect):
     """ Used for transform and imposter """
     source = Volatile.TRANSFORMED
