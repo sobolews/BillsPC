@@ -1132,6 +1132,9 @@ class Unaware(AbilityEffect):
 class Unburden(AbilityEffect):
     pass # TODO when: implement items
 
+class Unnerve(AbilityEffect):
+    pass # TODO when: implement items
+
 
 
 class _suppressed_(AbilityEffect):

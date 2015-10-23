@@ -3280,3 +3280,6 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_unburden(self):
     #     pass # TODO when: implement items
+
+    # def test_unnerve(self):
+    #     pass # TODO when: implement items
