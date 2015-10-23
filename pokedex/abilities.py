@@ -1135,6 +1135,13 @@ class Unburden(AbilityEffect):
 class Unnerve(AbilityEffect):
     pass # TODO when: implement items
 
+class VictoryStar(AbilityEffect):
+    def on_modify_move(self, move, user, engine):
+        if move.accuracy is not None:
+            move.accuracy *= 1.1
+            if __debug__: log.d("%s's accuracy increased to %s by VictoryStar",
+                                move, move.accuracy)
+
 
 
 class _suppressed_(AbilityEffect):

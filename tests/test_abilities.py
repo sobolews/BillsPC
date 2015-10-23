@@ -3283,3 +3283,17 @@ class TestAbilities(MultiMoveTestCase):
 
     # def test_unnerve(self):
     #     pass # TODO when: implement items
+
+    def test_victorystar(self):
+        self.reset_leads(p0_ability='victorystar')
+        with patch('random.randrange', lambda _: 99): # 99%- accuracy misses
+            self.choose_move(self.vaporeon, movedex['highjumpkick'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 2)
+
+        with patch('random.randrange', lambda _: 98): # 99% accuracy hits
+            self.choose_move(self.vaporeon, movedex['highjumpkick'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.leafeon, 63)
