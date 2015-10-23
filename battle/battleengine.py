@@ -303,15 +303,16 @@ class BattleEngine(object):
             return
 
         boost_factor = (1.0, 4.0/3.0, 5.0/3.0, 2.0, 7.0/3.0, 8.0/3.0, 3.0)
-        acc_boost = user.boosts['acc']
-        if acc_boost > 0 and target.ability is not abilitydex['unaware']:
-            accuracy *= boost_factor[acc_boost]
-        elif acc_boost < 0:
-            accuracy /= boost_factor[-acc_boost]
+        if not move.ignore_accuracy_boosts:
+            acc_boost = user.boosts['acc']
+            if acc_boost > 0:
+                accuracy *= boost_factor[acc_boost]
+            elif acc_boost < 0:
+                accuracy /= boost_factor[-acc_boost]
 
-        if not move.ignore_evasion:
+        if not move.ignore_evasion_boosts:
             evn_boost = target.boosts['evn']
-            if evn_boost > 0 and user.ability is not abilitydex['unaware']:
+            if evn_boost > 0:
                 accuracy /= boost_factor[evn_boost]
             elif evn_boost < 0:
                 accuracy *= boost_factor[-evn_boost]
@@ -422,15 +423,9 @@ class BattleEngine(object):
         attack_boosts = attack_stat_source.boosts[attacking_stat]
         defense_boosts = target.boosts[defending_stat]
 
-        # TODO: these should be attribute of the move; unaware can modify them in on_modify_move
-        ignore_offense_boosts = (target.ability is abilitydex['unaware'] or
-                                 (crit and attack_boosts < 0))
-        ignore_defense_boosts = (target.ability is abilitydex['unaware'] or
-                                 move.ignore_defensive or
-                                 (crit and defense_boosts > 0))
-        if ignore_offense_boosts:
+        if move.ignore_offensive_boosts or (crit and attack_boosts < 0):
             attack_boosts = 0
-        if ignore_defense_boosts:
+        if move.ignore_defensive_boosts or (crit and defense_boosts > 0):
             defense_boosts = 0
 
         attack = attack_stat_source.calculate_stat(attacking_stat, attack_boosts)

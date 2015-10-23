@@ -505,7 +505,7 @@ class KeenEye(AbilityEffect):
         return boosts
 
     def on_modify_move(self, move, user, engine):
-        move.ignore_evasion = True
+        move.ignore_evasion_boosts = True
 
 class Klutz(AbilityEffect):
     pass # TODO when: implement items

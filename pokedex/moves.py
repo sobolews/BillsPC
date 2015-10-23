@@ -63,8 +63,10 @@ class Move(object):
     crit = False
     switch_user = False
     defensive_category = None # psyshock, psystrike, secretsword
-    ignore_defensive = False  # sacredsword
-    ignore_evasion = False  # sacredsword, keeneye
+    ignore_offensive_boosts = False  # unaware
+    ignore_defensive_boosts = False  # sacredsword, unaware
+    ignore_accuracy_boosts = False   # unaware
+    ignore_evasion_boosts = False  # sacredsword, keeneye, unaware
     is_two_turn = False       # needed for sleeptalk
     recoil = 0 # percent of 100, or -1 to indicate recoil handled elsewhere (jumpkick etc.)
     user_boosts = None
@@ -2857,8 +2859,8 @@ class sacredsword(Move):
         self.accuracy = 100
         self.makes_contact = True
         self.base_power = 90
-        self.ignore_defensive = True
-        self.ignore_evasion = True
+        self.ignore_defensive_boosts = True
+        self.ignore_evasion_boosts = True
 
 class safeguard(Move):
     def __init__(self):
