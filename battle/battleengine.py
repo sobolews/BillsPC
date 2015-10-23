@@ -139,6 +139,9 @@ class BattleEngine(object):
         move.on_modify_move(user, target, self)
         for effect in user.effects: # TODO: sort by priority?
             effect.on_modify_move(move, user, self)
+        if target is not None:
+            for effect in target.effects:
+                effect.on_modify_foe_move(move, user, self)
 
         if user.item and user.item.choicelock:
             pass # user.set_effect(effects.ChoiceLock(move))? # TODO when: implement choice items

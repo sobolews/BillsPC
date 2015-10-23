@@ -86,6 +86,12 @@ class BaseEffect(object):
         until the end of run_move
         """
 
+    def on_modify_foe_move(self, move, user, engine):
+        """
+        Called when the foe's move is about to be used. `move` is a copy; modifications to it will
+        persist until the end of run_move
+        """
+
     def on_modify_base_power(self, user, move, target, engine, base_power):
         """
         Return a value calculated from `base_power`. Do not round float results, as this value may
