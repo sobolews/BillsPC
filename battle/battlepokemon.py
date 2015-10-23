@@ -357,7 +357,7 @@ class BattlePokemon(object):
         self.is_transformed = False
         if __debug__: log.i("%s's transform reverted", self)
 
-    def change_ability(self, new_ability):
+    def change_ability(self, new_ability, engine):
         """
         Change this pokemon's ability. This effect will only last while the pokemon is active.
         This pokemon's original ability remains saved in self._ability.
@@ -373,6 +373,7 @@ class BattlePokemon(object):
         self.remove_effect(ABILITY)
         self.ability = new_ability
         self.set_effect(new_ability())
+        self.get_effect(ABILITY).start(self, engine)
 
     def __str__(self):
         if self.name == self.base_species:

@@ -1918,8 +1918,8 @@ class TestAbilities(MultiMoveTestCase):
 
         self.leafeon.hp = 100
         self.engine.heal(self.vaporeon, 400)
-        self.leafeon.change_ability(abilitydex['mummy'])
-        self.vaporeon.change_ability(abilitydex['mummy'])
+        self.leafeon.change_ability(abilitydex['mummy'], self.engine)
+        self.vaporeon.change_ability(abilitydex['mummy'], self.engine)
         self.leafeon.cure_status()
         self.run_turn()
 
