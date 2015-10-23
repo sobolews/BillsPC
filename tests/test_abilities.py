@@ -2,7 +2,7 @@ from mock import patch
 
 from pokedex import statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, Hazard, ABILITY, Type
+from pokedex.enums import Status, Weather, Volatile, Hazard, PseudoWeather, Type
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
@@ -3297,3 +3297,26 @@ class TestAbilities(MultiMoveTestCase):
             self.run_turn()
 
             self.assertDamageTaken(self.leafeon, 63)
+
+    def test_voltabsorb(self):
+        self.reset_leads(p0_ability='voltabsorb', p1_ability='voltabsorb')
+        self.choose_move(self.leafeon, movedex['discharge'])
+        self.choose_move(self.vaporeon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 118)
+
+        self.choose_move(self.leafeon, movedex['electricterrain'])
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 118 - (self.leafeon.max_hp / 4))
+        self.assertTrue(self.engine.battlefield.has_effect(PseudoWeather.ELECTRICTERRAIN))
+
+        self.engine.heal(self.leafeon, 400)
+        self.choose_move(self.leafeon, movedex['magnetrise'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)

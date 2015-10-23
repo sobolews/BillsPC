@@ -1147,6 +1147,14 @@ class VitalSpirit(AbilityEffect):
 
     on_update = Insomnia.on_update.__func__
 
+class VoltAbsorb(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.type is Type.ELECTRIC:
+            if __debug__: log.i('%s was healed by its VoltAbsorb', target)
+            engine.heal(target, target.max_hp / 4)
+            return FAIL
+
 
 
 class _suppressed_(AbilityEffect):
