@@ -3239,3 +3239,41 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
+
+    @patch('random.randrange', lambda _: 81) # miss at 81%- accuracy
+    def test_unaware(self):
+        self.reset_leads(p0_ability='unaware')
+        self.engine.apply_boosts(self.leafeon, Boosts(spa=5))
+        self.engine.apply_boosts(self.vaporeon, Boosts(atk=1))
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 54)
+        self.assertDamageTaken(self.leafeon, 74)
+
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=-4))
+        self.engine.apply_boosts(self.vaporeon, Boosts(spa=-1))
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 54 + 142)
+        self.assertDamageTaken(self.leafeon, 74 + 59)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.engine.apply_boosts(self.vaporeon, Boosts(spd=-2))
+        self.choose_move(self.leafeon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 106)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.engine.heal(self.leafeon, 400)
+        self.engine.apply_boosts(self.leafeon, Boosts(acc=1, def_=6))
+        self.choose_move(self.leafeon, movedex['stoneedge'])
+        self.choose_move(self.vaporeon, movedex['xscissor'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 116)

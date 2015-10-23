@@ -1114,15 +1114,22 @@ class Truant(AbilityEffect):
             return FAIL
         user.set_effect(effects.TruantVolatile())
 
-
-
-
 class TurboBlaze(AbilityEffect):
     on_break_mold = MoldBreaker.on_break_mold.__func__
     on_unbreak_mold = MoldBreaker.on_unbreak_mold.__func__
 
 class Unaware(AbilityEffect):
-    pass
+    def on_modify_move(self, move, user, engine):
+        if __debug__: log.d("%s ignores the foe's def/spd/evn boosts", user)
+        move.ignore_defensive_boosts = True
+        move.ignore_evasion_boosts = True
+
+    def on_modify_foe_move(self, move, user, engine):
+        if __debug__: log.d("The foe ignores %s's atk/spa/acc boosts", user)
+        move.ignore_offensive_boosts = True
+        move.ignore_accuracy_boosts = True
+
+
 
 class Unburden(AbilityEffect):
     pass
