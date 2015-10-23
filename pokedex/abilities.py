@@ -1142,6 +1142,11 @@ class VictoryStar(AbilityEffect):
             if __debug__: log.d("%s's accuracy increased to %s by VictoryStar",
                                 move, move.accuracy)
 
+class VitalSpirit(AbilityEffect):
+    on_get_immunity = Insomnia.on_get_immunity.__func__
+
+    on_update = Insomnia.on_update.__func__
+
 
 
 class _suppressed_(AbilityEffect):

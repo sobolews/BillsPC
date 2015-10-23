@@ -923,8 +923,8 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertBoosts(self.vaporeon, {'atk': 1, 'def': 1})
 
-    def test_insomnia_and_sweetveil(self):
-        for ability in ('insomnia', 'sweetveil'):
+    def test_insomnia_and_sweetveil_and_vitalspirit(self):
+        for ability in ('insomnia', 'sweetveil', 'vitalspirit'):
             self.reset_leads(p0_ability=ability, p1_ability=ability)
             self.choose_move(self.leafeon, movedex['spore'])
             self.choose_move(self.vaporeon, movedex['yawn'])
