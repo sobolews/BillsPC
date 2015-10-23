@@ -122,7 +122,7 @@ class Flinch(BaseEffect):
     source = Volatile.FLINCH
     duration = 1
 
-    @priority(10)
+    @priority(8)
     def on_before_move(self, user, move, engine):
         if __debug__: log.i('FAIL: %s flinched', user)
         return FAIL
