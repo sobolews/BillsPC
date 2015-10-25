@@ -117,9 +117,9 @@ class Move(object):
     def damage_callback(self, user, target): # nightshade, etc.
         """ Return exact hp damage, or None to run move normally """
 
-    def get_effectiveness(self, type, target):
+    def get_effectiveness(self, target):
         """ Return a number in {0.25, 0.5, 1, 2, 4}: effectiveness multipler against target """
-        return effectiveness(type, target)
+        return effectiveness(self.type, target)
 
     def on_after_move_secondary_self(self, user, engine):
         """
@@ -1310,7 +1310,7 @@ class flyingpress(Move):
         self.makes_contact = True
         self.base_power = 80
 
-    def get_effectiveness(self, user, target):
+    def get_effectiveness(self, target):
         return effectiveness(Type.FIGHTING, target) * effectiveness(Type.FLYING, target)
 
 class focusblast(Move):
@@ -1364,7 +1364,7 @@ class freezedry(Move):
         self.base_power = 70
         self.secondary_effects = SecondaryEffect(10, status=Status.FRZ),
 
-    def get_effectiveness(self, user, target):
+    def get_effectiveness(self, target):
         return effectiveness(Type.ICE, target) * (4 if Type.WATER in target.types else 1)
 
 class fusionbolt(Move):

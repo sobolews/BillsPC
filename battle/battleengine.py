@@ -445,12 +445,11 @@ class BattleEngine(object):
 
         damage = int(damage * self.damage_randomizer() / 100)
 
-        move_type = move.type
-        if move_type in user.types:
+        if move.type in user.types:
             damage = int(damage * move.stab)
 
-        effectiveness = self.modify_effectiveness(user, move_type, target,
-                                                  move.get_effectiveness(move_type, target))
+        effectiveness = self.get_effectiveness(user, move, target)
+
         damage *= effectiveness
         if __debug__:
             if effectiveness != 1:
@@ -494,9 +493,10 @@ class BattleEngine(object):
             damage = effect.on_modify_foe_damage(user, move, target, crit, effectiveness, damage)
         return damage
 
-    def modify_effectiveness(self, user, move_type, target, effectiveness):
+    def get_effectiveness(self, user, move, target):
+        effectiveness = move.get_effectiveness(target)
         for effect in chain(user.effects, self.battlefield.effects):
-            effectiveness = effect.on_modify_effectiveness(user, move_type, target, effectiveness)
+            effectiveness = effect.on_modify_effectiveness(user, move, target, effectiveness)
         return effectiveness
 
     def modify_atk(self, atk, user, move, target):

@@ -832,10 +832,10 @@ class SapSipper(AbilityEffect):
             return FAIL
 
 class Scrappy(AbilityEffect):
-    def on_modify_effectiveness(self, user, move_type, target, effectiveness):
-        if move_type in (Type.FIGHTING, Type.NORMAL) and Type.GHOST in target.types:
+    def on_modify_effectiveness(self, user, move, target, effectiveness):
+        if move.type in (Type.FIGHTING, Type.NORMAL) and Type.GHOST in target.types:
             return type_effectiveness(
-                move_type, target.types[not target.types.index(Type.GHOST)] or Type['???'])
+                move.type, target.types[not target.types.index(Type.GHOST)] or Type['???'])
         return effectiveness
 
 class SereneGrace(AbilityEffect):

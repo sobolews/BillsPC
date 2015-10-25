@@ -119,10 +119,10 @@ class SandstormWeather(BaseWeatherEffect):
 class DeltaStreamWeather(BaseWeatherEffect):
     source = Weather.DELTASTREAM
 
-    def on_modify_effectiveness(self, user, move_type, target, effectiveness):
+    def on_modify_effectiveness(self, user, move, target, effectiveness):
         if not self.suppressed:
-            if Type.FLYING in target.types and type_effectiveness(move_type, Type.FLYING) == 2:
+            if Type.FLYING in target.types and type_effectiveness(move.type, Type.FLYING) == 2:
                 if __debug__:
-                    log.i("DeltaStream suppressed %s's %s type move", user, move_type.name)
+                    log.i("DeltaStream suppressed %s's %s type move", user, move.type.name)
                 return effectiveness * 0.5
         return effectiveness
