@@ -541,20 +541,25 @@ class BattleEngine(object):
                 log.w('Tried to damage fainted pokemon %s: cause: %s, source: %s, attacker: %s',
                       pokemon, cause, source, attacker)
             return 0
+
         assert pokemon.side.active_pokemon is pokemon
         assert pokemon.is_active
-        assert isinstance(damage, int)
         assert damage >= 0
         assert ((isinstance(attacker, BattlePokemon) and isinstance(source, Move)) if
                 cause is Cause.MOVE else True)
 
         if damage == 0:
-            if __debug__: log.w('BattleEngine.damage called with damage=0')
+            if __debug__: log.w('BattleEngine.damage called with damage=0') # this shouldn't happen
             return 0
 
         if cause is Cause.WEATHER and pokemon.is_immune_to(source):
             if __debug__: log.i('Weather immunity: %s / %s', pokemon, source.name)
             return 0
+
+        if damage < 1:
+            damage = 1 # always do at least 1 damage
+        else:
+            damage = int(damage)
 
         for effect in pokemon.effects:
             damage = effect.on_damage(pokemon, damage, cause, source, self) # TODO: priority?
@@ -625,6 +630,11 @@ class BattleEngine(object):
         Bypasses on_damage; is 'cause-less'.
         {substitute, bellydrum, painsplit, struggle recoil, confusion damage} are direct damage
         """
+        if damage < 1:
+            damage = 1 # always do at least 1 damage
+        else:
+            damage = int(damage)
+
         pokemon.hp -= damage
         if pokemon.hp <= 0:
             self.faint(pokemon, Cause.DIRECT)
