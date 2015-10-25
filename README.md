@@ -36,8 +36,8 @@ Bill's PC is currently in development!
 | make a randombattle statistics miner                | done | :white_check_mark: 
 | create battle engine logic and base data structures | done | :white_check_mark: 
 | implement moves                                     | done | :white_check_mark: 
-| implement abilities                                 | in progress | :large_blue_diamond: 
-| implement items                                     | to do | :white_medium_square:
+| implement abilities                                 | done | :white_check_mark: 
+| implement items                                     | in progress | :large_blue_diamond:
 | implement mega evolution                            | to do | :white_medium_square:
 | implement forme changes                             | to do | :white_medium_square:
 | implement a Showdown battle client/bot              | on hold | :large_blue_diamond: 
