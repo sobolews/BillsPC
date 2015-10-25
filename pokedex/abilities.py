@@ -1163,6 +1163,15 @@ class WaterAbsorb(AbilityEffect):
             engine.heal(target, target.max_hp / 4)
             return FAIL
 
+class WaterVeil(AbilityEffect):
+    def on_get_immunity(self, thing):
+        if thing is Status.BRN:
+            return True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.status is Status.BRN:
+            pokemon.cure_status()
+
 
 
 class _suppressed_(AbilityEffect):

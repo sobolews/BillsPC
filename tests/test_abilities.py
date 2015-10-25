@@ -3342,3 +3342,16 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 142)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_waterveil(self):
+        self.reset_leads(p0_ability='waterveil')
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+
+        self.engine.set_status(self.vaporeon, Status.BRN, None)
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
