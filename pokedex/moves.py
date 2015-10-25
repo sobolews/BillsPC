@@ -3501,6 +3501,7 @@ class taunt(Move):
         self.type = Type.DARK
         self.is_bounceable = True
         self.ignore_substitute = True
+        self.accuracy = 100
 
     def check_success(self, user, target, engine):
         if target.has_effect(Volatile.TAUNT):
