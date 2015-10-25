@@ -1186,7 +1186,12 @@ class WonderGuard(AbilityEffect):
             if __debug__: log.i("WonderGuard makes %s immune to %s!", target, move)
             return FAIL
 
-
+class WonderSkin(AbilityEffect):
+    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if move.category is MoveCategory.STATUS and accuracy is not None:
+            if __debug__: log.i("%s's accuracy is reduced by WonderSkin", move)
+            return accuracy * 0.5
+        return accuracy
 
 class _suppressed_(AbilityEffect):
     pass

@@ -3394,3 +3394,27 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 0)
         self.assertDamageTaken(self.vaporeon, 50 + 37) # spikes + confusion damage
+
+    @patch('random.randrange', lambda _: 45) # miss at 45%- accuracy
+    def test_wonderskin(self):
+        self.reset_leads(p0_ability='wonderskin')
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['stoneedge'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertDamageTaken(self.vaporeon, 139)
+
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.PAR)
+
+        self.choose_move(self.leafeon, movedex['stealthrock'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['agility'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.side.has_effect(Hazard.STEALTHROCK))
+        self.assertBoosts(self.leafeon, {'spe': 2})
