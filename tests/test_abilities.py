@@ -1339,196 +1339,6 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 230)
         self.assertDamageTaken(self.leafeon, 166)
 
-    def test_moldbreaker_vs_aromaveil(self):
-        self.reset_leads(p0_ability='aromaveil', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['taunt'])
-        self.run_turn()
-
-        self.assertTrue(self.vaporeon.has_effect(Volatile.TAUNT))
-
-    def test_moldbreaker_vs_battlearmor(self):
-        self.reset_leads(p0_ability='battlearmor', p1_ability='moldbreaker')
-        self.engine.get_critical_hit = lambda crit: True # crit when possible
-        self.choose_move(self.leafeon, movedex['return'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 213)
-
-    def test_moldbreaker_vs_bulletproof(self):
-        self.reset_leads(p0_ability='bulletproof', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['aurasphere'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 48)
-
-    def test_moldbreaker_vs_clearbody(self):
-        self.reset_leads(p0_ability='clearbody', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['partingshot'])
-        self.run_turn()
-
-        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
-
-    def test_moldbreaker_vs_contrary(self):
-        self.reset_leads(p0_ability='contrary', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['partingshot'])
-        self.run_turn()
-
-        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
-
-    def test_moldbreaker_vs_dryskin(self):
-        self.reset_leads(p0_ability='dryskin', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['surf'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 27)
-
-        self.choose_move(self.leafeon, movedex['flamecharge'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 27 + 35)
-
-    def test_moldbreaker_vs_filter(self):
-        self.reset_leads(p0_ability='filter', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['leafblade'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 378)
-
-    def test_moldbreaker_vs_flashfire(self):
-        self.reset_leads(p0_ability='flashfire', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['hiddenpowerfire'])
-        self.run_turn()
-
-        self.assertFalse(self.vaporeon.has_effect(Volatile.FLASHFIRE))
-        self.assertDamageTaken(self.vaporeon, 18)
-
-    def test_moldbreaker_vs_furcoat(self):
-        self.reset_leads(p0_ability='furcoat', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['leafblade'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 378)
-
-    def test_moldbreaker_vs_hypercutter(self):
-        self.reset_leads(p0_ability='hypercutter', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['partingshot'])
-        self.run_turn()
-
-        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
-
-    @patch('random.randrange', lambda _: 0) # no miss
-    def test_moldbreaker_vs_immunity(self):
-        self.reset_leads(p0_ability='immunity', p1_ability='moldbreaker')
-
-        with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
-            self.choose_move(self.leafeon, movedex['toxic'])
-            self.choose_move(self.vaporeon, movedex['facade'])
-            self.run_turn()
-
-            set_status.assert_called_with(self.vaporeon, Status.TOX, self.leafeon)
-            self.assertStatus(self.vaporeon, None)
-            self.assertDamageTaken(self.leafeon, 34)
-
-    def test_moldbreaker_vs_innerfocus(self):
-        self.reset_leads(p0_ability='innerfocus', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['fakeout'])
-        self.choose_move(self.vaporeon, movedex['bulkup'])
-        self.run_turn()
-
-        self.assertBoosts(self.vaporeon, {'atk': 0, 'def': 0})
-
-    def test_moldbreaker_vs_insomnia(self):
-        self.reset_leads(p0_ability='insomnia', p1_ability='moldbreaker')
-
-        with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
-            self.choose_move(self.leafeon, movedex['spore'])
-            self.choose_move(self.vaporeon, movedex['return'])
-            self.run_turn()
-
-            set_status.assert_called_with(self.vaporeon, Status.SLP, self.leafeon)
-            self.assertStatus(self.vaporeon, None)
-            self.assertDamageTaken(self.leafeon, 50)
-
-    def test_moldbreaker_vs_levitate(self):
-        self.reset_leads(p0_ability='levitate', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['earthquake'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 139)
-
-    def test_moldbreaker_vs_lightningrod(self):
-        self.reset_leads(p0_ability='lightningrod', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['thunderbolt'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 108)
-
-    def test_moldbreaker_vs_limber(self):
-        self.reset_leads(p0_ability='limber', p1_ability='moldbreaker')
-
-        with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
-            self.choose_move(self.leafeon, movedex['thunderwave'])
-            self.choose_move(self.vaporeon, movedex['return'])
-            self.run_turn()
-
-            set_status.assert_called_with(self.vaporeon, Status.PAR, self.leafeon)
-            self.assertStatus(self.vaporeon, None)
-            self.assertDamageTaken(self.leafeon, 50)
-
-    def test_moldbreaker_vs_magicbounce(self):
-        self.reset_leads(p0_ability='magicbounce', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['partingshot'])
-        self.run_turn()
-
-        self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': -1})
-
-    def test_moldbreaker_vs_marvelscale(self):
-        self.reset_leads(p0_ability='marvelscale', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['thunderwave'])
-        self.run_turn()
-        self.choose_move(self.leafeon, movedex['return'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 142)
-
-    def test_moldbreaker_roar_vs_incoming_levitate_with_spikes(self):
-        self.reset_leads(p0_ability='moldbreaker')
-        self.add_pokemon('flareon', 1, ability='levitate')
-        self.choose_move(self.vaporeon, movedex['spikes'])
-        self.run_turn()
-        self.choose_move(self.vaporeon, movedex['roar'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.flareon, self.flareon.max_hp / 8)
-
-    def test_moldbreaker_roar_vs_non_mold_incoming_ability(self):
-        pass
-
-    def test_moldbreaker_magiccoat(self):
-        self.reset_leads(p0_ability='clearbody', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['magiccoat'])
-        self.choose_move(self.vaporeon, movedex['partingshot'])
-        self.run_turn()
-
-        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
-
-    def test_moldbreaker_isnt_active_during_opponents_turn(self):
-        self.reset_leads(p0_ability='insomnia', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['return'])
-        self.choose_move(self.vaporeon, movedex['rest'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, 142)
-        self.assertStatus(self.vaporeon, None)
-
-    def test_moldbreaker_doesnt_suppress_weather_effects(self):
-        self.reset_leads(p0_ability='dryskin', p1_ability='moldbreaker')
-        self.choose_move(self.leafeon, movedex['sunnyday'])
-        self.choose_move(self.vaporeon, movedex['splash'])
-        self.run_turn()
-
-        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
-
     def test_motordrive(self):
         self.reset_leads(p0_ability='motordrive', p1_ability='motordrive')
         self.choose_move(self.leafeon, movedex['thunderwave'])
@@ -2924,14 +2734,6 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 2 * 158)
 
-    def test_moldbreaker_aliases(self):
-        for ability in ('teravolt', 'turboblaze'):
-            self.reset_leads(p0_ability='bulletproof', p1_ability=ability)
-            self.choose_move(self.leafeon, movedex['aurasphere'])
-            self.run_turn()
-
-            self.assertDamageTaken(self.vaporeon, 48)
-
     def test_thickfat(self):
         self.reset_leads(p0_ability='thickfat', p1_ability='thickfat')
         self.choose_move(self.leafeon, movedex['flamecharge'])
@@ -3413,3 +3215,379 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertTrue(self.vaporeon.side.has_effect(Hazard.STEALTHROCK))
         self.assertBoosts(self.leafeon, {'spe': 2})
+
+
+class TestMoldBreaker(MultiMoveTestCase):
+    def __init__(self, *args, **kwargs):
+        self._names = []
+        self.engine = None
+        super(TestMoldBreaker, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+        pass
+
+    def test_moldbreaker_vs_aromaveil(self):
+        self.reset_leads(p0_ability='aromaveil', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['taunt'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.has_effect(Volatile.TAUNT))
+
+    def test_moldbreaker_vs_battlearmor(self):
+        self.reset_leads(p0_ability='battlearmor', p1_ability='moldbreaker')
+        self.engine.get_critical_hit = lambda crit: True # crit when possible
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 213)
+
+    def test_moldbreaker_vs_bulletproof(self):
+        self.reset_leads(p0_ability='bulletproof', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['aurasphere'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 48)
+
+    def test_moldbreaker_vs_clearbody_and_whitesmoke(self):
+        for ability in ('clearbody', 'whitesmoke'):
+            self.reset_leads(p0_ability=ability, p1_ability='moldbreaker')
+            self.choose_move(self.leafeon, movedex['partingshot'])
+            self.run_turn()
+
+            self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
+
+    def test_moldbreaker_vs_contrary(self):
+        self.reset_leads(p0_ability='contrary', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
+
+    def test_moldbreaker_vs_dryskin(self):
+        self.reset_leads(p0_ability='dryskin', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 27)
+
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 27 + 35)
+
+    def test_moldbreaker_vs_filter_and_solidrock(self):
+        for ability in ('filter', 'solidrock'):
+            self.reset_leads(p0_ability=ability, p1_ability='moldbreaker')
+            self.choose_move(self.leafeon, movedex['leafblade'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 378)
+
+    def test_moldbreaker_vs_flashfire(self):
+        self.reset_leads(p0_ability='flashfire', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['hiddenpowerfire'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.FLASHFIRE))
+        self.assertDamageTaken(self.vaporeon, 18)
+
+    def test_moldbreaker_vs_furcoat(self):
+        self.reset_leads(p0_ability='furcoat', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378)
+
+    def test_moldbreaker_vs_hypercutter(self):
+        self.reset_leads(p0_ability='hypercutter', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_moldbreaker_vs_immunity(self):
+        self.reset_leads(p0_ability='immunity', p1_ability='moldbreaker')
+
+        with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
+            self.choose_move(self.leafeon, movedex['toxic'])
+            self.choose_move(self.vaporeon, movedex['facade'])
+            self.run_turn()
+
+            set_status.assert_called_with(self.vaporeon, Status.TOX, self.leafeon)
+            self.assertStatus(self.vaporeon, None)
+            self.assertDamageTaken(self.leafeon, 34)
+
+    def test_moldbreaker_vs_innerfocus(self):
+        self.reset_leads(p0_ability='innerfocus', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['fakeout'])
+        self.choose_move(self.vaporeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 0, 'def': 0})
+
+    def test_moldbreaker_vs_insomnia_sweetveil_vitalspirit(self):
+        for ability in ('insomnia', 'sweetveil', 'vitalspirit'):
+            self.reset_leads(p0_ability=ability, p1_ability='moldbreaker')
+
+            with patch.object(self.engine, 'set_status',
+                              wraps=self.engine.set_status) as set_status:
+                self.choose_move(self.leafeon, movedex['spore'])
+                self.choose_move(self.vaporeon, movedex['return'])
+                self.run_turn()
+
+                set_status.assert_called_with(self.vaporeon, Status.SLP, self.leafeon)
+                self.assertStatus(self.vaporeon, None)
+                self.assertDamageTaken(self.leafeon, 50)
+
+    def test_moldbreaker_vs_levitate(self):
+        self.reset_leads(p0_ability='levitate', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 139)
+
+    def test_moldbreaker_vs_lightningrod(self):
+        self.reset_leads(p0_ability='lightningrod', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['thunderbolt'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 108)
+
+    def test_moldbreaker_vs_limber(self):
+        self.reset_leads(p0_ability='limber', p1_ability='moldbreaker')
+
+        with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
+            self.choose_move(self.leafeon, movedex['thunderwave'])
+            self.choose_move(self.vaporeon, movedex['return'])
+            self.run_turn()
+
+            set_status.assert_called_with(self.vaporeon, Status.PAR, self.leafeon)
+            self.assertStatus(self.vaporeon, None)
+            self.assertDamageTaken(self.leafeon, 50)
+
+    def test_moldbreaker_vs_magicbounce(self):
+        self.reset_leads(p0_ability='magicbounce', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': -1})
+
+    def test_moldbreaker_vs_marvelscale(self):
+        self.reset_leads(p0_ability='marvelscale', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+
+    def test_moldbreaker_roar_vs_incoming_levitate_with_spikes(self):
+        self.reset_leads(p0_ability='moldbreaker')
+        self.add_pokemon('flareon', 1, ability='levitate')
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, self.flareon.max_hp / 8)
+
+    def test_moldbreaker_magiccoat(self):
+        self.reset_leads(p0_ability='clearbody', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['magiccoat'])
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
+
+    def test_moldbreaker_isnt_active_during_opponents_turn(self):
+        self.reset_leads(p0_ability='insomnia', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['rest'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertStatus(self.vaporeon, None)
+
+    def test_moldbreaker_doesnt_suppress_weather_effects(self):
+        self.reset_leads(p0_ability='dryskin', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['sunnyday'])
+        self.choose_move(self.vaporeon, movedex['splash'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+
+    def test_moldbreaker_aliases(self):
+        for ability in ('teravolt', 'turboblaze'):
+            self.reset_leads(p0_ability='bulletproof', p1_ability=ability)
+            self.choose_move(self.leafeon, movedex['aurasphere'])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 48)
+
+    def test_moldbreaker_vs_multiscale(self):
+        self.reset_leads(p0_ability='multiscale', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378)
+
+    def test_moldbreaker_vs_overcoat(self):
+        self.reset_leads(p0_ability='overcoat', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['spore'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.SLP)
+
+    def test_moldbreaker_vs_owntempo(self):
+        self.reset_leads(p0_ability='owntempo', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
+
+    @patch('random.randrange', lambda _: 80) # miss at 80%- accuracy
+    def test_moldbreaker_vs_sandveil(self):
+        self.reset_leads(p0_ability='sandveil', p1_ability='moldbreaker')
+        self.battlefield.set_weather(Weather.SANDSTORM)
+        self.choose_move(self.leafeon, movedex['crabhammer'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 69)
+
+    def test_moldbreaker_vs_sapsipper(self):
+        self.reset_leads(p0_ability='sapsipper', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378)
+
+    def test_moldbreaker_vs_shielddust(self):
+        self.reset_leads(p0_ability='shielddust', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['nuzzle'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 58)
+        self.assertStatus(self.vaporeon, Status.PAR)
+
+    def test_moldbreaker_vs_simple(self):
+        self.reset_leads(p0_ability='simple', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': -1})
+
+    @patch('random.randrange', lambda _: 80) # miss at 80%- accuracy
+    def test_moldbreaker_vs_snowcloak(self):
+        self.reset_leads(p0_ability='snowcloak', p1_ability='moldbreaker')
+        self.battlefield.set_weather(Weather.HAIL)
+        self.choose_move(self.leafeon, movedex['crabhammer'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 69)
+
+    def test_moldbreaker_vs_soundproof(self):
+        self.reset_leads(p0_ability='soundproof', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['boomburst'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 83)
+
+    # def test_moldbreaker_vs_stickyhold(self):
+    #     pass # TODO: implement items
+
+    def test_moldbreaker_vs_stormdrain(self):
+        self.reset_leads(p0_ability='stormdrain', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 27)
+
+    def test_moldbreaker_vs_sturdy(self):
+        self.reset_leads(p0_ability='sturdy', p1_ability='moldbreaker')
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=1))
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_moldbreaker_vs_suctioncups(self):
+        self.reset_leads(p0_ability='suctioncups', p1_ability='moldbreaker')
+        self.add_pokemon('flareon', 0, ability='suctioncups')
+        self.choose_move(self.leafeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertTrue(self.flareon.is_active)
+
+        self.choose_move(self.leafeon, movedex['circlethrow'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, 84)
+        self.assertTrue(self.vaporeon.is_active)
+
+    @patch('random.randrange', lambda _: 50) # miss at 50%- accuracy
+    def test_moldbreaker_vs_tangledfeet(self):
+        self.reset_leads(p0_ability='tangledfeet', p1_ability='moldbreaker')
+        self.vaporeon.confuse()
+        self.choose_move(self.leafeon, movedex['taunt'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.has_effect(Volatile.TAUNT))
+
+    def test_moldbreaker_vs_thickfat(self):
+        self.reset_leads(p0_ability='thickfat', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['icebeam'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 27)
+
+    def test_moldbreaker_vs_unaware(self):
+        self.reset_leads(p0_ability='unaware', p1_ability='moldbreaker')
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=2))
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 283)
+
+    def test_moldbreaker_vs_voltabsorb(self):
+        self.reset_leads(p0_ability='voltabsorb', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['thunderbolt'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 108)
+
+    def test_moldbreaker_vs_waterabsorb(self):
+        self.reset_leads(p0_ability='waterabsorb', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 27)
+
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_moldbreaker_vs_waterveil(self):
+        self.reset_leads(p0_ability='waterveil', p1_ability='moldbreaker')
+
+        with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
+            self.choose_move(self.leafeon, movedex['willowisp'])
+            self.choose_move(self.vaporeon, movedex['facade'])
+            self.run_turn()
+
+            set_status.assert_called_with(self.vaporeon, Status.BRN, self.leafeon)
+            self.assertStatus(self.vaporeon, None)
+            self.assertDamageTaken(self.leafeon, 34)
+
+    def test_moldbreaker_vs_wonderguard(self):
+        self.reset_leads(p0_ability='wonderguard', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+
+    @patch('random.randrange', lambda _: 99) # miss if possible
+    def test_moldbreaker_vs_wonderskin(self):
+        self.reset_leads(p0_ability='wonderskin', p1_ability='moldbreaker')
+        self.choose_move(self.leafeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': -1})
