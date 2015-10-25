@@ -79,14 +79,14 @@ class Burn(BaseStatusEffect):
 
     @priority(-9)
     def on_residual(self, pokemon, foe, engine):
-        engine.damage(pokemon, pokemon.max_hp / 8, Cause.RESIDUAL, self)
+        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
 class Poison(BaseStatusEffect):
     source = Status.PSN
 
     @priority(-9)
     def on_residual(self, pokemon, foe, engine):
-        engine.damage(pokemon, pokemon.max_hp / 8, Cause.RESIDUAL, self)
+        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
 class Toxic(BaseStatusEffect):
     source = Status.TOX

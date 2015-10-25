@@ -223,7 +223,7 @@ class PartialTrap(BaseEffect):
             pokemon.remove_effect(Volatile.PARTIALTRAP)
             return
         if __debug__: log.i("%s was hurt by PartialTrap", pokemon)
-        engine.damage(pokemon, pokemon.max_hp / 8, Cause.RESIDUAL, self)
+        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
     def on_end(self, pokemon, _):  # could end by e.g. uturn or roar
         self.trapper.remove_effect(Volatile.TRAPPER)
@@ -297,7 +297,7 @@ class LeechSeed(BaseEffect):
     def on_residual(self, pokemon, foe, engine):
         if foe is None or foe.is_fainted():
             return
-        engine.damage(pokemon, pokemon.max_hp / 8, Cause.RESIDUAL, self, foe, 100)
+        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self, foe, 100)
 
 class LightScreen(BaseEffect):
     source = SideCondition.LIGHTSCREEN
@@ -461,7 +461,7 @@ class Spikes(BaseEffect):
         # 1, 2, 3 layers of spikes do 1/8, 1/6, 1/4 damage respectively
         if not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i("%s was damaged by Spikes", pokemon)
-            engine.damage(pokemon, pokemon.max_hp / (None, 8, 6, 4)[self.layers],
+            engine.damage(pokemon, pokemon.max_hp / (None, 8.0, 6.0, 4.0)[self.layers],
                           Cause.HAZARD, self)
 
 class SpikyShield(BaseEffect):
@@ -474,7 +474,7 @@ class SpikyShield(BaseEffect):
             return
 
         if move.makes_contact:
-            engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
+            engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
         return FAIL
 
 class StealthRock(BaseEffect):
@@ -483,7 +483,7 @@ class StealthRock(BaseEffect):
     @priority(0)
     def on_switch_in(self, pokemon, engine):
         if __debug__: log.i("%s was damaged by StealthRock", pokemon)
-        engine.damage(pokemon, int(pokemon.max_hp / (8 / effectiveness(Type.ROCK, pokemon))),
+        engine.damage(pokemon, int(pokemon.max_hp / (8.0 / effectiveness(Type.ROCK, pokemon))),
                       Cause.HAZARD, self)
 
 class StickyWeb(BaseEffect):

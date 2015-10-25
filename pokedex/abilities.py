@@ -50,7 +50,7 @@ class Aftermath(AbilityEffect):
              source.makes_contact and
              foe is not None)):
             if __debug__: log.i("%s was damaged by %s's aftermath", foe, pokemon)
-            engine.damage(foe, foe.max_hp / 4, Cause.OTHER)
+            engine.damage(foe, foe.max_hp / 4.0, Cause.OTHER)
 
 class Aerilate(AbilityEffect):
     def on_modify_move(self, move, user, engine):
@@ -115,7 +115,7 @@ class BadDreams(AbilityEffect):
 
         if foe.status is Status.SLP:
             if __debug__: log.i("%s is hurt by %s's BadDreams", foe, pokemon)
-            engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
+            engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
 class BattleArmor(AbilityEffect):
     pass # implemented in BattleEngine.modify_critical_hit # TODO: use effect instead?
@@ -282,7 +282,7 @@ class DrySkin(AbilityEffect):
         if weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
             engine.heal(pokemon, pokemon.max_hp / 8)
         elif weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
-            engine.damage(pokemon, pokemon.max_hp / 8, Cause.OTHER)
+            engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.OTHER)
 
 class EarlyBird(AbilityEffect):
     @priority(11)
@@ -482,7 +482,7 @@ class IronBarbs(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         if cause is Cause.MOVE and source.makes_contact and foe is not None:
             if __debug__: log.i("%s was damaged by %s's IronBarbs", foe, pokemon)
-            engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
+            engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
 class IronFist(AbilityEffect):
     def on_modify_base_power(self, user, move, target, engine, base_power):
@@ -794,7 +794,7 @@ class RoughSkin(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         if cause is Cause.MOVE and source.makes_contact and foe is not None:
             if __debug__: log.i("%s was damaged by %s's RoughSkin", foe, pokemon)
-            engine.damage(foe, foe.max_hp / 8, Cause.OTHER)
+            engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
 class SandRush(AbilityEffect):
     def on_get_immunity(self, thing):
@@ -910,7 +910,7 @@ class SolarPower(AbilityEffect):
     def on_weather(self, pokemon, weather, engine):
         if weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
             if __debug__: log.i('%s was hurt by its SolarPower!')
-            engine.damage(pokemon, pokemon.max_hp / 8, Cause.OTHER)
+            engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.OTHER)
 
     def on_modify_spa(self, pokemon, move, engine, spa):
         if engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):

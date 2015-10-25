@@ -1701,7 +1701,7 @@ class highjumpkick(Move):
         self.recoil = -1
 
     def on_move_fail(self, user, engine):
-        engine.damage(user, user.max_hp / 2, Cause.CRASH, self)
+        engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class honeclaws(Move):
     def __init__(self):
@@ -1924,7 +1924,7 @@ class jumpkick(Move):
         self.recoil = -1
 
     def on_move_fail(self, user, engine):
-        engine.damage(user, user.max_hp / 2, Cause.CRASH, self)
+        engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class kingsshield(Move):
     def __init__(self):
@@ -3292,7 +3292,7 @@ class struggle(Move):
         self.on_success_ignores_substitute = True
 
     def on_success(self, user, target, engine):
-        engine.direct_damage(user, user.max_hp / 4)
+        engine.direct_damage(user, user.max_hp / 4.0)
 
 class stunspore(Move):
     def __init__(self):
@@ -3319,7 +3319,7 @@ class substitute(Move):
            return FAIL
 
     def on_success(self, user, _, engine):
-        engine.direct_damage(user, user.max_hp / 4)
+        engine.direct_damage(user, user.max_hp / 4.0)
         user.set_effect(effects.Substitute(user.max_hp / 4))
 
 class suckerpunch(Move):
