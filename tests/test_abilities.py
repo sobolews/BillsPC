@@ -3320,3 +3320,25 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 0)
+
+    def test_waterabsorb(self):
+        self.reset_leads(p0_ability='waterabsorb')
+        self.choose_move(self.leafeon, movedex['raindance'])
+        self.choose_move(self.vaporeon, movedex['bellydrum'])
+        self.run_turn()
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+        self.choose_move(self.leafeon, movedex['weatherball'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, (self.vaporeon.max_hp / 2 -
+                                               self.vaporeon.max_hp / 4))
+
+        self.choose_move(self.leafeon, movedex['aquajet'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)

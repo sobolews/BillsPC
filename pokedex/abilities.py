@@ -1155,6 +1155,14 @@ class VoltAbsorb(AbilityEffect):
             engine.heal(target, target.max_hp / 4)
             return FAIL
 
+class WaterAbsorb(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if move.type is Type.WATER:
+            if __debug__: log.i('%s was healed by its WaterAbsorb', target)
+            engine.heal(target, target.max_hp / 4)
+            return FAIL
+
 
 
 class _suppressed_(AbilityEffect):
