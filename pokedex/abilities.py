@@ -595,9 +595,9 @@ MOLDS = {'aromaveil', 'battlearmor', 'bigpecks', 'bulletproof', 'clearbody', 'co
          'leafguard', 'levitate', 'lightmetal', 'lightningrod', 'limber', 'magicbounce',
          'magmaarmor', 'marvelscale', 'motordrive', 'multiscale', 'oblivious', 'overcoat',
          'owntempo', 'sandveil', 'sapsipper', 'shellarmor', 'shielddust', 'simple', 'snowcloak',
-         'solidrock', 'soundproof', 'stickyhold', 'stormdrain', 'sturdy', 'suctioncups', 'sweetveil'
-         'tangledfeet', 'telepathy', 'thickfat', 'unaware', 'vitalspirit', 'voltabsorb',
-         'waterabsorb', 'waterveil', 'whitesmoke', 'wonderguard', 'wonderskin'}
+         'solidrock', 'soundproof', 'stickyhold', 'stormdrain', 'sturdy', 'suctioncups',
+         'sweetveil', 'tangledfeet', 'telepathy', 'thickfat', 'unaware', 'vitalspirit',
+         'voltabsorb', 'waterabsorb', 'waterveil', 'whitesmoke', 'wonderguard', 'wonderskin'}
 
 class MotorDrive(AbilityEffect):
     @priority(0)
