@@ -1172,6 +1172,9 @@ class WaterVeil(AbilityEffect):
         if pokemon.status is Status.BRN:
             pokemon.cure_status()
 
+class WhiteSmoke(AbilityEffect):
+    on_boost = ClearBody.on_boost.__func__
+
 
 
 class _suppressed_(AbilityEffect):

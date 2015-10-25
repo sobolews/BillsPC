@@ -332,18 +332,19 @@ class TestAbilities(MultiMoveTestCase):
         self.assertFainted(self.vaporeon)
         self.assertStatus(self.leafeon, None)
 
-    def test_clearbody(self):
-        self.reset_leads(p0_ability='clearbody')
-        self.choose_move(self.leafeon, movedex['partingshot'])
-        self.choose_move(self.vaporeon, movedex['superpower'])
-        self.run_turn()
+    def test_clearbody_and_whitesmoke(self):
+        for ability in ('clearbody', 'whitesmoke'):
+            self.reset_leads(p0_ability=ability)
+            self.choose_move(self.leafeon, movedex['partingshot'])
+            self.choose_move(self.vaporeon, movedex['superpower'])
+            self.run_turn()
 
-        self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': 0, 'def': -1})
+            self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': 0, 'def': -1})
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_induced=False)
-        self.assertEqual(self.vaporeon.boosts['spe'], 0)
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_induced=True)
-        self.assertEqual(self.vaporeon.boosts['spe'], -3)
+            self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_induced=False)
+            self.assertEqual(self.vaporeon.boosts['spe'], 0)
+            self.engine.apply_boosts(self.vaporeon, Boosts(spe=-3), self_induced=True)
+            self.assertEqual(self.vaporeon.boosts['spe'], -3)
 
     def test_competitive(self):
         self.reset_leads(p0_ability='competitive')
