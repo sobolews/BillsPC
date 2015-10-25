@@ -948,12 +948,6 @@ class TestAbilities(MultiMoveTestCase):
 
             self.assertIsNone(self.vaporeon.status)
 
-    # def test_trace_insomnia_cures_sleep(self):
-    #     pass # TODO when: implement trace
-
-    # def test_mold_breaker_spore_causes_insomniac_to_sleep_then_immediately_wake(self):
-    #     pass # TODO when: implement moldbreaker
-
     def test_intimidate(self):
         self.reset_leads(p0_ability='intimidate', p1_ability='competitive')
         self.add_pokemon('flareon', 0, ability='intimidate')
@@ -1087,9 +1081,6 @@ class TestAbilities(MultiMoveTestCase):
 
         self.assertStatus(self.vaporeon, None)
         self.assertStatus(self.leafeon, None)
-
-    # def test_tracing_limber_cures_paralysis(self):
-    #     pass # TODO when: implement trace
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_liquidooze(self):
@@ -1867,8 +1858,12 @@ class TestAbilities(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 28)
         self.assertDamageTaken(self.leafeon, 28 * 4)
 
-    # def test_parentalbond_breaks_sturdy(self):
-    #     pass # TODO when: implement sturdy
+    def test_parentalbond_breaks_sturdy(self):
+        self.reset_leads(p0_ability='sturdy', p1_ability='parentalbond')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
 
     # def test_pickpocket(self):
     #     pass # TODO when: implement items
