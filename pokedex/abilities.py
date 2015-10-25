@@ -584,7 +584,7 @@ class MoldBreaker(AbilityEffect):
             self.suppressed = False
 
     def on_unbreak_mold(self, target):
-        if self.suppressed and not target.is_fainted() and target.is_active:
+        if self.suppressed and target is not None and target.is_active:
             target.unsuppress_ability()
             if __debug__: log.d("%s's %s was restored", target, target.ability)
         self.suppressed = False
