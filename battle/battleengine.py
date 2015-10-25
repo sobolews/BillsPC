@@ -653,7 +653,10 @@ class BattleEngine(object):
         return pokemon.boosts.update(boosts)
 
     def force_random_switch(self, pokemon, forcer):
-        if pokemon.ability.name == 'suctioncups':
+        if (pokemon.is_fainted() or
+            forcer.is_fainted() or
+            pokemon.ability.name == 'suctioncups'
+        ):
             return FAIL
 
         team_members = self.get_switch_choices(pokemon.side, forced=True)
@@ -663,6 +666,8 @@ class BattleEngine(object):
             self.run_switch(pokemon, incoming)
             forcer.get_effect(ABILITY).on_break_mold(incoming, self)
             self.post_switch_in(incoming)
+        elif __debug__:
+            log.i('Tried to force random switch; %s has no remaining teammates', pokemon)
 
     def set_status(self, pokemon, status, setter):
         """

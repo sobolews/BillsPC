@@ -1060,3 +1060,28 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertEqual(self.leafeon.hp, 150) # leechseed happens first
         self.assertFainted(self.vaporeon)
+
+    def test_force_random_switch_with_forcer_faint(self):
+        self.reset_leads(p0_ability='ironbarbs', p1_ability='noguard')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('jolteon', 1)
+        self.leafeon.hp = 10
+        self.choose_move(self.leafeon, movedex['dragontail'])
+        self.run_turn()
+        self.engine.init_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertTrue(self.vaporeon.is_active)
+        self.assertFalse(self.flareon.is_active)
+
+    def test_force_random_switch_with_target_faint(self):
+        self.reset_leads(p1_ability='noguard')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('umbreon', 0)
+        with patch('random.choice', lambda _, self=self: self.umbreon):
+            self.vaporeon.hp = 10
+            self.choose_move(self.leafeon, movedex['dragontail'])
+            self.run_turn()
+            self.engine.init_turn()
+
+        self.assertTrue(self.flareon.is_active)
