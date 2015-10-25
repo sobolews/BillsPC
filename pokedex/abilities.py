@@ -1175,6 +1175,17 @@ class WaterVeil(AbilityEffect):
 class WhiteSmoke(AbilityEffect):
     on_boost = ClearBody.on_boost.__func__
 
+class WonderGuard(AbilityEffect):
+    @priority(0)
+    def on_foe_try_hit(self, foe, move, target, engine):
+        if (move.category is not MoveCategory.STATUS and
+            engine.get_effectiveness(foe, move, target) <= 1 and
+            move.type is not Type['???'] and
+            foe is not target
+        ):
+            if __debug__: log.i("WonderGuard makes %s immune to %s!", target, move)
+            return FAIL
+
 
 
 class _suppressed_(AbilityEffect):

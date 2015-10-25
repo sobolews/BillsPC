@@ -3356,3 +3356,41 @@ class TestAbilities(MultiMoveTestCase):
         self.run_turn()
 
         self.assertStatus(self.vaporeon, None)
+
+    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    def test_wonderguard(self):
+        self.reset_leads('vaporeon', p0_ability='wonderguard')
+        self.add_pokemon('shedinja', 0, ability='wonderguard')
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['lavaplume'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['spikes'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertTrue(self.vaporeon.side.has_effect(Hazard.SPIKES))
+
+        self.choose_move(self.leafeon, movedex['fusionbolt'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 278)
+
+        self.choose_move(self.leafeon, movedex['darkvoid'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.SLP)
+        self.vaporeon.cure_status()
+        self.engine.heal(self.vaporeon, 400)
+
+        self.choose_switch(self.vaporeon, self.shedinja)
+        self.run_turn()
+
+        self.assertFainted(self.shedinja)
+
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)
+        self.assertDamageTaken(self.vaporeon, 50 + 37) # spikes + confusion damage
