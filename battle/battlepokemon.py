@@ -1,7 +1,7 @@
 from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
-                           SideCondition)
+                           SideCondition, ITEM)
 from pokedex.items import itemdex
 from pokedex.stats import Boosts, PokemonStats
 from pokedex.types import effectiveness
@@ -286,15 +286,24 @@ class BattlePokemon(object):
         if self.ability == abilitydex['unburden']:
             self.set_effect(effects.Unburden())
         if __debug__: log.i('Removed %s from %s', self.item, self)
+        self.remove_effect(ITEM)
         self.item = None
         return item
 
     def set_item(self, item):   # TODO: implement items
         self.remove_effect(Volatile.UNBURDEN)
 
-    def use_item(self, item):   # TODO: implement items
-        """ Return FAIL if item was not used successfully """
-        pass
+    def use_item(self):
+        """
+        Return FAIL if item was not used successfully. It is assumed that the item can be used.
+        """
+        assert self.item is not None and self.item.is_removable
+
+        if self.ability == abilitydex['unburden']:
+            self.set_effect(effects.Unburden())
+
+        self.remove_effect(ITEM)
+        self.item = None
 
     @property
     def weight(self):
