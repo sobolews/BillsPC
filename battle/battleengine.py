@@ -817,7 +817,8 @@ class BattleEngine(object):
         if __debug__: log.i('Switched in %s on side %s', pokemon, pokemon.side.index)
 
         pokemon.set_effect(pokemon.ability())
-        # pokemon.set_effect(pokemon.item) # TODO when: implement items
+        if pokemon.item is not None:
+            pokemon.set_effect(pokemon.item())
 
         if pokemon.status is not None:
             pokemon.set_effect(STATUS_EFFECTS[pokemon.status](pokemon))
@@ -835,7 +836,9 @@ class BattleEngine(object):
             return
 
         pokemon.get_effect(ABILITY).start(pokemon, self)
-        # pokemon.get_effect(ITEM).on_start(pokemon, self) # TODO when: implement items
+        item_effect = pokemon.get_effect(ITEM)
+        if item_effect is not None:
+            item_effect.on_start(pokemon, self)
 
     def get_move_decisions(self): # TODO: deal with mega evolution decision
         decisions = []
