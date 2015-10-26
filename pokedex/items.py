@@ -1,29 +1,47 @@
 """
-Implementations of items go here.
-
-TODO: implement items.
+All items are implemented here, and gathered in to the `itemdex` dictionary.
+Items are named in CamelCase, but their .name attribute is lowercasenospaces.
 """
+import inspect
 
-class Item(object):
+from pokedex.baseeffect import BaseEffect
+from pokedex.enums import ITEM
+
+class BaseItem(object):
+    class __metaclass__(type):
+        def __new__(cls, name, bases, dct):
+            dct['name'] = name.lower()
+            return type.__new__(cls, name, bases, dct)
+
+        def __repr__(self):
+            return self.__name__
+
     choicelock = False
     is_mega_stone = False
     is_berry = False
     is_plate = False
     is_drive = False
     is_removable = True
+    source = ITEM
 
-    def __init__(self, name):
-        self.name = name
+    def __repr__(self):
+        return "%s()" % self.__class__.__name__
 
-class _tmp_DefaultDict(dict):
-    """
-    Placeholder itemdex.
-    """
-    def __getitem__(self, value):
-        try:
-            return dict.__getitem__(self, value)
-        except KeyError:
-            return Item('')
+class ItemEffect(BaseItem, BaseEffect):
+    pass
 
-itemdex = _tmp_DefaultDict()
-itemdex['safariball'] = Item('safariball')
+
+
+
+class AirBalloon(ItemEffect):
+    pass
+class LightClay(ItemEffect):
+    pass
+class PowerHerb(ItemEffect):
+    pass
+
+itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
+           inspect.isclass(obj) and
+           issubclass(obj, BaseItem) and
+           obj not in (BaseItem, ItemEffect) and
+           'Base' not in obj.__name__}

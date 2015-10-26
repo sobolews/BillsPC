@@ -92,7 +92,7 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
 
     def test_acrobatics(self):
-        self.vaporeon.item = itemdex['safariball']
+        self.vaporeon.item = itemdex['lightclay']
         damage = self.engine.use_move(self.vaporeon, movedex['acrobatics'], self.leafeon)
         self.assertEqual(damage, 54)
         self.vaporeon.take_item()
