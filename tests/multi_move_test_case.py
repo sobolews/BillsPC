@@ -13,7 +13,7 @@ from battle.events import MoveEvent, SwitchEvent
 from mining import create_pokedex
 from pokedex.abilities import abilitydex
 from pokedex.items import itemdex
-from pokedex.enums import Status, ABILITY
+from pokedex.enums import Status, ABILITY, ITEM
 from pokedex.moves import movedex
 
 pokedex = create_pokedex()
@@ -197,6 +197,23 @@ class MultiMoveTestCase(TestCase):
     def assertPpUsed(self, pokemon, move, pp):
         move = movedex[move]
         self.assertEqual(pokemon.pp[move], move.max_pp - pp)
+
+    def assertItem(self, pokemon, item):
+        self.assertEqual(pokemon.item, itemdex.get(item))
+        if item is None:
+            self.assertFalse(pokemon.has_effect(ITEM))
+        else:
+            held = pokemon.get_effect(ITEM)
+            self.assertIsNotNone(held)
+            self.assertEqual(held.name, item)
+
+    def assertActive(self, pokemon):
+        self.assertTrue(pokemon.is_active)
+        for teammate in pokemon.side.team:
+            if teammate is not pokemon:
+                self.assertFalse(teammate.is_active)
+
+        self.assertIs(pokemon.side.active_pokemon, pokemon)
 
     @property
     def battlefield(self):
