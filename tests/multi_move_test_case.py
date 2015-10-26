@@ -12,6 +12,7 @@ from battle.decisionmakers import AutoDecisionMaker
 from battle.events import MoveEvent, SwitchEvent
 from mining import create_pokedex
 from pokedex.abilities import abilitydex
+from pokedex.items import itemdex
 from pokedex.enums import Status, ABILITY
 from pokedex.moves import movedex
 
@@ -111,11 +112,13 @@ class MultiMoveTestCase(TestCase):
         self._names = [p0_name, p1_name]
         setattr(self, p0_name, AnyMovePokemon(pokedex[p0_name], side=None,
                                               ability=abilitydex[p0_ability],
-                                              evs=(0,)*6, moveset=p0_moves, item=p0_item,
+                                              evs=(0,)*6, moveset=p0_moves,
+                                              item=itemdex.get(p0_item),
                                               level=p0_level, gender=p0_gender))
         setattr(self, p1_name, AnyMovePokemon(pokedex[p1_name], side=None,
                                               ability=abilitydex[p1_ability],
-                                              evs=(0,)*6, moveset=p1_moves, item=p1_item,
+                                              evs=(0,)*6, moveset=p1_moves,
+                                              item=itemdex.get(p1_item),
                                               level=p1_level, gender=p1_gender))
         self.engine = TestingEngine([getattr(self, p0_name)],
                                     [getattr(self, p1_name)],
@@ -128,6 +131,9 @@ class MultiMoveTestCase(TestCase):
 
         self.engine.init_battle()
 
+    def reset_items(self, p0_item=None, p1_item=None):
+        self.reset_leads(p0_item=p0_item, p1_item=p1_item)
+
     def add_pokemon(self, name, side, ability='_none_', item=None, moves=()):
         """
         `side` is 0 or 1.
@@ -135,8 +141,8 @@ class MultiMoveTestCase(TestCase):
         """
         battle_side = self.engine.battlefield.sides[side]
         pokemon = AnyMovePokemon(pokedex[name], side=battle_side, evs=(0,)*6,
-
-                                 moveset=moves, ability=abilitydex[ability], item=item)
+                                 moveset=moves, ability=abilitydex[ability],
+                                 item=itemdex.get(item))
         setattr(self, name, pokemon)
         battle_side.team.append(pokemon)
         self._names.append(name)
