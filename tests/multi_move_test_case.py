@@ -199,3 +199,16 @@ class MultiMoveTestCase(TestCase):
     @property
     def faint_log(self):
         return self.engine.faint_queue.log
+
+class MultiMoveTestCaseWithoutSetup(MultiMoveTestCase):
+    """
+    Note: overrides MultiMoveTestCase's default setUp, so self.reset_leads must be called in
+    each test.
+    """
+    def __init__(self, *args, **kwargs):
+        self._names = []
+        self.engine = None
+        super(MultiMoveTestCaseWithoutSetup, self).__init__(*args, **kwargs)
+
+    def setUp(self):
+        pass

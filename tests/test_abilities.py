@@ -5,21 +5,9 @@ from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Weather, Volatile, Hazard, PseudoWeather, Type
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
-from tests.multi_move_test_case import MultiMoveTestCase
+from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
-class TestAbilities(MultiMoveTestCase):
-    """
-    Note: overrides MultiMoveTestCase's default setUp, so self.reset_leads must be called in
-    each test.
-    """
-    def __init__(self, *args, **kwargs):
-        self._names = []
-        self.engine = None
-        super(TestAbilities, self).__init__(*args, **kwargs)
-
-    def setUp(self):
-        pass
-
+class TestAbilities(MultiMoveTestCaseWithoutSetup):
     def test_adaptability(self):
         self.reset_leads('vaporeon', 'blastoise', p0_ability='adaptability')
         self.choose_move(self.vaporeon, movedex['surf'])
@@ -3217,15 +3205,7 @@ class TestAbilities(MultiMoveTestCase):
         self.assertBoosts(self.leafeon, {'spe': 2})
 
 
-class TestMoldBreaker(MultiMoveTestCase):
-    def __init__(self, *args, **kwargs):
-        self._names = []
-        self.engine = None
-        super(TestMoldBreaker, self).__init__(*args, **kwargs)
-
-    def setUp(self):
-        pass
-
+class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
     def test_moldbreaker_vs_aromaveil(self):
         self.reset_leads(p0_ability='aromaveil', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, movedex['taunt'])
