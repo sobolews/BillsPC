@@ -67,3 +67,26 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 37)
 
         self.assertItem(self.vaporeon, 'airballoon')
+
+    def test_assaultvest(self):
+        self.reset_leads(p0_item='assaultvest',
+                         p0_moves=[movedex['taunt'], movedex['recover'],
+                                   movedex['protect'], movedex['leechseed']])
+        self.assertMoveChoices(self.vaporeon, {movedex['struggle']})
+
+
+        self.reset_leads(p0_item='assaultvest', p0_ability='noguard',
+                         p0_moves=[movedex['taunt'], movedex['return'],
+                                   movedex['protect'], movedex['leafblade']])
+
+        self.assertMoveChoices(self.vaporeon, {movedex['return'], movedex['leafblade']})
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+
+        self.choose_move(self.leafeon, movedex['leafstorm'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142 + 156)

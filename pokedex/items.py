@@ -5,7 +5,7 @@ Items are named in CamelCase, but their .name attribute is lowercasenospaces.
 import inspect
 
 from pokedex.baseeffect import BaseEffect
-from pokedex.enums import ITEM, Type, Cause
+from pokedex.enums import ITEM, Type, Cause, MoveCategory
 
 class BaseItem(object):
     class __metaclass__(type):
@@ -38,6 +38,13 @@ class AirBalloon(ItemEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         if cause is Cause.MOVE and pokemon is not foe:
             pokemon.use_item()
+
+class AssaultVest(ItemEffect):
+    def on_get_move_choices(self, pokemon, moves):
+        return [move for move in moves if not move.category is MoveCategory.STATUS]
+
+    def on_modify_spd(self, pokemon, move, engine, spd):
+        return spd * 1.5
 
 
 
