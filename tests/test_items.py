@@ -101,3 +101,28 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
     # def test_blueorb(self):
     #     pass # TODO when: implement forme changes
+
+    def test_chestoberry(self):
+        self.reset_leads(p0_ability='baddreams', p1_ability='noguard',
+                         p0_item='chestoberry', p1_item='chestoberry')
+        self.choose_move(self.leafeon, movedex['spore'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertDamageTaken(self.leafeon, 50)
+
+        self.choose_move(self.leafeon, movedex['rest'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.assertItem(self.leafeon, 'chestoberry')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+        self.assertStatus(self.leafeon, None)
+        self.assertItem(self.leafeon, None)
+
+        self.choose_move(self.vaporeon, movedex['darkvoid'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50 + self.leafeon.max_hp / 8)
+        self.assertStatus(self.leafeon, Status.SLP)

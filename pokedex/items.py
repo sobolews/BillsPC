@@ -6,7 +6,7 @@ import inspect
 
 from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
-from pokedex.enums import ITEM, Type, Cause, MoveCategory
+from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status
 
 class BaseItem(object):
     class __metaclass__(type):
@@ -57,6 +57,17 @@ class BlackSludge(ItemEffect):
 
 # class BlueOrb(ItemEffect):
 #     pass # TODO when: implement forme changes
+
+class ChestoBerry(ItemEffect):
+    is_berry = True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.status is Status.SLP:
+            pokemon.use_item(engine)
+
+    def on_use_item(self, pokemon, item, engine):
+        if pokemon.status is Status.SLP:
+            pokemon.cure_status()
 
 
 
