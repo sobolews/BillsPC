@@ -90,3 +90,11 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 142 + 156)
+
+    def test_blacksludge(self):
+        self.reset_leads('vaporeon', 'muk', p0_item='blacksludge', p1_item='blacksludge')
+        self.choose_move(self.muk, movedex['bellydrum'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.muk, (self.muk.max_hp / 2) - (self.muk.max_hp / 16))
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)

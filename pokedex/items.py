@@ -4,6 +4,7 @@ Items are named in CamelCase, but their .name attribute is lowercasenospaces.
 """
 import inspect
 
+from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import ITEM, Type, Cause, MoveCategory
 
@@ -45,6 +46,14 @@ class AssaultVest(ItemEffect):
 
     def on_modify_spd(self, pokemon, move, engine, spd):
         return spd * 1.5
+
+class BlackSludge(ItemEffect):
+    @priority(-5.2)
+    def on_residual(self, pokemon, foe, engine):
+        if Type.POISON in pokemon.types:
+            engine.heal(pokemon, pokemon.max_hp / 16)
+        else:
+            engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
 
 
