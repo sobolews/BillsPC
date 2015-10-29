@@ -38,7 +38,7 @@ class AirBalloon(ItemEffect):
 
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
         if cause is Cause.MOVE and pokemon is not foe:
-            pokemon.use_item()
+            pokemon.use_item(engine)
 
 class AssaultVest(ItemEffect):
     def on_get_move_choices(self, pokemon, moves):

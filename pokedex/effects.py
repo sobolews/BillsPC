@@ -537,7 +537,7 @@ class Substitute(BaseEffect):
             move.on_success(foe, target, engine)
 
         if target.item is itemdex['airballoon']:
-            target.use_item()
+            target.use_item(engine)
 
         for s_effect in move.secondary_effects:
             if s_effect.affects_user:

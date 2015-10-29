@@ -293,17 +293,26 @@ class BattlePokemon(object):
     def set_item(self, item):   # TODO: implement items
         self.remove_effect(Volatile.UNBURDEN)
 
-    def use_item(self):
+    def use_item(self, engine, other_item=None):
         """
         Return FAIL if item was not used successfully. It is assumed that the item can be used.
+        Uses self.item unless other_item is specified.
         """
-        assert self.item is not None and self.item.is_removable
+        if other_item is None:
+            item = self.item
+            assert item is not None and item.is_removable
+        else:
+            item = other_item
 
-        if self.ability == abilitydex['unburden']:
-            self.set_effect(effects.Unburden())
+        if __debug__: log.i("%s used its %s", self, item)
 
-        self.remove_effect(ITEM)
-        self.item = None
+
+        if other_item is None:
+            if self.ability == abilitydex['unburden']:
+                self.set_effect(effects.Unburden())
+
+            self.remove_effect(ITEM)
+            self.item = None
 
     @property
     def weight(self):

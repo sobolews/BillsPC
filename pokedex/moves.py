@@ -476,7 +476,7 @@ class bounce(Move):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if user.item is itemdex['powerherb'] and user.use_item() is not FAIL:
+            if user.item is itemdex['powerherb'] and user.use_item(engine) is not FAIL:
                 return
             user.set_effect(effects.Bounce(self))
             return FAIL
@@ -519,7 +519,7 @@ class bugbite(Move):
     def on_success(self, user, target, engine):
         item = target.item
         if item and item.is_berry and not user.is_fainted() and target.take_item() is not FAIL:
-            user.use_item(item)
+            user.use_item(engine, item)
 
 class bugbuzz(Move):
     def __init__(self):
@@ -1412,7 +1412,7 @@ class geomancy(Move):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if user.item is itemdex['powerherb'] and user.use_item() is not FAIL: # TODO: replace string
+            if user.item is itemdex['powerherb'] and user.use_item(engine) is not FAIL:
                 return
             user.set_effect(effects.TwoTurnMoveEffect(self))
             return FAIL
@@ -2372,7 +2372,7 @@ class phantomforce(Move):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if user.item is itemdex['powerherb'] and user.use_item() is not FAIL: # TODO: replace string
+            if user.item is itemdex['powerherb'] and user.use_item(engine) is not FAIL:
                 return
             user.set_effect(effects.PhantomForce(self))
             return FAIL
@@ -2412,7 +2412,7 @@ class pluck(Move):
     def on_success(self, user, target, engine):
         item = target.item
         if item and item.is_berry and not user.is_fainted() and target.take_item() is not FAIL:
-            user.use_item(item)
+            user.use_item(engine, item)
 
 class poisonjab(Move):
     def __init__(self):
@@ -3118,7 +3118,7 @@ class solarbeam(Move):
             return
         else:
             if (engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND) or
-                (user.item == itemdex['powerherb'] and user.use_item() is not FAIL)):
+                (user.item == itemdex['powerherb'] and user.use_item(engine) is not FAIL)):
                 return
             user.set_effect(effects.TwoTurnMoveEffect(self))
             return FAIL
