@@ -55,6 +55,9 @@ class BlackSludge(ItemEffect):
         else:
             engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
+# class BlueOrb(ItemEffect):
+#     pass # TODO when: implement forme changes
+
 
 
 

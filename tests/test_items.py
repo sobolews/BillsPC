@@ -98,3 +98,6 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.muk, (self.muk.max_hp / 2) - (self.muk.max_hp / 16))
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+
+    # def test_blueorb(self):
+    #     pass # TODO when: implement forme changes
