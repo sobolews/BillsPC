@@ -245,6 +245,17 @@ class BaseEffect(object):
         Called when use_move returns
         """
 
+    def on_use_item(self, pokemon, item, engine):
+        """
+        Called when an item is used/consumed by a pokemon.
+        """
+
+    def on_try_use_item(self, pokemon, item, engine):
+        """
+        Called when an item is about to be used/consumed by a pokemon (before on_use_item). Return
+        FAIL to prevent the item from being used.
+        """
+
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__,
                            ', '.join(['%s=%s' % (attr, getattr(self, attr))

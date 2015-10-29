@@ -304,8 +304,13 @@ class BattlePokemon(object):
         else:
             item = other_item
 
-        if __debug__: log.i("%s used its %s", self, item)
+        for effect in self.effects:
+            if effect.on_try_use_item(self, item, engine) is FAIL:
+                return FAIL
 
+        if __debug__: log.i("%s used its %s", self, item)
+        for effect in self.effects:
+            effect.on_use_item(self, item, engine)
 
         if other_item is None:
             if self.ability == abilitydex['unburden']:
