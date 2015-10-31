@@ -192,3 +192,16 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 56)
         self.assertMoveChoices(self.vaporeon, {'fakeout'})
         self.assertMoveChoices(self.leafeon, {'ironhead'})
+
+    def test_choicespecs(self):
+        self.reset_leads(p0_item='choicespecs', p1_item='choicespecs',
+                         p0_moves=('fakeout', 'protect', 'taunt', 'dragonclaw'),
+                         p1_moves=('surf', 'toxic', 'ironhead', 'crunch'))
+        self.choose_move(self.leafeon, movedex['surf'])
+        self.choose_move(self.vaporeon, movedex['dragonclaw'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 40)
+        self.assertDamageTaken(self.leafeon, 39)
+        self.assertMoveChoices(self.leafeon, {'surf'})
+        self.assertMoveChoices(self.vaporeon, {'dragonclaw'})

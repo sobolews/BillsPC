@@ -86,6 +86,13 @@ class ChoiceScarf(ItemEffect):
     on_modify_move = ChoiceBand.on_modify_move.__func__
     on_lose_item = ChoiceBand.on_lose_item.__func__
 
+class ChoiceSpecs(ItemEffect):
+    def on_modify_spa(self, pokemon, move, engine, spa):
+        return spa * 1.5
+
+    on_modify_move = ChoiceBand.on_modify_move.__func__
+    on_lose_item = ChoiceBand.on_lose_item.__func__
+
 
 
 
