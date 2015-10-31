@@ -283,8 +283,10 @@ class BattlePokemon(object):
             self.ability == abilitydex['stickyhold']
         ):
             return FAIL
-        if self.ability == abilitydex['unburden']:
-            self.set_effect(effects.Unburden())
+
+        for effect in self.effects:
+            effect.on_lose_item(self, item)
+
         if __debug__: log.i('Removed %s from %s', self.item, self)
         self.remove_effect(ITEM)
         self.item = None
@@ -313,8 +315,8 @@ class BattlePokemon(object):
             effect.on_use_item(self, item, engine)
 
         if other_item is None:
-            if self.ability == abilitydex['unburden']:
-                self.set_effect(effects.Unburden())
+            for effect in self.effects:
+                effect.on_lose_item(self, item)
 
             self.remove_effect(ITEM)
             self.item = None

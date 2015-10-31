@@ -256,6 +256,11 @@ class BaseEffect(object):
         FAIL to prevent the item from being used.
         """
 
+    def on_lose_item(self, pokemon, item):
+        """
+        Called when a pokemon loses its item, by using it or by theft.
+        """
+
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__,
                            ', '.join(['%s=%s' % (attr, getattr(self, attr))
