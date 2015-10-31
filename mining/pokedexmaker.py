@@ -59,9 +59,11 @@ class PokedexDataMiner(object):
                 attrs['baseStats']['spd'],
                 attrs['baseStats']['spe'])
             abilities = [str(ability) for ability in attrs['abilities'].values()]
+            fully_evolved = (attrs.get('evos') is None)
 
             self.pokedex[pokemon] = self.pokedex[species] = PokedexEntry(
-                pokemon, species, weight, mega_formes, types, base_stats, None, abilities, None
+                pokemon, species, weight, mega_formes, fully_evolved,
+                types, base_stats, None, abilities, None
             )
             self.pokedex[pokemon[:18]] = self.pokedex[pokemon] # workaround: the showdown server
                                                                # cuts names off at 18 chars
@@ -104,12 +106,14 @@ class Pokedex(dict):
 
 
 class PokedexEntry(object):
-    def __init__(self, name, species, weight, mega_formes, types, base_stats, randbats_moves,
-                 randbats_abilities, randbats_items, required_item=False, uha=False):
+    def __init__(self, name, species, weight, mega_formes, fully_evolved, types, base_stats,
+                 randbats_moves, randbats_abilities, randbats_items,
+                 required_item=False, uha=False):
         self.name = name
         self.species = species
         self.weight = weight
         self.mega_formes = mega_formes
+        self.fully_evolved = fully_evolved
         self.types = types
         self.base_stats = base_stats
         self.randbats_moves = randbats_moves

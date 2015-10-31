@@ -31,6 +31,10 @@ class TestDataminer(TestCase):
         self.assertIn('charizardmegay', miner.pokedex['charizard'].mega_formes)
         self.assertEqual(len(miner.pokedex['Muk'].mega_formes), 0)
         self.assertIn('swampertmega', miner.pokedex['swampert'].mega_formes)
+        self.assertTrue(miner.pokedex['charizard'].fully_evolved)
+        self.assertTrue(miner.pokedex['muk'].fully_evolved)
+        self.assertFalse(miner.pokedex['porygon2'].fully_evolved)
+        self.assertFalse(miner.pokedex['scyther'].fully_evolved)
 
     def test_parse_formats_js(self):
         miner = pokedexmaker.PokedexDataMiner()
