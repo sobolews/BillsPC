@@ -4,6 +4,7 @@ Items are named in CamelCase, but their .name attribute is lowercasenospaces.
 """
 import inspect
 
+if __debug__: from _logging import log
 from misc.functions import priority
 from pokedex import effects
 from pokedex.baseeffect import BaseEffect
@@ -114,6 +115,13 @@ class Eviolite(ItemEffect):
         if not pokemon.pokedex_entry.fully_evolved:
             return spd * 1.5
         return spd
+
+class ExpertBelt(ItemEffect):
+    def on_modify_damage(self, user, move, damage, effectiveness):
+        if effectiveness > 1:
+            if __debug__: log.i("%s's power was boosted by %s's ExpertBelt!", move, user)
+            return damage * 1.2
+        return damage
 
 
 

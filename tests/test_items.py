@@ -267,3 +267,19 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.scyther, 78)
         self.assertDamageTaken(self.spiritomb, 67)
+
+    def test_expertbelt(self):
+        self.reset_items('expertbelt', 'expertbelt')
+        self.choose_move(self.leafeon, movedex['hiddenpowerelectric'])
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 86)
+        self.assertDamageTaken(self.leafeon, 60)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 86 + 142)
+        self.assertDamageTaken(self.leafeon, 60 + 50)
