@@ -223,7 +223,7 @@ class BaseEffect(object):
     def on_weather(self, pokemon, weather, engine):
         """ Called by weather effects in their on_residual handler """
 
-    def on_modify_priority(self, pokemon, move):
+    def on_modify_priority(self, pokemon, move, engine):
         """
         Return a number to increase or decrease the priority of a move, else 0.
         e.g. GaleWings returns +1 for flying moves

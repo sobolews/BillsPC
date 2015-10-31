@@ -368,7 +368,7 @@ class FurCoat(AbilityEffect):
         return def_ * 2
 
 class GaleWings(AbilityEffect):
-    def on_modify_priority(self, pokemon, move):
+    def on_modify_priority(self, pokemon, move, engine):
         if move.type is Type.FLYING:
             return 1
         return 0
@@ -719,7 +719,7 @@ class PoisonTouch(AbilityEffect):
             move.secondary_effects += SecondaryEffect(30, status=Status.PSN),
 
 class Prankster(AbilityEffect):
-    def on_modify_priority(self, pokemon, move):
+    def on_modify_priority(self, pokemon, move, engine):
         if move.category is MoveCategory.STATUS:
             return 1
         return 0
