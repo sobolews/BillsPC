@@ -15,7 +15,6 @@ from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, SideCondition,
                            Hazard, PseudoWeather)
-from pokedex.items import itemdex
 from pokedex.stats import Boosts
 from pokedex.types import effectiveness
 
@@ -536,7 +535,7 @@ class Substitute(BaseEffect):
         elif move.on_success_ignores_substitute:
             move.on_success(foe, target, engine)
 
-        if target.item is itemdex['airballoon']:
+        if target.item is not None and target.item.name == 'airballoon':
             target.use_item(engine)
 
         for s_effect in move.secondary_effects:
