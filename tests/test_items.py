@@ -250,3 +250,20 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
             self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
             self.run_turn()
         self.assertIsNone(self.battlefield.weather)
+
+    def test_eviolite(self):
+        self.reset_leads('vaporeon', 'porygon2', p0_item='eviolite', p1_item='eviolite')
+        self.choose_move(self.porygon2, movedex['dragonclaw'])
+        self.choose_move(self.vaporeon, movedex['xscissor'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.porygon2, 36)
+        self.assertDamageTaken(self.vaporeon, 86)
+
+        self.reset_leads('spiritomb', 'scyther', p0_item='eviolite', p1_item='eviolite')
+        self.choose_move(self.scyther, movedex['bugbuzz'])
+        self.choose_move(self.spiritomb, movedex['shadowball'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.scyther, 78)
+        self.assertDamageTaken(self.spiritomb, 67)

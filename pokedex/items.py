@@ -104,6 +104,17 @@ class DampRock(ItemEffect):
     # Implemented in drizzle and raindance
     pass
 
+class Eviolite(ItemEffect):
+    def on_modify_def(self, pokemon, move, engine, def_):
+        if not pokemon.pokedex_entry.fully_evolved:
+            return def_ * 1.5
+        return def_
+
+    def on_modify_spd(self, pokemon, move, engine, spd):
+        if not pokemon.pokedex_entry.fully_evolved:
+            return spd * 1.5
+        return spd
+
 
 
 
