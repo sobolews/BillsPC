@@ -205,3 +205,30 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 39)
         self.assertMoveChoices(self.leafeon, {'surf'})
         self.assertMoveChoices(self.vaporeon, {'dragonclaw'})
+
+    def test_custapberry(self):
+        self.reset_items('custapberry')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 50)
+        self.assertDamageTaken(self.vaporeon, 378)
+        self.assertItem(self.vaporeon, 'custapberry')
+
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['flamethrower'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertDamageTaken(self.vaporeon, 378)
+        self.assertItem(self.vaporeon, None)
+
+        self.reset_items(None, 'custapberry')
+        self.leafeon.hp = self.vaporeon.hp = 1
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['quickattack'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertStatus(self.vaporeon, None)

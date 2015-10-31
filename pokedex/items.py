@@ -7,7 +7,7 @@ import inspect
 from misc.functions import priority
 from pokedex import effects
 from pokedex.baseeffect import BaseEffect
-from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile
+from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile, FAIL
 
 class BaseItem(object):
     class __metaclass__(type):
@@ -92,6 +92,13 @@ class ChoiceSpecs(ItemEffect):
 
     on_modify_move = ChoiceBand.on_modify_move.__func__
     on_lose_item = ChoiceBand.on_lose_item.__func__
+
+class CustapBerry(ItemEffect):
+    def on_modify_priority(self, pokemon, move, engine):
+        if (pokemon.hp <= pokemon.max_hp / 4.0 and
+            pokemon.use_item(engine) is not FAIL):
+            return 0.1
+        return 0
 
 
 
