@@ -96,6 +96,22 @@ class BatonPass(BaseEffect):
     """ This effect is used as a flag; batonpass is implemented in run_switch """
     source = Volatile.BATONPASS
 
+class ChoiceLock(BaseEffect):
+    source = Volatile.CHOICELOCK
+
+    def __init__(self, move):
+        self.move = move
+
+    def on_get_move_choices(self, pokemon, moves):
+        if self.move not in pokemon.moveset:
+            pokemon.remove_effect(Volatile.CHOICELOCK)
+            if __debug__: log.d("%s doesn't have the choiced move %s, removing choicelock",
+                                pokemon, self.move)
+            return moves
+
+        if __debug__: log.d('%s is choicelocked into %s', pokemon, self.move)
+        return [self.move] if self.move in moves else []
+
 class Confuse(BaseEffect):
     source = Volatile.CONFUSE
 
