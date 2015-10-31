@@ -856,11 +856,11 @@ class BattleEngine(object):
         return [d for d in decisions if d is not None] # None is not a valid decision unless testing
 
     def modify_priority(self, pokemon, move):
+        priority = 0
         for effect in filter(None, (pokemon.get_effect(ABILITY),
                                     pokemon.get_effect(ITEM))):
-            priority = effect.on_modify_priority(pokemon, move)
-            if priority is not None:
-                return priority
+            priority += effect.on_modify_priority(pokemon, move)
+        return priority
 
     def get_move_choices(self, pokemon):
         move_choices = [move for move in pokemon.moveset if pokemon.pp[move] > 0]

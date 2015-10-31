@@ -225,9 +225,10 @@ class BaseEffect(object):
 
     def on_modify_priority(self, pokemon, move):
         """
-        Return an int to increase or decrease the priority of a move, else None.
+        Return a number to increase or decrease the priority of a move, else 0.
         e.g. GaleWings returns +1 for flying moves
         """
+        return 0
 
     def on_update(self, pokemon, engine):
         """

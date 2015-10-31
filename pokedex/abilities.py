@@ -371,6 +371,7 @@ class GaleWings(AbilityEffect):
     def on_modify_priority(self, pokemon, move):
         if move.type is Type.FLYING:
             return 1
+        return 0
 
 class Guts(AbilityEffect):
     def on_modify_atk(self, pokemon, move, engine, atk):
@@ -721,6 +722,7 @@ class Prankster(AbilityEffect):
     def on_modify_priority(self, pokemon, move):
         if move.category is MoveCategory.STATUS:
             return 1
+        return 0
 
 class Pressure(AbilityEffect):
     pass # implemented in BattleEngine.deduct_pp
