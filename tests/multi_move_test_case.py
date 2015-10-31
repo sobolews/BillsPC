@@ -108,8 +108,10 @@ class MultiMoveTestCase(TestCase):
         """
         if tearDown:
             self.tearDown()
-
         self._names = [p0_name, p1_name]
+        p0_moves = [movedex[move] if isinstance(move, str) else move for move in p0_moves]
+        p1_moves = [movedex[move] if isinstance(move, str) else move for move in p1_moves]
+
         setattr(self, p0_name, AnyMovePokemon(pokedex[p0_name], side=None,
                                               ability=abilitydex[p0_ability],
                                               evs=(0,)*6, moveset=p0_moves,
@@ -139,6 +141,7 @@ class MultiMoveTestCase(TestCase):
         `side` is 0 or 1.
         Other params are like self.reset_leads
         """
+        moves = [movedex[move] if isinstance(move, str) else move for move in moves]
         battle_side = self.engine.battlefield.sides[side]
         pokemon = AnyMovePokemon(pokedex[name], side=battle_side, evs=(0,)*6,
                                  moveset=moves, ability=abilitydex[ability],
@@ -184,6 +187,7 @@ class MultiMoveTestCase(TestCase):
         self.assertDictContainsSubset(boosts, pokemon.boosts)
 
     def assertMoveChoices(self, pokemon, moves):
+        moves = set([movedex[move] if isinstance(move, str) else move for move in moves])
         self.assertSetEqual(set(self.engine.get_move_choices(pokemon)), moves)
 
     def assertSwitchChoices(self, pokemon, choices):
