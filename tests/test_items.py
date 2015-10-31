@@ -1,7 +1,7 @@
 from mock import patch
 
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status
+from pokedex.enums import Status, Volatile
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
@@ -126,3 +126,45 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.leafeon, 50 + self.leafeon.max_hp / 8)
         self.assertStatus(self.leafeon, Status.SLP)
+
+    def test_choiceband(self):
+        self.reset_leads(p0_item='choiceband', p1_item='choiceband',
+                         p1_ability='magicbounce',
+                         p0_moves=('xscissor', 'protect', 'taunt', 'dragonclaw'),
+                         p1_moves=('return', 'toxic', 'ironhead', 'crunch'))
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('espeon', 1, item='choiceband')
+        self.assertMoveChoices(self.vaporeon, ('xscissor', 'protect', 'taunt', 'dragonclaw'))
+        self.assertMoveChoices(self.leafeon, ('return', 'toxic', 'ironhead', 'crunch'))
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['taunt'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 212)
+        self.assertTrue(self.vaporeon.has_effect(Volatile.TAUNT))
+        self.assertMoveChoices(self.vaporeon, {'struggle'})
+        self.assertSwitchChoices(self.vaporeon, {self.flareon})
+        self.assertMoveChoices(self.leafeon, {'return'})
+
+        self.choose_switch(self.leafeon, self.espeon)
+        self.choose_move(self.vaporeon, movedex['struggle'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.espeon, 69)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.choose_move(self.espeon, movedex['voltswitch'])
+        self.choose_move(self.vaporeon, movedex['struggle'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 158 + self.vaporeon.max_hp / 4)
+        self.assertActive(self.leafeon)
+        self.assertMoveChoices(self.leafeon, ('return', 'toxic', 'ironhead', 'crunch'))
+
+        self.run_turn()
+        self.assertFalse(self.vaporeon.has_effect(Volatile.TAUNT))
+        self.assertMoveChoices(self.vaporeon, {'taunt'})
+
+        self.vaporeon.take_item()
+        self.assertMoveChoices(self.vaporeon, ('xscissor', 'protect', 'taunt', 'dragonclaw'))

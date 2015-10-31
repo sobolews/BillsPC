@@ -143,9 +143,6 @@ class BattleEngine(object):
             for effect in target.effects:
                 effect.on_modify_foe_move(move, user, self)
 
-        if user.item and user.item.choicelock:
-            pass # user.set_effect(effects.ChoiceLock(move))? # TODO when: implement choice items
-
         if move.targets_user:
             return self.fast_use_move(user, move) # fast path for moves not targeting opponent
 

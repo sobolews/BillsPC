@@ -5,8 +5,9 @@ Items are named in CamelCase, but their .name attribute is lowercasenospaces.
 import inspect
 
 from misc.functions import priority
+from pokedex import effects
 from pokedex.baseeffect import BaseEffect
-from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status
+from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile
 
 class BaseItem(object):
     class __metaclass__(type):
@@ -17,7 +18,6 @@ class BaseItem(object):
         def __repr__(self):
             return self.__name__
 
-    choicelock = False
     is_mega_stone = False
     is_berry = False
     is_plate = False
@@ -68,6 +68,16 @@ class ChestoBerry(ItemEffect):
     def on_use_item(self, pokemon, item, engine):
         if pokemon.status is Status.SLP:
             pokemon.cure_status()
+
+class ChoiceBand(ItemEffect):
+    def on_modify_atk(self, pokemon, move, engine, atk):
+        return atk * 1.5
+
+    def on_modify_move(self, move, user, engine):
+        user.set_effect(effects.ChoiceLock(move))
+
+    def on_lose_item(self, pokemon, item):
+        pokemon.remove_effect(Volatile.CHOICELOCK)
 
 
 
