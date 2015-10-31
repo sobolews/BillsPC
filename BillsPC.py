@@ -81,9 +81,9 @@ def interactive(args):
     from pokedex.moves import movedex
     from mining import create_pokedex
     pokedex = create_pokedex()
-    import pokedex.enums
+    from pokedex import enums
     # ugly hack to embed the entire public pokedex.enums namespace into the local scope
-    locals().update({key: val for key, val in pokedex.enums.__dict__.items()
+    locals().update({key: val for key, val in enums.__dict__.items()
                      if not key.startswith('_')})
     t.setUp()
     import IPython
