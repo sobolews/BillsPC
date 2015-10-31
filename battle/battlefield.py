@@ -57,14 +57,14 @@ class BattleField(object):
         if self._weather is not None:
             self._effect_index[self._weather].suppressed = False
 
-    def set_weather(self, weather):
+    def set_weather(self, weather, duration=5):
         if self._weather in Weather.TRIO and not weather in Weather.TRIO:
             return FAIL
         if self._weather is not None:
             self.remove_effect(self._weather)
         if __debug__: log.i('The weather became %s', weather.name)
         self._weather = weather
-        w_effect = self.WEATHER_EFFECTS[weather]()
+        w_effect = self.WEATHER_EFFECTS[weather](duration)
         if self._weather_suppressed:
             w_effect.suppressed = True
         self.set_effect(w_effect)

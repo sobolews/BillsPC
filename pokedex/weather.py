@@ -8,6 +8,9 @@ if __debug__: from _logging import log
 class BaseWeatherEffect(BaseEffect):
     suppressed = False
 
+    def __init__(self, duration=5):
+        self.duration = duration
+
     @priority(-1)
     def on_residual(self, pokemon0, pokemon1, engine):
         if not self.suppressed:
@@ -17,9 +20,6 @@ class BaseWeatherEffect(BaseEffect):
 
 class SunnyDayWeather(BaseWeatherEffect):
     source = Weather.SUNNYDAY
-
-    def __init__(self, duration=5):
-        self.duration = duration
 
     def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed:
@@ -37,6 +37,9 @@ class SunnyDayWeather(BaseWeatherEffect):
 
 class DesolateLandWeather(BaseWeatherEffect):
     source = Weather.DESOLATELAND
+
+    def __init__(self, duration):
+        self.duration = None
 
     def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed and move.type is Type.FIRE:
@@ -57,9 +60,6 @@ class DesolateLandWeather(BaseWeatherEffect):
 class RainDanceWeather(BaseWeatherEffect):
     source = Weather.RAINDANCE
 
-    def __init__(self, duration=5):
-        self.duration = duration
-
     def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed:
             if move.type is Type.WATER:
@@ -72,6 +72,9 @@ class RainDanceWeather(BaseWeatherEffect):
 
 class PrimordialSeaWeather(BaseWeatherEffect):
     source = Weather.PRIMORDIALSEA
+
+    def __init__(self, duration):
+        self.duration = None
 
     def on_modify_damage(self, user, move, damage, effectiveness):
         if not self.suppressed and move.type is Type.WATER:
@@ -89,7 +92,6 @@ class PrimordialSeaWeather(BaseWeatherEffect):
 
 class HailWeather(BaseWeatherEffect):
     source = Weather.HAIL
-    duration = 5
 
     @priority(-1)
     def on_residual(self, pokemon0, pokemon1, engine):
@@ -100,7 +102,6 @@ class HailWeather(BaseWeatherEffect):
 
 class SandstormWeather(BaseWeatherEffect):
     source = Weather.SANDSTORM
-    duration = 5
 
     @priority(-1)
     def on_residual(self, pokemon0, pokemon1, engine):
@@ -118,6 +119,9 @@ class SandstormWeather(BaseWeatherEffect):
 
 class DeltaStreamWeather(BaseWeatherEffect):
     source = Weather.DELTASTREAM
+
+    def __init__(self, duration):
+        self.duration = None
 
     def on_modify_effectiveness(self, user, move, target, effectiveness):
         if not self.suppressed:

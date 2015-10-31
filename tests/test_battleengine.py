@@ -777,6 +777,13 @@ class TestWeather(MultiMoveTestCase):
     # def test_changing_weather_trio_weather_fails(self):
     #     pass # TODO: implement desolateland/primordialsea/deltastream abilities
 
+    def test_weather_trio_does_not_expire(self):
+        for weather in Weather.TRIO:
+            self.battlefield.set_weather(weather)
+            for _ in range(10):
+                self.run_turn()
+            self.assertEqual(self.battlefield.weather, weather)
+
 class TestMiscMultiTurn(MultiMoveTestCase):
     def test_prevent_bounce_invulnerability_persisting_when_move_fails(self):
         self.choose_move(self.vaporeon, movedex['yawn'])
