@@ -2610,7 +2610,8 @@ class raindance(Move):
             return FAIL
 
     def on_success(self, user, _, engine):
-        engine.battlefield.set_weather(Weather.RAINDANCE)
+        duration = 8 if user.item is itemdex['damprock'] else 5
+        engine.battlefield.set_weather(Weather.RAINDANCE, duration)
 
 class rapidspin(Move):
     def __init__(self):

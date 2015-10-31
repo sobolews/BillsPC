@@ -1,7 +1,7 @@
 from mock import patch
 
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Volatile
+from pokedex.enums import Status, Volatile, Weather
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
@@ -232,3 +232,21 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertFainted(self.leafeon)
         self.assertStatus(self.vaporeon, None)
+
+    def test_damprock(self):
+        self.reset_leads(p0_item='damprock', p0_ability='drizzle')
+
+        for _ in range(8):
+            self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+            self.run_turn()
+        self.assertIsNone(self.battlefield.weather)
+
+        self.reset_items('damprock')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['raindance'])
+        self.run_turn()
+
+        for _ in range(7):
+            self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+            self.run_turn()
+        self.assertIsNone(self.battlefield.weather)

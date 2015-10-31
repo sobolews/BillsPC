@@ -263,7 +263,8 @@ class Download(AbilityEffect):
 
 class Drizzle(AbilityEffect):
     def on_start(self, pokemon, engine):
-        engine.battlefield.set_weather(Weather.RAINDANCE)
+        duration = 8 if (pokemon.item is not None and pokemon.item.name == 'damprock') else 5
+        engine.battlefield.set_weather(Weather.RAINDANCE, duration)
 
 class Drought(AbilityEffect):
     def on_start(self, pokemon, engine):

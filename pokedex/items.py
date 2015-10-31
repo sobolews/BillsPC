@@ -100,6 +100,10 @@ class CustapBerry(ItemEffect):
             return 0.1
         return 0
 
+class DampRock(ItemEffect):
+    # Implemented in drizzle and raindance
+    pass
+
 
 
 
