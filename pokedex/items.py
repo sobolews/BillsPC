@@ -79,6 +79,13 @@ class ChoiceBand(ItemEffect):
     def on_lose_item(self, pokemon, item):
         pokemon.remove_effect(Volatile.CHOICELOCK)
 
+class ChoiceScarf(ItemEffect):
+    def on_modify_spe(self, pokemon, engine, spe):
+        return spe * 1.5
+
+    on_modify_move = ChoiceBand.on_modify_move.__func__
+    on_lose_item = ChoiceBand.on_lose_item.__func__
+
 
 
 

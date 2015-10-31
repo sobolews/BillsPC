@@ -4,6 +4,7 @@ from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Volatile
 from pokedex.items import itemdex
 from pokedex.moves import movedex
+from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestItems(MultiMoveTestCaseWithoutSetup):
@@ -168,3 +169,26 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.vaporeon.take_item()
         self.assertMoveChoices(self.vaporeon, ('xscissor', 'protect', 'taunt', 'dragonclaw'))
+
+    def test_choicescarf(self):
+        self.reset_leads(p0_item='choicescarf', p1_item='choicescarf',
+                         p0_moves=('fakeout', 'protect', 'taunt', 'dragonclaw'),
+                         p1_moves=('fakeout', 'toxic', 'ironhead', 'crunch'))
+        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
+        self.choose_move(self.leafeon, movedex['fakeout'])
+        self.choose_move(self.vaporeon, movedex['fakeout'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 20)
+        self.assertMoveChoices(self.vaporeon, {'fakeout'})
+        self.assertMoveChoices(self.leafeon, {'fakeout', 'toxic', 'ironhead', 'crunch'})
+
+        self.choose_move(self.vaporeon, movedex['fakeout'])
+        self.choose_move(self.leafeon, movedex['ironhead'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 20)
+        self.assertDamageTaken(self.vaporeon, 56)
+        self.assertMoveChoices(self.vaporeon, {'fakeout'})
+        self.assertMoveChoices(self.leafeon, {'ironhead'})
