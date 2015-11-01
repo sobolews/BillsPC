@@ -136,6 +136,11 @@ class BaseGem(ItemEffect):
 class FightingGem(BaseGem):
     gem_type = Type.FIGHTING
 
+class FlameOrb(ItemEffect):
+    @priority(-26.2)
+    def on_residual(self, pokemon, foe, engine):
+        engine.set_status(pokemon, Status.BRN, pokemon)
+
 
 
 

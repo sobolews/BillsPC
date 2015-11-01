@@ -309,3 +309,21 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.gengar, 0)
         self.assertItem(self.leafeon, 'fightinggem')
+
+    def test_flameorb(self):
+        self.reset_leads(p0_item='flameorb', p1_item='flameorb',
+                         p0_ability='noguard')
+        self.choose_move(self.leafeon, movedex['toxic'])
+        self.assertStatus(self.leafeon, None)
+        self.assertStatus(self.vaporeon, None)
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.BRN)
+        self.assertStatus(self.vaporeon, Status.TOX)
+
+        self.choose_move(self.leafeon, movedex['aromatherapy'])
+        self.choose_move(self.vaporeon, movedex['psychoshift'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, Status.TOX)
+        self.assertStatus(self.vaporeon, Status.BRN)
