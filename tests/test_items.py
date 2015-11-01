@@ -327,3 +327,12 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertStatus(self.leafeon, Status.TOX)
         self.assertStatus(self.vaporeon, Status.BRN)
+
+    def test_flyinggem(self):
+        self.reset_items('flyinggem', 'flyinggem')
+        self.choose_move(self.leafeon, movedex['acrobatics'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 199)
+        self.assertDamageTaken(self.leafeon, 50)

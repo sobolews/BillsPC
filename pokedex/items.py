@@ -141,6 +141,9 @@ class FlameOrb(ItemEffect):
     def on_residual(self, pokemon, foe, engine):
         engine.set_status(pokemon, Status.BRN, pokemon)
 
+class FlyingGem(BaseGem):
+    gem_type = Type.FLYING
+
 
 
 
