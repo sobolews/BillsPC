@@ -283,3 +283,29 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 86 + 142)
         self.assertDamageTaken(self.leafeon, 60 + 50)
+
+    def test_fightinggem(self):
+        self.reset_leads(p0_item='fightinggem', p1_item='fightinggem',
+                         p0_ability='noguard', p1_ability='shielddust')
+        self.add_pokemon('gengar', 0)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['focusblast'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertItem(self.leafeon, 'fightinggem')
+        self.assertDamageTaken(self.leafeon, 204)
+        self.assertItem(self.vaporeon, None)
+
+        self.engine.heal(self.leafeon, 300)
+        self.choose_move(self.vaporeon, movedex['focusblast'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 157)
+
+        self.choose_switch(self.vaporeon, self.gengar)
+        self.choose_move(self.leafeon, movedex['drainpunch'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.gengar, 0)
+        self.assertItem(self.leafeon, 'fightinggem')

@@ -123,6 +123,19 @@ class ExpertBelt(ItemEffect):
             return damage * 1.2
         return damage
 
+class BaseGem(ItemEffect):
+    gem_type = None
+
+    def on_move_hit(self, user, move, engine):
+        if (move.type is self.gem_type and
+            move.category is not MoveCategory.STATUS and
+            user.use_item(engine) is not FAIL
+        ):
+            user.set_effect(effects.GemVolatile())
+
+class FightingGem(BaseGem):
+    gem_type = Type.FIGHTING
+
 
 
 

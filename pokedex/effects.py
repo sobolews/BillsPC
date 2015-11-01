@@ -690,6 +690,14 @@ class TruantVolatile(BaseEffect):
     source = Volatile.TRUANT
     duration = 2
 
+class GemVolatile(BaseEffect):
+    source = Volatile.GEM
+    duration = 1
+
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if __debug__: log.i("%s's power was boosted by the %s gem", move, move.type.name)
+        return base_power * 1.3
+
 class Transformed(BaseEffect):
     """ Used for transform and imposter """
     source = Volatile.TRANSFORMED

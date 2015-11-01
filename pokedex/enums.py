@@ -15,7 +15,7 @@ Volatile = Enum(
                  'FLASHFIRE', 'TAUNT', 'IGNOREABILITY', 'IGNOREITEM', 'UNBURDEN', 'DESTINYBOND',
                  'SHEERFORCE', 'KINGSSHIELD', 'SPIKYSHIELD', 'STALL', 'MAGNETRISE', 'ROOST',
                  'BATONPASS', 'PURSUIT', 'ATTRACT', 'TRANSFORMED', 'PARENTALBOND', 'SLOWSTART',
-                 'TRUANT'))
+                 'TRUANT', 'GEM'))
 
 SideCondition = Enum(
     'SideCondition', ('LIGHTSCREEN', 'REFLECT', 'TAILWIND', 'HEALINGWISH', 'WISH', 'SAFEGUARD'))
