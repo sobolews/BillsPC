@@ -563,8 +563,8 @@ class BattleEngine(object):
         else:
             damage = int(damage)
 
-        for effect in pokemon.effects:
-            damage = effect.on_damage(pokemon, damage, cause, source, self) # TODO: priority?
+        for effect in sorted(pokemon.effects, key=lambda e: e.on_damage.priority, reverse=True):
+            damage = effect.on_damage(pokemon, damage, cause, source, self)
             if damage is FAIL:
                 return FAIL
 

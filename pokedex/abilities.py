@@ -545,6 +545,7 @@ class MagicBounce(BaseAbility, effects.MagicBounceBase):
     pass
 
 class MagicGuard(AbilityEffect):
+    @priority(0)
     def on_damage(self, pokemon, damage, cause, source, engine):
         if cause is not Cause.MOVE:
             if __debug__: log.i('Damage from (%s, %s) was prevented by MagicGuard',
@@ -707,6 +708,7 @@ class Pixilate(AbilityEffect):
         return base_power
 
 class PoisonHeal(AbilityEffect):
+    @priority(0)
     def on_damage(self, pokemon, damage, cause, source, engine):
         if cause is Cause.RESIDUAL and source.source in (Status.PSN, Status.TOX):
             if __debug__: log.i("%s was healed by its PoisonHeal", pokemon)
@@ -788,6 +790,7 @@ class Regenerator(AbilityEffect):
         engine.heal(pokemon, pokemon.max_hp / 3)
 
 class RockHead(AbilityEffect):
+    @priority(0)
     def on_damage(self, pokemon, damage, cause, source, engine):
         if cause is Cause.RECOIL:
             return FAIL
@@ -978,6 +981,7 @@ class StrongJaw(AbilityEffect):
         return base_power
 
 class Sturdy(AbilityEffect):
+    @priority(-100)
     def on_damage(self, pokemon, damage, cause, source, engine):
         if (pokemon.hp == pokemon.max_hp and
             damage >= pokemon.hp and
