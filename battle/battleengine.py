@@ -375,8 +375,12 @@ class BattleEngine(object):
         else:
             assert False, 'Tried to apply secondary effect with no boosts, volatile, or status'
 
-    def calculate_confusion_damage(self, pokemon):
-        return self.calculate_damage(pokemon, movedex['confusiondamage'], pokemon)
+    def confusion_hit(self, pokemon):
+        """ Cause a pokemon to hurt itself in confusion """
+        assert pokemon.is_active
+
+        damage = self.calculate_damage(pokemon, movedex['confusiondamage'], pokemon)
+        self.damage(pokemon, damage, Cause.MOVE, movedex['confusiondamage'], pokemon)
 
     def calculate_damage(self, user, move, target):
         """
@@ -626,7 +630,7 @@ class BattleEngine(object):
     def direct_damage(self, pokemon, damage):
         """
         Bypasses on_damage; is 'cause-less'.
-        {substitute, bellydrum, painsplit, struggle recoil, confusion damage} are direct damage
+        {substitute, bellydrum, painsplit, struggle recoil} are direct damage
         """
         if damage < 1:
             damage = 1 # always do at least 1 damage

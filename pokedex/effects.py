@@ -130,7 +130,7 @@ class Confuse(BaseEffect):
 
         if random.randrange(2) == 0:
             if __debug__: log.i('%s hurt itself in its confusion', user)
-            engine.direct_damage(user, engine.calculate_confusion_damage(user))
+            engine.confusion_hit(user)
             return FAIL
 
 class Flinch(BaseEffect):
