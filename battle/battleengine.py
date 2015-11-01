@@ -235,8 +235,9 @@ class BattleEngine(object):
     def move_hit(self, user, move, target):
         assert target is not None
 
-        # TODO: skipping second set of showdown TryHit* events because they're in try_move_hit
-        # (is this valid?)
+        for effect in user.effects:
+            effect.on_move_hit(user, move, self)
+
         substitute = target.get_effect(Volatile.SUBSTITUTE)
         if substitute is not None:
             result = substitute.on_hit_substitute(user, move, target, self)

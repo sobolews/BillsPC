@@ -77,6 +77,12 @@ class BaseEffect(object):
         Return FAIL to fail the move.
         """
 
+    def on_move_hit(self, user, move, engine):
+        """
+        Called at the beginning of move_hit, immediately before substitute check and damage
+        calculation, and after success, try_hit, accuracy, and immunity checks.
+        """
+
     def after_foe_hit(self, foe, move, target, engine):
         """ Called when the foe sucessfully hits this effect's pokemon with a move """
 
