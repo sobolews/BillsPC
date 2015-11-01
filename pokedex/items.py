@@ -144,6 +144,18 @@ class FlameOrb(ItemEffect):
 class FlyingGem(BaseGem):
     gem_type = Type.FLYING
 
+class FocusSash(ItemEffect):
+    @priority(0)
+    def on_damage(self, pokemon, damage, cause, source, engine):
+        if (pokemon.hp == pokemon.max_hp and
+            damage >= pokemon.hp and
+            cause is Cause.MOVE and
+            pokemon.use_item(engine) is not FAIL
+        ):
+            if __debug__: log.i("%s held on with FocusSash!", pokemon)
+            return pokemon.hp - 1
+        return damage
+
 
 
 

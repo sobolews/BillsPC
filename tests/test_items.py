@@ -336,3 +336,86 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 199)
         self.assertDamageTaken(self.leafeon, 50)
+
+    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    def test_focussash(self):
+        self.reset_leads('vaporeon', 'shedinja',
+                         p0_item='focussash', p1_item='focussash')
+        self.engine.apply_boosts(self.shedinja, Boosts(atk=5))
+        self.choose_move(self.vaporeon, movedex['pursuit'])
+        self.choose_move(self.shedinja, movedex['shadowclaw'])
+        self.assertItem(self.vaporeon, 'focussash')
+        self.assertItem(self.shedinja, 'focussash')
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 1)
+        self.assertDamageTaken(self.shedinja, 0)
+        self.assertItem(self.vaporeon, None)
+        self.assertItem(self.shedinja, None)
+
+        self.choose_move(self.vaporeon, movedex['pursuit'])
+        self.choose_move(self.shedinja, movedex['shadowclaw'])
+        self.run_turn()
+
+        self.assertFainted(self.shedinja)
+        self.assertEqual(self.vaporeon.hp, 1)
+
+        self.reset_leads('vaporeon', 'leafeon', # second hit should cause faint
+                         p0_item='focussash', p1_ability='parentalbond')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+        self.assertFainted(self.vaporeon)
+        self.assertEqual(self.vaporeon.item.name, 'focussash')
+
+        self.reset_leads('vaporeon', 'shedinja', # shouldn't block residual damage
+                         p0_ability='noguard', p1_item='focussash')
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+
+        self.assertFainted(self.shedinja)
+
+        self.reset_leads('vaporeon', 'shedinja', # shouldn't block recoil damage
+                         p0_item='focussash', p1_item='focussash')
+        self.add_pokemon('espeon', 1)
+        self.engine.apply_boosts(self.shedinja, Boosts(atk=4, spe=2))
+        self.choose_move(self.shedinja, movedex['doubleedge'])
+        self.choose_move(self.vaporeon, movedex['synthesis'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 1 + (round(self.vaporeon.max_hp / 2.0)))
+        self.assertFainted(self.shedinja)
+
+        self.reset_leads('vaporeon', 'shedinja', # should block self-damage due to confusion
+                         p1_item='focussash')
+        self.choose_move(self.vaporeon, movedex['confuseray'])
+        self.choose_move(self.shedinja, movedex['focusblast'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.shedinja, 0)
+        self.assertItem(self.shedinja, None)
+        self.assertDamageTaken(self.vaporeon, 0)
+
+    def test_focussash_0_damage_shedinja_still_allows_other_effects(self):
+        self.reset_leads('vaporeon', 'shedinja', p1_item='focussash')
+        self.choose_move(self.vaporeon, movedex['nuzzle'])
+        self.run_turn()
+
+        self.assertItem(self.shedinja, None)
+        self.assertDamageTaken(self.shedinja, 0)
+        self.assertStatus(self.shedinja, Status.PAR)
+
+        self.reset_leads('vaporeon', 'shedinja', p1_item='focussash')
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertItem(self.shedinja, None)
+        self.assertDamageTaken(self.shedinja, 0)
+        self.assertBoosts(self.vaporeon, {'spe': 1})
+
+    def test_focussash_with_sturdy(self):
+        self.reset_leads(p0_ability='sturdy', p0_item='focussash')
+        self.choose_move(self.leafeon, movedex['woodhammer'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 1)
+        self.assertItem(self.vaporeon, None)
