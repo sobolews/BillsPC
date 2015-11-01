@@ -252,7 +252,7 @@ class BattleEngine(object):
 
         if damage is not None:
             damage = self.damage(target, damage, Cause.MOVE, move, user, move.drain)
-            if damage in (FAIL, 0): # TODO: is 0 an option?
+            if damage is FAIL:
                 if __debug__: log.i('Move failed in BattleEngine.damage: returned %s', damage)
                 return FAIL
 
