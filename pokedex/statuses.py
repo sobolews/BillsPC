@@ -39,7 +39,7 @@ class Freeze(BaseStatusEffect):
             if __debug__: log.i("%s is frozen!", user)
             return FAIL
 
-    def on_foe_hit(self, foe, move, target, engine):
+    def after_foe_hit(self, foe, move, target, engine):
         if move.type is Type.FIRE or move.thaw_target:
             target.cure_status()
 

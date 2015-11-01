@@ -77,7 +77,7 @@ class BaseEffect(object):
         Return FAIL to fail the move.
         """
 
-    def on_foe_hit(self, foe, move, target, engine):
+    def after_foe_hit(self, foe, move, target, engine):
         """ Called when the foe sucessfully hits this effect's pokemon with a move """
 
     def on_modify_move(self, move, user, engine):
