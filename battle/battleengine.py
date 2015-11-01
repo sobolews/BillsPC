@@ -687,8 +687,8 @@ class BattleEngine(object):
             return FAIL
 
         if pokemon.status is not None or pokemon.is_immune_to(status):
-            if __debug__: log.i('Failed to set status %s: ', status.name +
-                                ('%%s is already statused: %s' % pokemon.status.name
+            if __debug__: log.i('Failed to set status %s: ' % status.name +
+                                ('%%s is already statused (%s)' % pokemon.status.name
                                  if pokemon.status is not None else
                                  '%s is immune') % pokemon)
             return FAIL
