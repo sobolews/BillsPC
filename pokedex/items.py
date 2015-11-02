@@ -178,6 +178,11 @@ class HeatRock(ItemEffect):
     # Implemented in drought and sunnyday
     pass
 
+class Leftovers(ItemEffect):
+    @priority(-5.2)
+    def on_residual(self, pokemon, foe, engine):
+        engine.heal(pokemon, pokemon.max_hp / 16)
+
 
 
 class LightClay(ItemEffect):

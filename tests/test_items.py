@@ -454,3 +454,18 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
             self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
             self.run_turn()
         self.assertIsNone(self.battlefield.weather)
+
+    def test_leftovers(self):
+        self.reset_items('leftovers', 'leftovers')
+        self.add_pokemon('flareon', 0, item='leftovers')
+        self.choose_move(self.leafeon, movedex['stealthrock'])
+        self.choose_move(self.vaporeon, movedex['lightofruin'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 183 - self.leafeon.max_hp / 16)
+        self.assertDamageTaken(self.vaporeon, 92 - self.vaporeon.max_hp / 16)
+
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, (self.flareon.max_hp / 4) - (self.flareon.max_hp / 16))
