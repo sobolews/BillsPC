@@ -277,9 +277,7 @@ class BattlePokemon(object):
     def take_item(self): # by force, e.g. from bugbite, knockoff, magician, trick etc.
         item = self.item
         if (item is None or
-            item.is_mega_stone or # TODO: make an item.is_removable property
-            item.is_plate or
-            item.is_drive or
+            not item.removable or
             self.ability == abilitydex['stickyhold']
         ):
             return FAIL
@@ -302,7 +300,7 @@ class BattlePokemon(object):
         """
         if other_item is None:
             item = self.item
-            assert item is not None and item.is_removable
+            assert item is not None and item.removable
         else:
             item = other_item
 

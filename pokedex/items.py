@@ -23,7 +23,7 @@ class BaseItem(object):
     is_berry = False
     is_plate = False
     is_drive = False
-    is_removable = True
+    removable = True
     source = ITEM
 
     def __repr__(self):
