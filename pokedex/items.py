@@ -126,7 +126,7 @@ class Eviolite(ItemEffect):
 class ExpertBelt(ItemEffect):
     def on_modify_damage(self, user, move, damage, effectiveness):
         if effectiveness > 1:
-            if __debug__: log.i("%s's power was boosted by %s's ExpertBelt!", move, user)
+            if __debug__: log.i("%s's damage was boosted by %s's ExpertBelt!", move, user)
             return damage * 1.2
         return damage
 
