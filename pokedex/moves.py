@@ -121,13 +121,6 @@ class Move(object):
         """ Return a number in {0.25, 0.5, 1, 2, 4}: effectiveness multipler against target """
         return effectiveness(self.type, target)
 
-    def on_after_move_secondary_self(self, user, engine):
-        """
-        To be used for meloetta relicsong forme change and lifeorb damage. This is an event that
-        targets the user and qualifies for removal of secondary effects but does not count as a
-        secondary effect itself.
-        """
-
     def on_after_move_secondary(self, user, target, engine):
         """
         A secondary effect that isn't representable by the SecondaryEffect class
