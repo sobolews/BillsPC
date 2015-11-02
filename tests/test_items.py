@@ -456,7 +456,8 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertIsNone(self.battlefield.weather)
 
     def test_leftovers(self):
-        self.reset_items('leftovers', 'leftovers')
+        self.reset_leads(p0_item='leftovers', p1_item='leftovers',
+                         p1_ability='noguard')
         self.add_pokemon('flareon', 0, item='leftovers')
         self.choose_move(self.leafeon, movedex['stealthrock'])
         self.choose_move(self.vaporeon, movedex['lightofruin'])
