@@ -156,6 +156,13 @@ class FocusSash(ItemEffect):
             return pokemon.hp - 1
         return damage
 
+class GriseousOrb(ItemEffect):
+    removable = False
+
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.type in (Type.GHOST, Type.DRAGON):
+            return base_power * 1.2
+        return base_power
 
 
 

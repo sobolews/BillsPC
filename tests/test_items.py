@@ -1,7 +1,7 @@
 from mock import patch
 
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Volatile, Weather
+from pokedex.enums import Status, Volatile, Weather, FAIL
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
@@ -419,3 +419,20 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertEqual(self.vaporeon.hp, 1)
         self.assertItem(self.vaporeon, None)
+
+    def test_griseousorb(self):
+        self.reset_leads('vaporeon', 'giratinaorigin', p1_item='griseousorb')
+
+        self.assertIs(self.giratinaorigin.take_item(), FAIL)
+
+        self.choose_move(self.giratinaorigin, movedex['shadowball'])
+        self.choose_move(self.vaporeon, movedex['dragonpulse'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 150)
+        self.assertDamageTaken(self.giratinaorigin, 158)
+
+        self.choose_move(self.giratinaorigin, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 150 + 150)
