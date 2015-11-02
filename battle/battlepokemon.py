@@ -300,9 +300,10 @@ class BattlePokemon(object):
         """
         if other_item is None:
             item = self.item
-            assert item is not None and item.removable
+            assert item is not None and item.removable and item.single_use
         else:
             item = other_item
+            assert item.single_use
 
         for effect in self.effects:
             if effect.on_try_use_item(self, item, engine) is FAIL:

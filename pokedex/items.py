@@ -24,6 +24,7 @@ class BaseItem(object):
     is_plate = False
     is_drive = False
     removable = True
+    single_use = False
     source = ITEM
 
     def __repr__(self):
@@ -33,6 +34,8 @@ class ItemEffect(BaseItem, BaseEffect):
     pass
 
 class AirBalloon(ItemEffect):
+    single_use = True
+
     def on_get_immunity(self, thing):
         if thing is Type.GROUND:
             return True
@@ -61,6 +64,7 @@ class BlackSludge(ItemEffect):
 
 class ChestoBerry(ItemEffect):
     is_berry = True
+    single_use = True
 
     def on_update(self, pokemon, engine):
         if pokemon.status is Status.SLP:
@@ -95,6 +99,9 @@ class ChoiceSpecs(ItemEffect):
     on_lose_item = ChoiceBand.on_lose_item.__func__
 
 class CustapBerry(ItemEffect):
+    is_berry = True
+    single_use = True
+
     def on_modify_priority(self, pokemon, move, engine):
         if (pokemon.hp <= pokemon.max_hp / 4.0 and
             pokemon.use_item(engine) is not FAIL):
@@ -125,6 +132,7 @@ class ExpertBelt(ItemEffect):
 
 class BaseGem(ItemEffect):
     gem_type = None
+    single_use = True
 
     def on_move_hit(self, user, move, engine):
         if (move.type is self.gem_type and
@@ -145,6 +153,8 @@ class FlyingGem(BaseGem):
     gem_type = Type.FLYING
 
 class FocusSash(ItemEffect):
+    single_use = True
+
     @priority(0)
     def on_damage(self, pokemon, damage, cause, source, engine):
         if (pokemon.hp == pokemon.max_hp and
