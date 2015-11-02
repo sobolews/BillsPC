@@ -436,3 +436,21 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 150 + 150)
+
+    def test_heatrock(self):
+        self.reset_leads(p0_item='heatrock', p0_ability='drought')
+
+        for _ in range(8):
+            self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
+            self.run_turn()
+        self.assertIsNone(self.battlefield.weather)
+
+        self.reset_items('heatrock')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['sunnyday'])
+        self.run_turn()
+
+        for _ in range(7):
+            self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
+            self.run_turn()
+        self.assertIsNone(self.battlefield.weather)

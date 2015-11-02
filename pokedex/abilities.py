@@ -268,7 +268,8 @@ class Drizzle(AbilityEffect):
 
 class Drought(AbilityEffect):
     def on_start(self, pokemon, engine):
-        engine.battlefield.set_weather(Weather.SUNNYDAY)
+        duration = 8 if (pokemon.item is not None and pokemon.item.name == 'heatrock') else 5
+        engine.battlefield.set_weather(Weather.SUNNYDAY, duration)
 
 class DrySkin(AbilityEffect):
     # Fire vulnerability implemented in BattleEngine.modify_base_power

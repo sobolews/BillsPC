@@ -174,6 +174,10 @@ class GriseousOrb(ItemEffect):
             return base_power * 1.2
         return base_power
 
+class HeatRock(ItemEffect):
+    # Implemented in drought and sunnyday
+    pass
+
 
 
 class LightClay(ItemEffect):

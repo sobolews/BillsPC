@@ -3359,7 +3359,8 @@ class sunnyday(Move):
             return FAIL
 
     def on_success(self, user, _, engine):
-        engine.battlefield.set_weather(Weather.SUNNYDAY)
+        duration = 8 if user.item is itemdex['heatrock'] else 5
+        engine.battlefield.set_weather(Weather.SUNNYDAY, duration)
 
 class superfang(Move):
     def __init__(self):
