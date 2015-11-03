@@ -470,3 +470,63 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertDamageTaken(self.flareon, (self.flareon.max_hp / 4) - (self.flareon.max_hp / 16))
+
+    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    def test_lifeorb(self):
+        self.reset_items('lifeorb', 'lifeorb')
+        self.add_pokemon('sylveon', 0, item='lifeorb')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['stickyweb'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 185)
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 10)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.engine.heal(self.leafeon, 400)
+        self.choose_move(self.vaporeon, movedex['seismictoss'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 100)
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 10)
+
+        self.choose_switch(self.vaporeon, self.sylveon)
+        self.choose_move(self.leafeon, movedex['outrage'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 100)
+        self.assertDamageTaken(self.sylveon, 0)
+
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.choose_move(self.sylveon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.sylveon, 45) # life orb boosted confusion hit
+
+    def test_lifeorb_faint_order(self):
+        self.reset_items(None, 'lifeorb')
+        self.leafeon.hp = 10
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+        self.assertFainted(self.leafeon)
+        self.assertEqual(self.battlefield.win, self.leafeon.side.index)
+
+    def test_lifeorb_with_sheerforce(self):
+        self.reset_leads(p0_ability='sheerforce', p1_ability='sheerforce',
+                         p0_item='lifeorb', p1_item='lifeorb')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 10)
+        self.assertDamageTaken(self.vaporeon, 185)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.engine.heal(self.leafeon, 400)
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 83)
+        self.assertBoosts(self.vaporeon, {'spe': 0})

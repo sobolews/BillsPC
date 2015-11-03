@@ -184,6 +184,16 @@ class Leftovers(ItemEffect):
         if __debug__: log.i('%s restored a little HP using its Leftovers!', pokemon)
         engine.heal(pokemon, pokemon.max_hp / 16)
 
+class LifeOrb(ItemEffect):
+    def on_modify_damage(self, user, move, damage, effectiveness):
+        if __debug__: log.d("%s was boosted by %s's LifeOrb", move, user)
+        return damage * 1.3
+
+    def on_after_move_secondary(self, user, move, target, engine):
+        if move.category is not MoveCategory.STATUS:
+            if __debug__: log.i("%s was hurt by its LifeOrb", user)
+            engine.damage(user, user.max_hp / 10.0, Cause.OTHER, self)
+
 
 
 class LightClay(ItemEffect):
