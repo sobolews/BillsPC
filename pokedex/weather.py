@@ -18,10 +18,13 @@ class BaseWeatherEffect(BaseEffect):
                 for effect in pokemon.effects:
                     effect.on_weather(pokemon, self.source, engine)
 
+    def weather_modify_damage(self, move, damage):
+        return damage
+
 class SunnyDayWeather(BaseWeatherEffect):
     source = Weather.SUNNYDAY
 
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def weather_modify_damage(self, move, damage):
         if not self.suppressed:
             if move.type is Type.FIRE:
                 if __debug__: log.i("%s boosted %s's power!", self, move)
@@ -41,7 +44,7 @@ class DesolateLandWeather(BaseWeatherEffect):
     def __init__(self, duration):
         self.duration = None
 
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def weather_modify_damage(self, move, damage):
         if not self.suppressed and move.type is Type.FIRE:
             if __debug__: log.i("%s boosted %s's power!", self, move)
             return 1.5 * damage
@@ -60,7 +63,7 @@ class DesolateLandWeather(BaseWeatherEffect):
 class RainDanceWeather(BaseWeatherEffect):
     source = Weather.RAINDANCE
 
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def weather_modify_damage(self, move, damage):
         if not self.suppressed:
             if move.type is Type.WATER:
                 if __debug__: log.i("%s boosted %s's power!", self, move)
@@ -76,7 +79,7 @@ class PrimordialSeaWeather(BaseWeatherEffect):
     def __init__(self, duration):
         self.duration = None
 
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def weather_modify_damage(self, move, damage):
         if not self.suppressed and move.type is Type.WATER:
             if __debug__: log.i("%s boosted %s's power!", self, move)
             return 1.5 * damage

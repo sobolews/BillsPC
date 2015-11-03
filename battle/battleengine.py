@@ -450,6 +450,10 @@ class BattleEngine(object):
         if move.type in user.types:
             damage = int(damage * move.stab)
 
+        weather_mod = self.battlefield.get_effect(self.battlefield.weather)
+        if weather_mod is not None:
+            damage = gf_round(weather_mod.weather_modify_damage(move, damage))
+
         effectiveness = self.get_effectiveness(user, move, target)
 
         damage *= effectiveness
