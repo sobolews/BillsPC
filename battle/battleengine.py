@@ -464,7 +464,7 @@ class BattleEngine(object):
         # TODO: burn modifier goes here now? but I think it's better as an effect :/
 
         damage = self.modify_damage(damage, user, move, target, crit, effectiveness)
-        damage = int(damage) or 1
+        damage = gf_round(damage) or 1
 
         if __debug__: log.d('Returning damage=%s', damage)
         return damage
