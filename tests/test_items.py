@@ -639,3 +639,86 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertMoveChoices(self.vaporeon, {'solarbeam'})
         self.assertBoosts(self.leafeon, {'spa': 2, 'spd': 2, 'spe': 2})
         self.assertDamageTaken(self.leafeon, 39)
+
+    def test_redcard(self):
+        self.reset_items('redcard', 'redcard')
+        self.add_pokemon('flareon', 0, item='redcard', ability='flashfire')
+        self.add_pokemon('jolteon', 1, item='redcard')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertActive(self.flareon)
+        self.assertActive(self.jolteon)
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertDamageTaken(self.jolteon, 182)
+        self.assertItem(self.vaporeon, None)
+        self.assertItem(self.jolteon, None)
+        self.assertItem(self.leafeon, 'redcard')
+
+        self.choose_switch(self.jolteon, self.leafeon)
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['flamethrower'])
+        self.choose_move(self.flareon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertActive(self.flareon)
+        self.assertActive(self.leafeon)
+        self.assertDamageTaken(self.flareon, 0)
+        self.assertTrue(self.flareon.has_effect(Volatile.FLASHFIRE))
+        self.assertStatus(self.leafeon, Status.PAR)
+        self.assertItem(self.flareon, 'redcard')
+        self.assertItem(self.leafeon, 'redcard')
+
+    @patch('random.randrange', lambda _: 0) # confusion hit
+    def test_redcard_confusion_hit_doesnt_activate(self):
+        self.reset_items('redcard', None)
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertActive(self.leafeon)
+        self.assertItem(self.vaporeon, 'redcard')
+        self.assertDamageTaken(self.vaporeon, 37)
+
+    def test_redcard_fails_if_holder_is_fainted(self):
+        self.reset_items('redcard', None)
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['woodhammer'])
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertActive(self.leafeon)
+        self.assertFainted(self.vaporeon)
+        self.assertDamageTaken(self.leafeon, 132) # recoil
+
+    def test_redcard_vs_sheerforce(self):
+        """ The opponent's sheerforce should prevent redcard from activating """
+        self.reset_leads(p0_item='redcard', p1_ability='sheerforce')
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45)
+        self.assertActive(self.leafeon)
+        self.assertItem(self.vaporeon, 'redcard')
+
+        self.choose_move(self.leafeon, movedex['dragonclaw'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 45 + 112)
+        self.assertActive(self.espeon)
+        self.assertItem(self.vaporeon, None)
+
+    def test_redcard_vs_suctioncups(self):
+        """ RedCard activates but fails to force switch against suctioncups """
+        self.reset_leads(p0_item='redcard', p1_ability='suctioncups')
+        self.add_pokemon('espeon', 1)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 142)
+        self.assertItem(self.vaporeon, None)
+        self.assertActive(self.leafeon)

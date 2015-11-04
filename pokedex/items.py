@@ -235,6 +235,19 @@ class PowerHerb(ItemEffect):
     single_use = True
     # Implemented in two-turn moves (solarbeam, geomancy, etc.)
 
+class RedCard(ItemEffect):
+    single_use = True
+
+    def on_after_foe_move_secondary(self, foe, move, target, engine):
+        if (not target.is_fainted() and
+            not foe.is_fainted() and
+            move.category is not MoveCategory.STATUS and
+            foe.is_active and
+            engine.get_switch_choices(foe.side, forced=True) and
+            target.use_item(engine) is not FAIL
+        ):
+            engine.force_random_switch(foe, target)
+
 
 
 
