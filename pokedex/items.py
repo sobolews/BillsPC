@@ -231,11 +231,12 @@ class PetayaBerry(ItemEffect):
     def on_use_item(self, pokemon, item, engine):
         engine.apply_boosts(pokemon, Boosts(spa=1), self_induced=True)
 
-
-
-
 class PowerHerb(ItemEffect):
-    pass
+    single_use = True
+    # Implemented in two-turn moves (solarbeam, geomancy, etc.)
+
+
+
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
            inspect.isclass(obj) and

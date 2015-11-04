@@ -619,3 +619,23 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 176 + 50)
         self.assertBoosts(self.leafeon, {'spa': 1})
         self.assertItem(self.leafeon, None)
+
+    def test_powerherb(self):
+        self.reset_items('powerherb', 'powerherb')
+        self.choose_move(self.leafeon, movedex['geomancy'])
+        self.choose_move(self.vaporeon, movedex['solarbeam'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertItem(self.leafeon, None)
+        self.assertBoosts(self.leafeon, {'spa': 2, 'spd': 2, 'spe': 2})
+        self.assertDamageTaken(self.leafeon, 39)
+
+        self.choose_move(self.leafeon, movedex['geomancy'])
+        self.choose_move(self.vaporeon, movedex['solarbeam'])
+        self.run_turn()
+
+        self.assertMoveChoices(self.leafeon, {'geomancy'})
+        self.assertMoveChoices(self.vaporeon, {'solarbeam'})
+        self.assertBoosts(self.leafeon, {'spa': 2, 'spd': 2, 'spe': 2})
+        self.assertDamageTaken(self.leafeon, 39)
