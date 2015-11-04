@@ -206,7 +206,7 @@ class MultiMoveTestCase(TestCase):
         self.assertEqual(pokemon.item, itemdex.get(item))
         if item is None:
             self.assertFalse(pokemon.has_effect(ITEM))
-        else:
+        elif pokemon.is_active:
             held = pokemon.get_effect(ITEM)
             self.assertIsNotNone(held)
             self.assertEqual(held.name, item)
