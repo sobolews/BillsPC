@@ -194,10 +194,13 @@ class LifeOrb(ItemEffect):
             if __debug__: log.i("%s was hurt by its LifeOrb", user)
             engine.damage(user, user.max_hp / 10.0, Cause.OTHER, self)
 
-
-
 class LightClay(ItemEffect):
+    # Implemented in lightscreen and reflect
     pass
+
+
+
+
 class PowerHerb(ItemEffect):
     pass
 

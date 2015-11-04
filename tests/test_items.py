@@ -1,7 +1,7 @@
 from mock import patch
 
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Volatile, Weather, FAIL
+from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
@@ -530,3 +530,17 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertDamageTaken(self.leafeon, 83)
         self.assertBoosts(self.vaporeon, {'spe': 0})
+
+    def test_lightclay(self):
+        self.reset_items(None, 'lightclay')
+        self.choose_move(self.leafeon, movedex['lightscreen'])
+        self.choose_move(self.vaporeon, movedex['lightscreen'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['reflect'])
+        self.choose_move(self.vaporeon, movedex['reflect'])
+        self.run_turn()
+
+        self.assertEqual(6, self.leafeon.side.get_effect(SideCondition.LIGHTSCREEN).duration)
+        self.assertEqual(3, self.vaporeon.side.get_effect(SideCondition.LIGHTSCREEN).duration)
+        self.assertEqual(7, self.leafeon.side.get_effect(SideCondition.REFLECT).duration)
+        self.assertEqual(4, self.vaporeon.side.get_effect(SideCondition.REFLECT).duration)
