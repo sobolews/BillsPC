@@ -725,3 +725,19 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
     # def test_redorb(self):
     #     pass # TODO when: implement forme changes
+
+    def test_rockyhelmet(self):
+        self.reset_leads(p0_item='rockyhelmet', p1_item='rockyhelmet',
+                         p0_ability='noguard')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 24 + (self.leafeon.max_hp / 6))
+        self.assertDamageTaken(self.vaporeon, 142 + 0) # no rockyhelmet damage
+
+        self.leafeon.hp = self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['vcreate'])
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.win, self.leafeon.side.index)

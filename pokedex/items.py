@@ -251,6 +251,12 @@ class RedCard(ItemEffect):
 # class RedOrb(ItemEffect):
 #     pass # TODO when: implement forme changes
 
+class RockyHelmet(ItemEffect):
+    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
+        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+            if __debug__: log.i("%s was damaged by %s's RockyHelmet", foe, pokemon)
+            engine.damage(foe, foe.max_hp / 6.0, Cause.OTHER)
+
 
 
 
