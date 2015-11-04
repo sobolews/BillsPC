@@ -248,6 +248,9 @@ class RedCard(ItemEffect):
         ):
             engine.force_random_switch(foe, target)
 
+# class RedOrb(ItemEffect):
+#     pass # TODO when: implement forme changes
+
 
 
 

@@ -722,3 +722,6 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 142)
         self.assertItem(self.vaporeon, None)
         self.assertActive(self.leafeon)
+
+    # def test_redorb(self):
+    #     pass # TODO when: implement forme changes
