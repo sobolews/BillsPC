@@ -210,6 +210,12 @@ class LumBerry(ItemEffect):
         pokemon.cure_status()
         pokemon.remove_effect(Volatile.CONFUSE)
 
+class LustrousOrb(ItemEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if user.base_species == 'palkia' and move.type in (Type.WATER, Type.DRAGON):
+            return base_power * 1.2
+        return base_power
+
 
 
 

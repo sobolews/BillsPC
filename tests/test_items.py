@@ -571,3 +571,20 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
         self.assertItem(self.vaporeon, None)
+
+    def test_lustrousorb(self):
+        self.reset_leads('vaporeon', 'palkia',
+                         p0_item='lustrousorb', p1_item='lustrousorb')
+        self.choose_move(self.palkia, movedex['outrage'])
+        self.choose_move(self.vaporeon, movedex['dragonpulse'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 324)
+        self.assertDamageTaken(self.palkia, 136)
+
+        self.engine.heal(self.vaporeon, 400)
+        self.choose_move(self.palkia, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 150)
+        self.assertIs(self.palkia.take_item(), itemdex['lustrousorb'])
