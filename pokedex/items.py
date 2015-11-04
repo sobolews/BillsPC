@@ -216,6 +216,9 @@ class LustrousOrb(ItemEffect):
             return base_power * 1.2
         return base_power
 
+class NormalGem(BaseGem):
+    gem_type = Type.NORMAL
+
 
 
 

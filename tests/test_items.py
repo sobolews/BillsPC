@@ -588,3 +588,15 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 150)
         self.assertIs(self.palkia.take_item(), itemdex['lustrousorb'])
+
+    def test_normalgem(self):
+        self.reset_items('normalgem', 'normalgem')
+        self.battlefield.set_weather(Weather.SUNNYDAY)
+        self.choose_move(self.vaporeon, movedex['rapidspin'])
+        self.choose_move(self.leafeon, movedex['weatherball'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 14)
+        self.assertItem(self.vaporeon, None)
+        self.assertDamageTaken(self.vaporeon, 44)
+        self.assertItem(self.leafeon, 'normalgem')
