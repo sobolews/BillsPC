@@ -67,6 +67,9 @@ class BaseEffect(object):
     def on_after_move_secondary(self, user, move, target, engine):
         """ This executes only if the move was successful, and is negated by Volatile.SHEERFORCE """
 
+    def on_after_foe_move_secondary(self, foe, move, target, engine):
+        """ This executes only if the foe's move was successful, and is negated by Volatile.SHEERFORCE """
+
     def on_try_hit(self, user, move, target, engine):
         """ Called before hitting the opponent with a move. Return FAIL to fail the move """
 
