@@ -198,6 +198,18 @@ class LightClay(ItemEffect):
     # Implemented in lightscreen and reflect
     pass
 
+class LumBerry(ItemEffect):
+    is_berry = True
+    single_use = True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.status is not None or pokemon.has_effect(Volatile.CONFUSE):
+            pokemon.use_item(engine)
+
+    def on_use_item(self, pokemon, item, engine):
+        pokemon.cure_status()
+        pokemon.remove_effect(Volatile.CONFUSE)
+
 
 
 

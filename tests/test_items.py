@@ -544,3 +544,30 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(3, self.vaporeon.side.get_effect(SideCondition.LIGHTSCREEN).duration)
         self.assertEqual(7, self.leafeon.side.get_effect(SideCondition.REFLECT).duration)
         self.assertEqual(4, self.vaporeon.side.get_effect(SideCondition.REFLECT).duration)
+
+    @patch('random.randrange', lambda _: 0) # parahax if possible; no miss
+    def test_lumberry(self):
+        self.reset_items('lumberry', 'lumberry')
+        self.choose_move(self.leafeon, movedex['thunderwave'])
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertStatus(self.vaporeon, None)
+        self.assertItem(self.leafeon, None)
+        self.assertStatus(self.leafeon, None)
+        self.assertDamageTaken(self.leafeon, 0)
+
+        self.choose_move(self.leafeon, movedex['nuzzle'])
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)
+        self.assertStatus(self.vaporeon, Status.PAR)
+
+        self.reset_items('lumberry', 'lumberry')
+        self.choose_move(self.leafeon, movedex['confuseray'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
+        self.assertItem(self.vaporeon, None)
