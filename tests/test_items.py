@@ -763,3 +763,12 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertEqual(crit[0], 2)
+
+    def test_sharpbeak(self):
+        self.reset_items('sharpbeak', 'sharpbeak')
+        self.choose_move(self.leafeon, movedex['acrobatics'])
+        self.choose_move(self.vaporeon, movedex['xscissor'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 92)
+        self.assertDamageTaken(self.leafeon, 78)

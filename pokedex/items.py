@@ -261,6 +261,12 @@ class ScopeLens(ItemEffect):
     def on_modify_move(self, move, user, engine):
         move.crit_ratio += 1
 
+class SharpBeak(ItemEffect):
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.type is Type.FLYING:
+            return base_power * 1.2
+        return base_power
+
 
 
 
