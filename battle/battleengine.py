@@ -146,7 +146,7 @@ class BattleEngine(object):
         if move.targets_user:
             return self.fast_use_move(user, move) # fast path for moves not targeting opponent
 
-        if not move.targets_user and (target is None or target.is_fainted()):
+        if target is None or target.is_fainted():
             if __debug__: log.i('But it failed: No target')
             if move.selfdestruct:
                 self.faint(user, Cause.SELFDESTRUCT, move)
