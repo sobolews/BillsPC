@@ -600,3 +600,22 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, None)
         self.assertDamageTaken(self.vaporeon, 44)
         self.assertItem(self.leafeon, 'normalgem')
+
+    def test_petayaberry(self):
+        self.reset_items('petayaberry', 'petayaberry')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378)
+        self.assertDamageTaken(self.leafeon, 176)
+        self.assertBoosts(self.vaporeon, {'spa': 1})
+        self.assertItem(self.vaporeon, None)
+        self.assertItem(self.leafeon, 'petayaberry')
+
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 176 + 50)
+        self.assertBoosts(self.leafeon, {'spa': 1})
+        self.assertItem(self.leafeon, None)

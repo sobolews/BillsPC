@@ -9,6 +9,7 @@ from misc.functions import priority
 from pokedex import effects
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile, FAIL
+from pokedex.stats import Boosts
 
 class BaseItem(object):
     class __metaclass__(type):
@@ -218,6 +219,17 @@ class LustrousOrb(ItemEffect):
 
 class NormalGem(BaseGem):
     gem_type = Type.NORMAL
+
+class PetayaBerry(ItemEffect):
+    is_berry = True
+    single_use = True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.hp <= pokemon.max_hp / 4:
+            pokemon.use_item(engine)
+
+    def on_use_item(self, pokemon, item, engine):
+        engine.apply_boosts(pokemon, Boosts(spa=1), self_induced=True)
 
 
 
