@@ -1,5 +1,6 @@
 from mock import patch
 
+from battle.battleengine import BattleEngine
 from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition
 from pokedex.items import itemdex
@@ -741,3 +742,24 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
+
+    def test_scopelens(self):
+        crit = [None]
+        def get_critical_hit(crit_ratio):
+            crit[0] = crit_ratio
+            return BattleEngine.get_critical_hit(crit_ratio)
+
+        self.reset_leads(p0_item='scopelens', p0_ability='superluck',
+                         p1_ability='angerpoint')
+        self.engine.get_critical_hit = get_critical_hit
+        self.choose_move(self.vaporeon, movedex['nightslash'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 51)
+        self.assertBoosts(self.leafeon, {'atk': 6})
+        self.assertEqual(crit[0], 3)
+
+        self.choose_move(self.vaporeon, movedex['bite'])
+        self.run_turn()
+
+        self.assertEqual(crit[0], 2)

@@ -257,6 +257,10 @@ class RockyHelmet(ItemEffect):
             if __debug__: log.i("%s was damaged by %s's RockyHelmet", foe, pokemon)
             engine.damage(foe, foe.max_hp / 6.0, Cause.OTHER)
 
+class ScopeLens(ItemEffect):
+    def on_modify_move(self, move, user, engine):
+        move.crit_ratio += 1
+
 
 
 
