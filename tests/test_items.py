@@ -855,3 +855,17 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 319 + 47)
+
+    def test_toxicorb(self):
+        self.reset_leads(p0_ability='noguard', p0_item='toxicorb', p1_item='toxicorb')
+        self.choose_move(self.vaporeon, movedex['willowisp'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertStatus(self.leafeon, Status.BRN)
+
+        self.choose_move(self.leafeon, movedex['healbell'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertStatus(self.leafeon, Status.TOX)

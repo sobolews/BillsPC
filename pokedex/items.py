@@ -289,6 +289,11 @@ class ThickClub(ItemEffect):
             return atk * 2
         return atk
 
+class ToxicOrb(ItemEffect):
+    @priority(-26.2)
+    def on_residual(self, pokemon, foe, engine):
+        engine.set_status(pokemon, Status.TOX, pokemon)
+
 
 
 
