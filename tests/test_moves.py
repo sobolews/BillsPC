@@ -2155,9 +2155,6 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertFalse(self.vaporeon.has_effect(Volatile.SUBSTITUTE))
 
-    # def test_technoblast_type_change(self):
-    #     pass # TODO: items
-
     @patch('random.randrange', lambda _: 0) # no miss
     def test_thunderwave_ground_immunity(self):
         self.reset_leads('golem', 'jolteon')

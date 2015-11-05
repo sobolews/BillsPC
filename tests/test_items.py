@@ -924,3 +924,30 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertBoosts(self.leafeon, {'atk': -1, 'def': 1, 'spe': 0, 'spa': -1, 'spd': 0})
+
+    def test_drives(self):
+        self.reset_leads('vaporeon', 'genesect')
+        self.choose_move(self.genesect, movedex['technoblast'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 125)
+
+        self.reset_leads('vaporeon', 'genesect', p0_ability='flashfire', p1_item='burndrive')
+        self.choose_move(self.genesect, movedex['technoblast'])
+        self.run_turn()
+        self.assertTrue(self.vaporeon.has_effect(Volatile.FLASHFIRE))
+
+        self.reset_leads('glaceon', 'genesect', p0_ability='flashfire', p1_item='chilldrive')
+        self.choose_move(self.genesect, movedex['technoblast'])
+        self.run_turn()
+        self.assertDamageTaken(self.glaceon, 62)
+
+        self.reset_leads('vaporeon', 'genesect', p0_ability='waterabsorb', p1_item='dousedrive')
+        self.choose_move(self.genesect, movedex['technoblast'])
+        self.vaporeon.hp -= 100
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.reset_leads('vaporeon', 'genesect', p1_item='shockdrive')
+        self.choose_move(self.genesect, movedex['technoblast'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 250)

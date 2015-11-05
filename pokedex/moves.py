@@ -3524,8 +3524,8 @@ class technoblast(Move):
         self.base_power = 120
 
     def on_modify_move(self, user, target, engine):
-        if user.item and user.item.is_drive:
-            self.type = user.item.type
+        if user.item is not None:
+            self.type = user.item.drive_type or Type.NORMAL
 
 class thunder(Move):
     def __init__(self):

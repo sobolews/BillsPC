@@ -23,7 +23,7 @@ class BaseItem(object):
     is_mega_stone = False
     is_berry = False
     is_plate = False
-    is_drive = False
+    drive_type = None
     removable = True
     single_use = False
     source = ITEM
@@ -313,6 +313,21 @@ class WhiteHerb(ItemEffect):
         if stats and pokemon.use_item(engine) is not FAIL:
             for stat in stats:
                 pokemon.boosts[stat] = 0
+
+class BaseDrive(ItemEffect):
+    removable = False
+
+class BurnDrive(BaseDrive):
+    drive_type = Type.FIRE
+
+class ChillDrive(BaseDrive):
+    drive_type = Type.ICE
+
+class DouseDrive(BaseDrive):
+    drive_type = Type.WATER
+
+class ShockDrive(BaseDrive):
+    drive_type = Type.ELECTRIC
 
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
