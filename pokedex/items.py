@@ -294,7 +294,16 @@ class ToxicOrb(ItemEffect):
     def on_residual(self, pokemon, foe, engine):
         engine.set_status(pokemon, Status.TOX, pokemon)
 
+class WeaknessPolicy(ItemEffect):
+    single_use = True
 
+    def after_foe_hit(self, foe, move, target, engine):
+        if (move.category is not MoveCategory.STATUS and
+            not move.has_damage_callback and
+            engine.get_effectiveness(foe, move, target) > 1 and
+            target.use_item(engine) is not FAIL
+        ):
+            engine.apply_boosts(target, Boosts(atk=2, spa=2), self_induced=True)
 
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if

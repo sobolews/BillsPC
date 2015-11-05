@@ -869,3 +869,30 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertStatus(self.vaporeon, Status.TOX)
         self.assertStatus(self.leafeon, Status.TOX)
+
+    def test_weaknesspolicy(self):
+        self.reset_items('weaknesspolicy', 'weaknesspolicy')
+        self.add_pokemon('porygonz', 0, item='weaknesspolicy')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['hiddenpowerfighting'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378)
+        self.assertBoosts(self.vaporeon, {'spa': 2, 'atk': 2})
+        self.assertItem(self.vaporeon, None)
+        self.assertDamageTaken(self.leafeon, 157)
+        self.assertBoosts(self.leafeon, {'spa': 0, 'atk': 0})
+
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'spa': 2, 'atk': 2})
+        self.assertItem(self.leafeon, None)
+
+        self.choose_switch(self.vaporeon, self.porygonz)
+        self.choose_move(self.leafeon, movedex['seismictoss'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.porygonz, 100)
+        self.assertBoosts(self.porygonz, {'spa': 0, 'atk': 0})
+        self.assertItem(self.porygonz, 'weaknesspolicy')
