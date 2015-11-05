@@ -305,6 +305,15 @@ class WeaknessPolicy(ItemEffect):
         ):
             engine.apply_boosts(target, Boosts(atk=2, spa=2), self_induced=True)
 
+class WhiteHerb(ItemEffect):
+    single_use = True
+
+    def on_update(self, pokemon, engine):
+        stats = [stat for stat, boost in pokemon.boosts.items() if boost < 0]
+        if stats and pokemon.use_item(engine) is not FAIL:
+            for stat in stats:
+                pokemon.boosts[stat] = 0
+
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
            inspect.isclass(obj) and

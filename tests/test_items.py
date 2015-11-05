@@ -896,3 +896,31 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.porygonz, 100)
         self.assertBoosts(self.porygonz, {'spa': 0, 'atk': 0})
         self.assertItem(self.porygonz, 'weaknesspolicy')
+
+    def test_whiteherb(self):
+        self.reset_leads(p0_ability='noguard', p0_item='whiteherb', p1_item='whiteherb')
+        self.choose_move(self.vaporeon, movedex['dracometeor'])
+        self.choose_move(self.leafeon, movedex['shellsmash'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': 2, 'spa': 2, 'spe': 2})
+        self.assertDamageTaken(self.leafeon, 170)
+        self.assertBoosts(self.vaporeon, {'spa': 0})
+
+        self.reset_leads(p0_ability='noguard', p0_item='whiteherb', p1_item='whiteherb')
+        self.choose_move(self.leafeon, movedex['bulkup'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': 1, 'def': 1, 'spe': 0, 'spa': 0, 'spd': 0})
+        self.assertItem(self.leafeon, 'whiteherb')
+
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': 0, 'def': 1, 'spe': 0, 'spa': 0, 'spd': 0})
+        self.assertItem(self.leafeon, None)
+
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+
+        self.assertBoosts(self.leafeon, {'atk': -1, 'def': 1, 'spe': 0, 'spa': -1, 'spd': 0})
