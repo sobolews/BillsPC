@@ -822,3 +822,22 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertFainted(self.volcarona)
+
+    def test_stick(self):
+        crit = [None]
+        def get_critical_hit(crit_ratio):
+            crit[0] = crit_ratio
+            return BattleEngine.get_critical_hit(crit_ratio)
+
+        self.reset_leads('vaporeon', 'farfetchd', p0_item='stick', p1_item='stick')
+        self.engine.get_critical_hit = get_critical_hit
+        self.choose_move(self.farfetchd, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 246)
+        self.assertEqual(crit[0], 3)
+
+        self.choose_move(self.vaporeon, movedex['nightslash'])
+        self.run_turn()
+
+        self.assertEqual(crit[0], 1)

@@ -278,6 +278,11 @@ class SitrusBerry(ItemEffect):
     def on_use_item(self, pokemon, item, engine):
         engine.heal(pokemon, pokemon.max_hp / 4)
 
+class Stick(ItemEffect):
+    def on_modify_move(self, move, user, engine):
+        if user.base_species == 'farfetchd':
+            move.crit_ratio += 2
+
 
 
 
