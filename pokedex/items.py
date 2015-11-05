@@ -267,6 +267,17 @@ class SharpBeak(ItemEffect):
             return base_power * 1.2
         return base_power
 
+class SitrusBerry(ItemEffect):
+    is_berry = True
+    single_use = True
+
+    def on_update(self, pokemon, engine):
+        if pokemon.hp <= pokemon.max_hp / 2:
+            pokemon.use_item(engine)
+
+    def on_use_item(self, pokemon, item, engine):
+        engine.heal(pokemon, pokemon.max_hp / 4)
+
 
 
 

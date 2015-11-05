@@ -772,3 +772,53 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 92)
         self.assertDamageTaken(self.leafeon, 78)
+
+    def test_sitrusberry(self):
+        self.reset_items('sitrusberry', 'sitrusberry')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['eruption'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 122)
+        self.assertDamageTaken(self.vaporeon, 378 - (self.vaporeon.max_hp / 4))
+        self.assertItem(self.vaporeon, None)
+
+
+    def test_sitrusberry_with_recoil_vs_rockyhelmet(self):
+        self.reset_leads(p0_ability='noguard', p0_item='rockyhelmet',
+                         p1_item='sitrusberry')
+        self.leafeon.hp = 137
+        self.choose_move(self.leafeon, movedex['headsmash'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertEqual(self.leafeon.item.name, 'sitrusberry')
+
+    def test_sitrusberry_with_multiple_residuals(self):
+        self.reset_leads('vaporeon', 'jolteon', p0_ability='noguard', p1_item='sitrusberry')
+        self.choose_move(self.vaporeon, movedex['infestation'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['leechseed'])
+        self.run_turn()
+        self.engine.heal(self.jolteon, 400)
+        self.choose_move(self.vaporeon, movedex['toxic'])
+        self.run_turn()
+        self.jolteon.get_effect(Status.TOX).stage = 4
+        self.jolteon.hp = 137
+        self.run_turn()
+
+        self.assertFainted(self.jolteon)
+        self.assertEqual(self.jolteon.item.name, 'sitrusberry')
+
+    def test_sitrusberry_with_multiple_hazards(self):
+        self.reset_leads()
+        self.add_pokemon('volcarona', 1, item='sitrusberry')
+        self.volcarona.hp = int(self.volcarona.max_hp * 0.6)
+        self.choose_move(self.vaporeon, movedex['stealthrock'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, movedex['spikes'])
+        self.run_turn()
+        self.choose_switch(self.leafeon, self.volcarona)
+        self.run_turn()
+
+        self.assertFainted(self.volcarona)
