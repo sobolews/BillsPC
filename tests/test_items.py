@@ -841,3 +841,17 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertEqual(crit[0], 1)
+
+    def test_thickclub(self):
+        self.reset_leads('vaporeon', 'marowak', p0_item='thickclub', p1_item='thickclub')
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.marowak, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.marowak, 57)
+        self.assertDamageTaken(self.vaporeon, 319)
+
+        self.choose_move(self.marowak, movedex['hypervoice'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 319 + 47)

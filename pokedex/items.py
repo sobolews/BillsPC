@@ -283,6 +283,12 @@ class Stick(ItemEffect):
         if user.base_species == 'farfetchd':
             move.crit_ratio += 2
 
+class ThickClub(ItemEffect):
+    def on_modify_atk(self, pokemon, move, engine, atk):
+        if pokemon.base_species == 'marowak':
+            return atk * 2
+        return atk
+
 
 
 
