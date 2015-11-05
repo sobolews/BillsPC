@@ -72,6 +72,12 @@ class TestMoveDefinitions(TestCase):
                 self.assertIsNone(move.target_status, move)
                 self.assertIsNone(move.drain, move)
 
+    def test_damage_callback_moves_have_attribute(self):
+        for move in self.all_moves:
+            if move.damage_callback.__func__ != Move.damage_callback.__func__:
+                self.assertTrue(move.has_damage_callback)
+            else:
+                self.assertFalse(move.has_damage_callback)
 
 class TestMoves(MultiMoveTestCase):
     """

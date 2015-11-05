@@ -81,6 +81,7 @@ class Move(object):
     stab = 1.5
     is_hiddenpower = False
     infiltrates = False
+    has_damage_callback = False
 
     def __init__(self):
         self.name = self.__class__.__name__.rstrip('_')
@@ -729,6 +730,7 @@ class counter(Move):
         self.accuracy = 100
         self.makes_contact = True
         self.priority = -5
+        self.has_damage_callback = True
 
     def check_success(self, user, target, engine):
         if not (user.was_attacked_this_turn and
@@ -1104,6 +1106,7 @@ class endeavor(Move):
         self.type = Type.NORMAL
         self.accuracy = 100
         self.makes_contact = True
+        self.has_damage_callback = True
 
     def check_success(self, user, target, engine):
         return True if target.hp > user.hp else FAIL
@@ -2116,6 +2119,7 @@ class metalburst(Move):
         self.category = PHYSICAL
         self.type = Type.STEEL
         self.accuracy = 100
+        self.has_damage_callback = True
 
     def check_success(self, user, target, engine):
         if not (user.was_attacked_this_turn and
@@ -2159,6 +2163,7 @@ class mirrorcoat(Move):
         self.type = Type.PSYCHIC
         self.accuracy = 100
         self.priority = -5
+        self.has_damage_callback = True
 
     def check_success(self, user, target, engine):
         if not (user.was_attacked_this_turn and
@@ -2221,6 +2226,7 @@ class nightshade(Move):
         self.category = SPECIAL
         self.type = Type.GHOST
         self.accuracy = 100
+        self.has_damage_callback = True
 
     def damage_callback(self, user, target):
         return user.level
@@ -2922,6 +2928,7 @@ class seismictoss(Move):
         self.type = Type.FIGHTING
         self.accuracy = 100
         self.makes_contact = True
+        self.has_damage_callback = True
 
     def damage_callback(self, user, target):
         return user.level
@@ -3363,6 +3370,7 @@ class superfang(Move):
         self.type = Type.NORMAL
         self.accuracy = 90
         self.makes_contact = True
+        self.has_damage_callback = True
 
     def damage_callback(self, user, target):
         return (target.hp / 2) or 1
