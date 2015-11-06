@@ -1905,8 +1905,8 @@ class judgment(Move):
         self.base_power = 100
 
     def on_modify_move(self, user, target, engine):
-        if user.item is not None and user.item.is_plate:
-            self.type = user.item.plate_type
+        if user.item is not None:
+            self.type = user.item.plate_type or Type.NORMAL
 
 class jumpkick(Move):
     def __init__(self):

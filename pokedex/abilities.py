@@ -625,7 +625,9 @@ class Multiscale(AbilityEffect):
         return damage
 
 class Multitype(AbilityEffect):
-    pass # TODO when: implement plates
+    def on_start(self, pokemon, engine):
+        if pokemon.item is not None:
+            pokemon.types = [pokemon.item.plate_type or Type.NORMAL, None]
 
 class Mummy(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):

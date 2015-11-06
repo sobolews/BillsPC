@@ -951,3 +951,59 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.choose_move(self.genesect, movedex['technoblast'])
         self.run_turn()
         self.assertDamageTaken(self.vaporeon, 250)
+
+    def test_plates_and_multitype(self):
+        self.reset_leads('vaporeon', 'arceusdragon', p1_item='dracoplate', p1_ability='multitype')
+        self.choose_move(self.arceusdragon, movedex['judgment'])
+        self.choose_move(self.vaporeon, movedex['dragonpulse'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 187)
+        self.assertDamageTaken(self.arceusdragon, 136)
+
+        self.reset_leads('vaporeon', 'arceusfire', p1_item='flameplate', p1_ability='multitype')
+        self.choose_move(self.arceusfire, movedex['judgment'])
+        self.choose_move(self.vaporeon, movedex['dragonpulse'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 93)
+        self.assertDamageTaken(self.arceusfire, 68)
+
+        self.reset_leads('vaporeon', 'arceusgrass', p1_item='meadowplate', p1_ability='multitype')
+        self.choose_move(self.arceusgrass, movedex['judgment'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 374)
+        self.assertDamageTaken(self.arceusgrass, 26)
+
+        self.reset_leads('vaporeon', 'arceusghost', p1_item='spookyplate', p1_ability='multitype')
+        self.choose_move(self.arceusghost, movedex['extremespeed'])
+        self.choose_move(self.vaporeon, movedex['hypervoice'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 120)
+        self.assertDamageTaken(self.arceusghost, 0)
+        self.choose_move(self.arceusghost, movedex['shadowclaw'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 120 + 189)
+
+        self.reset_leads('vaporeon', 'arceus', p1_item='lumberry', p1_ability='multitype')
+        self.choose_move(self.arceus, movedex['judgment'])
+        self.choose_move(self.vaporeon, movedex['vacuumwave'])
+        self.run_turn()
+        self.assertDamageTaken(self.vaporeon, 156)
+        self.assertDamageTaken(self.arceus, 66)
+
+    def test_plate_multitype_vs_hazards(self):
+        self.reset_leads()
+        self.add_pokemon('arceusflying', 0, item='skyplate', ability='multitype')
+        self.choose_move(self.leafeon, movedex['stealthrock'])
+        self.choose_move(self.vaporeon, movedex['uturn'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.arceusflying, self.arceusflying.max_hp / 4)
+
+        self.reset_leads()
+        self.add_pokemon('arceusflying', 0, item='skyplate', ability='multitype')
+        self.choose_move(self.leafeon, movedex['spikes'])
+        self.choose_move(self.vaporeon, movedex['uturn'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.arceusflying, 0)

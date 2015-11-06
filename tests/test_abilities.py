@@ -1392,8 +1392,12 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 18) # half of normal confusion damage
 
-    # def test_multiscale(self):
-    #     pass # TODO when: implement plates
+    def test_multitype_vs_imposter(self):
+        self.reset_leads('ditto', 'arceusground',
+                         p0_ability='imposter', p0_item='ironplate',
+                         p1_ability='multitype', p1_item='earthplate')
+        self.assertListEqual(self.ditto.types, [Type.GROUND, None])
+        self.assertAbility(self.ditto, 'imposter')
 
     def test_mummy(self):
         self.reset_leads(p0_ability='mummy', p1_ability='lightningrod')

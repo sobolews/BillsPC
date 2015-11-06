@@ -22,7 +22,7 @@ class BaseItem(object):
 
     is_mega_stone = False
     is_berry = False
-    is_plate = False
+    plate_type = False
     drive_type = None
     removable = True
     single_use = False
@@ -328,6 +328,68 @@ class DouseDrive(BaseDrive):
 
 class ShockDrive(BaseDrive):
     drive_type = Type.ELECTRIC
+
+class BasePlate(ItemEffect):
+    removable = False
+
+    def on_modify_base_power(self, user, move, target, engine, base_power):
+        if move.type is self.plate_type:
+            return base_power * 1.2
+        return base_power
+
+class DracoPlate(BasePlate):
+    plate_type = Type.DRAGON
+
+class DreadPlate(BasePlate):
+    plate_type = Type.DARK
+
+class EarthPlate(BasePlate):
+    plate_type = Type.GROUND
+
+class FistPlate(BasePlate):
+    plate_type = Type.FIGHTING
+
+class FlamePlate(BasePlate):
+    plate_type = Type.FIRE
+
+class IciclePlate(BasePlate):
+    plate_type = Type.ICE
+
+class InsectPlate(BasePlate):
+    plate_type = Type.BUG
+
+class IronPlate(BasePlate):
+    plate_type = Type.STEEL
+
+class MeadowPlate(BasePlate):
+    plate_type = Type.GRASS
+
+class MindPlate(BasePlate):
+    plate_type = Type.PSYCHIC
+
+class PixiePlate(BasePlate):
+    plate_type = Type.FAIRY
+
+class SkyPlate(BasePlate):
+    plate_type = Type.FLYING
+
+class SplashPlate(BasePlate):
+    plate_type = Type.WATER
+
+class SpookyPlate(BasePlate):
+    plate_type = Type.GHOST
+
+class StonePlate(BasePlate):
+    plate_type = Type.ROCK
+
+class ToxicPlate(BasePlate):
+    plate_type = Type.POISON
+
+class ZapPlate(BasePlate):
+    plate_type = Type.ELECTRIC
+
+
+
 
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
