@@ -1512,13 +1512,15 @@ class haze(Move):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.ICE
+        self.targets_user = True
         self.is_protectable = False
-        self.ignore_substitute = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, _, engine):
         if __debug__: log.i('All stats were reset!')
         user.boosts = Boosts()
-        target.boosts = Boosts() # not affected by clearbody or any Showdown "onBoost" events
+        foe = engine.get_foe(user)
+        if foe is not None:
+            foe.boosts = Boosts()
 
 class headbutt(Move):
     def __init__(self):

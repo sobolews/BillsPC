@@ -865,6 +865,14 @@ class TestMoves(MultiMoveTestCase):
         self.assertEqual(self.leafeon.boosts, Boosts())
         self.assertEqual(self.vaporeon.boosts, Boosts())
 
+    def test_haze_doesnt_fail_with_no_foe(self):
+        self.add_pokemon('flareon', 1)
+        self.choose_move(self.leafeon, movedex['memento'])
+        self.choose_move(self.vaporeon, movedex['haze'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.boosts)
+
     def test_healingwish(self):
         self.add_pokemon('flareon', 1)
         self.flareon.hp = 100
