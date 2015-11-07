@@ -610,7 +610,7 @@ class circlethrow(Move):
         self.priority = -6
 
     def on_success(self, user, target, engine):
-        return engine.force_random_switch(target, user)
+        engine.force_random_switch(target, user)
 
 class clearsmog(Move):
     def __init__(self):
@@ -979,7 +979,7 @@ class dragontail(Move):
         self.priority = -6
 
     def on_success(self, user, target, engine):
-        return engine.force_random_switch(target, user)
+        engine.force_random_switch(target, user)
 
 class drainingkiss(Move):
     def __init__(self):

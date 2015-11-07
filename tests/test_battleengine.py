@@ -1092,3 +1092,12 @@ class TestMiscMultiTurn(MultiMoveTestCase):
             self.engine.init_turn()
 
         self.assertTrue(self.flareon.is_active)
+
+    def test_circlethrow_with_lifeorb_kos_foe_and_has_recoil(self):
+        self.reset_leads(p0_item='lifeorb', p0_ability='noguard')
+        self.leafeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['circlethrow'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 10)
