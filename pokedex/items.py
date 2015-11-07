@@ -389,9 +389,6 @@ class ZapPlate(BasePlate):
     plate_type = Type.ELECTRIC
 
 
-
-
-
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
            inspect.isclass(obj) and
            issubclass(obj, BaseItem) and
