@@ -5,14 +5,16 @@ provides a significant speed increase.
 """
 import logging
 import os
+import sys
 import time
+import types
 from datetime import datetime
 
 LOG_DIR = os.path.expanduser('~/.BillsPC/logs/')
 LOG_FILE = os.path.join(LOG_DIR, 'BillsPC-%s.log' % datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
 LOG_FORMAT = "%(asctime)s %(levelname)s %(funcName)s:%(lineno)d: %(message)s"
 
-def _create_logger():
+def _create_logger(testing=False):
     class MyFormatter(logging.Formatter):
         def formatTime(self, record, datefmt=None):
             ct = self.converter(record.created)
@@ -35,15 +37,21 @@ def _create_logger():
 
     logger.d = logger.debug
     logger.i = logger.info
-    logger.w = logger.warn
-    logger.e = logger.error
-    logger.c = logger.critical
-    logger.wtf = logger.error
+    if testing:
+        # when testing, anything that produces a warning or higher should be a test failure
+        def logger_assert(self, msg, *fmt):
+            raise AssertionError(msg % fmt)
+        logger.w = logger.e = logger.c = logger.wtf = types.MethodType(logger_assert, logger)
+    else:
+        logger.w = logger.warn
+        logger.e = logger.error
+        logger.c = logger.critical
+        logger.wtf = logger.error
 
     return logger
 
-log = _create_logger()
+testing = (os.getenv('BILLSPC_TEST') == '1') or ('nosetests' in sys.argv[0])
+log = _create_logger(testing)
 
 def silence_console():
     log.handlers[1].setLevel(logging.WARNING)
-
