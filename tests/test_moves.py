@@ -1181,6 +1181,14 @@ class TestMoves(MultiMoveTestCase):
         self.assertItem(self.vaporeon, None)
         self.assertMoveChoices(self.vaporeon, {'return', 'protect', 'toxic', 'surf'})
 
+    def test_knockoff_ko_target(self):
+        self.reset_leads(p0_item='lumberry', p0_ability='unburden')
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=4))
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+
     @patch('random.randrange', lambda _: 0) # no miss
     def test_leechseed_residual(self):
         self.leafeon.hp = 100
