@@ -2205,8 +2205,93 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp * 3/4)
         self.assertFainted(self.leafeon)
 
-    # def test_switcheroo(self):
-    #     pass # TODO: items
+    def test_switcheroo_and_trick(self):
+        for trick in ('trick', 'switcheroo'):
+            self.reset_leads(p0_item='airballoon', p1_item='powerherb')
+            self.choose_move(self.leafeon, movedex[trick])
+            self.choose_move(self.vaporeon, movedex['earthquake'])
+            self.run_turn()
+
+            self.assertItem(self.vaporeon, 'powerherb')
+            self.assertItem(self.leafeon, 'airballoon')
+            self.assertDamageTaken(self.leafeon, 0)
+
+            self.choose_move(self.leafeon, movedex[trick])
+            self.choose_move(self.vaporeon, movedex[trick])
+            self.run_turn()
+
+            self.assertItem(self.vaporeon, 'powerherb')
+            self.assertItem(self.leafeon, 'airballoon')
+
+            self.choose_move(self.vaporeon, movedex['extremespeed'])
+            self.choose_move(self.leafeon, movedex[trick])
+            self.run_turn()
+
+            self.assertItem(self.leafeon, 'powerherb')
+            self.assertItem(self.vaporeon, None)
+
+            self.choose_move(self.leafeon, movedex['solarbeam'])
+            self.choose_move(self.vaporeon, movedex[trick])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 212)
+            self.assertItem(self.vaporeon, None)
+            self.assertItem(self.leafeon, None)
+
+    def test_trick_with_choicescarf(self):
+        self.reset_leads(p0_item='choicescarf', p1_item='toxicorb',
+                         p0_moves=('trick', 'switcheroo', 'surf', 'protect'),
+                         p1_moves=('trick', 'switcheroo', 'leafblade', 'dragonclaw'))
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.choose_move(self.leafeon, movedex['dragonclaw'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'toxicorb')
+        self.assertItem(self.leafeon, 'choicescarf')
+        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertStatus(self.leafeon, None)
+        self.assertMoveChoices(self.vaporeon, {'trick', 'switcheroo', 'surf', 'protect'})
+        self.assertMoveChoices(self.leafeon, {'dragonclaw'})
+
+    def test_trick_fails_if_foe_item_is_unremovable(self):
+        self.reset_leads('vaporeon', 'arceuspsychic', p0_item='flameorb',
+                         p1_item='mindplate', p1_ability='multitype')
+        self.add_pokemon('genesectchill', 1, item='chilldrive')
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.BRN)
+        self.assertStatus(self.arceuspsychic, None)
+
+        self.choose_switch(self.arceuspsychic, self.genesectchill)
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertStatus(self.genesectchill, None)
+
+    def test_trick_encored_with_assaultvest(self):
+        self.reset_leads(p0_item='lifeorb', p1_item='assaultvest',
+                         p0_moves=('trick', 'explosion', 'surf', 'protect'),
+                         p1_moves=('trick', 'return', 'encore', 'dragonclaw'))
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['encore'])
+        self.choose_move(self.vaporeon, movedex['explosion'])
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertItem(self.vaporeon, 'lifeorb')
+        self.assertItem(self.leafeon, 'assaultvest')
+        self.assertMoveChoices(self.vaporeon, {'trick'})
+
+        self.choose_move(self.leafeon, movedex['dragonclaw'])
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'assaultvest')
+        self.assertItem(self.leafeon, 'lifeorb')
+        self.assertMoveChoices(self.vaporeon, {'struggle'})
 
     def test_tailwind(self):
         self.leafeon.hp = 1

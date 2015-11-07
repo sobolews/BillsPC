@@ -290,7 +290,11 @@ class BattlePokemon(object):
         self.item = None
         return item
 
-    def set_item(self, item):   # TODO: implement items
+    def set_item(self, item):
+        assert self.item is None
+
+        self.item = item
+        self.set_effect(item())
         self.remove_effect(Volatile.UNBURDEN)
 
     def use_item(self, engine, other_item=None):

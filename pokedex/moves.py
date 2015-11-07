@@ -3416,17 +3416,15 @@ class switcheroo(Move):
         self.accuracy = 100
 
     def check_success(self, user, target, engine):
-        user_item = user.item
-        target_item = target.item
-        # TODO: make a (redundant) is_removable attr on item to avoid this mess?
-        if ((target.has_effect(Volatile.SUBSTITUTE) or target.ability.name == 'stickyhold' or
-             target_item.is_mega_stone or target_item.is_plate or target_item.is_drive or
-             user_item.is_mega_stone or user_item.is_plate or user_item.is_drive)):
+        if ((user.item is not None and not user.item.removable) or
+            (target.item is not None and not target.item.removable) or
+            target.ability.name == 'stickyhold'
+        ):
             return FAIL
 
     def on_success(self, user, target, engine):
-        user_item = user.take_item()
-        target_item = target.take_item()
+        user_item = None if user.item is None else user.take_item()
+        target_item = None if target.item is None else target.take_item()
         assert FAIL not in (user_item, target_item)
 
         if target_item is not None:
@@ -3434,9 +3432,8 @@ class switcheroo(Move):
         if user_item is not None:
             target.set_item(user_item)
 
-        if __debug__:
-            log.i('Swapped items %s and %s previously held by %s and %s respectively' %
-                  (user_item, target_item, user, target))
+        if __debug__: log.i('%s got a %s and %s got a %s' %
+                            (user, target_item, target, user_item))
 
 class swordsdance(Move):
     def __init__(self):
