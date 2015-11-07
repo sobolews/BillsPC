@@ -397,7 +397,10 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
             pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
     def on_end(self, pokemon, _):
-        if self.duration <= 1 and pokemon.status is not Status.SLP:
+        if (self.duration <= 1 and
+            pokemon.status is not Status.SLP
+            and not pokemon.is_fainted()
+        ):
             pokemon.confuse(infiltrates=True)
 
 class PerishSong(BaseEffect):

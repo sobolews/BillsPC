@@ -2287,7 +2287,8 @@ class outrage(Move):
         self.base_power = 120
 
     def on_success(self, user, target, engine):
-        user.set_effect(effects.LockedMove(self))
+        if not user.is_fainted():
+            user.set_effect(effects.LockedMove(self))
 
     def on_move_fail(self, user, engine):
         user.remove_effect(Volatile.LOCKEDMOVE)
@@ -2352,11 +2353,8 @@ class petaldance(Move):
         self.makes_contact = True
         self.base_power = 120
 
-    def on_success(self, user, target, engine):
-        user.set_effect(effects.LockedMove(self))
-
-    def on_move_fail(self, user, engine):
-        user.remove_effect(Volatile.LOCKEDMOVE)
+    on_success = outrage.on_success.__func__
+    on_move_fail = outrage.on_success.__func__
 
 class phantomforce(Move):
     def __init__(self):

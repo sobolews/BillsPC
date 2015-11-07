@@ -555,6 +555,32 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertFalse(self.vaporeon.has_effect(Volatile.LOCKEDMOVE))
         self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
 
+    def test_locked_move_user_faints_first_turn(self):
+        self.reset_leads(p0_item='rockyhelmet')
+        self.add_pokemon('jolteon', 1)
+        self.leafeon.hp = 10
+        self.choose_move(self.leafeon, movedex['outrage'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFalse(self.leafeon.has_effect(Volatile.CONFUSE))
+
+    @patch('random.randint', lambda *_: 2) # two-turn outrage
+    def test_locked_move_ko_user_last_turn(self):
+        self.add_pokemon('jolteon', 1)
+        self.leafeon.hp = 10
+        self.choose_move(self.leafeon, movedex['outrage'])
+        self.run_turn()
+
+        self.choose_move(self.vaporeon, movedex['extremespeed'])
+        self.choose_move(self.leafeon, movedex['outrage'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFalse(self.leafeon.has_effect(Volatile.CONFUSE))
+        self.engine.init_turn()
+        self.assertActive(self.jolteon)
+
     @patch('random.randint', lambda *_: 3) # three turns of confusion and sleep
     def test_confusion_counter_doesnt_decrement_while_pokemon_is_asleep(self):
         self.choose_move(self.leafeon, movedex['confuseray'])
