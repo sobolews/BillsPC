@@ -2186,6 +2186,14 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertMoveChoices(self.vaporeon, {movedex['struggle']})
 
+    def test_struggle_doesnt_damage_if_user_already_fainted(self):
+        self.reset_leads(p1_item='rockyhelmet')
+        self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['struggle'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+
     def test_stormthrow_always_crit(self):
         self.engine.get_critical_hit = BattleEngine.get_critical_hit
         self.choose_move(self.vaporeon, movedex['stormthrow'])

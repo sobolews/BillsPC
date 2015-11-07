@@ -3294,7 +3294,8 @@ class struggle(Move):
         self.on_success_ignores_substitute = True
 
     def on_success(self, user, target, engine):
-        engine.direct_damage(user, user.max_hp / 4.0)
+        if not user.is_fainted():
+            engine.direct_damage(user, user.max_hp / 4.0)
 
 class stunspore(Move):
     def __init__(self):
