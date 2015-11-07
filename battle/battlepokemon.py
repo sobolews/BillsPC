@@ -57,6 +57,8 @@ class BattlePokemon(object):
         return self._effect_index.values()
 
     def set_effect(self, effect):
+        assert not self.is_fainted()
+
         if effect.source in self._effect_index:
             if __debug__: log.d('Tried to set effect %s but %s already has it', effect, self)
             return FAIL

@@ -1041,6 +1041,28 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertSwitchChoices(self.gengar, {self.flareon})
 
+    def test_infestation_ko(self):
+        self.reset_leads(p0_item='lifeorb', p1_item='rockyhelmet')
+        self.add_pokemon('espeon', 1)
+        self.leafeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['infestation'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFalse(self.vaporeon.has_effect(Volatile.TRAPPER))
+        self.engine.init_turn()
+        self.assertActive(self.espeon)
+
+    def test_infestation_user_faints(self):
+        self.reset_leads(p1_item='rockyhelmet')
+        self.add_pokemon('flareon', 0)
+        self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['infestation'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+        self.assertFalse(self.leafeon.has_effect(Volatile.PARTIALTRAP))
+
     # def test_judgment(self):
     #     self.use_leads('arceus', 'leafeon', p0_item=itemdex['flameplate'])
     #     damage = self.engine.use_move(self.arceus, movedex['judgment'], self.leafeon)
