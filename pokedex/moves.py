@@ -1954,7 +1954,7 @@ class knockoff(Move):
 
     def get_base_power(self, user, target, engine):
         item = target.item
-        if item and (item.is_mega_stone or item.is_drive or item.is_plate):
+        if item is not None and item.removable:
             return 1.5 * 65
         return 65
 

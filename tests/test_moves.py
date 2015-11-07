@@ -1062,8 +1062,94 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertEqual(self.leafeon.boosts['atk'], 0)
 
-    # def test_knockoff(self):
-    #     pass # TODO: much tests (after items implemented)
+    def test_knockoff(self):
+        self.reset_leads(p0_item='sitrusberry')
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=1))
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 202)
+        self.assertItem(self.vaporeon, None)
+
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 202 + 136)
+
+    def test_knockoff_fails_if_user_faints(self):
+        self.reset_leads(p0_item='rockyhelmet', p0_ability='ironbarbs')
+        self.leafeon.hp = 75
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 135)
+        self.assertFainted(self.leafeon)
+        self.assertItem(self.vaporeon, 'rockyhelmet')
+
+    def test_knockoff_vs_focussash_and_evolite(self):
+        self.reset_leads(p0_item='focussash')
+        self.add_pokemon('chansey', 0, item='eviolite')
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=4))
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.choose_move(self.vaporeon, movedex['haze'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.hp, 1)
+        self.assertItem(self.vaporeon, None)
+
+        self.choose_switch(self.vaporeon, self.chansey)
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.chansey, 304)
+
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.chansey, 304 + 305)
+
+    def test_knockoff_hits_substitute(self):
+        self.reset_leads(p1_item='heatrock')
+        self.choose_move(self.leafeon, movedex['substitute'])
+        self.choose_move(self.vaporeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
+        self.assertEqual(self.leafeon.get_effect(Volatile.SUBSTITUTE).hp,
+                         self.leafeon.max_hp / 4 - 47)
+        self.assertItem(self.leafeon, 'heatrock')
+
+    def test_knockoff_vs_drives_and_plates(self):
+        self.reset_leads('arceuspoison', 'genesectdouse',
+                         p0_item='toxicplate', p0_ability='multitype',
+                         p1_item='dousedrive')
+        self.choose_move(self.arceuspoison, movedex['knockoff'])
+        self.choose_move(self.genesectdouse, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.arceuspoison, 56)
+        self.assertDamageTaken(self.genesectdouse, 68)
+
+    def test_knockoff_berry(self):
+        self.reset_leads(p0_item='sitrusberry')
+        self.engine.apply_boosts(self.leafeon, Boosts(atk=2))
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 269)
+        self.assertItem(self.vaporeon, None)
+
+    def test_knockoff_choice_item(self):
+        self.reset_leads(p0_item='choiceband',
+                         p0_moves=('return', 'protect', 'toxic', 'surf'))
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertMoveChoices(self.vaporeon, {'return', 'protect', 'toxic', 'surf'})
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_leechseed_residual(self):
