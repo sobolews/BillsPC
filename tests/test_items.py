@@ -671,6 +671,11 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.flareon, 'redcard')
         self.assertItem(self.leafeon, 'redcard')
 
+        self.reset_items('redcard', None)
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+        self.assertItem(self.vaporeon, 'redcard')
+
     @patch('random.randrange', lambda _: 0) # confusion hit
     def test_redcard_confusion_hit_doesnt_activate(self):
         self.reset_items('redcard', None)
