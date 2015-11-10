@@ -256,7 +256,8 @@ class BaseEffect(object):
         Called when use_move returns
         """
 
-    def on_use_item(self, pokemon, item, engine):
+    @staticmethod
+    def on_eat(pokemon, engine):
         """
         Called when an item is used/consumed by a pokemon.
         """

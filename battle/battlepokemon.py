@@ -299,32 +299,40 @@ class BattlePokemon(object):
         self.set_effect(item())
         self.remove_effect(Volatile.UNBURDEN)
 
-    def use_item(self, engine, other_item=None):
+    def use_item(self, engine):
         """
+        Use the item held by this pokemon.
         Return FAIL if item was not used successfully. It is assumed that the item can be used.
-        Uses self.item unless other_item is specified.
         """
-        if other_item is None:
-            item = self.item
-            assert item is not None and item.removable and item.single_use
+        item = self.item
+        assert item is not None and item.removable and item.single_use
+
+        if item.is_berry:
+            if self.eat_berry(engine, item) is FAIL:
+                return FAIL
         else:
-            item = other_item
-            assert item.single_use
+            for effect in self.effects:
+                if effect.on_try_use_item(self, item, engine) is FAIL:
+                    return FAIL
+            if __debug__: log.i("%s used its %s", self, item)
 
         for effect in self.effects:
-            if effect.on_try_use_item(self, item, engine) is FAIL:
+            effect.on_lose_item(self, item)
+        self.remove_effect(ITEM)
+        self.item = None
+
+    def eat_berry(self, engine, berry):
+        """
+        Eat a berry, which may be held by this pokemon or stolen from another (via bugbite or pluck)
+        """
+        assert berry.is_berry
+
+        for effect in self.effects:
+            if effect.on_try_use_item(self, berry, engine) is FAIL:
                 return FAIL
 
-        if __debug__: log.i("%s used its %s", self, item)
-        for effect in self.effects:
-            effect.on_use_item(self, item, engine)
-
-        if other_item is None:
-            for effect in self.effects:
-                effect.on_lose_item(self, item)
-
-            self.remove_effect(ITEM)
-            self.item = None
+        if __debug__: log.i("%s ate the %s", self, berry)
+        berry.on_eat(self, engine)
 
     @property
     def weight(self):

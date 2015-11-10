@@ -71,7 +71,8 @@ class ChestoBerry(ItemEffect):
         if pokemon.status is Status.SLP:
             pokemon.use_item(engine)
 
-    def on_use_item(self, pokemon, item, engine):
+    @staticmethod
+    def on_eat(pokemon, engine):
         if pokemon.status is Status.SLP:
             pokemon.cure_status()
 
@@ -207,7 +208,8 @@ class LumBerry(ItemEffect):
         if pokemon.status is not None or pokemon.has_effect(Volatile.CONFUSE):
             pokemon.use_item(engine)
 
-    def on_use_item(self, pokemon, item, engine):
+    @staticmethod
+    def on_eat(pokemon, engine):
         pokemon.cure_status()
         pokemon.remove_effect(Volatile.CONFUSE)
 
@@ -228,7 +230,8 @@ class PetayaBerry(ItemEffect):
         if pokemon.hp <= pokemon.max_hp / 4:
             pokemon.use_item(engine)
 
-    def on_use_item(self, pokemon, item, engine):
+    @staticmethod
+    def on_eat(pokemon, engine):
         engine.apply_boosts(pokemon, Boosts(spa=1), self_induced=True)
 
 class PowerHerb(ItemEffect):
@@ -275,7 +278,8 @@ class SitrusBerry(ItemEffect):
         if pokemon.hp <= pokemon.max_hp / 2:
             pokemon.use_item(engine)
 
-    def on_use_item(self, pokemon, item, engine):
+    @staticmethod
+    def on_eat(pokemon, engine):
         engine.heal(pokemon, pokemon.max_hp / 4)
 
 class Stick(ItemEffect):

@@ -513,7 +513,7 @@ class bugbite(Move):
     def on_success(self, user, target, engine):
         item = target.item
         if item and item.is_berry and not user.is_fainted() and target.take_item() is not FAIL:
-            user.use_item(engine, item)
+            user.eat_berry(engine, item)
 
 class bugbuzz(Move):
     def __init__(self):
