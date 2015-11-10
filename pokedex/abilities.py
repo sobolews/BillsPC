@@ -511,7 +511,7 @@ class KeenEye(AbilityEffect):
         move.ignore_evasion_boosts = True
 
 class Klutz(AbilityEffect):
-    pass # TODO when: implement items
+    pass
 
 class Levitate(AbilityEffect):
     def on_get_immunity(self, thing):

@@ -1013,9 +1013,6 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertBoosts(self.vaporeon, {'acc': -1})
 
-    # def test_klutz(self):
-    #     pass # TODO when: implement items
-
     def test_levitate(self):
         self.reset_leads(p0_ability='levitate', p1_ability='levitate')
         self.choose_move(self.leafeon, movedex['earthquake'])
