@@ -844,9 +844,6 @@ class BattleEngine(object):
             return
 
         pokemon.get_effect(ABILITY).start(pokemon, self)
-        item_effect = pokemon.get_effect(ITEM)
-        if item_effect is not None:
-            item_effect.on_start(pokemon, self)
 
     def get_move_decisions(self): # TODO: deal with mega evolution decision
         decisions = []
