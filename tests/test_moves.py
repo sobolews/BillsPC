@@ -273,8 +273,80 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertTrue(self.leafeon.side.has_effect(SideCondition.REFLECT))
 
-    # def test_bugbite(self):
-    #     pass # TODO: test once berries/items are implemented
+    def test_bugbite_and_pluck(self):
+        for eatberry in ('bugbite', 'pluck'):
+            self.reset_leads(p0_ability='noguard', p1_item='sitrusberry',
+                             p0_moves=(eatberry, 'sleeptalk'))
+            self.add_pokemon('espeon', 1, item='lumberry')
+            self.add_pokemon('jolteon', 1, item='chestoberry')
+            self.add_pokemon('alakazam', 1, item='custapberry')
+            self.add_pokemon('dedenne', 1, item='petayaberry')
+            self.add_pokemon('gengar', 1, item='weaknesspolicy')
+            self.leafeon.hp = (self.leafeon.max_hp / 2) + 10
+            self.choose_move(self.leafeon, movedex['leafstorm'])
+            self.choose_move(self.vaporeon, movedex[eatberry])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 230 - (self.vaporeon.max_hp / 4))
+            self.assertEqual(self.leafeon.hp, (self.leafeon.max_hp / 2) + 10 - 60)
+            self.assertItem(self.leafeon, None)
+
+            self.choose_switch(self.leafeon, self.espeon)
+            self.run_turn()
+            self.choose_move(self.espeon, movedex['toxic'])
+            self.choose_move(self.vaporeon, movedex[eatberry])
+            self.run_turn()
+
+            self.assertDamageTaken(self.espeon, 110 if eatberry == 'bugbite' else 55)
+            self.assertItem(self.espeon, None)
+            self.assertStatus(self.vaporeon, None)
+
+            self.choose_switch(self.espeon, self.jolteon)
+            self.run_turn()
+            self.choose_move(self.jolteon, movedex['spore'])
+            self.choose_move(self.vaporeon, movedex['sleeptalk'])
+            self.run_turn()
+
+            self.assertItem(self.jolteon, None)
+            self.assertStatus(self.vaporeon, None)
+
+            self.choose_switch(self.jolteon, self.alakazam)
+            self.engine.heal(self.vaporeon, 400)
+            self.alakazam.hp = 100
+            self.run_turn()
+            self.choose_move(self.alakazam, movedex['aerialace'])
+            self.choose_move(self.vaporeon, movedex[eatberry])
+            self.run_turn()
+
+            self.assertDamageTaken(self.vaporeon, 45)
+            self.assertItem(self.alakazam, None)
+            if eatberry == 'bugbite':
+                self.assertFainted(self.alakazam)
+                self.choose_switch(self.leafeon, self.dedenne)
+            else:
+                self.assertEqual(self.alakazam.hp, 100 - 68)
+                self.choose_switch(self.alakazam, self.dedenne)
+
+            self.choose_move(self.vaporeon, movedex[eatberry])
+            self.run_turn()
+
+            self.assertDamageTaken(self.dedenne, 28)
+            self.assertBoosts(self.vaporeon, {'spa': 1})
+
+            self.choose_switch(self.dedenne, self.gengar)
+            self.choose_move(self.vaporeon, movedex[eatberry])
+            self.run_turn()
+
+            self.assertItem(self.gengar, 'weaknesspolicy')
+
+    def test_bugbite_sitrusberry_loses_to_ironbarbs(self):
+        self.reset_leads(p1_item='sitrusberry', p1_ability='ironbarbs')
+        self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['bugbite'])
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+        self.assertItem(self.leafeon, 'sitrusberry')
 
     def test_clearsmog(self):
         self.engine.apply_boosts(self.leafeon, Boosts(atk=2, spa=-3))

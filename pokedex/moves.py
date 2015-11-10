@@ -2408,11 +2408,7 @@ class pluck(Move):
         self.makes_contact = True
         self.base_power = 60
 
-    # TODO: make sure plucked berries cannot be regained with harvest
-    def on_success(self, user, target, engine):
-        item = target.item
-        if item and item.is_berry and not user.is_fainted() and target.take_item() is not FAIL:
-            user.use_item(engine, item)
+    on_success = bugbite.on_success.__func__
 
 class poisonjab(Move):
     def __init__(self):
