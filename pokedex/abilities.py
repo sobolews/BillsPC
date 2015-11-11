@@ -555,7 +555,12 @@ class MagicGuard(AbilityEffect):
         return damage
 
 class Magician(AbilityEffect):
-    pass # TODO when: implement items
+    def on_move_success(self, user, move, target):
+        if move.category is not MoveCategory.STATUS and user.item is None:
+            item = target.take_item()
+            if item is not FAIL:
+                if __debug__: log.i("%s stole %s's item!", user, target)
+                user.set_item(item)
 
 class MagnetPull(AbilityEffect):
     def on_before_turn(self, pokemon, foe):

@@ -1266,8 +1266,58 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 0)
 
-    # def test_magician(self):
-    #     pass # TODO when: implement items
+    def test_magician(self):
+        self.reset_leads(p0_ability='magician', p1_item='stick')
+        self.add_pokemon('jolteon', 1, item='toxicorb')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, 'stick')
+
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'stick')
+        self.assertItem(self.jolteon, 'toxicorb')
+        self.assertStatus(self.jolteon, Status.TOX)
+
+        self.reset_leads(p0_ability='magician')
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+    def test_magician_steals_items_before_they_are_used(self):
+        self.reset_leads(p0_ability='magician', p1_item='sitrusberry')
+        self.add_pokemon('espeon', 1, item='weaknesspolicy')
+        self.vaporeon.hp = 100
+        self.choose_move(self.vaporeon, movedex['icebeam'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 236)
+        self.assertEqual(self.vaporeon.hp, 200)
+        self.assertItem(self.leafeon, None)
+
+        self.choose_switch(self.leafeon, self.espeon)
+        self.choose_move(self.vaporeon, movedex['darkpulse'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.espeon, 156)
+        self.assertItem(self.espeon, None)
+        self.assertItem(self.vaporeon, 'weaknesspolicy')
+
+    def test_magician_ko_with_knockoff_steals_item(self):
+        self.reset_leads(p0_ability='magician', p1_item='flameorb')
+        self.leafeon.hp = 10
+        self.choose_move(self.vaporeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, 'flameorb')
+        self.assertStatus(self.vaporeon, Status.BRN)
 
     def test_magnetpull(self):
         self.reset_leads('vaporeon', 'steelix', p0_ability='magnetpull')
