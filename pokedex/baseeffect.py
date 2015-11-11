@@ -86,6 +86,11 @@ class BaseEffect(object):
         calculation, and after success, try_hit, accuracy, and immunity checks.
         """
 
+    def on_move_success(self, user, move, target):
+        """
+        Called if user successfully hits target with a move.
+        """
+
     def after_foe_hit(self, foe, move, target, engine):
         """ Called when the foe sucessfully hits this effect's pokemon with a move """
 
