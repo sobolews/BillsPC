@@ -3213,8 +3213,30 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
 
-    # def test_unnerve(self):
-    #     pass # TODO when: implement items
+    def test_unnerve(self):
+        self.reset_leads(p0_item='sitrusberry', p1_ability='unnerve')
+        self.add_pokemon('jolteon', 1)
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378)
+        self.assertItem(self.vaporeon, 'sitrusberry')
+
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378 - self.vaporeon.max_hp / 4)
+        self.assertItem(self.vaporeon, None)
+
+    def test_unnerve_vs_bugbite(self):
+        self.reset_leads(p1_ability='unnerve', p1_item='sitrusberry')
+        self.vaporeon.hp = 100
+        self.choose_move(self.vaporeon, movedex['bugbite'])
+        self.run_turn()
+
+        self.assertItem(self.leafeon, None)
+        self.assertEqual(self.vaporeon.hp, 100 + self.vaporeon.max_hp / 4)
 
     def test_victorystar(self):
         self.reset_leads(p0_ability='victorystar')

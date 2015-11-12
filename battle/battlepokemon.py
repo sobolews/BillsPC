@@ -321,11 +321,16 @@ class BattlePokemon(object):
         self.remove_effect(ITEM)
         self.item = None
 
-    def eat_berry(self, engine, berry):
+    def eat_berry(self, engine, berry, stolen=False):
         """
         Eat a berry, which may be held by this pokemon or stolen from another (via bugbite or pluck)
         """
         assert berry.is_berry
+
+        if not stolen:
+            foe = engine.get_foe(self)
+            if foe.ability is abilitydex['unnerve']:
+                return FAIL
 
         for effect in self.effects:
             if effect.on_try_use_item(self, berry, engine) is FAIL:

@@ -1150,7 +1150,7 @@ class Unburden(AbilityEffect):
         pokemon.set_effect(effects.UnburdenVolatile())
 
 class Unnerve(AbilityEffect):
-    pass # TODO when: implement items
+    pass
 
 class VictoryStar(AbilityEffect):
     def on_modify_move(self, move, user, engine):
