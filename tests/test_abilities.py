@@ -2506,8 +2506,46 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.leafeon, None)
         self.assertBoosts(self.vaporeon, {'spe': 1})
 
-    # def test_stickyhold(self):
-    #     pass # TODO when: implement items
+    def test_stickyhold(self):
+        self.reset_leads(p0_item='toxicorb', p0_ability='immunity',
+                         p1_ability='stickyhold',
+                         p1_item='petayaberry')
+        self.add_pokemon('flareon', 0, ability='magician')
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'toxicorb')
+        self.assertItem(self.leafeon, 'petayaberry')
+
+        self.choose_move(self.vaporeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 47)
+        self.assertItem(self.leafeon, 'petayaberry')
+
+        self.choose_move(self.vaporeon, movedex['bugbite'])
+        self.choose_move(self.leafeon, movedex['whirlwind'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 47 + 60)
+        self.assertItem(self.leafeon, 'petayaberry')
+
+        self.choose_move(self.flareon, movedex['drainpunch'])
+        self.run_turn()
+        self.assertDamageTaken(self.leafeon, 47 + 60 + 65)
+
+        self.assertItem(self.leafeon, 'petayaberry')
+
+    def test_stickyhold_allows_item_usage(self):
+        self.reset_leads(p0_item='airballoon', p0_ability='stickyhold',
+                         p1_item='lumberry', p1_ability='stickyhold')
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['thunderwave'])
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, None)
 
     def test_stormdrain(self):
         self.reset_leads(p0_ability='stormdrain', p1_ability='stormdrain')
@@ -3524,8 +3562,13 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 83)
 
-    # def test_moldbreaker_vs_stickyhold(self):
-    #     pass # TODO: implement items
+    def test_moldbreaker_vs_stickyhold(self):
+        self.reset_leads(p0_ability='moldbreaker',
+                         p1_ability='stickyhold', p1_item='leftovers')
+        self.choose_move(self.vaporeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertItem(self.leafeon, None)
 
     def test_moldbreaker_vs_stormdrain(self):
         self.reset_leads(p0_ability='stormdrain', p1_ability='moldbreaker')

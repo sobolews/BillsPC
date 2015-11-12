@@ -971,7 +971,7 @@ class Steadfast(AbilityEffect):
             engine.apply_boosts(user, Boosts(spe=1), self_induced=False)
 
 class StickyHold(AbilityEffect):
-    pass # TODO when: implement items
+    pass # Implemented in BattlePokemon.take_item
 
 class StormDrain(AbilityEffect):
     @priority(0)
