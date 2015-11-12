@@ -3153,8 +3153,65 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertDamageTaken(self.leafeon, 116)
 
-    # def test_unburden(self):
-    #     pass # TODO when: implement items
+    def test_unburden_when_use_item(self):
+        self.reset_leads(p0_ability='unburden', p0_item='sitrusberry')
+        self.leafeon.hp = 1
+        self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertTrue(self.vaporeon.has_effect(Volatile.UNBURDEN))
+
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['surf'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
+
+    def test_unburden_when_item_stolen(self):
+        self.reset_leads(p0_ability='unburden', p0_item='heatrock')
+        self.leafeon.hp = self.vaporeon.hp = 1
+        self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
+        self.choose_move(self.leafeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertTrue(self.vaporeon.has_effect(Volatile.UNBURDEN))
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
+
+    def test_unburden_with_regained_item_and_switch(self):
+        self.reset_leads(p0_ability='unburden', p0_item='heatrock',
+                         p1_ability='magician', p1_item='sharpbeak')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.has_effect(Volatile.UNBURDEN))
+        self.assertItem(self.vaporeon, None)
+
+        self.choose_move(self.leafeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
+        self.assertItem(self.vaporeon, 'sharpbeak')
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.has_effect(Volatile.UNBURDEN))
+        self.assertItem(self.vaporeon, None)
+
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_move(self.leafeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
 
     # def test_unnerve(self):
     #     pass # TODO when: implement items

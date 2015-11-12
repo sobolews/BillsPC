@@ -1145,7 +1145,9 @@ class Unaware(AbilityEffect):
         move.ignore_accuracy_boosts = True
 
 class Unburden(AbilityEffect):
-    pass # TODO when: implement items
+    def on_lose_item(self, pokemon, item):
+        if __debug__: log.d("%s's Unburden activated!", pokemon)
+        pokemon.set_effect(effects.UnburdenVolatile())
 
 class Unnerve(AbilityEffect):
     pass # TODO when: implement items

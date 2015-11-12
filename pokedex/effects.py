@@ -701,6 +701,13 @@ class GemVolatile(BaseEffect):
         if __debug__: log.i("%s's power was boosted by the %s gem", move, move.type.name)
         return base_power * 1.3
 
+class UnburdenVolatile(BaseEffect):
+    source = Volatile.UNBURDEN
+
+    def on_modify_spe(self, pokemon, engine, spe):
+        if __debug__: log.d("%s's speed is boosted by Unburden", pokemon)
+        return spe * 2
+
 class Transformed(BaseEffect):
     """ Used for transform and imposter """
     source = Volatile.TRANSFORMED
