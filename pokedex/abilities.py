@@ -698,7 +698,15 @@ class ParentalBond(AbilityEffect):
             user.set_effect(effects.ParentalBondVolatile())
 
 class Pickpocket(AbilityEffect):
-    pass
+    def on_after_foe_move_secondary(self, foe, move, target, engine):
+        if (move.makes_contact and
+            target.item is None and
+            foe.item is not None
+        ):
+            item = foe.take_item()
+            if item is not FAIL:
+                if __debug__: log.i("%s stole %s's item!", target, foe)
+                target.set_item(item)
 
 class Pickup(AbilityEffect):
     @priority(-26.1)

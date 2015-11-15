@@ -1714,8 +1714,65 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertFainted(self.vaporeon)
 
-    # def test_pickpocket(self):
-    #     pass # TODO when: implement items
+    def test_pickpocket(self):
+        self.reset_leads(p0_ability='pickpocket', p1_item='sitrusberry')
+        self.add_pokemon('jolteon', 1, item='airballoon')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 378 - self.vaporeon.max_hp / 4)
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, None)
+
+        self.choose_switch(self.leafeon, self.jolteon)
+        self.run_turn()
+        self.choose_move(self.jolteon, movedex['powergem'])
+        self.choose_move(self.vaporeon, movedex['recover'])
+        self.run_turn()
+
+        self.assertItem(self.jolteon, 'airballoon')
+
+        self.choose_move(self.jolteon, movedex['return'])
+        self.choose_move(self.vaporeon, movedex['earthquake'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.jolteon, 182)
+        self.assertItem(self.vaporeon, 'airballoon')
+        self.assertItem(self.jolteon, None)
+
+    def test_pickpocket_vs_suicide_lifeorb(self):
+        self.reset_leads(p0_ability='pickpocket', p1_item='lifeorb')
+        self.leafeon.hp = 1
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertEqual(self.leafeon.hp, 1)
+        self.assertItem(self.vaporeon, 'lifeorb')
+
+    def test_pickpocket_vs_suicide_recoil(self):
+        self.reset_leads(p0_ability='pickpocket', p1_item='heatrock')
+        self.leafeon.hp = 1
+        self.choose_move(self.leafeon, movedex['doubleedge'])
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, 'heatrock')
+
+    def test_pickpocket_vs_sheerforce(self):
+        self.reset_leads(p0_ability='pickpocket',
+                         p1_ability='sheerforce', p1_item='scopelens')
+        self.choose_move(self.leafeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertItem(self.leafeon, 'scopelens')
+        self.assertItem(self.vaporeon, None)
+
+        self.choose_move(self.leafeon, movedex['return'])
+        self.run_turn()
+
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, 'scopelens')
 
     def test_pickup(self):
         self.reset_leads(p0_ability='pickup', p1_item='sitrusberry')
