@@ -48,6 +48,7 @@ class BattlePokemon(object):
         self.sleep_turns = None
         self.is_transformed = False
         self.illusion = False
+        self.item_used_this_turn = None
         self.base_data = {}     # for transform
         self._suppressed_ability = None
         self._effect_index = {}
@@ -320,6 +321,7 @@ class BattlePokemon(object):
             effect.on_lose_item(self, item)
         self.remove_effect(ITEM)
         self.item = None
+        self.item_used_this_turn = item
 
     def eat_berry(self, engine, berry, stolen=False):
         """

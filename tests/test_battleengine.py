@@ -6,6 +6,7 @@ from battle.battlepokemon import BattlePokemon
 from mining.pokedexmaker import create_pokedex
 from pokedex.moves import movedex
 from pokedex.abilities import abilitydex
+from pokedex.items import itemdex
 from pokedex.enums import FAIL, Status, Volatile, Type, Weather
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
@@ -639,6 +640,39 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.run_turn()
 
         self.assertEqual(self.espeon.status, Status.SLP)
+
+    def test_item_used_this_turn(self):
+        self.reset_leads(p0_item='sitrusberry', p1_item='weaknesspolicy')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertEqual(self.vaporeon.item_used_this_turn, itemdex['sitrusberry'])
+
+        self.choose_move(self.vaporeon, movedex['flamecharge'])
+        self.run_turn()
+
+        self.assertIsNone(self.vaporeon.item_used_this_turn)
+        self.assertItem(self.leafeon, None)
+        self.assertEqual(self.leafeon.item_used_this_turn, itemdex['weaknesspolicy'])
+
+        self.run_turn()
+
+        self.assertIsNone(self.leafeon.item_used_this_turn)
+
+    def test_item_used_this_turn_when_switching(self):
+        self.reset_leads(p0_item='sitrusberry')
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['voltswitch'])
+        self.run_turn()
+
+        self.choose_move(self.leafeon, movedex['roar'])
+        self.run_turn()
+
+        self.assertIsNone(self.vaporeon.item_used_this_turn)
+
 
 class TestWeather(MultiMoveTestCase):
     def test_sunnyday_damage_modify(self):

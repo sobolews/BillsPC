@@ -825,6 +825,7 @@ class BattleEngine(object):
         pokemon.turns_out = 0
         pokemon.must_switch = False
         pokemon.ability = pokemon._ability
+        pokemon.item_used_this_turn = None
         if __debug__: log.i('Switched in %s on side %s', pokemon, pokemon.side.index)
 
         pokemon.set_effect(pokemon.ability())
@@ -977,6 +978,7 @@ class BattleEngine(object):
                     pokemon.damage_done_this_turn = 0
                     pokemon.was_attacked_this_turn = None
                     pokemon.hit_by_crit = False
+                    pokemon.item_used_this_turn = None
 
             while switch_queue:
                 event = switch_queue.pop()
