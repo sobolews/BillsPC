@@ -701,7 +701,15 @@ class Pickpocket(AbilityEffect):
     pass
 
 class Pickup(AbilityEffect):
-    pass
+    @priority(-26.1)
+    def on_residual(self, pokemon, foe, engine):
+        foe_item = foe.item_used_this_turn
+        if (foe_item is not None and
+            pokemon.item is None and
+            foe_item.name != 'airballoon'
+        ):
+            if __debug__: log.i("%s found a %s!", pokemon, foe_item)
+            pokemon.set_item(foe_item)
 
 class Pixilate(AbilityEffect):
     def on_modify_move(self, move, user, engine):

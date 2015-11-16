@@ -1717,8 +1717,54 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
     # def test_pickpocket(self):
     #     pass # TODO when: implement items
 
-    # def test_pickup(self):
-    #     pass # TODO when: implement items
+    def test_pickup(self):
+        self.reset_leads(p0_ability='pickup', p1_item='sitrusberry')
+        self.choose_move(self.vaporeon, movedex['hiddenpowerice'])
+        self.run_turn()
+        self.assertItem(self.leafeon, None)
+        self.assertDamageTaken(self.leafeon, 158 - self.leafeon.max_hp / 4)
+        self.assertItem(self.vaporeon, 'sitrusberry')
+
+        self.reset_leads(p0_ability='pickup', p1_item='airballoon')
+        self.choose_move(self.vaporeon, movedex['hiddenpowerice'])
+        self.run_turn()
+        self.assertItem(self.leafeon, None)
+        self.assertItem(self.vaporeon, None)
+
+        self.reset_leads(p0_ability='pickup', p1_item='flyinggem')
+        self.choose_move(self.leafeon, movedex['hiddenpowerflying'])
+        self.choose_move(self.vaporeon, movedex['hiddenpowerflying'])
+        self.run_turn()
+        self.assertItem(self.leafeon, None)
+        self.assertDamageTaken(self.vaporeon, 47)
+        self.assertItem(self.vaporeon, 'flyinggem')
+        self.assertDamageTaken(self.leafeon, 158)
+
+        self.reset_leads(p0_ability='pickup', p1_item='whiteherb')
+        self.choose_move(self.vaporeon, movedex['partingshot'])
+        self.run_turn()
+        self.assertItem(self.vaporeon, 'whiteherb')
+
+        self.reset_leads(p0_ability='pickup', p1_item='weaknesspolicy')
+        self.choose_move(self.vaporeon, movedex['iceshard'])
+        self.choose_move(self.leafeon, movedex['thunderbolt'])
+        self.run_turn()
+        self.assertItem(self.vaporeon, 'weaknesspolicy')
+
+        self.reset_leads(p0_item='focussash', p1_ability='pickup')
+        self.choose_move(self.leafeon, movedex['woodhammer'])
+        self.run_turn()
+        self.assertItem(self.leafeon, 'focussash')
+
+    def test_pickup_doesnt_pick_up_knocked_off_items(self):
+        self.reset_leads(p0_ability='pickup', p1_item='sitrusberry')
+        self.leafeon.hp = 150
+        self.choose_move(self.vaporeon, movedex['knockoff'])
+        self.run_turn()
+
+        self.assertItem(self.leafeon, None)
+        self.assertEqual(self.leafeon.hp, 150 - 47)
+        self.assertItem(self.vaporeon, None)
 
     def test_pixilate(self):
         self.reset_leads('sylveon', 'flareon', p0_ability='pixilate', p1_ability='pixilate')
