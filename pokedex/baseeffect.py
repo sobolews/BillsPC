@@ -39,9 +39,6 @@ class BaseEffect(object):
     source = None   # must be overriden
     duration = None # default: effect does not expire
 
-    def on_start(self, pokemon, engine):
-        """ Called when the effect is set (abilities/items only) """
-
     def on_end(self, pokemon=None, engine=None):
         """ Called when an effect ends, regardless of cause """
 

@@ -1,6 +1,8 @@
 """
 All abilities are implemented here, and gathered in to the `abilitydex` dictionary.
-Abilities are named in CamelCase, but their .name attribute is lowercasenospaces.
+Abilities are named in CamelCase, but their .name attribute is lowercasenospaces.  All ability
+effects call on_start when the ability is activated (i.e. by switching in) or re-activated
+(i.e. through transform, trace, etc.).
 """
 import inspect
 import random
@@ -27,6 +29,9 @@ class BaseAbility(object):
 
     source = ABILITY
     started = False
+
+    def on_start(self, pokemon, engine):
+        """ Called when the effect is set (abilities only) """
 
     def start(self, pokemon, engine):
         if not self.started:
