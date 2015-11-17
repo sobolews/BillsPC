@@ -298,6 +298,24 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 142)
 
+    def test_cheekpouch(self):
+        self.reset_leads(p0_ability='cheekpouch', p0_item='sitrusberry',
+                         p1_ability='noguard', p1_item='petayaberry')
+        self.choose_move(self.leafeon, movedex['leafblade'])
+        self.choose_move(self.vaporeon, movedex['trick'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon,
+                               378 - (self.vaporeon.max_hp / 4) - (self.vaporeon.max_hp / 3))
+
+        self.choose_move(self.leafeon, movedex['leafstorm'])
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spa': 1})
+        self.assertDamageTaken(self.vaporeon,
+                               (378 + 230) -
+                               (self.vaporeon.max_hp / 4) - (self.vaporeon.max_hp / 3) * 2)
+
     def test_chlorophyll(self):
         self.reset_leads(p0_ability='chlorophyll')
         self.battlefield.set_weather(Weather.SUNNYDAY)

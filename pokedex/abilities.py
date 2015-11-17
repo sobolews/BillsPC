@@ -140,8 +140,11 @@ class BulletProof(AbilityEffect):
             if __debug__: log.i('%s was blocked by BulletProof!', move)
             return FAIL
 
-# class CheekPouch(AbilityEffect):
-#     pass # TODO: berries
+class CheekPouch(AbilityEffect):
+    def on_use_item(self, pokemon, item, engine):
+        if item.is_berry:
+            if __debug__: log.i("%s is healed by its CheekPouch", pokemon)
+            engine.heal(pokemon, pokemon.max_hp / 3)
 
 class Chlorophyll(AbilityEffect):
     def on_modify_spe(self, pokemon, engine, spe):
