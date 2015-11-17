@@ -66,7 +66,7 @@ def interactive(args):
     """
     Example usage: (see tests/multi_move_test_case.py for details)
 
-    >>> self.reset_leads('charizard', 'blastoise', p0_ability='dryskin')
+    >>> self.new_battle('charizard', 'blastoise', p0_ability='dryskin')
     >>> print self.charizard
     >>> self.charizard
     >>> self.choose_move(self.charizard, 'bellydrum')

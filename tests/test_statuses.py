@@ -56,7 +56,7 @@ class TestStatuses(MultiMoveTestCase):
 
     @patch('random.randrange', lambda *_: 1) # no auto thaw
     def test_freeze_thaw_by_foe_move(self):
-        self.reset_leads('flareon', 'leafeon')
+        self.new_battle('flareon', 'leafeon')
         self.engine.set_status(self.flareon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'scald')
@@ -68,7 +68,7 @@ class TestStatuses(MultiMoveTestCase):
 
     @patch('random.randint', lambda *_: 1) # sleep for 1 turn
     def test_sleep_block_move(self):
-        self.reset_leads('vaporeon', 'jolteon')
+        self.new_battle('vaporeon', 'jolteon')
         self.engine.apply_boosts(self.vaporeon, Boosts(spa=2))
         self.choose_move(self.jolteon, 'spore')
         self.choose_move(self.vaporeon, 'earthpower')
@@ -80,7 +80,7 @@ class TestStatuses(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 3) # sleep for 3 turns
     @patch('random.randrange', lambda *_: 1) # no miss
     def test_sleep_pokemon_wakes_up(self):
-        self.reset_leads('vaporeon', 'jolteon')
+        self.new_battle('vaporeon', 'jolteon')
         self.choose_move(self.jolteon, 'splash')
         self.choose_move(self.vaporeon, 'spore')
         self.run_turn()
@@ -150,7 +150,7 @@ class TestStatuses(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 33)
 
     def test_toxic_residual_damage(self):
-        self.reset_leads('vaporeon', 'muk')
+        self.new_battle('vaporeon', 'muk')
         self.choose_move(self.vaporeon, 'toxic')
         self.choose_move(self.muk, 'toxic')
         self.run_turn()
@@ -167,7 +167,7 @@ class TestStatuses(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.status, Status.FNT)
 
     def test_toxic_resets_on_switch_out(self):
-        self.reset_leads('vaporeon', 'muk')
+        self.new_battle('vaporeon', 'muk')
         self.add_pokemon('umbreon', 0)
         self.choose_move(self.vaporeon, 'toxic')
         self.choose_move(self.muk, 'toxic')

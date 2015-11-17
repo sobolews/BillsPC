@@ -81,7 +81,7 @@ class TestingDecisionMaker(AutoDecisionMaker):
 
 class MultiMoveTestCase(TestCase):
     """
-    Tests may call reset_leads, with two pokemon names, to change the default leads. Additional
+    Tests may call new_battle, with two pokemon names, to change the default leads. Additional
     (benched) pokemon are added with add_pokemon(). The test may simulate the battle by populating
     the event_queue then calling run_turn, or by calling individual methods like use_move. Any
     forced switch decisions will be handled automatically unless a custom DecisionMaker is
@@ -89,9 +89,9 @@ class MultiMoveTestCase(TestCase):
     """
     def setUp(self):
         """ By default, start with vaporeon vs. flareon with no moveset """
-        self.reset_leads('vaporeon', 'leafeon', tearDown=False)
+        self.new_battle('vaporeon', 'leafeon', tearDown=False)
 
-    def reset_leads(self, p0_name='vaporeon', p1_name='leafeon',
+    def new_battle(self, p0_name='vaporeon', p1_name='leafeon',
                     p0_moves=(), p1_moves=(),
                     p0_item=None, p1_item=None,
                     p0_ability='_none_', p1_ability='_none_',
@@ -134,12 +134,12 @@ class MultiMoveTestCase(TestCase):
         self.engine.init_battle()
 
     def reset_items(self, p0_item=None, p1_item=None):
-        self.reset_leads(p0_item=p0_item, p1_item=p1_item)
+        self.new_battle(p0_item=p0_item, p1_item=p1_item)
 
     def add_pokemon(self, name, side, ability='_none_', item=None, moves=()):
         """
         `side` is 0 or 1.
-        Other params are like self.reset_leads
+        Other params are like self.new_battle
         """
         moves = [movedex[move] if isinstance(move, str) else move for move in moves]
         battle_side = self.engine.battlefield.sides[side]
@@ -229,7 +229,7 @@ class MultiMoveTestCase(TestCase):
 
 class MultiMoveTestCaseWithoutSetup(MultiMoveTestCase):
     """
-    Note: overrides MultiMoveTestCase's default setUp, so self.reset_leads must be called in
+    Note: overrides MultiMoveTestCase's default setUp, so self.new_battle must be called in
     each test.
     """
     def __init__(self, *args, **kwargs):

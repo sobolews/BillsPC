@@ -9,7 +9,7 @@ from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestAbilities(MultiMoveTestCaseWithoutSetup):
     def test_adaptability(self):
-        self.reset_leads('vaporeon', 'blastoise', p0_ability='adaptability')
+        self.new_battle('vaporeon', 'blastoise', p0_ability='adaptability')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
 
@@ -23,7 +23,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 52)
 
     def test_aftermath(self):
-        self.reset_leads(p0_ability='aftermath')
+        self.new_battle(p0_ability='aftermath')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -42,14 +42,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.win, self.vaporeon.side.index)
 
     def test_aftermath_doesnt_activate_on_non_contact_move_damage(self):
-        self.reset_leads(p0_ability='aftermath')
+        self.new_battle(p0_ability='aftermath')
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, 'earthquake')
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 0)
 
-        self.reset_leads(p0_ability='aftermath')
+        self.new_battle(p0_ability='aftermath')
         self.vaporeon.hp = 1
         self.engine.set_status(self.vaporeon, Status.PSN, None)
         self.run_turn()
@@ -58,7 +58,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 0)
 
     def test_aerilate(self):
-        self.reset_leads(p0_ability='aerilate')
+        self.new_battle(p0_ability='aerilate')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
@@ -69,14 +69,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.leafeon, 128 + 60)
 
-        self.reset_leads('tornadus', 'leafeon', p0_ability='aerilate')
+        self.new_battle('tornadus', 'leafeon', p0_ability='aerilate')
         self.choose_move(self.tornadus, 'bodyslam')
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 254)
 
     def test_airlock(self):
-        self.reset_leads()
+        self.new_battle()
         self.add_pokemon('rayquaza', 0, ability='airlock')
         self.battlefield.set_weather(Weather.SANDSTORM)
         self.choose_move(self.vaporeon, 'batonpass')
@@ -103,7 +103,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.rayquaza, 19)
 
     def test_weather_starts_during_airlock_and_ends(self):
-        self.reset_leads(p0_ability='airlock')
+        self.new_battle(p0_ability='airlock')
         self.add_pokemon('umbreon', 0)
         self.choose_move(self.leafeon, 'raindance')
 
@@ -118,7 +118,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertIsNone(self.battlefield.weather)
 
     def test_weather_ends_during_airlock(self):
-        self.reset_leads()
+        self.new_battle()
         self.add_pokemon('espeon', 0, ability='airlock')
         self.choose_move(self.vaporeon, 'sunnyday')
         for _ in range(3):
@@ -134,7 +134,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_blizzard_can_miss_in_airlocked_hail(self):
-        self.reset_leads(p1_ability='airlock')
+        self.new_battle(p1_ability='airlock')
         self.add_pokemon('umbreon', 1)
         self.battlefield.set_weather(Weather.HAIL)
 
@@ -150,7 +150,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.umbreon, 81 + 20) # blizzard damage plus hail
 
     def test_analytic(self):
-        self.reset_leads(p0_ability='analytic',
+        self.new_battle(p0_ability='analytic',
                          p1_ability='analytic')
         self.add_pokemon('umbreon', 0)
         self.choose_move(self.leafeon, 'return')
@@ -177,7 +177,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.umbreon, 113)
 
     def test_angerpoint(self):
-        self.reset_leads(p0_ability='angerpoint')
+        self.new_battle(p0_ability='angerpoint')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
@@ -191,7 +191,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 194)
 
     def test_arenatrap(self):
-        self.reset_leads(p0_ability='arenatrap')
+        self.new_battle(p0_ability='arenatrap')
         self.add_pokemon('flareon', 1, ability='arenatrap')
         self.add_pokemon('jolteon', 1)
         self.add_pokemon('umbreon', 0)
@@ -209,7 +209,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertSwitchChoices(self.flareon, set())
 
     def test_arenatrap_doesnt_trap_flying(self):
-        self.reset_leads('vaporeon', 'pidgeot', p0_ability='arenatrap')
+        self.new_battle('vaporeon', 'pidgeot', p0_ability='arenatrap')
         self.add_pokemon('sylveon', 1, ability='levitate')
         self.engine.init_turn()
 
@@ -222,7 +222,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertSwitchChoices(self.sylveon, {self.pidgeot})
 
     def test_aromaveil(self):
-        self.reset_leads(p0_ability='aromaveil')
+        self.new_battle(p0_ability='aromaveil')
         self.choose_move(self.leafeon, 'taunt')
         self.choose_move(self.vaporeon, 'disable')
         self.run_turn()
@@ -244,7 +244,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # moonblast: no spa drop
     def test_aurabreak(self):
-        self.reset_leads('xerneas', 'zygarde', p0_ability='fairyaura', p1_ability='aurabreak')
+        self.new_battle('xerneas', 'zygarde', p0_ability='fairyaura', p1_ability='aurabreak')
         self.choose_move(self.xerneas, 'moonblast')
         self.choose_move(self.zygarde, 'darkpulse')
         self.run_turn()
@@ -254,7 +254,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randint', lambda *_: 1)
     def test_baddreams(self):
-        self.reset_leads(p1_ability='baddreams')
+        self.new_battle(p1_ability='baddreams')
         self.choose_move(self.leafeon, 'spore')
         self.choose_move(self.vaporeon, 'explosion')
         self.run_turn()
@@ -269,14 +269,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 50)
 
     def test_battlearmor(self):
-        self.reset_leads(p0_ability='battlearmor')
+        self.new_battle(p0_ability='battlearmor')
         self.choose_move(self.leafeon, 'stormthrow')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 84)
 
     def test_blaze(self):
-        self.reset_leads('flareon', 'leafeon', p0_ability='blaze')
+        self.new_battle('flareon', 'leafeon', p0_ability='blaze')
         self.engine.apply_boosts(self.leafeon, Boosts(atk=2))
         self.choose_move(self.leafeon, 'aquajet')
         self.choose_move(self.flareon, 'flamewheel')
@@ -285,7 +285,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 230)
 
     def test_bulletproof(self):
-        self.reset_leads(p0_ability='bulletproof')
+        self.new_battle(p0_ability='bulletproof')
         self.choose_move(self.vaporeon, 'shadowball')
         self.choose_move(self.leafeon, 'sludgebomb')
         self.run_turn()
@@ -299,7 +299,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 142)
 
     def test_cheekpouch(self):
-        self.reset_leads(p0_ability='cheekpouch', p0_item='sitrusberry',
+        self.new_battle(p0_ability='cheekpouch', p0_item='sitrusberry',
                          p1_ability='noguard', p1_item='petayaberry')
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'trick')
@@ -317,7 +317,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
                                (self.vaporeon.max_hp / 4) - (self.vaporeon.max_hp / 3) * 2)
 
     def test_chlorophyll(self):
-        self.reset_leads(p0_ability='chlorophyll')
+        self.new_battle(p0_ability='chlorophyll')
         self.battlefield.set_weather(Weather.SUNNYDAY)
         self.vaporeon.hp = self.leafeon.hp = 1
         self.choose_move(self.vaporeon, 'return')
@@ -328,7 +328,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, None)
 
     def test_chlorophyll_blocked_in_airlock(self):
-        self.reset_leads(p0_ability='chlorophyll', p1_ability='airlock')
+        self.new_battle(p0_ability='chlorophyll', p1_ability='airlock')
         self.battlefield.set_weather(Weather.SUNNYDAY)
         self.vaporeon.hp = self.leafeon.hp = 1
         self.choose_move(self.vaporeon, 'return')
@@ -340,7 +340,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_clearbody_and_whitesmoke(self):
         for ability in ('clearbody', 'whitesmoke'):
-            self.reset_leads(p0_ability=ability)
+            self.new_battle(p0_ability=ability)
             self.choose_move(self.leafeon, 'partingshot')
             self.choose_move(self.vaporeon, 'superpower')
             self.run_turn()
@@ -353,7 +353,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertEqual(self.vaporeon.boosts['spe'], -3)
 
     def test_competitive(self):
-        self.reset_leads(p0_ability='competitive')
+        self.new_battle(p0_ability='competitive')
         self.add_pokemon('umbreon', 0, ability='competitive')
         self.choose_move(self.leafeon, 'defog')
         self.choose_move(self.vaporeon, 'closecombat')
@@ -371,7 +371,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_compoundeyes(self):
-        self.reset_leads(p0_ability='compoundeyes')
+        self.new_battle(p0_ability='compoundeyes')
         self.choose_move(self.vaporeon, 'stoneedge')
         self.choose_move(self.leafeon, 'stoneedge')
         self.run_turn()
@@ -380,7 +380,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 49)
 
     def test_contrary(self):
-        self.reset_leads(p0_ability='contrary')
+        self.new_battle(p0_ability='contrary')
         self.choose_move(self.leafeon, 'partingshot')
         self.choose_move(self.vaporeon, 'superpower')
         self.run_turn()
@@ -395,7 +395,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 2) # cursedbody success
     def test_cursedbody(self):
-        self.reset_leads(p0_ability='cursedbody', p1_moves=[movedex['return'], movedex['protect'],
+        self.new_battle(p0_ability='cursedbody', p1_moves=[movedex['return'], movedex['protect'],
                                                             movedex['foulplay'], movedex['toxic']])
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -411,7 +411,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 1) # cutecharm success and infatuate fail
     def test_cutecharm(self):
-        self.reset_leads(p0_ability='cutecharm', p0_gender='M', p1_gender='F')
+        self.new_battle(p0_ability='cutecharm', p0_gender='M', p1_gender='F')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -424,14 +424,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.leafeon, 50)
 
-        self.reset_leads(p0_ability='cutecharm', p0_gender=None, p1_gender='F')
+        self.new_battle(p0_ability='cutecharm', p0_gender=None, p1_gender='F')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
         self.assertFalse(self.leafeon.has_effect(Volatile.ATTRACT))
 
-        self.reset_leads(p0_ability='cutecharm', p1_ability='aromaveil',
+        self.new_battle(p0_ability='cutecharm', p1_ability='aromaveil',
                          p0_gender='F', p1_gender='M')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
@@ -441,7 +441,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # no flinch
     def test_darkaura(self):
-        self.reset_leads('yveltal', 'leafeon', p0_ability='darkaura')
+        self.new_battle('yveltal', 'leafeon', p0_ability='darkaura')
         self.choose_move(self.yveltal, 'darkpulse')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -454,7 +454,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.yveltal, 99 + 51)
 
     def test_defeatist(self):
-        self.reset_leads('archeops', 'leafeon', p0_ability='defeatist')
+        self.new_battle('archeops', 'leafeon', p0_ability='defeatist')
         self.choose_move(self.archeops, 'pluck')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
@@ -468,7 +468,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 164 + 84)
 
     def test_defiant(self):
-        self.reset_leads(p0_ability='defiant')
+        self.new_battle(p0_ability='defiant')
         self.choose_move(self.leafeon, 'partingshot')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -477,7 +477,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 122)
 
     def test_deltastream(self):
-        self.reset_leads()
+        self.new_battle()
         self.add_pokemon('umbreon', 0, ability='deltastream')
         self.add_pokemon('jolteon', 1, ability='deltastream')
         self.choose_switch(self.vaporeon, self.umbreon)
@@ -513,7 +513,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
 
     def test_desolateland(self):
-        self.reset_leads()
+        self.new_battle()
         self.add_pokemon('umbreon', 0, ability='desolateland')
         self.choose_switch(self.vaporeon, self.umbreon)
         self.choose_move(self.leafeon, 'waterfall')
@@ -523,7 +523,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.weather, Weather.DESOLATELAND)
 
     def test_download(self):
-        self.reset_leads(p0_ability='download', p1_ability='download')
+        self.new_battle(p0_ability='download', p1_ability='download')
         self.add_pokemon('umbreon', 0, ability='download')
         self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': 1})
         self.assertBoosts(self.leafeon, {'atk': 1, 'spa': 0})
@@ -533,23 +533,23 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.umbreon, {'atk': 0, 'spa': 1})
 
     def test_drizzle(self):
-        self.reset_leads(p0_ability='drizzle')
+        self.new_battle(p0_ability='drizzle')
         self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 132)
 
-        self.reset_leads(p0_ability='drizzle', p1_ability='desolateland')
+        self.new_battle(p0_ability='drizzle', p1_ability='desolateland')
         self.assertEqual(self.battlefield.weather, Weather.DESOLATELAND)
 
     def test_drought(self):
-        self.reset_leads(p0_ability='drought')
+        self.new_battle(p0_ability='drought')
         self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
 
     @patch('random.randrange', lambda _: 99) # no secondary effects
     def test_dryskin(self):
-        self.reset_leads(p0_ability='dryskin')
+        self.new_battle(p0_ability='dryskin')
         self.choose_move(self.leafeon, 'scald')
         self.run_turn()
 
@@ -574,7 +574,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randint', lambda *_: 3)
     def test_earlybird(self):
-        self.reset_leads(p0_ability='earlybird')
+        self.new_battle(p0_ability='earlybird')
         self.choose_move(self.leafeon, 'spore')
         self.choose_move(self.vaporeon, 'explosion')
         self.run_turn()
@@ -590,7 +590,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randint', lambda *_: 1)
     def test_earlybird_immediate_wake_up(self):
-        self.reset_leads(p0_ability='earlybird')
+        self.new_battle(p0_ability='earlybird')
         self.choose_move(self.leafeon, 'spore')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -599,7 +599,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 25) # poison
     def test_effectspore(self):
-        self.reset_leads('vaporeon', 'flareon', p0_ability='effectspore')
+        self.new_battle('vaporeon', 'flareon', p0_ability='effectspore')
         self.choose_move(self.flareon, 'return')
         self.run_turn()
 
@@ -613,14 +613,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 25) # poison
     def test_effectspore_vs_grass_type(self):
-        self.reset_leads(p0_ability='effectspore')
+        self.new_battle(p0_ability='effectspore')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
         self.assertStatus(self.leafeon, None)
 
     def test_filter(self):
-        self.reset_leads(p0_ability='filter')
+        self.new_battle(p0_ability='filter')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
@@ -634,7 +634,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 2)
     def test_flamebody(self):
-        self.reset_leads(p0_ability='flamebody')
+        self.new_battle(p0_ability='flamebody')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
@@ -642,7 +642,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 8)
 
     def test_flashfire(self):
-        self.reset_leads('vaporeon', 'espeon', p0_ability='flashfire')
+        self.new_battle('vaporeon', 'espeon', p0_ability='flashfire')
         self.choose_move(self.espeon, 'sacredfire')
         self.choose_move(self.vaporeon, 'hiddenpowerfire')
         self.run_turn()
@@ -660,7 +660,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 0)
 
     def test_flowergift(self):
-        self.reset_leads('cherrim', 'leafeon', p0_ability='flowergift')
+        self.new_battle('cherrim', 'leafeon', p0_ability='flowergift')
         self.choose_move(self.leafeon, 'sunnyday')
         self.choose_move(self.cherrim, 'return')
         self.run_turn()
@@ -673,13 +673,13 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.cherrim, 42)
 
     def test_existence_of_noneffect_abilities(self):
-        self.reset_leads(p0_ability='flowerveil')
-        self.reset_leads(p0_ability='frisk')
-        self.reset_leads(p0_ability='illusion')
-        self.reset_leads(p0_ability='symbiosis')
+        self.new_battle(p0_ability='flowerveil')
+        self.new_battle(p0_ability='frisk')
+        self.new_battle(p0_ability='illusion')
+        self.new_battle(p0_ability='symbiosis')
 
     def test_furcoat(self):
-        self.reset_leads(p0_ability='furcoat')
+        self.new_battle(p0_ability='furcoat')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
@@ -691,7 +691,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 192 + 27)
 
     def test_galewings(self):
-        self.reset_leads(p0_ability='galewings')
+        self.new_battle(p0_ability='galewings')
         self.add_pokemon('jolteon', 1)
         self.vaporeon.hp = self.leafeon.hp = self.jolteon.hp = 1
         self.choose_move(self.vaporeon, 'hiddenpowerflying')
@@ -710,7 +710,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 1) # no parahax
     def test_guts(self):
-        self.reset_leads(p0_ability='guts', p1_ability='guts')
+        self.new_battle(p0_ability='guts', p1_ability='guts')
         self.engine.set_status(self.vaporeon, Status.BRN, None)
         self.choose_move(self.vaporeon, 'facade')
         self.choose_move(self.leafeon, 'xscissor')
@@ -720,7 +720,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 100)
 
     def test_harvest(self):
-        self.reset_leads(p0_ability='harvest', p0_item='lumberry', p1_ability='noguard')
+        self.new_battle(p0_ability='harvest', p0_item='lumberry', p1_ability='noguard')
         self.add_pokemon('flareon', 0, ability='harvest', item='sitrusberry')
         with patch('random.randrange', lambda _: 0): # harvest success
             for _ in range(3):
@@ -758,7 +758,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_harvest_is_prevented_by_item_removal(self):
         for move in ('knockoff', 'bugbite', 'trick'):
-            self.reset_leads(p0_ability='harvest', p0_item='lumberry', p1_ability='noguard')
+            self.new_battle(p0_ability='harvest', p0_item='lumberry', p1_ability='noguard')
             self.choose_move(self.leafeon, 'willowisp')
             self.choose_move(self.vaporeon, 'sunnyday')
             self.run_turn()
@@ -777,7 +777,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertStatus(self.vaporeon, Status.PAR)
 
     def test_harvest_stops_after_using_other_item(self):
-        self.reset_leads(p0_ability='harvest', p0_item='lumberry',
+        self.new_battle(p0_ability='harvest', p0_item='lumberry',
                          p1_ability='noguard', p1_item='normalgem')
         self.choose_move(self.leafeon, 'willowisp')
         self.choose_move(self.vaporeon, 'sunnyday')
@@ -800,7 +800,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, Status.BRN)
 
     def test_hugepower(self):
-        self.reset_leads(p0_ability='hugepower', p1_ability='hugepower')
+        self.new_battle(p0_ability='hugepower', p1_ability='hugepower')
         self.choose_move(self.leafeon, 'hiddenpowergrass')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -810,7 +810,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_hustle(self):
         with patch('random.randrange', lambda _: 71): # no miss
-            self.reset_leads(p0_ability='hustle', p1_ability='hustle')
+            self.new_battle(p0_ability='hustle', p1_ability='hustle')
             self.choose_move(self.vaporeon, 'aquatail')
             self.choose_move(self.leafeon, 'hydropump')
             self.run_turn()
@@ -819,7 +819,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.leafeon, 48)
 
         with patch('random.randrange', lambda _: 72): # miss at 90% * 80% accuracy
-            self.reset_leads(p0_ability='hustle', p1_ability='hustle')
+            self.new_battle(p0_ability='hustle', p1_ability='hustle')
             self.choose_move(self.vaporeon, 'aquatail')
             self.choose_move(self.leafeon, 'hydropump')
             self.run_turn()
@@ -829,7 +829,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 1) # no parahax
     def test_hydration(self):
-        self.reset_leads(p0_ability='hydration')
+        self.new_battle(p0_ability='hydration')
         self.choose_move(self.leafeon, 'thunderwave')
         self.choose_move(self.vaporeon, 'raindance')
         self.engine.set_status(self.leafeon, Status.PSN, None)
@@ -847,7 +847,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, Status.PAR)
 
     def test_hypercutter(self):
-        self.reset_leads(p0_ability='hypercutter', p1_ability='intimidate')
+        self.new_battle(p0_ability='hypercutter', p1_ability='intimidate')
         self.assertBoosts(self.vaporeon, {'atk': 0})
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
@@ -855,7 +855,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'atk': 0, 'spa': -1})
 
     def test_icebody(self):
-        self.reset_leads(p0_ability='icebody')
+        self.new_battle(p0_ability='icebody')
         self.choose_move(self.leafeon, 'return')
         self.battlefield.set_weather(Weather.HAIL)
         self.run_turn()
@@ -864,7 +864,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
 
     def test_immunity(self):
-        self.reset_leads('gligar', 'muk', p0_ability='immunity')
+        self.new_battle('gligar', 'muk', p0_ability='immunity')
         self.choose_move(self.muk, 'toxic')
         self.run_turn()
 
@@ -876,7 +876,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.gligar, Status.PAR)
 
     def test_imposter_transformation(self):
-        self.reset_leads('ditto', p0_ability='imposter', p1_ability='download',
+        self.new_battle('ditto', p0_ability='imposter', p1_ability='download',
                          p0_moves=[movedex['transform']], p1_gender='F',
                          p1_moves=(movedex['leafblade'], movedex['xscissor'],
                                    movedex['swordsdance'], movedex['toxic']))
@@ -898,7 +898,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.ditto, {'spa': 2})
 
     def test_imposter_fail_to_transform_substitute(self):
-        self.reset_leads()
+        self.new_battle()
         self.add_pokemon('ditto', 0, ability='imposter')
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'voltswitch')
@@ -908,11 +908,11 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFalse(self.ditto.is_transformed)
 
     def test_imposter_fail_to_transform_illusion(self):
-        self.reset_leads('ditto', p0_ability='imposter', p1_ability='illusion')
+        self.new_battle('ditto', p0_ability='imposter', p1_ability='illusion')
         self.assertFalse(self.ditto.is_transformed)
 
     def test_imposter_moves(self):
-        self.reset_leads('ditto', p0_ability='imposter',
+        self.new_battle('ditto', p0_ability='imposter',
                          p1_moves=(movedex['leafblade'], movedex['xscissor'],
                                    movedex['swordsdance'], movedex['return']))
 
@@ -927,7 +927,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.ditto.pp[movedex['return']], 4)
 
     def test_imposter_switch_and_transform_different_foes(self):
-        self.reset_leads(p1_moves=(movedex['leafblade'], movedex['uturn'],
+        self.new_battle(p1_moves=(movedex['leafblade'], movedex['uturn'],
                                    movedex['swordsdance'], movedex['return']), p1_ability='moxie')
         self.add_pokemon('ditto', 0, ability='imposter')
         self.add_pokemon('umbreon', 1, moves=(movedex['stickyweb'], movedex['splash'],
@@ -966,7 +966,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.ditto._ability.name, 'imposter')
 
     def test_imposter_copy_ability(self):
-        self.reset_leads('ditto', p0_ability='imposter', p1_ability='magicbounce',
+        self.new_battle('ditto', p0_ability='imposter', p1_ability='magicbounce',
                          p1_moves=(movedex['partingshot'], movedex['xscissor'],
                                    movedex['swordsdance'], movedex['return']))
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
@@ -983,7 +983,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'spa': -1, 'atk': -1})
 
     def test_infiltrator(self):
-        self.reset_leads(p0_ability='infiltrator', p1_ability='infiltrator')
+        self.new_battle(p0_ability='infiltrator', p1_ability='infiltrator')
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'lightscreen')
         self.run_turn()
@@ -1003,7 +1003,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 88 + 50)
 
     def test_innerfocus(self):
-        self.reset_leads(p0_ability='innerfocus')
+        self.new_battle(p0_ability='innerfocus')
         self.choose_move(self.leafeon, 'fakeout')
         self.choose_move(self.vaporeon, 'bulkup')
         self.run_turn()
@@ -1012,7 +1012,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_insomnia_and_sweetveil_and_vitalspirit(self):
         for ability in ('insomnia', 'sweetveil', 'vitalspirit'):
-            self.reset_leads(p0_ability=ability, p1_ability=ability)
+            self.new_battle(p0_ability=ability, p1_ability=ability)
             self.choose_move(self.leafeon, 'spore')
             self.choose_move(self.vaporeon, 'yawn')
             self.run_turn()
@@ -1035,7 +1035,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertIsNone(self.vaporeon.status)
 
     def test_intimidate(self):
-        self.reset_leads(p0_ability='intimidate', p1_ability='competitive')
+        self.new_battle(p0_ability='intimidate', p1_ability='competitive')
         self.add_pokemon('flareon', 0, ability='intimidate')
         self.add_pokemon('espeon', 1, ability='intimidate')
 
@@ -1051,7 +1051,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_ironbarbs(self):
-        self.reset_leads(p0_ability='ironbarbs', p1_ability='ironbarbs')
+        self.new_battle(p0_ability='ironbarbs', p1_ability='ironbarbs')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'earthquake')
         self.run_turn()
@@ -1067,7 +1067,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # no secondary effect
     def test_ironfist(self):
-        self.reset_leads(p0_ability='ironfist', p1_ability='ironfist')
+        self.new_battle(p0_ability='ironfist', p1_ability='ironfist')
         self.choose_move(self.leafeon, 'thunderpunch')
         self.choose_move(self.vaporeon, 'shadowpunch')
         self.run_turn()
@@ -1076,7 +1076,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 252)
 
     def test_justified(self):
-        self.reset_leads(p0_ability='justified', p1_ability='justified')
+        self.new_battle(p0_ability='justified', p1_ability='justified')
         self.choose_move(self.leafeon, 'knockoff')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -1085,7 +1085,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'atk': 0})
 
     def test_justified_doesnt_activate_behind_substitute(self):
-        self.reset_leads(p1_ability='justified')
+        self.new_battle(p1_ability='justified')
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'knockoff')
         self.run_turn()
@@ -1096,7 +1096,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_keeneye(self):
-        self.reset_leads(p0_ability='keeneye')
+        self.new_battle(p0_ability='keeneye')
         self.engine.apply_boosts(self.leafeon, Boosts(evn=6))
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -1112,7 +1112,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'acc': -1})
 
     def test_levitate(self):
-        self.reset_leads(p0_ability='levitate', p1_ability='levitate')
+        self.new_battle(p0_ability='levitate', p1_ability='levitate')
         self.choose_move(self.leafeon, 'earthquake')
         self.choose_move(self.vaporeon, 'spikes')
         self.run_turn()
@@ -1129,7 +1129,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'spe': 0})
 
     def test_lightningrod(self):
-        self.reset_leads(p0_ability='lightningrod', p1_ability='lightningrod')
+        self.new_battle(p0_ability='lightningrod', p1_ability='lightningrod')
         self.add_pokemon('espeon', 1)
         self.choose_move(self.leafeon, 'thunderbolt')
         self.choose_move(self.vaporeon, 'thunderwave')
@@ -1147,7 +1147,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 50)
 
     def test_lightningrod_magiccoat(self):
-        self.reset_leads(p0_ability='lightningrod')
+        self.new_battle(p0_ability='lightningrod')
         self.choose_move(self.vaporeon, 'magiccoat')
         self.choose_move(self.leafeon, 'thunderwave')
         self.run_turn()
@@ -1157,7 +1157,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # bodyslam paralyzes
     def test_limber(self):
-        self.reset_leads(p0_ability='limber', p1_ability='limber')
+        self.new_battle(p0_ability='limber', p1_ability='limber')
         self.choose_move(self.vaporeon, 'thunderwave')
         self.choose_move(self.leafeon, 'bodyslam')
         self.run_turn()
@@ -1167,7 +1167,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_liquidooze(self):
-        self.reset_leads(p0_ability='liquidooze')
+        self.new_battle(p0_ability='liquidooze')
         self.choose_move(self.leafeon, 'drainpunch')
         self.run_turn()
 
@@ -1180,7 +1180,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 105 + 50)
         self.assertDamageTaken(self.leafeon, 53 + 50)
 
-        self.reset_leads(p0_ability='liquidooze')
+        self.new_battle(p0_ability='liquidooze')
         self.vaporeon.hp = self.leafeon.hp = 200
         self.choose_move(self.leafeon, 'recover')
         self.choose_move(self.vaporeon, 'recover')
@@ -1190,7 +1190,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 0)
 
     def test_liquidooze_behind_substitute(self):
-        self.reset_leads(p0_ability='liquidooze')
+        self.new_battle(p0_ability='liquidooze')
         self.choose_move(self.leafeon, 'suckerpunch')
         self.choose_move(self.vaporeon, 'substitute')
         self.run_turn()
@@ -1209,7 +1209,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 23 + 35) # ceil(70 * 0.5)
 
     def test_liquidooze_wins_tie(self):
-        self.reset_leads(p1_ability='liquidooze')
+        self.new_battle(p1_ability='liquidooze')
         self.vaporeon.hp = 10
         self.leafeon.hp = 30
         self.choose_move(self.vaporeon, 'drainingkiss')
@@ -1220,7 +1220,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
 
     def test_magicbounce(self):
-        self.reset_leads(p0_ability='magicbounce')
+        self.new_battle(p0_ability='magicbounce')
         self.choose_move(self.leafeon, 'thunderwave')
         self.choose_move(self.vaporeon, 'partingshot')
         self.run_turn()
@@ -1230,7 +1230,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'spa': -1, 'atk': -1})
 
     def test_magicbounce_no_infinite_recursion(self):
-        self.reset_leads(p0_ability='magicbounce', p1_ability='magicbounce')
+        self.new_battle(p0_ability='magicbounce', p1_ability='magicbounce')
         self.choose_move(self.leafeon, 'thunderwave')
         self.choose_move(self.vaporeon, 'partingshot')
         self.run_turn()
@@ -1239,7 +1239,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
 
     def test_magicbounce_magiccoat(self):
-        self.reset_leads(p1_ability='magicbounce')
+        self.new_battle(p1_ability='magicbounce')
         self.choose_move(self.leafeon, 'thunderwave')
         self.choose_move(self.vaporeon, 'magiccoat')
         self.run_turn()
@@ -1247,7 +1247,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.leafeon, Status.PAR)
 
     def test_magicbounce_encore(self):
-        self.reset_leads(p1_ability='magicbounce')
+        self.new_battle(p1_ability='magicbounce')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'encore')
         self.run_turn()
@@ -1257,7 +1257,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_magicguard(self):
-        self.reset_leads(p0_ability='magicguard', p1_ability='magicguard')
+        self.new_battle(p0_ability='magicguard', p1_ability='magicguard')
         # TODO: give vaporeon a lifeorb
         self.add_pokemon('umbreon', 0, ability='magicguard')
         self.add_pokemon('jolteon', 1, ability='magicguard')
@@ -1295,7 +1295,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_magicguard_vs_liquidooze(self): # move does damage but no heal/recoil
-        self.reset_leads(p0_ability='liquidooze', p1_ability='magicguard')
+        self.new_battle(p0_ability='liquidooze', p1_ability='magicguard')
         self.leafeon.hp = 100
         self.choose_move(self.leafeon, 'leechseed')
         self.run_turn()
@@ -1304,7 +1304,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
 
     def test_magicguard_vs_destinybond(self):
-        self.reset_leads(p0_ability='magicguard')
+        self.new_battle(p0_ability='magicguard')
         self.vaporeon.hp = self.leafeon.hp = 10
         self.choose_move(self.leafeon, 'destinybond')
         self.choose_move(self.vaporeon, 'return')
@@ -1315,7 +1315,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss; confusion roll fails
     def test_magicguard_vs_confusiondamage_perishsong_and_bellydrum(self):
-        self.reset_leads(p0_ability='magicguard', p1_ability='magicguard')
+        self.new_battle(p0_ability='magicguard', p1_ability='magicguard')
         self.choose_move(self.leafeon, 'perishsong')
         self.choose_move(self.vaporeon, 'bellydrum')
         self.run_turn()
@@ -1335,14 +1335,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.vaporeon)
 
     def test_magicguard_vs_recoil(self):
-        self.reset_leads(p0_ability='magicguard')
+        self.new_battle(p0_ability='magicguard')
         self.choose_move(self.vaporeon, 'flareblitz')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 0)
 
     def test_magicguard_with_explosion(self):
-        self.reset_leads(p0_ability='magicguard')
+        self.new_battle(p0_ability='magicguard')
         self.choose_move(self.vaporeon, 'explosion')
         self.run_turn()
 
@@ -1350,7 +1350,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.vaporeon)
 
     def test_magicguard_vs_aftermath_and_ironbarbs(self):
-        self.reset_leads(p0_ability='magicguard', p1_ability='aftermath')
+        self.new_battle(p0_ability='magicguard', p1_ability='aftermath')
         self.add_pokemon('jolteon', 1, ability='ironbarbs')
         self.leafeon.hp = 10
         self.choose_move(self.vaporeon, 'return')
@@ -1365,7 +1365,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 0)
 
     def test_magician(self):
-        self.reset_leads(p0_ability='magician', p1_item='stick')
+        self.new_battle(p0_ability='magician', p1_item='stick')
         self.add_pokemon('jolteon', 1, item='toxicorb')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
@@ -1382,13 +1382,13 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.jolteon, 'toxicorb')
         self.assertStatus(self.jolteon, Status.TOX)
 
-        self.reset_leads(p0_ability='magician')
+        self.new_battle(p0_ability='magician')
         self.choose_move(self.vaporeon, 'return')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
     def test_magician_steals_items_before_they_are_used(self):
-        self.reset_leads(p0_ability='magician', p1_item='sitrusberry')
+        self.new_battle(p0_ability='magician', p1_item='sitrusberry')
         self.add_pokemon('espeon', 1, item='weaknesspolicy')
         self.vaporeon.hp = 100
         self.choose_move(self.vaporeon, 'icebeam')
@@ -1407,7 +1407,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, 'weaknesspolicy')
 
     def test_magician_ko_with_knockoff_steals_item(self):
-        self.reset_leads(p0_ability='magician', p1_item='flameorb')
+        self.new_battle(p0_ability='magician', p1_item='flameorb')
         self.leafeon.hp = 10
         self.choose_move(self.vaporeon, 'knockoff')
         self.run_turn()
@@ -1418,7 +1418,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, Status.BRN)
 
     def test_magnetpull(self):
-        self.reset_leads('vaporeon', 'steelix', p0_ability='magnetpull')
+        self.new_battle('vaporeon', 'steelix', p0_ability='magnetpull')
         self.add_pokemon('aegislash', 1)
         self.add_pokemon('glaceon', 1)
         self.engine.init_turn()
@@ -1438,7 +1438,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 1) # no miss; no parahax
     def test_marvelscale(self):
-        self.reset_leads(p0_ability='marvelscale', p1_ability='marvelscale',
+        self.new_battle(p0_ability='marvelscale', p1_ability='marvelscale',
                          p0_moves=(movedex['xscissor'], movedex['drillpeck'],
                                    movedex['poisonjab'], movedex['sleeptalk']))
         self.choose_move(self.vaporeon, 'drillpeck')
@@ -1464,7 +1464,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_megalauncher(self):
-        self.reset_leads(p0_ability='megalauncher', p1_ability='megalauncher')
+        self.new_battle(p0_ability='megalauncher', p1_ability='megalauncher')
         self.choose_move(self.vaporeon, 'dragonpulse')
         self.choose_move(self.leafeon, 'leafstorm')
         self.run_turn()
@@ -1473,7 +1473,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 166)
 
     def test_motordrive(self):
-        self.reset_leads(p0_ability='motordrive', p1_ability='motordrive')
+        self.new_battle(p0_ability='motordrive', p1_ability='motordrive')
         self.choose_move(self.leafeon, 'thunderwave')
         self.choose_move(self.vaporeon, 'voltswitch')
         self.run_turn()
@@ -1483,7 +1483,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_moxie(self):
-        self.reset_leads(p0_ability='moxie')
+        self.new_battle(p0_ability='moxie')
         self.add_pokemon('flareon', 1)
         self.add_pokemon('jolteon', 1)
         self.leafeon.hp = self.flareon.hp = self.jolteon.hp = 1
@@ -1508,7 +1508,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss; confusion damage
     def test_multiscale(self):
-        self.reset_leads(p0_ability='multiscale', p1_ability='multiscale')
+        self.new_battle(p0_ability='multiscale', p1_ability='multiscale')
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'toxic')
         self.run_turn()
@@ -1538,14 +1538,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 18) # half of normal confusion damage
 
     def test_multitype_vs_imposter(self):
-        self.reset_leads('ditto', 'arceusground',
+        self.new_battle('ditto', 'arceusground',
                          p0_ability='imposter', p0_item='ironplate',
                          p1_ability='multitype', p1_item='earthplate')
         self.assertListEqual(self.ditto.types, [Type.GROUND, None])
         self.assertAbility(self.ditto, 'imposter')
 
     def test_mummy(self):
-        self.reset_leads(p0_ability='mummy', p1_ability='lightningrod')
+        self.new_battle(p0_ability='mummy', p1_ability='lightningrod')
         self.add_pokemon('sylveon', 0, 'flowerveil')
         self.add_pokemon('jolteon', 1, 'levitate')
         self.choose_move(self.leafeon, 'return')
@@ -1578,7 +1578,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_naturalcure(self):
-        self.reset_leads(p0_ability='naturalcure', p1_ability='naturalcure')
+        self.new_battle(p0_ability='naturalcure', p1_ability='naturalcure')
         self.add_pokemon('flareon', 0, ability='naturalcure')
         self.add_pokemon('espeon', 1)
         self.choose_move(self.leafeon, 'toxic')
@@ -1626,14 +1626,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
             self.assertStatus(self.leafeon, None)
 
-        self.reset_leads(p0_ability='noguard')
+        self.new_battle(p0_ability='noguard')
         test()
-        self.reset_leads(p1_ability='noguard')
+        self.new_battle(p1_ability='noguard')
         test()
 
     @patch('random.randrange', lambda _: 25) # effectspore causes poison
     def test_overcoat(self):
-        self.reset_leads(p0_ability='overcoat', p1_ability='effectspore')
+        self.new_battle(p0_ability='overcoat', p1_ability='effectspore')
         self.battlefield.set_weather(Weather.HAIL)
         self.run_turn()
         self.battlefield.set_weather(Weather.SANDSTORM)
@@ -1649,7 +1649,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, None)
 
     def test_overgrow(self):
-        self.reset_leads(p1_ability='overgrow')
+        self.new_battle(p1_ability='overgrow')
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=2))
         self.choose_move(self.vaporeon, 'bugbuzz')
         self.choose_move(self.leafeon, 'energyball')
@@ -1664,7 +1664,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 240 + 56)
 
     def test_owntempo(self):
-        self.reset_leads(p0_ability='owntempo', p1_ability='noguard')
+        self.new_battle(p0_ability='owntempo', p1_ability='noguard')
         self.choose_move(self.leafeon, 'confuseray')
         self.run_turn()
 
@@ -1677,7 +1677,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
 
     def test_parentalbond(self):
-        self.reset_leads('vaporeon', 'espeon', p0_ability='parentalbond', p1_ability='justified')
+        self.new_battle('vaporeon', 'espeon', p0_ability='parentalbond', p1_ability='justified')
         self.choose_move(self.vaporeon, 'darkpulse')
         self.run_turn()
 
@@ -1690,7 +1690,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.espeon.side.get_effect(Hazard.SPIKES).layers, 1)
 
     def test_parentalbond_break_substitute(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -1699,7 +1699,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
 
     def test_parentalbond_secondary_effects_trigger_twice(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.vaporeon, 'poweruppunch')
         self.run_turn()
 
@@ -1714,7 +1714,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'atk': 3})
 
     def test_parentalbond_fakeout_activates_steadfast_once(self):
-        self.reset_leads(p0_ability='parentalbond', p1_ability='steadfast')
+        self.new_battle(p0_ability='parentalbond', p1_ability='steadfast')
         self.choose_move(self.vaporeon, 'fakeout')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -1725,14 +1725,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.choice', lambda _: 5) # iciclespear hits 5 times
     def test_parentalbond_doesnt_affect_multihit(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.vaporeon, 'iciclespear')
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 5 * 26)
 
     def test_parentalbond_doesnt_affect_status_move(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.vaporeon, 'bulkup')
         self.run_turn()
 
@@ -1744,7 +1744,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'atk': -1, 'spa': -1})
 
     def test_parentalbond_doesnt_affect_selfdestruct_moves(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.vaporeon, 'explosion')
         self.run_turn()
 
@@ -1752,7 +1752,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.vaporeon)
 
     def test_parentalbond_doesnt_affect_charge_moves(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'phantomforce')
         self.run_turn()
@@ -1765,7 +1765,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 44)
 
     def test_parentalbond_vs_ironbarbs(self):
-        self.reset_leads(p0_ability='parentalbond', p1_ability='ironbarbs')
+        self.new_battle(p0_ability='parentalbond', p1_ability='ironbarbs')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
@@ -1773,7 +1773,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 2 * (self.vaporeon.max_hp / 8))
 
     def test_parentalbond_with_recoil_move(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.vaporeon, 'doubleedge')
         self.run_turn()
 
@@ -1781,7 +1781,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 29)
 
     def test_parentalbond_with_drain_move(self):
-        self.reset_leads(p0_ability='parentalbond', p1_ability='ironbarbs')
+        self.new_battle(p0_ability='parentalbond', p1_ability='ironbarbs')
         self.vaporeon.hp = 100
         self.choose_move(self.vaporeon, 'drainpunch')
         self.run_turn()
@@ -1790,14 +1790,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.hp, 100 + 19 - 50 + 10 - 50) # 29
 
     def test_parentalbond_with_seismictoss(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.vaporeon, 'seismictoss')
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 200)
 
     def test_parentalbond_with_counter(self):
-        self.reset_leads(p0_ability='parentalbond')
+        self.new_battle(p0_ability='parentalbond')
         self.choose_move(self.leafeon, 'aquajet')
         self.choose_move(self.vaporeon, 'counter')
         self.run_turn()
@@ -1806,14 +1806,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 28 * 4)
 
     def test_parentalbond_breaks_sturdy(self):
-        self.reset_leads(p0_ability='sturdy', p1_ability='parentalbond')
+        self.new_battle(p0_ability='sturdy', p1_ability='parentalbond')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
         self.assertFainted(self.vaporeon)
 
     def test_pickpocket(self):
-        self.reset_leads(p0_ability='pickpocket', p1_item='sitrusberry')
+        self.new_battle(p0_ability='pickpocket', p1_item='sitrusberry')
         self.add_pokemon('jolteon', 1, item='airballoon')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
@@ -1839,7 +1839,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.jolteon, None)
 
     def test_pickpocket_vs_suicide_lifeorb(self):
-        self.reset_leads(p0_ability='pickpocket', p1_item='lifeorb')
+        self.new_battle(p0_ability='pickpocket', p1_item='lifeorb')
         self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -1848,7 +1848,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, 'lifeorb')
 
     def test_pickpocket_vs_suicide_recoil(self):
-        self.reset_leads(p0_ability='pickpocket', p1_item='heatrock')
+        self.new_battle(p0_ability='pickpocket', p1_item='heatrock')
         self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'doubleedge')
         self.run_turn()
@@ -1858,7 +1858,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, 'heatrock')
 
     def test_pickpocket_vs_sheerforce(self):
-        self.reset_leads(p0_ability='pickpocket',
+        self.new_battle(p0_ability='pickpocket',
                          p1_ability='sheerforce', p1_item='scopelens')
         self.choose_move(self.leafeon, 'flamecharge')
         self.run_turn()
@@ -1873,20 +1873,20 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, 'scopelens')
 
     def test_pickup(self):
-        self.reset_leads(p0_ability='pickup', p1_item='sitrusberry')
+        self.new_battle(p0_ability='pickup', p1_item='sitrusberry')
         self.choose_move(self.vaporeon, 'hiddenpowerice')
         self.run_turn()
         self.assertItem(self.leafeon, None)
         self.assertDamageTaken(self.leafeon, 158 - self.leafeon.max_hp / 4)
         self.assertItem(self.vaporeon, 'sitrusberry')
 
-        self.reset_leads(p0_ability='pickup', p1_item='airballoon')
+        self.new_battle(p0_ability='pickup', p1_item='airballoon')
         self.choose_move(self.vaporeon, 'hiddenpowerice')
         self.run_turn()
         self.assertItem(self.leafeon, None)
         self.assertItem(self.vaporeon, None)
 
-        self.reset_leads(p0_ability='pickup', p1_item='flyinggem')
+        self.new_battle(p0_ability='pickup', p1_item='flyinggem')
         self.choose_move(self.leafeon, 'hiddenpowerflying')
         self.choose_move(self.vaporeon, 'hiddenpowerflying')
         self.run_turn()
@@ -1895,24 +1895,24 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, 'flyinggem')
         self.assertDamageTaken(self.leafeon, 158)
 
-        self.reset_leads(p0_ability='pickup', p1_item='whiteherb')
+        self.new_battle(p0_ability='pickup', p1_item='whiteherb')
         self.choose_move(self.vaporeon, 'partingshot')
         self.run_turn()
         self.assertItem(self.vaporeon, 'whiteherb')
 
-        self.reset_leads(p0_ability='pickup', p1_item='weaknesspolicy')
+        self.new_battle(p0_ability='pickup', p1_item='weaknesspolicy')
         self.choose_move(self.vaporeon, 'iceshard')
         self.choose_move(self.leafeon, 'thunderbolt')
         self.run_turn()
         self.assertItem(self.vaporeon, 'weaknesspolicy')
 
-        self.reset_leads(p0_item='focussash', p1_ability='pickup')
+        self.new_battle(p0_item='focussash', p1_ability='pickup')
         self.choose_move(self.leafeon, 'woodhammer')
         self.run_turn()
         self.assertItem(self.leafeon, 'focussash')
 
     def test_pickup_doesnt_pick_up_knocked_off_items(self):
-        self.reset_leads(p0_ability='pickup', p1_item='sitrusberry')
+        self.new_battle(p0_ability='pickup', p1_item='sitrusberry')
         self.leafeon.hp = 150
         self.choose_move(self.vaporeon, 'knockoff')
         self.run_turn()
@@ -1922,7 +1922,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, None)
 
     def test_pixilate(self):
-        self.reset_leads('sylveon', 'flareon', p0_ability='pixilate', p1_ability='pixilate')
+        self.new_battle('sylveon', 'flareon', p0_ability='pixilate', p1_ability='pixilate')
         self.choose_move(self.flareon, 'substitute')
         self.choose_move(self.sylveon, 'hypervoice')
         self.run_turn()
@@ -1941,7 +1941,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_poisonheal(self):
-        self.reset_leads(p0_ability='poisonheal', p1_ability='poisonheal')
+        self.new_battle(p0_ability='poisonheal', p1_ability='poisonheal')
         self.add_pokemon('umbreon', 1)
         self.choose_move(self.leafeon, 'toxic')
         self.choose_move(self.vaporeon, 'toxicspikes')
@@ -1973,7 +1973,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 4 * (self.vaporeon.max_hp / 16))
 
     def test_poisontouch(self):
-        self.reset_leads(p0_ability='poisontouch', p1_ability='steadfast')
+        self.new_battle(p0_ability='poisontouch', p1_ability='steadfast')
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=1))
         with patch('random.randrange', lambda _: 5): # icepunch freezes before poisontouch
             self.choose_move(self.vaporeon, 'icepunch')
@@ -2006,7 +2006,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.leafeon, Status.PSN)
 
     def test_prankster(self):
-        self.reset_leads(p0_ability='prankster')
+        self.new_battle(p0_ability='prankster')
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=-5))
         self.choose_move(self.leafeon, 'partingshot')
         self.choose_move(self.vaporeon, 'taunt')
@@ -2022,7 +2022,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
 
     def test_prankster_vs_priority(self):
-        self.reset_leads(p0_ability='prankster')
+        self.new_battle(p0_ability='prankster')
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=-5))
         self.choose_move(self.leafeon, 'fakeout')
         self.choose_move(self.vaporeon, 'thunderwave')
@@ -2039,7 +2039,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.vaporeon)
 
     def test_pressure(self):
-        self.reset_leads(p0_moves=(movedex['protect'], movedex['rest'],
+        self.new_battle(p0_moves=(movedex['protect'], movedex['rest'],
                                    movedex['toxic'], movedex['return']),
                          p1_moves=(movedex['xscissor'], movedex['drillpeck'],
                                    movedex['dragonclaw'], movedex['bulkup']),
@@ -2059,7 +2059,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertPpUsed(self.vaporeon, 'return', 1)
 
     def test_primordialsea(self):
-        self.reset_leads()
+        self.new_battle()
         self.add_pokemon('umbreon', 0, ability='primordialsea')
         self.choose_switch(self.vaporeon, self.umbreon)
         self.choose_move(self.leafeon, 'flamecharge')
@@ -2075,7 +2075,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'spe': 1})
 
     def test_protean(self):
-        self.reset_leads(p0_ability='protean', p1_ability='protean')
+        self.new_battle(p0_ability='protean', p1_ability='protean')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'flamecharge')
         self.choose_move(self.vaporeon, 'spikes')
@@ -2101,14 +2101,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertListEqual(self.vaporeon.types, list(self.vaporeon.pokedex_entry.types))
 
     def test_protean_vs_immunity(self):
-        self.reset_leads(p0_ability='protean', p1_ability='levitate')
+        self.new_battle(p0_ability='protean', p1_ability='levitate')
         self.choose_move(self.vaporeon, 'earthquake')
         self.run_turn()
 
         self.assertEqual(self.vaporeon.types, [Type.GROUND, None])
 
     def test_double_taunt_protean(self):
-        self.reset_leads(p0_ability='protean')
+        self.new_battle(p0_ability='protean')
         self.choose_move(self.vaporeon, 'taunt')
         self.run_turn()
         self.choose_move(self.vaporeon, 'surf')
@@ -2119,7 +2119,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.types, [Type.DARK, None])
 
     def test_protean_when_toxic_spikes_fails(self):
-        self.reset_leads(p0_ability='protean')
+        self.new_battle(p0_ability='protean')
         for _ in range(2):
             self.choose_move(self.vaporeon, 'toxicspikes')
             self.run_turn()
@@ -2133,14 +2133,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.types, [Type.POISON, None])
 
     def test_protean_vs_magicbounce(self):
-        self.reset_leads(p0_ability='protean', p1_ability='magicbounce')
+        self.new_battle(p0_ability='protean', p1_ability='magicbounce')
         self.choose_move(self.vaporeon, 'taunt')
         self.run_turn()
 
         self.assertEqual(self.vaporeon.types, [Type.DARK, None])
 
     def test_protean_second_fakeout(self):
-        self.reset_leads(p0_ability='protean')
+        self.new_battle(p0_ability='protean')
         self.choose_move(self.vaporeon, 'flamecharge')
         self.run_turn()
         self.choose_move(self.vaporeon, 'fakeout')
@@ -2149,7 +2149,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.types, [Type.NORMAL, None])
 
     def test_protean_suckerpunch(self):
-        self.reset_leads(p0_ability='protean')
+        self.new_battle(p0_ability='protean')
         self.choose_move(self.leafeon, 'bulkup')
         self.choose_move(self.vaporeon, 'suckerpunch')
         self.run_turn()
@@ -2157,7 +2157,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.types, [Type.DARK, None])
 
     def test_purepower(self):
-        self.reset_leads(p0_ability='purepower', p1_ability='purepower')
+        self.new_battle(p0_ability='purepower', p1_ability='purepower')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -2167,7 +2167,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 1) # no parahax
     def test_quickfeet(self):
-        self.reset_leads(p0_ability='quickfeet')
+        self.new_battle(p0_ability='quickfeet')
         self.add_pokemon('flareon', 0, ability='quickfeet')
         self.flareon.status = Status.PAR
         self.add_pokemon('umbreon', 0, ability='quickfeet')
@@ -2195,7 +2195,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
 
     def test_raindish(self):
-        self.reset_leads(p0_ability='raindish', p1_ability='airlock')
+        self.new_battle(p0_ability='raindish', p1_ability='airlock')
         self.add_pokemon('glaceon', 1, ability='drizzle')
         self.add_pokemon('flareon', 1, ability='primordialsea')
         self.choose_move(self.leafeon, 'nightshade')
@@ -2221,7 +2221,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_reckless(self):
-        self.reset_leads(p0_ability='reckless', p1_ability='reckless')
+        self.new_battle(p0_ability='reckless', p1_ability='reckless')
         self.choose_move(self.leafeon, 'headcharge')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -2235,7 +2235,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 200 + 167)
 
     def test_refrigerate(self):
-        self.reset_leads('vaporeon', 'espeon', p0_ability='refrigerate', p1_ability='refrigerate')
+        self.new_battle('vaporeon', 'espeon', p0_ability='refrigerate', p1_ability='refrigerate')
         self.choose_move(self.espeon, 'substitute')
         self.choose_move(self.vaporeon, 'hypervoice')
         self.run_turn()
@@ -2253,7 +2253,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.espeon, 69)
 
     def test_regenerator(self):
-        self.reset_leads(p0_ability='regenerator', p1_ability='regenerator')
+        self.new_battle(p0_ability='regenerator', p1_ability='regenerator')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('espeon', 1)
         self.vaporeon.hp = self.leafeon.hp = 10
@@ -2272,7 +2272,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_rockhead(self):
-        self.reset_leads(p0_ability='rockhead', p1_ability='rockhead')
+        self.new_battle(p0_ability='rockhead', p1_ability='rockhead')
         self.choose_move(self.leafeon, 'doubleedge')
         self.choose_move(self.vaporeon, 'jumpkick')
         self.run_turn()
@@ -2287,7 +2287,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_roughskin(self):
-        self.reset_leads(p0_ability='roughskin', p1_ability='roughskin')
+        self.new_battle(p0_ability='roughskin', p1_ability='roughskin')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'earthquake')
         self.run_turn()
@@ -2302,7 +2302,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
 
     def test_sandrush(self):
-        self.reset_leads(p0_ability='sandrush')
+        self.new_battle(p0_ability='sandrush')
         self.add_pokemon('jolteon', 1, ability='airlock')
         self.battlefield.set_weather(Weather.SANDSTORM)
         self.choose_move(self.vaporeon, 'suckerpunch')
@@ -2322,15 +2322,15 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 73)
 
     def test_sandstream(self):
-        self.reset_leads(p0_ability='sandstream', p1_ability='drizzle')
+        self.new_battle(p0_ability='sandstream', p1_ability='drizzle')
         self.assertEqual(self.battlefield.weather, Weather.SANDSTORM)
 
-        self.reset_leads(p0_ability='sandstream', p1_ability='primordialsea')
+        self.new_battle(p0_ability='sandstream', p1_ability='primordialsea')
         self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)
 
     def test_sandveil(self):
         with patch('random.randrange', lambda _: 81): # miss at 80%- accuracy
-            self.reset_leads(p0_ability='sandveil')
+            self.new_battle(p0_ability='sandveil')
             self.choose_move(self.leafeon, 'superfang')
             self.choose_move(self.vaporeon, 'rockslide')
             self.run_turn()
@@ -2353,7 +2353,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.vaporeon, 200 + 84)
 
     def test_sapsipper(self):
-        self.reset_leads(p0_ability='sapsipper', p1_ability='magicbounce')
+        self.new_battle(p0_ability='sapsipper', p1_ability='magicbounce')
         self.choose_move(self.leafeon, 'leafstorm')
         self.choose_move(self.vaporeon, 'leafblade')
         self.run_turn()
@@ -2369,7 +2369,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'atk': 2})
 
     def test_scrappy(self):
-        self.reset_leads('gengar', 'drifblim', p0_ability='scrappy', p1_ability='scrappy')
+        self.new_battle('gengar', 'drifblim', p0_ability='scrappy', p1_ability='scrappy')
         self.choose_move(self.gengar, 'earthquake')
         self.choose_move(self.drifblim, 'brickbreak')
         self.run_turn()
@@ -2385,7 +2385,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.gengar, (self.gengar.max_hp / 4) + 89)
 
     def test_scrappy_aurasphere_vs_bulletproof(self):
-        self.reset_leads(p0_ability='scrappy', p1_ability='bulletproof')
+        self.new_battle(p0_ability='scrappy', p1_ability='bulletproof')
         self.choose_move(self.vaporeon, 'aurasphere')
         self.run_turn()
 
@@ -2393,7 +2393,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 50)
     def test_serenegrace(self):
-        self.reset_leads(p0_ability='serenegrace', p1_ability='serenegrace')
+        self.new_battle(p0_ability='serenegrace', p1_ability='serenegrace')
         self.choose_move(self.leafeon, 'airslash')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -2407,7 +2407,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'def': 0})
 
     def test_shadowtag(self):
-        self.reset_leads(p0_ability='shadowtag')
+        self.new_battle(p0_ability='shadowtag')
         self.add_pokemon('jolteon', 1, ability='shadowtag')
         self.add_pokemon('gengar', 1)
         self.add_pokemon('flareon', 0)
@@ -2447,7 +2447,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertSwitchChoices(self.ditto, {self.flareon, self.vaporeon})
 
     def test_shedskin(self):
-        self.reset_leads(p0_ability='shedskin', p1_ability='shedskin')
+        self.new_battle(p0_ability='shedskin', p1_ability='shedskin')
         with patch('random.randrange', lambda _: 0): # shedskin succeeds; no miss
             self.choose_move(self.leafeon, 'willowisp')
             self.choose_move(self.vaporeon, 'darkvoid')
@@ -2468,7 +2468,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 2) # triattack freezes if possible
     def test_sheerforce(self):
-        self.reset_leads(p0_ability='sheerforce', p1_ability='sheerforce')
+        self.new_battle(p0_ability='sheerforce', p1_ability='sheerforce')
         self.choose_move(self.leafeon, 'flamecharge')
         self.choose_move(self.vaporeon, 'triattack')
         self.run_turn()
@@ -2484,7 +2484,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 136 + 88)
 
     def test_shellarmor(self):
-        self.reset_leads(p0_ability='shellarmor')
+        self.new_battle(p0_ability='shellarmor')
         self.choose_move(self.leafeon, 'stormthrow')
         self.run_turn()
 
@@ -2492,7 +2492,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # secondary effects activate if possible
     def test_shielddust(self):
-        self.reset_leads(p0_ability='shielddust', p1_ability='shielddust')
+        self.new_battle(p0_ability='shielddust', p1_ability='shielddust')
         self.choose_move(self.vaporeon, 'fakeout')
         self.choose_move(self.leafeon, 'flamecharge')
         self.run_turn()
@@ -2510,7 +2510,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_simple(self):
-        self.reset_leads(p0_ability='simple', p1_ability='simple')
+        self.new_battle(p0_ability='simple', p1_ability='simple')
         self.choose_move(self.leafeon, 'partingshot')
         self.choose_move(self.vaporeon, 'leafstorm')
         self.run_turn()
@@ -2526,7 +2526,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_skilllink(self):
-        self.reset_leads(p0_ability='skilllink', p1_ability='skilllink')
+        self.new_battle(p0_ability='skilllink', p1_ability='skilllink')
         self.choose_move(self.leafeon, 'tailslap')
         self.choose_move(self.vaporeon, 'bonemerang')
         self.run_turn()
@@ -2540,7 +2540,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 36 * 5 + 142)
 
     def test_slowstart(self):
-        self.reset_leads(p0_ability='slowstart', p1_ability='slowstart')
+        self.new_battle(p0_ability='slowstart', p1_ability='slowstart')
         self.add_pokemon('espeon', 1)
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'surf')
@@ -2570,7 +2570,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 72 + 98)
 
     def test_sniper(self):
-        self.reset_leads(p0_ability='sniper', p1_ability='angerpoint')
+        self.new_battle(p0_ability='sniper', p1_ability='angerpoint')
         self.choose_move(self.vaporeon, 'stormthrow')
         self.run_turn()
         self.assertBoosts(self.leafeon, {'atk': 6})
@@ -2584,7 +2584,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 81) # miss on 80%- accuracy
     def test_snowcloak(self):
-        self.reset_leads(p0_ability='snowcloak')
+        self.new_battle(p0_ability='snowcloak')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
         self.assertDamageTaken(self.vaporeon, 142)
@@ -2594,14 +2594,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 142)
 
     def test_snowwarning(self):
-        self.reset_leads(p0_ability='snowwarning', p1_ability='drizzle')
+        self.new_battle(p0_ability='snowwarning', p1_ability='drizzle')
         self.assertEqual(self.battlefield.weather, Weather.HAIL)
 
-        self.reset_leads(p0_ability='snowwarning', p1_ability='primordialsea')
+        self.new_battle(p0_ability='snowwarning', p1_ability='primordialsea')
         self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)
 
     def test_solarpower(self):
-        self.reset_leads(p0_ability='solarpower')
+        self.new_battle(p0_ability='solarpower')
         self.choose_move(self.vaporeon, 'vacuumwave')
         self.run_turn()
 
@@ -2616,7 +2616,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 53 + 79)
 
     def test_solidrock(self):
-        self.reset_leads(p0_ability='solidrock')
+        self.new_battle(p0_ability='solidrock')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
@@ -2629,7 +2629,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 142)
 
     def test_soundproof(self):
-        self.reset_leads(p0_ability='soundproof', p1_ability='soundproof')
+        self.new_battle(p0_ability='soundproof', p1_ability='soundproof')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'hypervoice')
@@ -2651,7 +2651,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 0)
 
     def test_speedboost(self):
-        self.reset_leads(p0_ability='speedboost')
+        self.new_battle(p0_ability='speedboost')
         self.add_pokemon('flareon', 0, ability='speedboost')
 
         self.run_turn()
@@ -2687,7 +2687,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss, static success
     def test_static(self):
-        self.reset_leads(p0_ability='static')
+        self.new_battle(p0_ability='static')
         self.choose_move(self.vaporeon, 'return')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -2698,7 +2698,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.leafeon, Status.PAR)
 
     def test_steadfast(self):
-        self.reset_leads(p0_ability='steadfast')
+        self.new_battle(p0_ability='steadfast')
         self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'fakeout')
         self.choose_move(self.vaporeon, 'return')
@@ -2708,7 +2708,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'spe': 1})
 
     def test_stickyhold(self):
-        self.reset_leads(p0_item='toxicorb', p0_ability='immunity',
+        self.new_battle(p0_item='toxicorb', p0_ability='immunity',
                          p1_ability='stickyhold',
                          p1_item='petayaberry')
         self.add_pokemon('flareon', 0, ability='magician')
@@ -2738,7 +2738,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.leafeon, 'petayaberry')
 
     def test_stickyhold_allows_item_usage(self):
-        self.reset_leads(p0_item='airballoon', p0_ability='stickyhold',
+        self.new_battle(p0_item='airballoon', p0_ability='stickyhold',
                          p1_item='lumberry', p1_ability='stickyhold')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'thunderwave')
@@ -2749,7 +2749,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, None)
 
     def test_stormdrain(self):
-        self.reset_leads(p0_ability='stormdrain', p1_ability='stormdrain')
+        self.new_battle(p0_ability='stormdrain', p1_ability='stormdrain')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -2766,7 +2766,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'spa': 0})
 
     def test_strongjaw(self):
-        self.reset_leads(p0_ability='strongjaw', p1_ability='strongjaw')
+        self.new_battle(p0_ability='strongjaw', p1_ability='strongjaw')
         self.choose_move(self.leafeon, 'crunch')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -2777,7 +2777,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
     @patch('random.randrange', lambda _: 0) # no miss
     @patch('random.choice', lambda _: 5) # rockblast hits 5 times
     def test_sturdy(self):
-        self.reset_leads(p0_ability='sturdy', p1_ability='sturdy')
+        self.new_battle(p0_ability='sturdy', p1_ability='sturdy')
         self.add_pokemon('flareon', 0, ability='sturdy')
         self.add_pokemon('jolteon', 1, ability='sturdy')
         self.choose_move(self.leafeon, 'powerwhip')
@@ -2814,7 +2814,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.jolteon)
 
     def test_suctioncups(self):
-        self.reset_leads(p0_ability='suctioncups', p1_ability='noguard')
+        self.new_battle(p0_ability='suctioncups', p1_ability='noguard')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 1)
         self.choose_move(self.leafeon, 'dragontail')
@@ -2846,7 +2846,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             crit[0] = crit_ratio
             return False
 
-        self.reset_leads(p0_ability='superluck', p1_ability='superluck')
+        self.new_battle(p0_ability='superluck', p1_ability='superluck')
         self.engine.get_critical_hit = get_critical_hit
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -2859,7 +2859,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(crit[0], 2)
 
     def test_swarm(self):
-        self.reset_leads(p0_ability='swarm', p1_ability='swarm')
+        self.new_battle(p0_ability='swarm', p1_ability='swarm')
         self.choose_move(self.leafeon, 'xscissor')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -2881,7 +2881,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 167 + 80)
 
     def test_swiftswim(self):
-        self.reset_leads(p0_ability='swiftswim')
+        self.new_battle(p0_ability='swiftswim')
         self.choose_move(self.leafeon, 'suckerpunch')
         self.choose_move(self.vaporeon, 'suckerpunch')
         self.run_turn()
@@ -2899,7 +2899,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 1) # no miss; no parahax
     def test_synchronize(self):
-        self.reset_leads(p0_ability='synchronize')
+        self.new_battle(p0_ability='synchronize')
         self.add_pokemon('espeon', 1, ability='synchronize')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'substitute')
@@ -2924,7 +2924,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertStatus(self.flareon, None)
 
-        self.reset_leads(p0_ability='synchronize', p1_ability='synchronize')
+        self.new_battle(p0_ability='synchronize', p1_ability='synchronize')
         self.engine.set_status(self.vaporeon, Status.PSN, None)
         self.choose_move(self.vaporeon, 'willowisp')
         self.run_turn()
@@ -2933,7 +2933,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, Status.PSN)
 
     def test_synchronize_vs_safeguard(self):
-        self.reset_leads(p1_ability='synchronize')
+        self.new_battle(p1_ability='synchronize')
         self.choose_move(self.leafeon, 'safeguard')
         self.run_turn()
         self.choose_move(self.leafeon, 'thunderwave')
@@ -2944,7 +2944,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # icebeam freezes
     def test_synchronize_doesnt_activate_for_slp_or_frz(self):
-        self.reset_leads(p0_ability='synchronize')
+        self.new_battle(p0_ability='synchronize')
         self.choose_move(self.leafeon, 'icebeam')
         self.run_turn()
 
@@ -2968,7 +2968,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 49) # miss at 49%- accuracy
     def test_tangledfeet(self):
-        self.reset_leads(p0_ability='tangledfeet')
+        self.new_battle(p0_ability='tangledfeet')
         self.choose_move(self.leafeon, 'airslash')
         self.run_turn()
 
@@ -2989,7 +2989,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.choice', lambda _: 2) # multihit hits 2 times
     def test_technician(self):
-        self.reset_leads(p0_ability='technician', p1_ability='technician')
+        self.new_battle(p0_ability='technician', p1_ability='technician')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'quickattack')
         self.run_turn()
@@ -2997,7 +2997,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 30)
         self.assertDamageTaken(self.vaporeon, 142)
 
-        self.reset_leads(p0_ability='technician', p1_ability='technician')
+        self.new_battle(p0_ability='technician', p1_ability='technician')
         self.vaporeon.hp = 134 + 126
         self.choose_move(self.leafeon, 'lowkick')
         self.choose_move(self.vaporeon, 'waterspout')
@@ -3006,14 +3006,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.hp, 134)
         self.assertDamageTaken(self.leafeon, 74)
 
-        self.reset_leads(p0_ability='technician', p1_ability='technician')
+        self.new_battle(p0_ability='technician', p1_ability='technician')
         self.choose_move(self.leafeon, 'bulletseed')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 2 * 158)
 
     def test_thickfat(self):
-        self.reset_leads(p0_ability='thickfat', p1_ability='thickfat')
+        self.new_battle(p0_ability='thickfat', p1_ability='thickfat')
         self.choose_move(self.leafeon, 'flamecharge')
         self.choose_move(self.vaporeon, 'hiddenpowerice')
         self.run_turn()
@@ -3027,7 +3027,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 18 + 142)
 
     def test_tintedlens(self):
-        self.reset_leads(p0_ability='tintedlens', p1_ability='tintedlens')
+        self.new_battle(p0_ability='tintedlens', p1_ability='tintedlens')
         self.choose_move(self.leafeon, 'eruption')
         self.choose_move(self.vaporeon, 'hiddenpowerice')
         self.run_turn()
@@ -3036,7 +3036,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 158)
 
     def test_torrent(self):
-        self.reset_leads(p0_ability='torrent', p1_ability='torrent')
+        self.new_battle(p0_ability='torrent', p1_ability='torrent')
         self.vaporeon.hp = 100
         self.choose_move(self.leafeon, 'surf')
         self.choose_move(self.vaporeon, 'return')
@@ -3059,7 +3059,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 132 + 43)
 
     def test_toughclaws(self):
-        self.reset_leads(p0_ability='toughclaws', p1_ability='toughclaws')
+        self.new_battle(p0_ability='toughclaws', p1_ability='toughclaws')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -3069,7 +3069,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_toxicboost(self):
-        self.reset_leads(p0_ability='toxicboost', p1_ability='toxicboost')
+        self.new_battle(p0_ability='toxicboost', p1_ability='toxicboost')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'toxic')
         self.run_turn()
@@ -3088,18 +3088,18 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 88 + (6 * (self.leafeon.max_hp / 16)))
 
     def test_trace(self):
-        self.reset_leads(p0_ability='trace', p1_ability='adaptability')
+        self.new_battle(p0_ability='trace', p1_ability='adaptability')
         self.engine.init_turn()
 
         self.assertAbility(self.vaporeon, 'adaptability')
 
-        self.reset_leads(p0_ability='trace', p1_ability='illusion')
+        self.new_battle(p0_ability='trace', p1_ability='illusion')
         self.engine.init_turn()
 
         self.assertAbility(self.vaporeon, 'trace')
 
     def test_trace_untraceable_then_switch(self):
-        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.new_battle(p0_ability='trace', p1_ability='flowergift')
         self.add_pokemon('espeon', 1, ability='hugepower')
 
         self.choose_switch(self.leafeon, self.espeon)
@@ -3110,7 +3110,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.espeon, 184)
 
     def test_trace_untraceable_then_force_switch(self):
-        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.new_battle(p0_ability='trace', p1_ability='flowergift')
         self.add_pokemon('espeon', 1, ability='hugepower')
 
         self.choose_move(self.vaporeon, 'roar')
@@ -3119,7 +3119,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertAbility(self.vaporeon, 'hugepower')
 
     def test_trace_untraceable_then_untraceable_then_traceable(self):
-        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.new_battle(p0_ability='trace', p1_ability='flowergift')
         self.add_pokemon('jolteon', 1, ability='illusion')
         self.add_pokemon('espeon', 1, ability='hugepower')
 
@@ -3138,7 +3138,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.espeon, 184)
 
     def test_trace_untraceable_then_switch_into_spikes_ko(self):
-        self.reset_leads(p0_ability='trace', p1_ability='flowergift')
+        self.new_battle(p0_ability='trace', p1_ability='flowergift')
         self.add_pokemon('jolteon', 1, ability='aftermath')
         self.add_pokemon('espeon', 1, ability='aerilate')
         self.leafeon.hp = self.jolteon.hp = 1
@@ -3155,7 +3155,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertAbility(self.vaporeon, 'aftermath')
 
     def test_trace_substitute(self):
-        self.reset_leads(p1_ability='airlock')
+        self.new_battle(p1_ability='airlock')
         self.add_pokemon('flareon', 0, ability='trace')
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'voltswitch')
@@ -3165,7 +3165,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertAbility(self.flareon, 'airlock')
 
     def test_trace_again_after_switch_out(self):
-        self.reset_leads(p0_ability='trace', p1_ability='analytic')
+        self.new_battle(p0_ability='trace', p1_ability='analytic')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 1, ability='angerpoint')
         self.engine.init_turn()
@@ -3179,7 +3179,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertAbility(self.vaporeon, 'angerpoint')
 
     def test_trace_then_suppress_with_moldbreaker(self):
-        self.reset_leads(p0_ability='trace', p1_ability='motordrive')
+        self.new_battle(p0_ability='trace', p1_ability='motordrive')
         self.add_pokemon('jolteon', 1, ability='moldbreaker')
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
@@ -3191,7 +3191,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertAbility(self.vaporeon, 'motordrive')
 
     def test_tracing_levitate_doesnt_block_hazards(self):
-        self.reset_leads(p1_ability='levitate')
+        self.new_battle(p1_ability='levitate')
         self.add_pokemon('flareon', 0, ability='trace')
         self.choose_move(self.leafeon, 'spikes')
         self.run_turn()
@@ -3204,7 +3204,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.flareon, 2 * (self.flareon.max_hp / 8)) # spikes + psn
 
     def test_tracing_levitate_on_between_turn_switch_in_doesnt_block_hazards(self):
-        self.reset_leads(p1_ability='levitate')
+        self.new_battle(p1_ability='levitate')
         self.add_pokemon('flareon', 0, ability='trace')
         self.choose_move(self.leafeon, 'spikes')
         self.choose_move(self.vaporeon, 'explosion')
@@ -3214,7 +3214,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.flareon, self.flareon.max_hp / 8)
 
     def test_trace_ability_with_on_update(self):
-        self.reset_leads(p0_ability='trace', p1_ability='noguard')
+        self.new_battle(p0_ability='trace', p1_ability='noguard')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 1, ability='immunity')
         self.choose_move(self.leafeon, 'toxic')
@@ -3231,7 +3231,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 16) # 1 turn of toxic
 
     def test_trace_regenerator(self):
-        self.reset_leads(p0_ability='trace', p1_ability='regenerator')
+        self.new_battle(p0_ability='trace', p1_ability='regenerator')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'voltswitch')
@@ -3240,7 +3240,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 142 - (self.vaporeon.max_hp / 3))
 
     def test_trace_ability_with_on_start(self):
-        self.reset_leads(p0_ability='trace', p1_ability='intimidate')
+        self.new_battle(p0_ability='trace', p1_ability='intimidate')
         self.add_pokemon('flareon', 0, ability='trace')
         self.choose_switch(self.vaporeon, self.flareon)
         self.choose_move(self.leafeon, 'return')
@@ -3250,7 +3250,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.flareon, 72)
 
     def test_faster_switch_into_tracer_traces_outgoing_opponent(self):
-        self.reset_leads(p0_ability='aurabreak')
+        self.new_battle(p0_ability='aurabreak')
         self.add_pokemon('flareon', 0, ability='baddreams')
         self.add_pokemon('jolteon', 1, ability='trace')
         self.choose_switch(self.leafeon, self.jolteon)
@@ -3261,7 +3261,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randint', lambda *_: 1) # 1 sleep turn
     def test_truant(self):
-        self.reset_leads(p0_ability='truant')
+        self.new_battle(p0_ability='truant')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'bulkup')
         self.choose_move(self.vaporeon, 'bulkup')
@@ -3318,7 +3318,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 81) # miss at 81%- accuracy
     def test_unaware(self):
-        self.reset_leads(p0_ability='unaware')
+        self.new_battle(p0_ability='unaware')
         self.engine.apply_boosts(self.leafeon, Boosts(spa=5))
         self.engine.apply_boosts(self.vaporeon, Boosts(atk=1))
         self.choose_move(self.vaporeon, 'return')
@@ -3355,7 +3355,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 116)
 
     def test_unburden_when_use_item(self):
-        self.reset_leads(p0_ability='unburden', p0_item='sitrusberry')
+        self.new_battle(p0_ability='unburden', p0_item='sitrusberry')
         self.leafeon.hp = 1
         self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
         self.choose_move(self.leafeon, 'leafblade')
@@ -3371,7 +3371,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
 
     def test_unburden_when_item_stolen(self):
-        self.reset_leads(p0_ability='unburden', p0_item='heatrock')
+        self.new_battle(p0_ability='unburden', p0_item='heatrock')
         self.leafeon.hp = self.vaporeon.hp = 1
         self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
         self.choose_move(self.leafeon, 'trick')
@@ -3387,7 +3387,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
 
     def test_unburden_with_regained_item_and_switch(self):
-        self.reset_leads(p0_ability='unburden', p0_item='heatrock',
+        self.new_battle(p0_ability='unburden', p0_item='heatrock',
                          p1_ability='magician', p1_item='sharpbeak')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'knockoff')
@@ -3415,7 +3415,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFalse(self.vaporeon.has_effect(Volatile.UNBURDEN))
 
     def test_unnerve(self):
-        self.reset_leads(p0_item='sitrusberry', p1_ability='unnerve')
+        self.new_battle(p0_item='sitrusberry', p1_ability='unnerve')
         self.add_pokemon('jolteon', 1)
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'return')
@@ -3431,7 +3431,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, None)
 
     def test_unnerve_vs_bugbite(self):
-        self.reset_leads(p1_ability='unnerve', p1_item='sitrusberry')
+        self.new_battle(p1_ability='unnerve', p1_item='sitrusberry')
         self.vaporeon.hp = 100
         self.choose_move(self.vaporeon, 'bugbite')
         self.run_turn()
@@ -3440,7 +3440,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.vaporeon.hp, 100 + self.vaporeon.max_hp / 4)
 
     def test_victorystar(self):
-        self.reset_leads(p0_ability='victorystar')
+        self.new_battle(p0_ability='victorystar')
         with patch('random.randrange', lambda _: 99): # 99%- accuracy misses
             self.choose_move(self.vaporeon, 'highjumpkick')
             self.run_turn()
@@ -3454,7 +3454,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.leafeon, 63)
 
     def test_voltabsorb(self):
-        self.reset_leads(p0_ability='voltabsorb', p1_ability='voltabsorb')
+        self.new_battle(p0_ability='voltabsorb', p1_ability='voltabsorb')
         self.choose_move(self.leafeon, 'discharge')
         self.choose_move(self.vaporeon, 'hypervoice')
         self.run_turn()
@@ -3477,7 +3477,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 0)
 
     def test_waterabsorb(self):
-        self.reset_leads(p0_ability='waterabsorb')
+        self.new_battle(p0_ability='waterabsorb')
         self.choose_move(self.leafeon, 'raindance')
         self.choose_move(self.vaporeon, 'bellydrum')
         self.run_turn()
@@ -3500,7 +3500,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_waterveil(self):
-        self.reset_leads(p0_ability='waterveil')
+        self.new_battle(p0_ability='waterveil')
         self.choose_move(self.leafeon, 'willowisp')
         self.run_turn()
 
@@ -3513,7 +3513,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss, confusion hit
     def test_wonderguard(self):
-        self.reset_leads('vaporeon', p0_ability='wonderguard')
+        self.new_battle('vaporeon', p0_ability='wonderguard')
         self.add_pokemon('shedinja', 0, ability='wonderguard')
         self.choose_move(self.leafeon, 'knockoff')
         self.run_turn()
@@ -3551,7 +3551,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 45) # miss at 45%- accuracy
     def test_wonderskin(self):
-        self.reset_leads(p0_ability='wonderskin')
+        self.new_battle(p0_ability='wonderskin')
         self.choose_move(self.leafeon, 'willowisp')
         self.run_turn()
         self.choose_move(self.leafeon, 'stoneedge')
@@ -3576,14 +3576,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
 class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
     def test_moldbreaker_vs_aromaveil(self):
-        self.reset_leads(p0_ability='aromaveil', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='aromaveil', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'taunt')
         self.run_turn()
 
         self.assertTrue(self.vaporeon.has_effect(Volatile.TAUNT))
 
     def test_moldbreaker_vs_battlearmor(self):
-        self.reset_leads(p0_ability='battlearmor', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='battlearmor', p1_ability='moldbreaker')
         self.engine.get_critical_hit = lambda crit: True # crit when possible
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -3591,7 +3591,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 213)
 
     def test_moldbreaker_vs_bulletproof(self):
-        self.reset_leads(p0_ability='bulletproof', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='bulletproof', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'aurasphere')
         self.run_turn()
 
@@ -3599,21 +3599,21 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     def test_moldbreaker_vs_clearbody_and_whitesmoke(self):
         for ability in ('clearbody', 'whitesmoke'):
-            self.reset_leads(p0_ability=ability, p1_ability='moldbreaker')
+            self.new_battle(p0_ability=ability, p1_ability='moldbreaker')
             self.choose_move(self.leafeon, 'partingshot')
             self.run_turn()
 
             self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
 
     def test_moldbreaker_vs_contrary(self):
-        self.reset_leads(p0_ability='contrary', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='contrary', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
 
         self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
 
     def test_moldbreaker_vs_dryskin(self):
-        self.reset_leads(p0_ability='dryskin', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='dryskin', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'surf')
         self.run_turn()
 
@@ -3626,14 +3626,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     def test_moldbreaker_vs_filter_and_solidrock(self):
         for ability in ('filter', 'solidrock'):
-            self.reset_leads(p0_ability=ability, p1_ability='moldbreaker')
+            self.new_battle(p0_ability=ability, p1_ability='moldbreaker')
             self.choose_move(self.leafeon, 'leafblade')
             self.run_turn()
 
             self.assertDamageTaken(self.vaporeon, 378)
 
     def test_moldbreaker_vs_flashfire(self):
-        self.reset_leads(p0_ability='flashfire', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='flashfire', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'hiddenpowerfire')
         self.run_turn()
 
@@ -3641,14 +3641,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 18)
 
     def test_moldbreaker_vs_furcoat(self):
-        self.reset_leads(p0_ability='furcoat', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='furcoat', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 378)
 
     def test_moldbreaker_vs_hypercutter(self):
-        self.reset_leads(p0_ability='hypercutter', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='hypercutter', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
 
@@ -3656,7 +3656,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_moldbreaker_vs_immunity(self):
-        self.reset_leads(p0_ability='immunity', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='immunity', p1_ability='moldbreaker')
 
         with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
             self.choose_move(self.leafeon, 'toxic')
@@ -3668,7 +3668,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.leafeon, 34)
 
     def test_moldbreaker_vs_innerfocus(self):
-        self.reset_leads(p0_ability='innerfocus', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='innerfocus', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'fakeout')
         self.choose_move(self.vaporeon, 'bulkup')
         self.run_turn()
@@ -3677,7 +3677,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     def test_moldbreaker_vs_insomnia_sweetveil_vitalspirit(self):
         for ability in ('insomnia', 'sweetveil', 'vitalspirit'):
-            self.reset_leads(p0_ability=ability, p1_ability='moldbreaker')
+            self.new_battle(p0_ability=ability, p1_ability='moldbreaker')
 
             with patch.object(self.engine, 'set_status',
                               wraps=self.engine.set_status) as set_status:
@@ -3690,21 +3690,21 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
                 self.assertDamageTaken(self.leafeon, 50)
 
     def test_moldbreaker_vs_levitate(self):
-        self.reset_leads(p0_ability='levitate', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='levitate', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'earthquake')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 139)
 
     def test_moldbreaker_vs_lightningrod(self):
-        self.reset_leads(p0_ability='lightningrod', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='lightningrod', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'thunderbolt')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 108)
 
     def test_moldbreaker_vs_limber(self):
-        self.reset_leads(p0_ability='limber', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='limber', p1_ability='moldbreaker')
 
         with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
             self.choose_move(self.leafeon, 'thunderwave')
@@ -3716,14 +3716,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.leafeon, 50)
 
     def test_moldbreaker_vs_magicbounce(self):
-        self.reset_leads(p0_ability='magicbounce', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='magicbounce', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
 
         self.assertBoosts(self.vaporeon, {'atk': -1, 'spa': -1})
 
     def test_moldbreaker_vs_marvelscale(self):
-        self.reset_leads(p0_ability='marvelscale', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='marvelscale', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'thunderwave')
         self.run_turn()
         self.choose_move(self.leafeon, 'return')
@@ -3732,7 +3732,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 142)
 
     def test_moldbreaker_roar_vs_incoming_levitate_with_spikes(self):
-        self.reset_leads(p0_ability='moldbreaker')
+        self.new_battle(p0_ability='moldbreaker')
         self.add_pokemon('flareon', 1, ability='levitate')
         self.choose_move(self.vaporeon, 'spikes')
         self.run_turn()
@@ -3742,7 +3742,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.flareon, self.flareon.max_hp / 8)
 
     def test_moldbreaker_magiccoat(self):
-        self.reset_leads(p0_ability='clearbody', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='clearbody', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'magiccoat')
         self.choose_move(self.vaporeon, 'partingshot')
         self.run_turn()
@@ -3750,7 +3750,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.vaporeon, {'spa': -1, 'atk': -1})
 
     def test_moldbreaker_isnt_active_during_opponents_turn(self):
-        self.reset_leads(p0_ability='insomnia', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='insomnia', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'rest')
         self.run_turn()
@@ -3759,7 +3759,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, None)
 
     def test_moldbreaker_doesnt_suppress_weather_effects(self):
-        self.reset_leads(p0_ability='dryskin', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='dryskin', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'sunnyday')
         self.choose_move(self.vaporeon, 'splash')
         self.run_turn()
@@ -3768,28 +3768,28 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     def test_moldbreaker_aliases(self):
         for ability in ('teravolt', 'turboblaze'):
-            self.reset_leads(p0_ability='bulletproof', p1_ability=ability)
+            self.new_battle(p0_ability='bulletproof', p1_ability=ability)
             self.choose_move(self.leafeon, 'aurasphere')
             self.run_turn()
 
             self.assertDamageTaken(self.vaporeon, 48)
 
     def test_moldbreaker_vs_multiscale(self):
-        self.reset_leads(p0_ability='multiscale', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='multiscale', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 378)
 
     def test_moldbreaker_vs_overcoat(self):
-        self.reset_leads(p0_ability='overcoat', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='overcoat', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'spore')
         self.run_turn()
 
         self.assertStatus(self.vaporeon, Status.SLP)
 
     def test_moldbreaker_vs_owntempo(self):
-        self.reset_leads(p0_ability='owntempo', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='owntempo', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'confuseray')
         self.run_turn()
 
@@ -3797,7 +3797,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 80) # miss at 80%- accuracy
     def test_moldbreaker_vs_sandveil(self):
-        self.reset_leads(p0_ability='sandveil', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='sandveil', p1_ability='moldbreaker')
         self.battlefield.set_weather(Weather.SANDSTORM)
         self.choose_move(self.leafeon, 'crabhammer')
         self.run_turn()
@@ -3805,14 +3805,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 69)
 
     def test_moldbreaker_vs_sapsipper(self):
-        self.reset_leads(p0_ability='sapsipper', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='sapsipper', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 378)
 
     def test_moldbreaker_vs_shielddust(self):
-        self.reset_leads(p0_ability='shielddust', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='shielddust', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'nuzzle')
         self.run_turn()
 
@@ -3820,7 +3820,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, Status.PAR)
 
     def test_moldbreaker_vs_simple(self):
-        self.reset_leads(p0_ability='simple', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='simple', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
 
@@ -3828,7 +3828,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 80) # miss at 80%- accuracy
     def test_moldbreaker_vs_snowcloak(self):
-        self.reset_leads(p0_ability='snowcloak', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='snowcloak', p1_ability='moldbreaker')
         self.battlefield.set_weather(Weather.HAIL)
         self.choose_move(self.leafeon, 'crabhammer')
         self.run_turn()
@@ -3836,14 +3836,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 69)
 
     def test_moldbreaker_vs_soundproof(self):
-        self.reset_leads(p0_ability='soundproof', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='soundproof', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'boomburst')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 83)
 
     def test_moldbreaker_vs_stickyhold(self):
-        self.reset_leads(p0_ability='moldbreaker',
+        self.new_battle(p0_ability='moldbreaker',
                          p1_ability='stickyhold', p1_item='leftovers')
         self.choose_move(self.vaporeon, 'knockoff')
         self.run_turn()
@@ -3851,14 +3851,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.leafeon, None)
 
     def test_moldbreaker_vs_stormdrain(self):
-        self.reset_leads(p0_ability='stormdrain', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='stormdrain', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'surf')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 27)
 
     def test_moldbreaker_vs_sturdy(self):
-        self.reset_leads(p0_ability='sturdy', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='sturdy', p1_ability='moldbreaker')
         self.engine.apply_boosts(self.leafeon, Boosts(atk=1))
         self.choose_move(self.leafeon, 'leafblade')
         self.run_turn()
@@ -3867,7 +3867,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_moldbreaker_vs_suctioncups(self):
-        self.reset_leads(p0_ability='suctioncups', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='suctioncups', p1_ability='moldbreaker')
         self.add_pokemon('flareon', 0, ability='suctioncups')
         self.choose_move(self.leafeon, 'roar')
         self.run_turn()
@@ -3882,7 +3882,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 50) # miss at 50%- accuracy
     def test_moldbreaker_vs_tangledfeet(self):
-        self.reset_leads(p0_ability='tangledfeet', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='tangledfeet', p1_ability='moldbreaker')
         self.vaporeon.confuse()
         self.choose_move(self.leafeon, 'taunt')
         self.run_turn()
@@ -3890,14 +3890,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertTrue(self.vaporeon.has_effect(Volatile.TAUNT))
 
     def test_moldbreaker_vs_thickfat(self):
-        self.reset_leads(p0_ability='thickfat', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='thickfat', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'icebeam')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 27)
 
     def test_moldbreaker_vs_unaware(self):
-        self.reset_leads(p0_ability='unaware', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='unaware', p1_ability='moldbreaker')
         self.engine.apply_boosts(self.leafeon, Boosts(atk=2))
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -3905,14 +3905,14 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 283)
 
     def test_moldbreaker_vs_voltabsorb(self):
-        self.reset_leads(p0_ability='voltabsorb', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='voltabsorb', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'thunderbolt')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 108)
 
     def test_moldbreaker_vs_waterabsorb(self):
-        self.reset_leads(p0_ability='waterabsorb', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='waterabsorb', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'surf')
         self.run_turn()
 
@@ -3920,7 +3920,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_moldbreaker_vs_waterveil(self):
-        self.reset_leads(p0_ability='waterveil', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='waterveil', p1_ability='moldbreaker')
 
         with patch.object(self.engine, 'set_status', wraps=self.engine.set_status) as set_status:
             self.choose_move(self.leafeon, 'willowisp')
@@ -3932,7 +3932,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.leafeon, 34)
 
     def test_moldbreaker_vs_wonderguard(self):
-        self.reset_leads(p0_ability='wonderguard', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='wonderguard', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
@@ -3940,7 +3940,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 99) # miss if possible
     def test_moldbreaker_vs_wonderskin(self):
-        self.reset_leads(p0_ability='wonderskin', p1_ability='moldbreaker')
+        self.new_battle(p0_ability='wonderskin', p1_ability='moldbreaker')
         self.choose_move(self.leafeon, 'partingshot')
         self.run_turn()
 

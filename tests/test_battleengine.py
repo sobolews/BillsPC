@@ -357,7 +357,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         """
         Regression: Moves with user_boosts tried to boost the user even if it fainted
         """
-        self.reset_leads(p0_ability='aftermath')
+        self.new_battle(p0_ability='aftermath')
         self.engine.apply_boosts = Mock()
         self.vaporeon.hp = self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'closecombat')
@@ -474,7 +474,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
     @patch('random.randint', lambda *_: 2) # two-turn outrage
     def test_locked_move(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p0_moves=(movedex['return'], movedex['splash'],
                                    movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'outrage')
@@ -492,7 +492,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertTrue(self.vaporeon.has_effect(Volatile.CONFUSE))
 
     def test_locked_move_with_1_pp(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p0_moves=(movedex['return'], movedex['splash'],
                                    movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'outrage')
@@ -503,7 +503,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
     @patch('random.randint', lambda *_: 3) # three-turn outrage
     def test_locked_move_unlocks_after_protect_without_confusion(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p0_moves=(movedex['return'], movedex['splash'],
                                    movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'outrage')
@@ -521,7 +521,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
     @patch('random.randint', lambda *_: 2) # two-turn outrage
     def test_locked_move_unlocks_after_immunity_with_confusion(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p0_moves=(movedex['return'], movedex['splash'],
                                    movedex['outrage'], movedex['toxic']))
         self.add_pokemon('sylveon', 1)
@@ -541,7 +541,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
     @patch('random.randint', lambda *_: 3) # three-turn outrage
     def test_locked_move_unlocks_without_confusion_after_user_falls_asleep(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p0_moves=(movedex['return'], movedex['splash'],
                                    movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'petaldance')
@@ -557,7 +557,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
 
     def test_locked_move_user_faints_first_turn(self):
-        self.reset_leads(p0_item='rockyhelmet')
+        self.new_battle(p0_item='rockyhelmet')
         self.add_pokemon('jolteon', 1)
         self.leafeon.hp = 10
         self.choose_move(self.leafeon, 'outrage')
@@ -642,7 +642,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertEqual(self.espeon.status, Status.SLP)
 
     def test_item_used_this_turn(self):
-        self.reset_leads(p0_item='sitrusberry', p1_item='weaknesspolicy')
+        self.new_battle(p0_item='sitrusberry', p1_item='weaknesspolicy')
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -662,7 +662,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertIsNone(self.leafeon.item_used_this_turn)
 
     def test_item_used_this_turn_when_switching(self):
-        self.reset_leads(p0_item='sitrusberry')
+        self.new_battle(p0_item='sitrusberry')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'voltswitch')
@@ -778,7 +778,7 @@ class TestWeather(MultiMoveTestCase):
         self.assertDamageTaken(self.golem, 0)
 
     def test_sandstorm_boosts_spd_rock_types(self):
-        self.reset_leads('tyranitar', 'leafeon')
+        self.new_battle('tyranitar', 'leafeon')
         self.engine.battlefield.set_weather(Weather.SANDSTORM)
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -790,21 +790,21 @@ class TestWeather(MultiMoveTestCase):
         self.assertDamageTaken(self.tyranitar, 43 + 96)
 
     def test_hail_kos_shedinja(self): # TODO: test with wonderguard
-        self.reset_leads('shedinja', 'leafeon')
+        self.new_battle('shedinja', 'leafeon')
         self.engine.battlefield.set_weather(Weather.HAIL)
         self.run_turn()
 
         self.assertEqual(self.shedinja.status, Status.FNT)
 
     def test_sandstorm_kos_shedinja(self): # TODO: test with wonderguard
-        self.reset_leads('shedinja', 'leafeon')
+        self.new_battle('shedinja', 'leafeon')
         self.engine.battlefield.set_weather(Weather.SANDSTORM)
         self.run_turn()
 
         self.assertEqual(self.shedinja.status, Status.FNT)
 
     def test_deltastream_suppresses_moves_supereffective_vs_flying(self):
-        self.reset_leads('rayquaza', 'leafeon')
+        self.new_battle('rayquaza', 'leafeon')
         self.engine.battlefield.set_weather(Weather.DELTASTREAM)
         self.choose_move(self.leafeon, 'hiddenpowerice')
         self.run_turn()
@@ -930,7 +930,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 192 * 2)
 
     def test_disable_vs_sleeptalk(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                    movedex['crunch'], movedex['xscissor']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
@@ -942,7 +942,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
                                               movedex['xscissor']})
 
     def test_disable_vs_copycat(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['copycat'],
                                    movedex['crunch'], movedex['xscissor']))
         self.choose_move(self.vaporeon, 'surf')
@@ -955,7 +955,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
                                               movedex['xscissor']})
 
     def test_encore_vs_copycat(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['copycat'],
                                    movedex['crunch'], movedex['xscissor']))
         self.choose_move(self.vaporeon, 'surf')
@@ -972,7 +972,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertFalse(self.vaporeon.has_effect(Volatile.ENCORE))
 
     def test_encore_vs_sleeptalk(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                    movedex['extremespeed'], movedex['xscissor']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
@@ -990,7 +990,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 112 * 2)
 
     def test_copycat_vs_sleeptalk(self):
-        self.reset_leads(p0_name='vaporeon', p1_name='leafeon',
+        self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                          p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                    movedex['extremespeed'], movedex['crunch']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
@@ -1002,7 +1002,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 39)
 
     def test_drain_fails_on_aftermath(self):
-        self.reset_leads('vaporeon', 'leafeon', p1_ability='aftermath')
+        self.new_battle('vaporeon', 'leafeon', p1_ability='aftermath')
         self.vaporeon.hp = self.leafeon.hp = 10
         self.choose_move(self.vaporeon, 'drainpunch')
 
@@ -1012,7 +1012,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
 
     def test_destinybond_with_aftermath(self):
-        self.reset_leads('vaporeon', 'leafeon', p1_ability='aftermath')
+        self.new_battle('vaporeon', 'leafeon', p1_ability='aftermath')
         self.vaporeon.hp = self.leafeon.hp = 10
         self.choose_move(self.leafeon, 'destinybond')
         self.choose_move(self.vaporeon, 'return')
@@ -1058,10 +1058,10 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.flareon, self.flareon.max_hp / 4)
 
     def test_order_of_abilities_depends_on_speed_of_switchins(self):
-        self.reset_leads('vaporeon', 'leafeon', p0_ability='drizzle', p1_ability='drought')
+        self.new_battle('vaporeon', 'leafeon', p0_ability='drizzle', p1_ability='drought')
         self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
 
-        self.reset_leads('jolteon', 'flareon', p0_ability='drizzle', p1_ability='drought')
+        self.new_battle('jolteon', 'flareon', p0_ability='drizzle', p1_ability='drought')
         self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
 
     # TODO: test order of switchins after both faint, and order on both actively switch, and try
@@ -1089,7 +1089,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
 
-        self.reset_leads('leafeon', 'vaporeon')
+        self.new_battle('leafeon', 'vaporeon')
         self.add_pokemon('alakazam', 0, ability='drought')
         self.add_pokemon('slowbro', 1, ability='drizzle')
         self.choose_switch(self.leafeon, self.alakazam)
@@ -1108,7 +1108,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertIsNone(self.battlefield.weather)
 
     def test_drain_heal_before_on_after_damage(self):
-        self.reset_leads(p1_ability='ironbarbs')
+        self.new_battle(p1_ability='ironbarbs')
         self.vaporeon.hp = 50
         self.choose_move(self.vaporeon, 'drainpunch')
         self.run_turn()
@@ -1129,7 +1129,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertFainted(self.vaporeon)
 
     def test_force_random_switch_with_forcer_faint(self):
-        self.reset_leads(p0_ability='ironbarbs', p1_ability='noguard')
+        self.new_battle(p0_ability='ironbarbs', p1_ability='noguard')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 1)
         self.leafeon.hp = 10
@@ -1142,7 +1142,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertFalse(self.flareon.is_active)
 
     def test_force_random_switch_with_target_faint(self):
-        self.reset_leads(p1_ability='noguard')
+        self.new_battle(p1_ability='noguard')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('umbreon', 0)
         with patch('random.choice', lambda _, self=self: self.umbreon):
@@ -1154,7 +1154,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertTrue(self.flareon.is_active)
 
     def test_circlethrow_with_lifeorb_kos_foe_and_has_recoil(self):
-        self.reset_leads(p0_item='lifeorb', p0_ability='noguard')
+        self.new_battle(p0_item='lifeorb', p0_ability='noguard')
         self.leafeon.hp = 10
         self.choose_move(self.vaporeon, 'circlethrow')
         self.run_turn()
