@@ -74,3 +74,4 @@ bot_local.py
 bot_showdown.py
 *.log
 TODO.txt
+/WIP.txt
