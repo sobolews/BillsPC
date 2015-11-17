@@ -382,8 +382,16 @@ class Guts(AbilityEffect):
             return atk * 1.5
         return atk
 
-# class Harvest(AbilityEffect):
-#     pass # TODO: berries
+class Harvest(AbilityEffect):
+    @priority(-26.1)
+    def on_residual(self, pokemon, foe, engine):
+        if (pokemon.item is None and
+            pokemon.last_berry_used is not None and
+            (engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND) or
+             random.randrange(2) == 0)
+        ):
+            if __debug__: log.i("%s harvested a %s!", pokemon, pokemon.last_berry_used)
+            pokemon.set_item(pokemon.last_berry_used)
 
 class HugePower(AbilityEffect):
     def on_modify_atk(self, pokemon, move, engine, atk):

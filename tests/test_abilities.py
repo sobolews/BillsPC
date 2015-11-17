@@ -701,6 +701,86 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 112 + 50)
         self.assertDamageTaken(self.leafeon, 100)
 
+    def test_harvest(self):
+        self.reset_leads(p0_ability='harvest', p0_item='lumberry', p1_ability='noguard')
+        self.add_pokemon('flareon', 0, ability='harvest', item='sitrusberry')
+        with patch('random.randrange', lambda _: 0): # harvest success
+            for _ in range(3):
+                self.choose_move(self.leafeon, movedex['thunderwave'])
+                self.run_turn()
+                self.assertStatus(self.vaporeon, None)
+                self.assertItem(self.vaporeon, 'lumberry')
+
+        with patch('random.randrange', lambda _: 1): # harvest failure; no parahax
+            self.choose_move(self.leafeon, movedex['thunderwave'])
+            self.run_turn()
+            self.assertStatus(self.vaporeon, None)
+            self.assertItem(self.vaporeon, None)
+
+            self.choose_move(self.leafeon, movedex['thunderwave'])
+            self.choose_move(self.vaporeon, movedex['sunnyday'])
+            self.run_turn()
+            self.assertStatus(self.vaporeon, None)
+            self.assertItem(self.vaporeon, None)
+
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_move(self.leafeon, movedex['rockslide'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, 210 - 2 * (self.flareon.max_hp / 4)) # 2 sitrusberries
+        self.assertItem(self.flareon, None)
+
+        self.choose_switch(self.flareon, self.vaporeon)
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
+        self.assertStatus(self.vaporeon, None)
+        self.assertItem(self.vaporeon, None)
+
+    def test_harvest_is_prevented_by_item_removal(self):
+        for move in ('knockoff', 'bugbite', 'trick'):
+            self.reset_leads(p0_ability='harvest', p0_item='lumberry', p1_ability='noguard')
+            self.choose_move(self.leafeon, movedex['willowisp'])
+            self.choose_move(self.vaporeon, movedex['sunnyday'])
+            self.run_turn()
+            self.assertStatus(self.vaporeon, None)
+            self.assertItem(self.vaporeon, 'lumberry')
+            self.assertDamageTaken(self.vaporeon, 0)
+
+            self.choose_move(self.leafeon, movedex[move])
+            self.run_turn()
+
+            self.assertItem(self.vaporeon, None)
+
+            self.choose_move(self.leafeon, movedex['thunderwave'])
+            self.run_turn()
+
+            self.assertStatus(self.vaporeon, Status.PAR)
+
+    def test_harvest_stops_after_using_other_item(self):
+        self.reset_leads(p0_ability='harvest', p0_item='lumberry',
+                         p1_ability='noguard', p1_item='normalgem')
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.choose_move(self.vaporeon, movedex['sunnyday'])
+        self.run_turn()
+        self.assertStatus(self.vaporeon, None)
+        self.assertItem(self.vaporeon, 'lumberry')
+
+        self.choose_move(self.leafeon, movedex['switcheroo'])
+        self.choose_move(self.vaporeon, movedex['return'])
+        self.run_turn()
+        self.assertDamageTaken(self.leafeon, 64)
+
+        self.assertItem(self.vaporeon, None)
+        self.assertIsNone(self.vaporeon.last_berry_used)
+
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertStatus(self.vaporeon, Status.BRN)
+
     def test_hugepower(self):
         self.reset_leads(p0_ability='hugepower', p1_ability='hugepower')
         self.choose_move(self.leafeon, movedex['hiddenpowergrass'])
