@@ -11,8 +11,8 @@ class TestStatuses(MultiMoveTestCase):
         self.engine.set_status(self.leafeon, Status.PAR, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
-        self.choose_move(self.leafeon, movedex['return'])
-        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, 'return')
+        self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
         self.assertEqual(self.leafeon.status, Status.FNT)
@@ -23,8 +23,8 @@ class TestStatuses(MultiMoveTestCase):
         self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
-        self.choose_move(self.leafeon, movedex['return'])
-        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, 'return')
+        self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
         self.assertEqual(self.leafeon.status, Status.FNT)
@@ -35,8 +35,8 @@ class TestStatuses(MultiMoveTestCase):
         self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
-        self.choose_move(self.leafeon, movedex['return'])
-        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, 'return')
+        self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
         self.assertEqual(self.vaporeon.status, Status.FNT)
@@ -47,8 +47,8 @@ class TestStatuses(MultiMoveTestCase):
         self.engine.set_status(self.leafeon, Status.FRZ, None)
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
-        self.choose_move(self.leafeon, movedex['flamewheel'])
-        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, 'flamewheel')
+        self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
         self.assertEqual(self.vaporeon.status, Status.FNT)
@@ -59,8 +59,8 @@ class TestStatuses(MultiMoveTestCase):
         self.reset_leads('flareon', 'leafeon')
         self.engine.set_status(self.flareon, Status.FRZ, None)
         self.leafeon.hp = 1
-        self.choose_move(self.leafeon, movedex['scald'])
-        self.choose_move(self.flareon, movedex['return'])
+        self.choose_move(self.leafeon, 'scald')
+        self.choose_move(self.flareon, 'return')
         self.run_turn()
 
         self.assertEqual(self.leafeon.status, Status.FNT)
@@ -70,8 +70,8 @@ class TestStatuses(MultiMoveTestCase):
     def test_sleep_block_move(self):
         self.reset_leads('vaporeon', 'jolteon')
         self.engine.apply_boosts(self.vaporeon, Boosts(spa=2))
-        self.choose_move(self.jolteon, movedex['spore'])
-        self.choose_move(self.vaporeon, movedex['earthpower'])
+        self.choose_move(self.jolteon, 'spore')
+        self.choose_move(self.vaporeon, 'earthpower')
         self.run_turn()
 
         self.assertDamageTaken(self.jolteon, 0)
@@ -81,19 +81,19 @@ class TestStatuses(MultiMoveTestCase):
     @patch('random.randrange', lambda *_: 1) # no miss
     def test_sleep_pokemon_wakes_up(self):
         self.reset_leads('vaporeon', 'jolteon')
-        self.choose_move(self.jolteon, movedex['splash'])
-        self.choose_move(self.vaporeon, movedex['spore'])
+        self.choose_move(self.jolteon, 'splash')
+        self.choose_move(self.vaporeon, 'spore')
         self.run_turn()
 
         for _ in range(3):
-            self.choose_move(self.jolteon, movedex['return'])
-            self.choose_move(self.vaporeon, movedex['splash'])
+            self.choose_move(self.jolteon, 'return')
+            self.choose_move(self.vaporeon, 'splash')
             self.run_turn()
 
             self.assertDamageTaken(self.vaporeon, 0)
 
-        self.choose_move(self.jolteon, movedex['thunder'])
-        self.choose_move(self.vaporeon, movedex['splash'])
+        self.choose_move(self.jolteon, 'thunder')
+        self.choose_move(self.vaporeon, 'splash')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 318)
@@ -101,11 +101,11 @@ class TestStatuses(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 3) # sleep for 3 turns
     def test_sleep_does_not_reset_upon_switch(self):
         self.add_pokemon('flareon', 0)
-        self.choose_move(self.leafeon, movedex['spore'])
-        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.leafeon, 'spore')
+        self.choose_move(self.vaporeon, 'return')
         self.run_turn()
         for _ in range(2):
-            self.choose_move(self.vaporeon, movedex['return'])
+            self.choose_move(self.vaporeon, 'return')
             self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 0)
@@ -114,7 +114,7 @@ class TestStatuses(MultiMoveTestCase):
         self.choose_switch(self.flareon, self.vaporeon)
         self.run_turn()
         self.assertEqual(self.vaporeon.status, Status.SLP)
-        self.choose_move(self.vaporeon, movedex['return'])
+        self.choose_move(self.vaporeon, 'return')
         self.run_turn()
         self.assertDamageTaken(self.leafeon, 50)
 
@@ -134,8 +134,8 @@ class TestStatuses(MultiMoveTestCase):
 
     @patch('random.randrange', lambda *_: 0) # no miss
     def test_burn_residual_damage(self):
-        self.choose_move(self.vaporeon, movedex['willowisp'])
-        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.choose_move(self.vaporeon, 'willowisp')
+        self.choose_move(self.leafeon, 'willowisp')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 50)
@@ -151,8 +151,8 @@ class TestStatuses(MultiMoveTestCase):
 
     def test_toxic_residual_damage(self):
         self.reset_leads('vaporeon', 'muk')
-        self.choose_move(self.vaporeon, movedex['toxic'])
-        self.choose_move(self.muk, movedex['toxic'])
+        self.choose_move(self.vaporeon, 'toxic')
+        self.choose_move(self.muk, 'toxic')
         self.run_turn()
         self.assertDamageTaken(self.vaporeon, 25)
         self.run_turn()
@@ -169,8 +169,8 @@ class TestStatuses(MultiMoveTestCase):
     def test_toxic_resets_on_switch_out(self):
         self.reset_leads('vaporeon', 'muk')
         self.add_pokemon('umbreon', 0)
-        self.choose_move(self.vaporeon, movedex['toxic'])
-        self.choose_move(self.muk, movedex['toxic'])
+        self.choose_move(self.vaporeon, 'toxic')
+        self.choose_move(self.muk, 'toxic')
         self.run_turn()
         self.assertDamageTaken(self.vaporeon, 25)
         self.run_turn()

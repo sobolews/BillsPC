@@ -69,8 +69,8 @@ def interactive(args):
     >>> self.reset_leads('charizard', 'blastoise', p0_ability='dryskin')
     >>> print self.charizard
     >>> self.charizard
-    >>> self.choose_move(self.charizard, movedex['bellydrum'])
-    >>> self.choose_move(self.blastoise, movedex['surf'])
+    >>> self.choose_move(self.charizard, 'bellydrum')
+    >>> self.choose_move(self.blastoise, 'surf')
     >>> self.run_turn()
     """
     from tests.multi_move_test_case import MultiMoveTestCase

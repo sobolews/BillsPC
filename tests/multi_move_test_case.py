@@ -154,7 +154,7 @@ class MultiMoveTestCase(TestCase):
         """
         `pokemon` will use `move` next turn.
         """
-        self.engine.testing_decisions.append(('move', pokemon, move))
+        self.engine.testing_decisions.append(('move', pokemon, movedex.get(move) or move))
 
     def choose_switch(self, outgoing, incoming):
         """

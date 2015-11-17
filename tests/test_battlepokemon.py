@@ -61,30 +61,30 @@ class TestAbilityChange(MultiMoveTestCase):
         self.reset_leads(p0_ability='levitate')
         self.add_pokemon('espeon', 0)
         self.vaporeon.change_ability(abilitydex['motordrive'], self.engine)
-        self.choose_move(self.leafeon, movedex['earthquake'])
+        self.choose_move(self.leafeon, 'earthquake')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 139)
 
-        self.choose_move(self.leafeon, movedex['thunderbolt'])
+        self.choose_move(self.leafeon, 'thunderbolt')
         self.run_turn()
 
         self.assertBoosts(self.vaporeon, {'spe': 1})
 
         self.choose_switch(self.vaporeon, self.espeon)
-        self.choose_move(self.leafeon, movedex['roar'])
+        self.choose_move(self.leafeon, 'roar')
         self.run_turn()
         self.assertTrue(self.vaporeon.is_active)
 
         self.assertEqual(self.vaporeon.ability.name, 'levitate')
 
         self.vaporeon.hp = self.vaporeon.max_hp
-        self.choose_move(self.leafeon, movedex['fusionbolt'])
+        self.choose_move(self.leafeon, 'fusionbolt')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 278)
 
-        self.choose_move(self.leafeon, movedex['earthquake'])
+        self.choose_move(self.leafeon, 'earthquake')
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 278)
