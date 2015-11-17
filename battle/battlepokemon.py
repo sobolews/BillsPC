@@ -318,6 +318,7 @@ class BattlePokemon(object):
             self.last_berry_used = None
 
         for effect in self.effects:
+            effect.on_use_item(self, item, engine)
             effect.on_lose_item(self, item)
         self.remove_effect(ITEM)
         self.item = None
