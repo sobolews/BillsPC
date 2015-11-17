@@ -314,9 +314,6 @@ class BattlePokemon(object):
             if self.eat_berry(engine, item) is FAIL:
                 return FAIL
         else:
-            for effect in self.effects:
-                if effect.on_try_use_item(self, item, engine) is FAIL:
-                    return FAIL
             if __debug__: log.i("%s used its %s", self, item)
             self.last_berry_used = None
 
@@ -335,10 +332,6 @@ class BattlePokemon(object):
         if not stolen:
             foe = engine.get_foe(self)
             if foe.ability is abilitydex['unnerve']:
-                return FAIL
-
-        for effect in self.effects:
-            if effect.on_try_use_item(self, berry, engine) is FAIL:
                 return FAIL
 
         if __debug__: log.i("%s ate the %s", self, berry)

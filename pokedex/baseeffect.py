@@ -267,12 +267,6 @@ class BaseEffect(object):
         Called when an item is used/consumed by a pokemon.
         """
 
-    def on_try_use_item(self, pokemon, item, engine):
-        """
-        Called when an item is about to be used/consumed by a pokemon (before on_use_item). Return
-        FAIL to prevent the item from being used.
-        """
-
     def on_lose_item(self, pokemon, item):
         """
         Called when a pokemon loses its item, by using it or by theft.
