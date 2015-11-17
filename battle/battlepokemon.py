@@ -49,6 +49,7 @@ class BattlePokemon(object):
         self.is_transformed = False
         self.illusion = False
         self.item_used_this_turn = None
+        self.last_berry_used = None
         self.base_data = {}     # for transform
         self._suppressed_ability = None
         self._effect_index = {}
@@ -291,6 +292,7 @@ class BattlePokemon(object):
         if __debug__: log.i('Removed %s from %s', self.item, self)
         self.remove_effect(ITEM)
         self.item = None
+        self.last_berry_used = None
         return item
 
     def set_item(self, item):
@@ -316,6 +318,7 @@ class BattlePokemon(object):
                 if effect.on_try_use_item(self, item, engine) is FAIL:
                     return FAIL
             if __debug__: log.i("%s used its %s", self, item)
+            self.last_berry_used = None
 
         for effect in self.effects:
             effect.on_lose_item(self, item)
@@ -340,6 +343,7 @@ class BattlePokemon(object):
 
         if __debug__: log.i("%s ate the %s", self, berry)
         berry.on_eat(self, engine)
+        self.last_berry_used = berry
 
     @property
     def weight(self):
