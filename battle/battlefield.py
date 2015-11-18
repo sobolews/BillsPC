@@ -92,7 +92,6 @@ class BattleField(object):
             if __debug__: log.d("Tried to remove nonexistent %s from battlefield", source)
             return
 
-        effect.on_end() # TODO: will any battlefield effects use on_end?
         if source in Weather:
             self._weather = None
         if __debug__: log.i('Removed %s from battlefield', effect)
@@ -158,7 +157,6 @@ class BattleSide(object):
                                 (source, self.index))
             return
 
-        effect.on_end() # TODO: will any battleside effects use on_end?
         if __debug__: log.i('Removed %s from side %d', effect, self.index)
 
     def clear_hazards(self):
