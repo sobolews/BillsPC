@@ -123,7 +123,7 @@ class BadDreams(AbilityEffect):
             engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
 class BattleArmor(AbilityEffect):
-    pass # implemented in BattleEngine.modify_critical_hit # TODO: use effect instead?
+    pass # implemented in BattleEngine.modify_critical_hit
 
 class Blaze(AbilityEffect):
     def on_modify_atk(self, pokemon, move, engine, atk):
@@ -911,7 +911,7 @@ class SheerForce(AbilityEffect):
             user.set_effect(effects.SheerForceVolatile())
 
 class ShellArmor(AbilityEffect):
-    pass # implemented in BattleEngine.modify_critical_hit # TODO: use effect instead?
+    pass # implemented in BattleEngine.modify_critical_hit
 
 class ShieldDust(AbilityEffect):
     pass # implemented in BattleEngine.apply_secondary_effect

@@ -698,20 +698,6 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 68)
         self.run_turn()
 
-    # def test_order_of_residuals(self): TODO
-    #     """ -> order of residuals: test case
-    #     Chesnaught used Spiky Shield!
-    #     Chesnaught protected itself!
-    #     The opposing Dragalge used Sludge Wave!
-    #     Chesnaught protected itself!
-    #     Chesnaught restored a little HP using its Leftovers!
-    #     The opposing Dragalge restored HP using its Black Sludge!
-    #     The opposing Dragalge's health is sapped by Leech Seed!
-    #     Chesnaught was hurt by poison!
-    #     The opposing Dragalge was hurt by its burn!
-    #     The opposing Dragalge fainted!
-    #     """
-
     def test_switch_in_wish_and_spikes(self):
         """ Spikes is on_switch_in, before wish (on_timeout) """
         self.add_pokemon('umbreon', 0)
@@ -893,10 +879,6 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.new_battle('jolteon', 'flareon', p0_ability='drizzle', p1_ability='drought')
         self.assertEqual(self.battlefield.weather, Weather.SUNNYDAY)
-
-    # TODO: test order of switchins after both faint, and order on both actively switch, and try
-    # each with both p0/p1 being faster so as to catch orderings based on order of
-    # battlefield.sides
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_order_of_switchins_after_double_ko(self):

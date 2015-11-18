@@ -1135,12 +1135,6 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.vaporeon)
         self.assertFalse(self.leafeon.has_effect(Volatile.PARTIALTRAP))
 
-    # def test_judgment(self):
-    #     self.use_leads('arceus', 'leafeon', p0_item=itemdex['flameplate'])
-    #     damage = self.engine.use_move(self.arceus, movedex['judgment'], self.leafeon)
-    #     self.assertEqual(damage, 506)
-    # TODO: once items and multitype are implemented
-
     def test_kingsshield(self):
         self.choose_move(self.vaporeon, 'kingsshield')
         self.choose_move(self.leafeon, 'leafblade')
@@ -1534,9 +1528,6 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 126)
-
-    # def test_pluck(self):
-    #     pass # TODO: implement berries
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_protect_doesnt_block_first_turn_of_charge_move(self):

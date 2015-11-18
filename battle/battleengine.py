@@ -98,7 +98,6 @@ class BattleEngine(object):
                 user.remove_effect(Volatile.TWOTURNMOVE) # remove bounce etc.'s invulnerability
                 return
 
-        # TODO: if anything else will use on_foe_before_move, put pressure effect in there instead
         if move != movedex['struggle'] and not user.has_effect(Volatile.LOCKEDMOVE):
             self.deduct_pp(user, move, target)
 
@@ -137,7 +136,7 @@ class BattleEngine(object):
         move = move.__class__()
 
         move.on_modify_move(user, target, self)
-        for effect in user.effects: # TODO: sort by priority?
+        for effect in user.effects:
             effect.on_modify_move(move, user, self)
         if target is not None:
             for effect in target.effects:
@@ -165,8 +164,7 @@ class BattleEngine(object):
 
         if (user.hp == 0 or move.selfdestruct) and not user.status is Status.FNT:
             if __debug__: log.d('User has no HP after using move, fainting')
-            self.faint(user, Cause.SELFDESTRUCT, move) # TODO: or Cause.OTHER? is there any other
-                                                       # way of reaching this? life orb?
+            self.faint(user, Cause.SELFDESTRUCT, move)
 
         if damage is FAIL:
             if __debug__:
@@ -355,8 +353,7 @@ class BattleEngine(object):
 
         if (user.hp == 0 or move.selfdestruct) and not user.status is Status.FNT:
             if __debug__: log.d('User has no HP after using move, fainting')
-            self.faint(user, Cause.SELFDESTRUCT, move) # TODO: or Cause.OTHER? any other way of
-                                                       # reaching this?
+            self.faint(user, Cause.SELFDESTRUCT, move)
 
     def apply_secondary_effect(self, pokemon, s_effect, user):
         if (random.randrange(100) >= s_effect.chance or
@@ -393,13 +390,11 @@ class BattleEngine(object):
         Return None: Move did not attempt to do damage
         Return int: Amount of damage dealt (returning 0 still means damage for Static etc.)
         """
-        if __debug__: log.d('Calculating damage for %s attacking %s with %s', user, target, move)
-
-        # TODO: move immunity check up a level?
-        # TODO: immunity already checked in try_move_hit, does it need to be checked here?
         if target.is_immune_to_move(user, move):
             if __debug__: log.i('FAIL: %s is immune to %s', target, move)
             return FAIL
+
+        if __debug__: log.d('Calculating damage for %s attacking %s with %s', user, target, move)
 
         damage = move.damage_callback(user, target)
         if damage is not None:
@@ -466,7 +461,6 @@ class BattleEngine(object):
             if effectiveness != 1:
                 log.i("It's %s effective", {0.25: 'barely', 0.5: 'not very',
                                             2: 'super', 4: 'super duper'}[effectiveness])
-        # TODO: burn modifier goes here now? but I think it's better as an effect :/
 
         damage = self.modify_damage(damage, user, move, target, crit, effectiveness)
         damage = gf_round(damage) or 1
@@ -613,8 +607,7 @@ class BattleEngine(object):
             if __debug__: log.w('Tried to faint %s twice!', pokemon)
             return
         pokemon.hp = 0
-        # This should be the only way to assign Status.FNT
-        pokemon.status = Status.FNT # TODO: assert no active fainted pokemon at decision time
+        pokemon.status = Status.FNT # This should be the only way to assign Status.FNT
         pokemon.side.last_fainted_on_turn = self.battlefield.turns
         pokemon.side.active_pokemon = None
         pokemon.is_active = False
@@ -971,7 +964,7 @@ class BattleEngine(object):
                 break
 
         actives = [side.active_pokemon for side in sides]
-        for i in (0, 1): # TODO: make sure order doesn't matter here
+        for i in (0, 1): # This is only used for trapping abilities, so order doesn't matter
             actives[i].will_move_this_turn = True
             actives[i].turns_out += 1
             for effect in actives[i].effects:

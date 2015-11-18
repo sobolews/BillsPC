@@ -312,7 +312,6 @@ class avalanche(Move):
         self.accuracy = 100
 
     def get_base_power(self, user, target, engine):
-         # TODO: test this more thoroughly! (esp. with tricky abilities)
         if (user.was_attacked_this_turn is not None and
             user.was_attacked_this_turn['damage'] > 0
         ):
@@ -679,7 +678,7 @@ class copycat(Move):
                   'sleeptalk', 'snatch', 'struggle', 'switcheroo', 'thief', 'transform', 'trick',
                   'whirlwind'}
 
-    def on_success(self, user, _, engine): # TODO: how far back can it get a move?
+    def on_success(self, user, _, engine):
         move = engine.battlefield.last_move_used
         if move is None or move.name in self.NO_COPYCAT:
             if __debug__:
@@ -2517,7 +2516,7 @@ class psychoshift(Move):
         if user.status is None or target.status is not None:
             return FAIL
 
-    def on_success(self, user, target, engine): # TODO: make sure blocked by substitute
+    def on_success(self, user, target, engine):
         if engine.set_status(target, user.status, user) is not FAIL:
             user.cure_status()
 
@@ -3557,7 +3556,6 @@ class thunderwave(Move):
         self.accuracy = 100
         self.is_bounceable = True
         self.target_status = Status.PAR
-        # TODO: verify exception to "status -> ignore immunity" rule
 
 class toxic(Move):
     def __init__(self):
