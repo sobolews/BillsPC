@@ -9,12 +9,13 @@ removed on switch out and reapplied on switch in).
 """
 import random
 import math
+from itertools import chain
 
 if __debug__: from _logging import log
 from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, SideCondition,
-                           Hazard, PseudoWeather)
+                           Hazard, PseudoWeather, ABILITY, ITEM)
 from pokedex.stats import Boosts
 from pokedex.types import effectiveness
 
@@ -92,9 +93,29 @@ class Autotomize(BaseEffect):
         weight -= self.multiplier * 100
         return weight if weight >= 0.1 else 0.1
 
+NO_BATONPASS = frozenset({
+    Volatile.FLASHFIRE, Volatile.AUTOTOMIZE, Volatile.DISABLE, Volatile.TRAPPER, Volatile.STALL,
+    Volatile.TRAPPED, Volatile.IGNOREITEM, Volatile.IGNOREABILITY, Volatile.UNBURDEN, Volatile.YAWN,
+    Volatile.SHEERFORCE, Volatile.BATONPASS, Volatile.TWOTURNMOVE, Volatile.LOCKEDMOVE,
+    Volatile.ATTRACT, Volatile.TRANSFORMED, Volatile.FLINCH, Volatile.CHOICELOCK, Volatile.VANISHED,
+    Volatile.MAGNETRISE, Volatile.PURSUIT, ABILITY, ITEM})
+
 class BatonPass(BaseEffect):
-    """ This effect is used as a flag; batonpass is implemented in run_switch """
     source = Volatile.BATONPASS
+
+    def on_switch_out(self, pokemon, incoming, engine):
+        if pokemon.has_effect(Volatile.BATONPASS):
+            incoming.boosts = pokemon.boosts
+            # TODO: test that this (just transferring the effect) works properly with each effect
+            for source, effect in pokemon._effect_index.items():
+                if source not in NO_BATONPASS:
+                    incoming._effect_index[source] = effect
+                    del pokemon._effect_index[source]
+
+            if __debug__: log.i('Batonpassed %s to %s',
+                                filter(None, chain([incoming.boosts], incoming.effects)) or None,
+                                incoming)
+
 
 class ChoiceLock(BaseEffect):
     source = Volatile.CHOICELOCK

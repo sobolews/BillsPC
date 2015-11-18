@@ -336,13 +336,6 @@ class batonpass(Move):
     def on_success(self, user, _, engine):
         user.set_effect(effects.BatonPass())
 
-NO_BATONPASS = frozenset({
-    Volatile.FLASHFIRE, Volatile.AUTOTOMIZE, Volatile.DISABLE, Volatile.TRAPPER, Volatile.STALL,
-    Volatile.TRAPPED, Volatile.IGNOREITEM, Volatile.IGNOREABILITY, Volatile.UNBURDEN, Volatile.YAWN,
-    Volatile.SHEERFORCE, Volatile.BATONPASS, Volatile.TWOTURNMOVE, Volatile.LOCKEDMOVE,
-    Volatile.ATTRACT, Volatile.TRANSFORMED, Volatile.FLINCH, Volatile.CHOICELOCK, Volatile.VANISHED,
-    Volatile.MAGNETRISE, Volatile.PURSUIT, ABILITY, ITEM})
-
 class bellydrum(Move):
     def __init__(self):
         super(bellydrum, self).__init__()

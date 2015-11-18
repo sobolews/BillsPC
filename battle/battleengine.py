@@ -14,7 +14,7 @@ from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import (MoveCategory, Volatile, Status, Cause, FAIL, Type, Decision, ABILITY,
                            ITEM)
-from pokedex.moves import movedex, NO_BATONPASS, Move
+from pokedex.moves import movedex, Move
 from pokedex.items import itemdex
 from pokedex.stats import Boosts
 
@@ -785,19 +785,6 @@ class BattleEngine(object):
 
     def switch_out(self, outgoing, incoming):
         outgoing.is_switching_out = True
-
-        # TODO: use on_switch effect for this instead?
-        if outgoing.has_effect(Volatile.BATONPASS):
-            incoming.boosts = outgoing.boosts
-            # TODO: test that this (just transferring the effect) works properly with each effect
-            for source, effect in outgoing._effect_index.items():
-                if source not in NO_BATONPASS:
-                    incoming._effect_index[source] = effect
-                    del outgoing._effect_index[source]
-
-            if __debug__: log.i('Batonpassed %s to %s',
-                                filter(None, chain([incoming.boosts], incoming.effects)) or None,
-                                incoming)
 
         for effect in outgoing.effects:
             effect.on_switch_out(outgoing, incoming, self)
