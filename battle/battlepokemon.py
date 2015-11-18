@@ -342,8 +342,12 @@ class BattlePokemon(object):
     @property
     def weight(self):
         weight = self._weight
-        for effect in self.effects: # TODO: just look for Autotomize instead?
-            weight = effect.on_get_weight(weight)
+
+        autotomize = self.get_effect(Volatile.AUTOTOMIZE)
+        if autotomize is not None:
+            weight -= autotomize.multiplier * 100
+            return weight if weight >= 0.1 else 0.1
+
         return weight
 
     def transform_into(self, other, engine):

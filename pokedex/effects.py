@@ -87,11 +87,7 @@ class PhantomForce(TwoTurnMoveEffect):
 class Autotomize(BaseEffect):
     source = Volatile.AUTOTOMIZE
     multiplier = 1
-
-    def on_get_weight(self, weight):
-        """ Return modified weight of pokemon """
-        weight -= self.multiplier * 100
-        return weight if weight >= 0.1 else 0.1
+    # Weight modification is implemented in BattlePokemon.weight
 
 NO_BATONPASS = frozenset({
     Volatile.FLASHFIRE, Volatile.AUTOTOMIZE, Volatile.DISABLE, Volatile.TRAPPER, Volatile.STALL,

@@ -57,10 +57,6 @@ class BaseEffect(object):
     def on_before_move(self, user, move, engine):
         """ Called before a move is attempted. Return FAIL to cause move to fail. """
 
-    def on_get_weight(self, weight):
-        """ Return modified weight of pokemon """
-        return weight
-
     def on_after_move_secondary(self, user, move, target, engine):
         """ This executes only if the move was successful, and is negated by Volatile.SHEERFORCE """
 
