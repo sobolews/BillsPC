@@ -1703,12 +1703,17 @@ class TestMoves(MultiMoveTestCase):
 
     def test_pursuit_vs_batonpass(self):
         self.add_pokemon('flareon', 0)
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
+        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1, acc=1))
+        self.engine.apply_boosts(self.vaporeon, Boosts(spd=3))
+        self.choose_move(self.leafeon, 'leechseed')
+        self.run_turn()
         self.choose_move(self.leafeon, 'pursuit')
         self.choose_move(self.vaporeon, 'batonpass')
         self.run_turn()
 
-        self.assertDamageTaken(self.flareon, 57) # 40 BP
+        self.assertDamageTaken(self.flareon, 57 + self.flareon.max_hp / 8) # 40 BP + leechseed
+        self.assertBoosts(self.flareon, {'spd': 3})
+        self.assertTrue(self.flareon.has_effect(Volatile.LEECHSEED))
 
     def test_raindance(self):
         self.choose_move(self.leafeon, 'protect')
