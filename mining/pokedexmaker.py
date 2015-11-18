@@ -11,7 +11,6 @@ from pokedex.enums import Type
 
 SHOWDOWN_DIR = abspath(join(dirname(__file__), 'Pokemon-Showdown'))
 POKEDEX_JS_PATH = join(SHOWDOWN_DIR, 'data', 'pokedex.js')
-FORMATS_JS_PATH = join(SHOWDOWN_DIR, 'data', 'formats-data.js')
 
 def create_pokedex():
     return PokedexDataMiner().make_pokedex()
@@ -25,7 +24,6 @@ class PokedexDataMiner(object):
 
     def make_pokedex(self):
         self.parse_pokedex_js()
-        self.parse_formats_js()
         return self.pokedex
 
     def _js_file_to_dict(self, path):
@@ -58,38 +56,13 @@ class PokedexDataMiner(object):
                 attrs['baseStats']['spa'],
                 attrs['baseStats']['spd'],
                 attrs['baseStats']['spe'])
-            abilities = [str(ability) for ability in attrs['abilities'].values()]
             fully_evolved = (attrs.get('evos') is None)
 
             self.pokedex[pokemon] = self.pokedex[species] = PokedexEntry(
-                pokemon, species, weight, mega_formes, fully_evolved,
-                types, base_stats, None, abilities, None
-            )
+                pokemon, species, weight, mega_formes, fully_evolved, types, base_stats)
             self.pokedex[pokemon[:18]] = self.pokedex[pokemon] # workaround: the showdown server
                                                                # cuts names off at 18 chars
 
-    def parse_formats_js(self):
-        """
-        Parse Pokemon-Showdown/data/formats-data.js and get randbats_moves and required_item for
-        all pokemon.
-
-        TODO: randbats_moves isn't really needed, since we can get this from statistics.py anyway
-        """
-        data = self._js_file_to_dict(FORMATS_JS_PATH)['BattleFormatsData']
-        for pokemon, attrs in data.items():
-            if pokemon not in self.pokedex: # exclude missingo, CAP
-                continue
-            randbats_moves = attrs.get('randomBattleMoves', ())
-            if not randbats_moves and pokemon != 'castform':
-                # no vanilla castform in randbats; it's always specialized
-                del self.pokedex[pokemon]
-                continue
-            self.pokedex[pokemon].randbats_moves = map(str, randbats_moves)
-            self.pokedex[pokemon].required_item = required_item = attrs.get('requiredItem', None)
-            if required_item is not None:
-                self.pokedex[pokemon].required_item = str(required_item)
-            uha = attrs.get('unreleasedHidden', False)
-            self.pokedex[pokemon].unreleased_hidden_ability = str(uha) if uha else False
 
 class Pokedex(dict):
     @classmethod
@@ -106,9 +79,7 @@ class Pokedex(dict):
 
 
 class PokedexEntry(object):
-    def __init__(self, name, species, weight, mega_formes, fully_evolved, types, base_stats,
-                 randbats_moves, randbats_abilities, randbats_items,
-                 required_item=False, uha=False):
+    def __init__(self, name, species, weight, mega_formes, fully_evolved, types, base_stats):
         self.name = name
         self.species = species
         self.weight = weight
@@ -116,11 +87,6 @@ class PokedexEntry(object):
         self.fully_evolved = fully_evolved
         self.types = types
         self.base_stats = base_stats
-        self.randbats_moves = randbats_moves
-        self.randbats_abilities = randbats_abilities
-        self.randbats_items = randbats_items
-        self.required_item = required_item
-        self.unreleased_hidden_ability = uha
 
     def __repr__(self):
         return pformat(self.__dict__)

@@ -20,7 +20,6 @@ class TestDataminer(TestCase):
         miner = pokedexmaker.PokedexDataMiner()
         miner.parse_pokedex_js()
         self.assertEqual(miner.pokedex['arcanine'].base_stats['max_hp'], 90)
-        self.assertIn('Intimidate', miner.pokedex['growlithe'].randbats_abilities)
         self.assertIs(miner.pokedex['poliwag'].types[0], Type.WATER)
         self.assertIsNone(miner.pokedex['poliwhirl'].types[1])
         self.assertIs(miner.pokedex['poliwrath'].types[1], Type.FIGHTING)
@@ -35,15 +34,3 @@ class TestDataminer(TestCase):
         self.assertTrue(miner.pokedex['muk'].fully_evolved)
         self.assertFalse(miner.pokedex['porygon2'].fully_evolved)
         self.assertFalse(miner.pokedex['scyther'].fully_evolved)
-
-    def test_parse_formats_js(self):
-        miner = pokedexmaker.PokedexDataMiner()
-        miner.make_pokedex()
-
-        self.assertIn('counter', miner.pokedex['wobbuffet'].randbats_moves)
-        self.assertEqual(miner.pokedex['giratinaorigin'].required_item, "Griseous Orb")
-        self.assertIsNone(miner.pokedex['poliwrath'].required_item)
-        self.assertIsNone(miner.pokedex.get('keldeoresolute'),
-                          "Did not delete pokemon with no randbats moves")
-        self.assertIsNone(miner.pokedex.get('missingno'), "Included missingno")
-
