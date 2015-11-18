@@ -826,9 +826,8 @@ class BattleEngine(object):
         """
         Foe may be None (e.g. was KO'd with voltswitch)
         """
-        for effect in chain(sorted(pokemon.side.effects, key=lambda c: c.on_switch_in.priority,
-                                   reverse=True),
-                            pokemon.effects): # TODO: priority of pokemon.effects (ability vs item)?
+        for effect in sorted(pokemon.side.effects, key=lambda c: c.on_switch_in.priority,
+                             reverse=True):
             effect.on_switch_in(pokemon, self)
 
         if pokemon.is_fainted():
