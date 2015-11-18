@@ -118,8 +118,7 @@ class BattleSide(object):
         self.active_pokemon.is_active = True
         self.index = index
         self.team = team
-        self.last_fainted_on_turn = set() # for retaliate # TODO: does this need to track any but
-                                          # the last turn?
+        self.last_fainted_on_turn = None
         self.username = username or '<side-%d>' % index
 
         for pokemon in self.team:
