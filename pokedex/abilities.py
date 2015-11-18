@@ -657,7 +657,7 @@ class Mummy(AbilityEffect):
             foe.change_ability(Mummy, engine)
 
 class NaturalCure(AbilityEffect):
-    def on_switch_out(self, pokemon, engine):
+    def on_switch_out(self, pokemon, incoming, engine):
         pokemon.cure_status()
 
 class NoGuard(AbilityEffect):
@@ -825,7 +825,7 @@ class Refrigerate(AbilityEffect):
         return base_power
 
 class Regenerator(AbilityEffect):
-    def on_switch_out(self, pokemon, engine):
+    def on_switch_out(self, pokemon, incoming, engine):
         if __debug__: log.i("%s was healed by its Regenerator!", pokemon)
         engine.heal(pokemon, pokemon.max_hp / 3)
 

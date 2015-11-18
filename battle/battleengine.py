@@ -800,7 +800,7 @@ class BattleEngine(object):
                                 incoming)
 
         for effect in outgoing.effects:
-            effect.on_switch_out(outgoing, self)
+            effect.on_switch_out(outgoing, incoming, self)
 
         outgoing.clear_effects(self)
         outgoing.boosts = Boosts()
