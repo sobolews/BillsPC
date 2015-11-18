@@ -152,8 +152,8 @@ class BattleSide(object):
     def remove_effect(self, source, _=None):
         effect = self._effect_index.pop(source, None)
         if effect is None:
-            if __debug__: log.d("Tried to remove nonexistent %s from side %d" %
-                                (source, self.index))
+            if __debug__: log.d("Tried to remove nonexistent %s from side %d",
+                                source, self.index)
             return
 
         if __debug__: log.i('Removed %s from side %d', effect, self.index)

@@ -272,7 +272,7 @@ class BattleEngine(object):
             if __debug__: log.i('Move "%s" failed in on_success', move)
             return FAIL
 
-        target = self.get_foe(user) #  # roar, etc. could have changed the active foe
+        target = self.get_foe(user) # roar, etc. could have changed the active foe
 
         if target is not None:
             for effect in target.effects:
@@ -721,7 +721,8 @@ class BattleEngine(object):
 
                     if effect.duration == 0:
                         if __debug__: log.i('%s timed out', effect)
-                        residuals.append(Residual(None, None, partial(effect.on_timeout, thing, self)))
+                        residuals.append(Residual(None, None,
+                                                  partial(effect.on_timeout, thing, self)))
                         thing.remove_effect(effect.source, self)
 
         for pokemon, foe in ((actives[0], actives[1]), (actives[1], actives[0])):
@@ -764,8 +765,8 @@ class BattleEngine(object):
         if outgoing is not None:
             self.switch_out(outgoing, incoming)
 
-        if outgoing is None or not outgoing.is_fainted(): # it could have fainted during
-                                                          # self.switch_out from pursuit
+        # outgoing could have fainted during self.switch_out from pursuit
+        if outgoing is None or not outgoing.is_fainted():
             self.switch_in(incoming)
 
     def switch_out(self, outgoing, incoming):
@@ -907,10 +908,10 @@ class BattleEngine(object):
                     side.remaining_pokemon_on_bench > 0
                 ):
                     if __debug__:
-                        log.d('%s must switch: getting forced switch decision', side.active_pokemon)
+                        log.d('%s must switch: requesting switch decision', side.active_pokemon)
                     insort(self.event_queue, SwitchEvent(
                         side.active_pokemon,
-                        0, # shouldn't need calculate spe if this can't run for both sides at once
+                        0, # spe calculation is unnecessary; this can't run for both sides at once
                         self.get_switch_decision(side, forced=True)))
 
             self.resolve_faint_queue()

@@ -216,6 +216,7 @@ class RandbatsStatistics(object):
 def copy_miner_file():
     shutil.copyfile(SHOWDOWN_MINER_LOCAL, SHOWDOWN_MINER)
 
+
 def distributemax(N, cap):
     """ Distribute N tasks into buckets of capacity cap: distributemax(34, 10) --> [9, 9, 8, 8] """
     return distribute(N, int(ceil(float(N) / cap)))
