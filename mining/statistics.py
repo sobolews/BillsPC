@@ -68,7 +68,7 @@ class RandbatsStatistics(object):
     def from_pickle(cls, path='mining/rbstats.pkl'):
         if not exists(path):
             if __debug__:
-                log.w('%s does not exist. Creating one with 1000 teams. For better results, you '
+                log.i('%s does not exist. Creating one with 1000 teams. For better results, you '
                       'should mine for at least 100,000 teams', path)
             count_teams(1000).to_pickle(path)
         with open(path) as fin:
