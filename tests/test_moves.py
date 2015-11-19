@@ -1769,6 +1769,17 @@ class TestMoves(MultiMoveTestCase):
         damage = self.engine.use_move(self.leafeon, movedex['earthquake'], self.vaporeon)
         self.assertEqual(damage, 69)
 
+    @patch('random.randrange', lambda _: 0) # no miss; confusion damage
+    def test_reflect_with_confusion_damage(self):
+        self.choose_move(self.leafeon, 'reflect')
+        self.choose_move(self.vaporeon, 'confuseray')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'return')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 31)
+        self.assertDamageTaken(self.vaporeon, 0)
+
     # def test_relicsong_forme_change(self):
     #     pass # TODO: implement forme change
 

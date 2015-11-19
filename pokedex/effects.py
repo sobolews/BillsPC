@@ -338,7 +338,6 @@ class LightScreen(BaseEffect):
         self.duration = duration
 
     def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
-        assert foe != target    # TODO: remove check below
         if (move.category is MoveCategory.SPECIAL and
             not crit and
             not move.infiltrates and
@@ -355,7 +354,6 @@ class Reflect(BaseEffect):
         self.duration = duration
 
     def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
-        assert foe != target    # TODO: remove check below?
         if (move.category is MoveCategory.PHYSICAL and
             not crit and
             not move.infiltrates and
