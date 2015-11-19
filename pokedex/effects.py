@@ -2,10 +2,10 @@
 Volatile effects, as well as field and side conditions go here.
 
 Effect duration, where not None, is decremented between turns. Effect is removed when duration hits
-0. (No effect should start the turn at 0. TODO: assert/test this) Volatiles and their Effects are
-always removed upon switch out. The on_end handler is always called when an effect is
-removed. Benched pokemon should never have any effects (even if they are statused, the effect is
-removed on switch out and reapplied on switch in).
+0 (No effect should start the turn at 0). Volatiles and their Effects are always removed upon switch
+out. The on_end handler is always called when an effect is removed. Benched pokemon should never
+have any effects (even if they are statused, the effect is removed on switch out and reapplied on
+switch in).
 """
 import random
 import math

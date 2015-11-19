@@ -981,7 +981,12 @@ class BattleEngine(object):
                 effect.on_before_turn(actives[i], actives[not i])
 
         self.battlefield.turns += 1
-        if __debug__: log.i('\nTurn %d', self.battlefield.turns)
+        if __debug__:
+            log.i('\nTurn %d', self.battlefield.turns)
+            for pokemon in actives:
+                for effect in chain(pokemon.effects, pokemon.side.effects,
+                                    self.battlefield.effects):
+                        assert effect.duration > 0 or effect.duration is None
 
         decisions = self.get_move_decisions()
 
