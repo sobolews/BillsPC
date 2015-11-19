@@ -10,7 +10,7 @@ import pickle
 import sys
 from itertools import izip_longest
 
-from mining.pokedexmaker import PokedexDataMiner
+from mining.pokedexmaker import create_pokedex
 from mining.statistics import RandbatsStatistics
 from misc.multitabulate import multitabulate
 from pokedex.types import Type, effectiveness
@@ -37,7 +37,7 @@ class CheatSheetCli(cmd.Cmd):
                                       for pokemon in self.completions
                                       for char in [' ', ',', '.', '-', '. ']
                                       if char in pokemon]))
-        self.pokedex = PokedexDataMiner().make_pokedex()
+        self.pokedex = create_pokedex()
 
     def completenames(self, text, line, begidx, endidx):
         if not text:
