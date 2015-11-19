@@ -418,11 +418,11 @@ class BattleEngine(object):
         base_power = int(max(gf_round(base_power), 1))
         if __debug__: log.d('Using base_power of %s', base_power)
 
-        crit = move.always_crit or self.get_critical_hit(move.crit_ratio)
-        if crit:
-            crit = move.crit = False if move.never_crit else self.modify_critical_hit(crit, target)
-            if __debug__:
-                log.i('Critical hit!')
+        crit = move.crit = ((move.always_crit or self.get_critical_hit(move.crit_ratio)) and not
+                            (move.never_crit or target.ability in (abilitydex['battlearmor'],
+                                                                   abilitydex['shellarmor'])))
+        if __debug__:
+            if crit: log.i('Critical hit!')
 
         defensive_category = move.defensive_category or move.category
         attacking_stat = 'atk' if move.category is PHYSICAL else 'spa'
@@ -480,11 +480,6 @@ class BattleEngine(object):
         if target.ability is abilitydex['dryskin'] and move.type is Type.FIRE:
             base_power *= 1.25
         return base_power
-
-    def modify_critical_hit(self, crit, target):
-        if target.ability in (abilitydex['battlearmor'], abilitydex['shellarmor']):
-            return False
-        return crit
 
     @staticmethod # for duck punching
     def get_critical_hit(crit_ratio):
