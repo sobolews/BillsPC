@@ -2054,8 +2054,20 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertStatus(self.flareon, None)
 
-    # def test_safeguard_doesnt_block_status_orbs(self):
-    #     pass # TODO: implement toxicorb, flameorb
+    def test_safeguard_doesnt_block_status_orbs(self):
+        self.add_pokemon('flareon', 0, item='toxicorb')
+        self.add_pokemon('sylveon', 0, item='flameorb')
+        self.choose_move(self.vaporeon, 'safeguard')
+        self.run_turn()
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn()
+
+        self.assertStatus(self.flareon, Status.TOX)
+
+        self.choose_switch(self.flareon, self.sylveon)
+        self.run_turn()
+
+        self.assertStatus(self.sylveon, Status.BRN)
 
     @patch('random.randint', lambda *_: 1) # one turn sleep
     def test_sleeptalk(self):
