@@ -136,6 +136,23 @@ class TestWeather(MultiMoveTestCase):
 
         self.assertEqual(self.shedinja.status, Status.FNT)
 
+    def test_sandstorm_and_hail_ko_order(self):
+        for weather in (Weather.SANDSTORM, Weather.HAIL):
+            self.new_battle('vaporeon', 'leafeon')
+            self.leafeon.hp = self.vaporeon.hp = 1
+            self.engine.battlefield.set_weather(weather)
+            self.run_turn()
+
+            self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
+
+            self.new_battle('vaporeon', 'leafeon')
+            self.leafeon.hp = self.vaporeon.hp = 1
+            self.engine.battlefield.set_weather(weather)
+            self.choose_move(self.vaporeon, 'autotomize')
+            self.run_turn()
+
+            self.assertEqual(self.leafeon.side.index, self.battlefield.win)
+
     def test_deltastream_suppresses_moves_supereffective_vs_flying(self):
         self.new_battle('rayquaza', 'leafeon')
         self.engine.battlefield.set_weather(Weather.DELTASTREAM)
