@@ -108,7 +108,8 @@ class TestStatisticsModule(TestCase):
         self.assertTrue(all(t in (dist[0], dist[0] - 1) for t in dist))
         self.assertTrue(len(dist), b)
 
-    # TODO: def test_distributemax(self):
+    def test_distributemax(self):
+        self.assertEqual(statistics.distributemax(34, 10), [9, 9, 8, 8])
 
     def test_json_teams_format(self):
         """
