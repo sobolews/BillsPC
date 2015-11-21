@@ -731,15 +731,12 @@ class BattleEngine(object):
                         residuals.append(Residual(None, None, partial(effect.on_timeout, thing, self)))
                         thing.remove_effect(effect.source, self)
 
-        for side, pokemon, foe in ((sides[0], pokemon0, pokemon1),
-                                   (sides[1], pokemon1, pokemon0)):
+        for pokemon, foe in ((pokemon0, pokemon1),
+                             (pokemon1, pokemon0)):
             if pokemon is not None:
                 residuals.extend(Residual(pokemon, effect.source,
                                           partial(effect.on_residual, pokemon, foe, self))
                                  for effect in pokemon.effects)
-            residuals.extend(Residual(side, effect.source,
-                                      partial(effect.on_residual, pokemon, foe, self))
-                             for effect in side.effects)
         residuals.extend(Residual(self.battlefield, effect.source,
                                   partial(effect.on_residual, pokemon0, pokemon1, self))
                          for effect in self.battlefield.effects)
