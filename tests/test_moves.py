@@ -666,6 +666,28 @@ class TestMoves(MultiMoveTestCase):
         self.assertFalse(self.leafeon.has_effect(Volatile.DISABLE))
         self.assertFalse(self.flareon.has_effect(Volatile.DISABLE))
 
+    @patch('random.randint', lambda *_: 2) # two outrage turns
+    def test_disable_vs_locking_moves(self):
+        """
+        If outrage is disabled during rampage, outrage is still selectable (LOCKEDMOVE overrides
+        DISABLE), but it will fail when it is tried. The user can then use its other moves (but if
+        the rampage is over it still gets confused)
+        """
+        self.choose_move(self.leafeon, 'outrage')
+        self.choose_move(self.vaporeon, 'disable')
+        self.run_turn()
+
+        self.assertMoveChoices(self.leafeon, {'outrage'})
+        self.assertTrue(self.leafeon.has_effect(Volatile.DISABLE))
+        self.assertDamageTaken(self.vaporeon, 167)
+
+        self.choose_move(self.leafeon, 'outrage')
+        self.choose_move(self.vaporeon, 'return')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 167)
+        self.assertTrue(self.leafeon.has_effect(Volatile.CONFUSE))
+
     def test_electricterrain(self):
         self.new_battle('skarmory', 'flareon')
         self.engine.apply_boosts(self.flareon, Boosts(spe=1))
