@@ -122,15 +122,15 @@ class TestWeather(MultiMoveTestCase):
         self.run_turn()
         self.assertDamageTaken(self.tyranitar, 43 + 96)
 
-    def test_hail_kos_shedinja(self): # TODO: test with wonderguard
-        self.new_battle('shedinja', 'leafeon')
+    def test_hail_kos_shedinja(self):
+        self.new_battle('shedinja', 'leafeon', p0_ability='wonderguard')
         self.engine.battlefield.set_weather(Weather.HAIL)
         self.run_turn()
 
         self.assertEqual(self.shedinja.status, Status.FNT)
 
-    def test_sandstorm_kos_shedinja(self): # TODO: test with wonderguard
-        self.new_battle('shedinja', 'leafeon')
+    def test_sandstorm_kos_shedinja(self):
+        self.new_battle('shedinja', 'leafeon', p0_ability='wonderguard')
         self.engine.battlefield.set_weather(Weather.SANDSTORM)
         self.run_turn()
 
