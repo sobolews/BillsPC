@@ -156,7 +156,7 @@ class BattleEngine(object):
             damage, total_damage = damage
 
         if damage not in (FAIL, None, 0):
-            if move.recoil > 0:
+            if move.recoil > 0 and not user.is_fainted():
                 self.damage(user, int(round(total_damage * move.recoil / 100.0)) or 1,
                             Cause.RECOIL, move)
 
