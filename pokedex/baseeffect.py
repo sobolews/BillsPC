@@ -195,9 +195,6 @@ class BaseEffect(object):
         return None to default to standard immunity
         """
 
-    def on_move_type(self, move):
-        """ Return a Type to alter the type of a move, else None for default """
-
     @priority(0)
     def on_damage(self, pokemon, damage, cause, source, engine):
         """ Return a modified amount of damage, or FAIL """
