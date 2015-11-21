@@ -715,12 +715,12 @@ class BattleEngine(object):
     def run_residual(self):
         if __debug__: log.i('Between turns')
         sides = self.battlefield.sides
-        pokemon0 = sides[0].active_pokemon
-        pokemon1 = sides[1].active_pokemon
+        actives = sorted([sides[0].active_pokemon, sides[1].active_pokemon],
+                         key=lambda p: 0 if p is None else -self.effective_spe(p))
 
         residuals = []
 
-        for thing in filter(None, (pokemon0, pokemon1, sides[0], sides[1], self.battlefield)):
+        for thing in filter(None, (actives[0], actives[1], sides[0], sides[1], self.battlefield)):
             for effect in thing.effects:
                 if effect.duration is not None:
                     assert effect.duration > 0
@@ -731,14 +731,14 @@ class BattleEngine(object):
                         residuals.append(Residual(None, None, partial(effect.on_timeout, thing, self)))
                         thing.remove_effect(effect.source, self)
 
-        for pokemon, foe in ((pokemon0, pokemon1),
-                             (pokemon1, pokemon0)):
+        for pokemon, foe in ((actives[0], actives[1]), (actives[1], actives[0])):
             if pokemon is not None:
                 residuals.extend(Residual(pokemon, effect.source,
                                           partial(effect.on_residual, pokemon, foe, self))
                                  for effect in pokemon.effects)
+
         residuals.extend(Residual(self.battlefield, effect.source,
-                                  partial(effect.on_residual, pokemon0, pokemon1, self))
+                                  partial(effect.on_residual, actives[0], actives[1], self))
                          for effect in self.battlefield.effects)
 
         # For each residual, check first if its effect still exists on the holder, because another
