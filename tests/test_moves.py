@@ -573,11 +573,23 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.vaporeon)
         self.assertEqual(self.battlefield.win, self.vaporeon.side.index)
 
-    # def test_destinybond_bypasses_magicguard(self):
-    #     pass # TODO
+    def test_destinybond_bypasses_magicguard(self):
+        self.new_battle(p0_ability='prankster', p1_ability='magicguard')
+        self.choose_move(self.vaporeon, 'destinybond')
+        self.choose_move(self.leafeon, 'woodhammer')
+        self.run_turn()
 
-    # def test_destinybond_bypasses_focussash(self):
-    #     pass # TODO
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+
+    def test_destinybond_bypasses_focussash(self):
+        self.new_battle(p0_ability='prankster', p1_ability='toughclaws', p1_item='focussash')
+        self.choose_move(self.vaporeon, 'destinybond')
+        self.choose_move(self.leafeon, 'leafblade')
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
 
     def test_disable_removes_choice_and_restores_it_later(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
