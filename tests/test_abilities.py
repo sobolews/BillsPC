@@ -1257,8 +1257,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_magicguard(self):
-        self.new_battle(p0_ability='magicguard', p1_ability='magicguard')
-        # TODO: give vaporeon a lifeorb
+        self.new_battle(p0_ability='magicguard', p0_item='lifeorb',
+                        p1_ability='magicguard')
         self.add_pokemon('umbreon', 0, ability='magicguard')
         self.add_pokemon('jolteon', 1, ability='magicguard')
 
@@ -1273,7 +1273,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.choose_move(self.vaporeon, 'infestation')
         self.run_turn()
 
-        self.assertDamageTaken(self.leafeon, 54)
+        self.assertDamageTaken(self.leafeon, 70)
         self.assertDamageTaken(self.vaporeon, 0)
 
         self.choose_move(self.leafeon, 'batonpass')
