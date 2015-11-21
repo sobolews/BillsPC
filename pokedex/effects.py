@@ -636,7 +636,7 @@ class Wish(BaseEffect):
     def __init__(self, hp):
         self.hp = hp
 
-    @priority(4)
+    @priority(-4)
     def on_timeout(self, side, engine):
         pokemon = side.active_pokemon
         if pokemon is not None and pokemon.hp < pokemon.max_hp:
