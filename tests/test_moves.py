@@ -238,14 +238,28 @@ class TestMoves(MultiMoveTestCase):
             self.assertDamageTaken(self.vaporeon, 130)
             self.assertDamageTaken(self.leafeon, 0)
 
-    # def test_bounce_resets_next_turn_if_disabled(self):
-    #     """
-    #     If a mid-bounce pokemon gets disabled (via no guard for example) it should remain airborne
-    #     until the second phase, at which point it WILL have bounce as its only choice, but when
-    #     attempted it will fail (due to disable, as though disable had just been applied), and
-    #     the pokemon will then no longer be airborne (can be hit normally).
-    #     """
-    #     # TODO (when noguard is implemented)
+    def test_bounce_resets_next_turn_if_disabled(self):
+        """
+        If a mid-bounce pokemon gets disabled (via no guard for example) it should remain airborne
+        until the second phase, at which point it WILL have bounce as its only choice, but when
+        attempted it will fail (due to disable, as though disable had just been applied), and
+        the pokemon will then no longer be airborne (can be hit normally).
+        """
+        self.new_battle(p0_ability='noguard')
+        self.choose_move(self.leafeon, 'bounce')
+        self.choose_move(self.vaporeon, 'disable')
+        self.run_turn()
+
+        self.assertMoveChoices(self.leafeon, {'bounce'})
+        self.assertTrue(self.leafeon.has_effect(Volatile.TWOTURNMOVE))
+
+        self.choose_move(self.leafeon, 'bounce')
+        self.vaporeon.suppress_ability(self.engine)
+        self.choose_move(self.vaporeon, 'earthquake')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 24)
 
     def test_brickbreak(self):
         self.add_pokemon('gengar', 1)
