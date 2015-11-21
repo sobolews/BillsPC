@@ -184,8 +184,21 @@ class TestWeather(MultiMoveTestCase):
 
         self.assertEqual(self.engine.battlefield.get_effect(Weather.RAINDANCE).duration, 2)
 
-    # def test_changing_weather_trio_weather_fails(self):
-    #     pass # TODO: implement desolateland/primordialsea/deltastream abilities
+    def test_changing_weather_trio_weather_fails(self):
+        for ability, weather in (('desolateland', Weather.DESOLATELAND),
+                                 ('primordialsea', Weather.PRIMORDIALSEA),
+                                 ('deltastream', Weather.DELTASTREAM)):
+            self.new_battle(p0_ability=ability)
+            self.add_pokemon('espeon', 1, ability='drizzle')
+            self.choose_move(self.leafeon, 'sunnyday')
+            self.run_turn()
+
+            self.assertEqual(self.battlefield.weather, weather)
+
+            self.choose_switch(self.leafeon, self.espeon)
+            self.run_turn()
+
+            self.assertEqual(self.battlefield.weather, weather)
 
     def test_weather_trio_does_not_expire(self):
         for weather in Weather.TRIO:
