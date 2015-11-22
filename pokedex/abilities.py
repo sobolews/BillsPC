@@ -171,8 +171,8 @@ class ClearBody(AbilityEffect):
         return boosts
 
 class CloudNine(AbilityEffect):
-    on_start = AirLock.on_start
-    on_end = AirLock.on_end
+    on_start = AirLock.on_start.__func__
+    on_end = AirLock.on_end.__func__
 
 class Competitive(AbilityEffect):
     def on_boost(self, pokemon, boosts, self_induced):

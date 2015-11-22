@@ -75,32 +75,33 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.leafeon, 254)
 
-    def test_airlock(self):
-        self.new_battle()
-        self.add_pokemon('rayquaza', 0, ability='airlock')
-        self.battlefield.set_weather(Weather.SANDSTORM)
-        self.choose_move(self.vaporeon, 'batonpass')
-        self.run_turn()
+    def test_airlock_and_cloudnine(self):
+        for ability in ('airlock', 'cloudnine'):
+            self.new_battle()
+            self.add_pokemon('rayquaza', 0, ability=ability)
+            self.battlefield.set_weather(Weather.SANDSTORM)
+            self.choose_move(self.vaporeon, 'batonpass')
+            self.run_turn()
 
-        self.assertIsNone(self.battlefield.weather)
-        self.assertEqual(self.battlefield._weather, Weather.SANDSTORM)
-        self.assertDamageTaken(self.rayquaza, 0)
-        self.assertDamageTaken(self.leafeon, 0)
+            self.assertIsNone(self.battlefield.weather)
+            self.assertEqual(self.battlefield._weather, Weather.SANDSTORM)
+            self.assertDamageTaken(self.rayquaza, 0)
+            self.assertDamageTaken(self.leafeon, 0)
 
-        self.choose_switch(self.rayquaza, self.vaporeon)
-        self.run_turn()
+            self.choose_switch(self.rayquaza, self.vaporeon)
+            self.run_turn()
 
-        self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
-        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 16)
+            self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
+            self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 16)
 
-        self.choose_switch(self.vaporeon, self.rayquaza)
-        self.choose_move(self.leafeon, 'sunnyday')
-        self.run_turn()
-        self.assertTrue(self.battlefield.has_effect(Weather.SUNNYDAY))
-        self.choose_move(self.leafeon, 'hiddenpowerfire')
-        self.run_turn()
+            self.choose_switch(self.vaporeon, self.rayquaza)
+            self.choose_move(self.leafeon, 'sunnyday')
+            self.run_turn()
+            self.assertTrue(self.battlefield.has_effect(Weather.SUNNYDAY))
+            self.choose_move(self.leafeon, 'hiddenpowerfire')
+            self.run_turn()
 
-        self.assertDamageTaken(self.rayquaza, 19)
+            self.assertDamageTaken(self.rayquaza, 19)
 
     def test_weather_starts_during_airlock_and_ends(self):
         self.new_battle(p0_ability='airlock')
