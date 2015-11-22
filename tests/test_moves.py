@@ -1954,19 +1954,20 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 126)
 
+    @patch('random.randrange', lambda _: 0) # no miss, static succeeds
     def test_safeguard(self):
+        self.new_battle(p0_ability='static')
         self.choose_move(self.leafeon, 'safeguard')
         self.choose_move(self.vaporeon, 'thunderwave')
         self.run_turn()
 
         self.assertIsNone(self.leafeon.status)
 
-        self.engine.apply_boosts(self.leafeon, Boosts(acc=1))
-        self.choose_move(self.leafeon, 'toxic')
+        self.choose_move(self.leafeon, 'willowisp')
         self.choose_move(self.vaporeon, 'nuzzle')
         self.run_turn()
 
-        self.assertStatus(self.vaporeon, Status.TOX)
+        self.assertStatus(self.vaporeon, Status.BRN)
         self.assertIsNone(self.leafeon.status)
 
         for _ in range(3):
@@ -1974,6 +1975,13 @@ class TestMoves(MultiMoveTestCase):
             self.run_turn()
 
         self.assertFalse(self.leafeon.side.has_effect(SideCondition.SAFEGUARD))
+
+        self.choose_move(self.leafeon, 'safeguard')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'aquatail')
+        self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
 
     def test_safeguard_removed_by_defog(self):
         self.choose_move(self.leafeon, 'safeguard')
