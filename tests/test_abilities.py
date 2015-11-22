@@ -439,6 +439,12 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertFalse(self.leafeon.has_effect(Volatile.ATTRACT))
 
+        self.new_battle(p0_ability='cutecharm', p0_gender='F', p1_gender='M')
+        self.choose_move(self.leafeon, 'hypervoice')
+        self.run_turn()
+
+        self.assertFalse(self.leafeon.has_effect(Volatile.ATTRACT))
+
     @patch('random.randrange', lambda _: 99) # no flinch
     def test_darkaura(self):
         self.new_battle('yveltal', 'leafeon', p0_ability='darkaura')

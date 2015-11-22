@@ -202,13 +202,18 @@ class CursedBody(AbilityEffect):
 
 class CuteCharm(AbilityEffect):
     def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if foe.has_effect(Volatile.ATTRACT) or foe.ability.name in ('oblivious', 'aromaveil'):
+        if (cause is not Cause.MOVE or
+            not source.makes_contact or
+            foe.has_effect(Volatile.ATTRACT) or
+            foe.ability.name in ('oblivious', 'aromaveil') or
+            not ((foe.gender == 'M' and pokemon.gender == 'F') or
+                 (foe.gender == 'F' and pokemon.gender == 'M')) or
+            random.randrange(10) >= 3
+        ):
             return
 
-        if ((foe.gender == 'M' and pokemon.gender == 'F') or
-            (foe.gender == 'F' and pokemon.gender == 'M')):
-            if __debug__: log.i('CuteCharm caused %s to be attracted to %s!', foe, pokemon)
-            foe.set_effect(effects.Attract(pokemon))
+        if __debug__: log.i('CuteCharm caused %s to be attracted to %s!', foe, pokemon)
+        foe.set_effect(effects.Attract(pokemon))
 
 class DarkAura(AbilityEffect):
     def on_start(self, pokemon, engine):
