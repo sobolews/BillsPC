@@ -978,10 +978,7 @@ class BattleEngine(object):
         self.battlefield.turns += 1
         if __debug__:
             log.i('\nTurn %d', self.battlefield.turns)
-            for pokemon in actives:
-                for effect in chain(pokemon.effects, pokemon.side.effects,
-                                    self.battlefield.effects):
-                        assert effect.duration > 0 or effect.duration is None
+            self._debug_sanity_check()
 
         decisions = self.get_move_decisions()
 
@@ -1007,3 +1004,18 @@ class BattleEngine(object):
                 if pokemon.effects or pokemon._effect_index:
                     log.w('Post-fainted pokemon has effects: %r', pokemon)
             pokemon._effect_index.clear() # just in case
+
+    def _debug_sanity_check(self):
+        if self.battlefield.win is None:
+            for side in self.battlefield.sides:
+                for pokemon in side.team:
+                    if pokemon.hp == 0 or pokemon.status == Status.FNT:
+                        assert pokemon.hp == 0
+                        assert pokemon.status == Status.FNT
+                        assert not pokemon.effects
+                        assert not pokemon.is_active
+                        assert not pokemon.boosts
+                    else:
+                        for effect in chain(pokemon.effects, pokemon.side.effects,
+                                            self.battlefield.effects):
+                            assert effect.duration > 0 or effect.duration is None
