@@ -382,7 +382,7 @@ class BattlePokemon(object):
             if self.boosts: log.i('%s copied %r', self, self.boosts)
 
         if other.ability.name not in ('stancechange', 'multitype', 'illusion'):
-            self.remove_effect(ABILITY)
+            self.remove_effect(ABILITY, engine)
             self.ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
@@ -417,7 +417,7 @@ class BattlePokemon(object):
             if __debug__: log.d("Failed to change %s's %s to %s", self, self.ability, new_ability)
             return FAIL
 
-        self.remove_effect(ABILITY)
+        self.remove_effect(ABILITY, engine)
         self.ability = new_ability
         self.set_effect(new_ability())
         self.get_effect(ABILITY).start(self, engine)
