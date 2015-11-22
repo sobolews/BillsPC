@@ -92,12 +92,12 @@ class MultiMoveTestCase(TestCase):
         self.new_battle('vaporeon', 'leafeon', tearDown=False)
 
     def new_battle(self, p0_name='vaporeon', p1_name='leafeon',
-                    p0_moves=(), p1_moves=(),
-                    p0_item=None, p1_item=None,
-                    p0_ability='_none_', p1_ability='_none_',
-                    p0_level=100, p1_level=100,
-                    p0_gender=None, p1_gender=None,
-                    tearDown=True):
+                   p0_moves=(), p1_moves=(),
+                   p0_item=None, p1_item=None,
+                   p0_ability='_none_', p1_ability='_none_',
+                   p0_level=100, p1_level=100,
+                   p0_gender=None, p1_gender=None,
+                   tearDown=True):
         """
         `name` is the species name of a pokemon in the pokedex.
         `moves` is a list of up to four moves

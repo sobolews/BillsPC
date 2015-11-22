@@ -290,7 +290,7 @@ class TestMoves(MultiMoveTestCase):
     def test_bugbite_and_pluck(self):
         for eatberry in ('bugbite', 'pluck'):
             self.new_battle(p0_ability='noguard', p1_item='sitrusberry',
-                             p0_moves=(eatberry, 'sleeptalk'))
+                            p0_moves=(eatberry, 'sleeptalk'))
             self.add_pokemon('espeon', 1, item='lumberry')
             self.add_pokemon('jolteon', 1, item='chestoberry')
             self.add_pokemon('alakazam', 1, item='custapberry')
@@ -593,8 +593,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_disable_removes_choice_and_restores_it_later(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                       p1_moves=(movedex['return'], movedex['leafblade'],
-                                 movedex['uturn'], movedex['splash']))
+                        p1_moves=(movedex['return'], movedex['leafblade'],
+                                  movedex['uturn'], movedex['splash']))
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'disable')
         self.run_turn()
@@ -623,8 +623,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_disable_causes_struggle_when_its_the_last_available_move(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                       p1_moves=(movedex['return'], movedex['leafblade'],
-                                 movedex['uturn'], movedex['splash']))
+                        p1_moves=(movedex['return'], movedex['leafblade'],
+                                  movedex['uturn'], movedex['splash']))
         self.leafeon.pp[movedex['leafblade']] = 0
         self.leafeon.pp[movedex['uturn']] = 0
         self.leafeon.pp[movedex['splash']] = 0
@@ -717,8 +717,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_encore_modifies_move_choices(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                       p1_moves=(movedex['return'], movedex['leafblade'],
-                                 movedex['uturn'], movedex['splash']))
+                        p1_moves=(movedex['return'], movedex['leafblade'],
+                                  movedex['uturn'], movedex['splash']))
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'encore')
         self.run_turn()
@@ -735,8 +735,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_encore_overrides_move_choice(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                       p0_moves=(movedex['return'], movedex['splash'],
-                                 movedex['uturn'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['splash'],
+                                  movedex['uturn'], movedex['toxic']))
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'splash')
         self.run_turn()
@@ -1265,8 +1265,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_knockoff_vs_drives_and_plates(self):
         self.new_battle('arceuspoison', 'genesectdouse',
-                         p0_item='toxicplate', p0_ability='multitype',
-                         p1_item='dousedrive')
+                        p0_item='toxicplate', p0_ability='multitype',
+                        p1_item='dousedrive')
         self.choose_move(self.arceuspoison, 'knockoff')
         self.choose_move(self.genesectdouse, 'knockoff')
         self.run_turn()
@@ -1285,7 +1285,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_knockoff_choice_item(self):
         self.new_battle(p0_item='choiceband',
-                         p0_moves=('return', 'protect', 'toxic', 'surf'))
+                        p0_moves=('return', 'protect', 'toxic', 'surf'))
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
         self.choose_move(self.leafeon, 'knockoff')
@@ -1848,7 +1848,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_rest_fails_when_already_asleep(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['rest'], movedex['sleeptalk']))
+                        p0_moves=(movedex['rest'], movedex['sleeptalk']))
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'rest')
         self.run_turn()
@@ -2094,8 +2094,8 @@ class TestMoves(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 1) # one turn sleep
     def test_sleeptalk(self):
         self.new_battle(p0_name='vaporeon', p1_name='jolteon',
-                         p0_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
-                                   movedex['seedbomb'], movedex['xscissor']))
+                        p0_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
+                                  movedex['seedbomb'], movedex['xscissor']))
         self.choose_move(self.jolteon, 'spore')
         self.run_turn()
 
@@ -2113,7 +2113,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_sleeptalk_uses_rest_fails(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['rest'], movedex['sleeptalk']))
+                        p0_moves=(movedex['rest'], movedex['sleeptalk']))
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'rest')
         self.run_turn()
@@ -2133,7 +2133,7 @@ class TestMoves(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 3) # three turns sleep
     def test_faster_sleeptalk_roar_opponent_doesnt_get_to_move(self):
         self.new_battle('vaporeon', 'giratina',
-                         p1_moves=(movedex['sleeptalk'], movedex['roar']))
+                        p1_moves=(movedex['sleeptalk'], movedex['roar']))
         self.add_pokemon('flareon', 0)
         self.choose_move(self.giratina, 'sleeptalk')
         self.choose_move(self.vaporeon, 'spore')
@@ -2313,8 +2313,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_struggle_is_only_move_choice_when_disable_taunted(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['return'], movedex['wish'],
-                                   movedex['protect'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['wish'],
+                                  movedex['protect'], movedex['toxic']))
         self.choose_move(self.leafeon, 'taunt')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -2425,8 +2425,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_trick_with_choicescarf(self):
         self.new_battle(p0_item='choicescarf', p1_item='toxicorb',
-                         p0_moves=('trick', 'switcheroo', 'surf', 'protect'),
-                         p1_moves=('trick', 'switcheroo', 'leafblade', 'dragonclaw'))
+                        p0_moves=('trick', 'switcheroo', 'surf', 'protect'),
+                        p1_moves=('trick', 'switcheroo', 'leafblade', 'dragonclaw'))
         self.choose_move(self.vaporeon, 'trick')
         self.choose_move(self.leafeon, 'dragonclaw')
         self.run_turn()
@@ -2440,7 +2440,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_trick_fails_if_foe_item_is_unremovable(self):
         self.new_battle('vaporeon', 'arceuspsychic', p0_item='flameorb',
-                         p1_item='mindplate', p1_ability='multitype')
+                        p1_item='mindplate', p1_ability='multitype')
         self.add_pokemon('genesectchill', 1, item='chilldrive')
         self.choose_move(self.vaporeon, 'trick')
         self.run_turn()
@@ -2456,8 +2456,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_trick_encored_with_assaultvest(self):
         self.new_battle(p0_item='lifeorb', p1_item='assaultvest',
-                         p0_moves=('trick', 'explosion', 'surf', 'protect'),
-                         p1_moves=('trick', 'return', 'encore', 'dragonclaw'))
+                        p0_moves=('trick', 'explosion', 'surf', 'protect'),
+                        p1_moves=('trick', 'return', 'encore', 'dragonclaw'))
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'trick')
         self.run_turn()
@@ -2493,8 +2493,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_taunt_limits_choices(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                       p1_moves=(movedex['dragonclaw'], movedex['protect'],
-                                 movedex['xscissor'], movedex['substitute']))
+                        p1_moves=(movedex['dragonclaw'], movedex['protect'],
+                                  movedex['xscissor'], movedex['substitute']))
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'taunt')
         self.run_turn()
@@ -2503,8 +2503,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_taunt_prevents_slower_status_move_same_turn(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                       p0_moves=(movedex['dragonclaw'], movedex['protect'],
-                                 movedex['xscissor'], movedex['substitute']))
+                        p0_moves=(movedex['dragonclaw'], movedex['protect'],
+                                  movedex['xscissor'], movedex['substitute']))
         self.choose_move(self.leafeon, 'taunt')
         self.choose_move(self.vaporeon, 'substitute')
         self.run_turn()

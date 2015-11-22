@@ -151,7 +151,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_analytic(self):
         self.new_battle(p0_ability='analytic',
-                         p1_ability='analytic')
+                        p1_ability='analytic')
         self.add_pokemon('umbreon', 0)
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
@@ -300,7 +300,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_cheekpouch(self):
         self.new_battle(p0_ability='cheekpouch', p0_item='sitrusberry',
-                         p1_ability='noguard', p1_item='petayaberry')
+                        p1_ability='noguard', p1_item='petayaberry')
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'trick')
         self.run_turn()
@@ -396,7 +396,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
     @patch('random.randrange', lambda _: 2) # cursedbody success
     def test_cursedbody(self):
         self.new_battle(p0_ability='cursedbody', p1_moves=[movedex['return'], movedex['protect'],
-                                                            movedex['foulplay'], movedex['toxic']])
+                                                           movedex['foulplay'], movedex['toxic']])
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
@@ -432,7 +432,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFalse(self.leafeon.has_effect(Volatile.ATTRACT))
 
         self.new_battle(p0_ability='cutecharm', p1_ability='aromaveil',
-                         p0_gender='F', p1_gender='M')
+                        p0_gender='F', p1_gender='M')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -778,7 +778,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_harvest_stops_after_using_other_item(self):
         self.new_battle(p0_ability='harvest', p0_item='lumberry',
-                         p1_ability='noguard', p1_item='normalgem')
+                        p1_ability='noguard', p1_item='normalgem')
         self.choose_move(self.leafeon, 'willowisp')
         self.choose_move(self.vaporeon, 'sunnyday')
         self.run_turn()
@@ -877,9 +877,9 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_imposter_transformation(self):
         self.new_battle('ditto', p0_ability='imposter', p1_ability='download',
-                         p0_moves=[movedex['transform']], p1_gender='F',
-                         p1_moves=(movedex['leafblade'], movedex['xscissor'],
-                                   movedex['swordsdance'], movedex['toxic']))
+                        p0_moves=[movedex['transform']], p1_gender='F',
+                        p1_moves=(movedex['leafblade'], movedex['xscissor'],
+                                  movedex['swordsdance'], movedex['toxic']))
 
         self.assertTrue(self.ditto.is_transformed)
         self.assertEqual(self.ditto.name, 'leafeon')
@@ -913,8 +913,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_imposter_moves(self):
         self.new_battle('ditto', p0_ability='imposter',
-                         p1_moves=(movedex['leafblade'], movedex['xscissor'],
-                                   movedex['swordsdance'], movedex['return']))
+                        p1_moves=(movedex['leafblade'], movedex['xscissor'],
+                                  movedex['swordsdance'], movedex['return']))
 
         self.assertEqual(self.ditto.calculate_stat('spe'),
                          self.leafeon.calculate_stat('spe'))
@@ -928,7 +928,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_imposter_switch_and_transform_different_foes(self):
         self.new_battle(p1_moves=(movedex['leafblade'], movedex['uturn'],
-                                   movedex['swordsdance'], movedex['return']), p1_ability='moxie')
+                                  movedex['swordsdance'], movedex['return']), p1_ability='moxie')
         self.add_pokemon('ditto', 0, ability='imposter')
         self.add_pokemon('umbreon', 1, moves=(movedex['stickyweb'], movedex['splash'],
                                               movedex['swordsdance'], movedex['foulplay']),
@@ -967,8 +967,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_imposter_copy_ability(self):
         self.new_battle('ditto', p0_ability='imposter', p1_ability='magicbounce',
-                         p1_moves=(movedex['partingshot'], movedex['xscissor'],
-                                   movedex['swordsdance'], movedex['return']))
+                        p1_moves=(movedex['partingshot'], movedex['xscissor'],
+                                  movedex['swordsdance'], movedex['return']))
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
         self.assertEqual(self.ditto._ability.name, 'imposter')
 
@@ -1439,8 +1439,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
     @patch('random.randrange', lambda _: 1) # no miss; no parahax
     def test_marvelscale(self):
         self.new_battle(p0_ability='marvelscale', p1_ability='marvelscale',
-                         p0_moves=(movedex['xscissor'], movedex['drillpeck'],
-                                   movedex['poisonjab'], movedex['sleeptalk']))
+                        p0_moves=(movedex['xscissor'], movedex['drillpeck'],
+                                  movedex['poisonjab'], movedex['sleeptalk']))
         self.choose_move(self.vaporeon, 'drillpeck')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -1539,8 +1539,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_multitype_vs_imposter(self):
         self.new_battle('ditto', 'arceusground',
-                         p0_ability='imposter', p0_item='ironplate',
-                         p1_ability='multitype', p1_item='earthplate')
+                        p0_ability='imposter', p0_item='ironplate',
+                        p1_ability='multitype', p1_item='earthplate')
         self.assertListEqual(self.ditto.types, [Type.GROUND, None])
         self.assertAbility(self.ditto, 'imposter')
 
@@ -1859,7 +1859,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_pickpocket_vs_sheerforce(self):
         self.new_battle(p0_ability='pickpocket',
-                         p1_ability='sheerforce', p1_item='scopelens')
+                        p1_ability='sheerforce', p1_item='scopelens')
         self.choose_move(self.leafeon, 'flamecharge')
         self.run_turn()
 
@@ -2040,10 +2040,10 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_pressure(self):
         self.new_battle(p0_moves=(movedex['protect'], movedex['rest'],
-                                   movedex['toxic'], movedex['return']),
-                         p1_moves=(movedex['xscissor'], movedex['drillpeck'],
-                                   movedex['dragonclaw'], movedex['bulkup']),
-                         p0_ability='pressure')
+                                  movedex['toxic'], movedex['return']),
+                        p1_moves=(movedex['xscissor'], movedex['drillpeck'],
+                                  movedex['dragonclaw'], movedex['bulkup']),
+                        p0_ability='pressure')
         self.choose_move(self.leafeon, 'xscissor')
         self.choose_move(self.vaporeon, 'protect')
         self.run_turn()
@@ -2709,8 +2709,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_stickyhold(self):
         self.new_battle(p0_item='toxicorb', p0_ability='immunity',
-                         p1_ability='stickyhold',
-                         p1_item='petayaberry')
+                        p1_ability='stickyhold',
+                        p1_item='petayaberry')
         self.add_pokemon('flareon', 0, ability='magician')
         self.choose_move(self.vaporeon, 'trick')
         self.run_turn()
@@ -2739,7 +2739,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_stickyhold_allows_item_usage(self):
         self.new_battle(p0_item='airballoon', p0_ability='stickyhold',
-                         p1_item='lumberry', p1_ability='stickyhold')
+                        p1_item='lumberry', p1_ability='stickyhold')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'thunderwave')
         self.run_turn()
@@ -3388,7 +3388,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_unburden_with_regained_item_and_switch(self):
         self.new_battle(p0_ability='unburden', p0_item='heatrock',
-                         p1_ability='magician', p1_item='sharpbeak')
+                        p1_ability='magician', p1_item='sharpbeak')
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'knockoff')
         self.run_turn()
@@ -3844,7 +3844,7 @@ class TestMoldBreaker(MultiMoveTestCaseWithoutSetup):
 
     def test_moldbreaker_vs_stickyhold(self):
         self.new_battle(p0_ability='moldbreaker',
-                         p1_ability='stickyhold', p1_item='leftovers')
+                        p1_ability='stickyhold', p1_item='leftovers')
         self.choose_move(self.vaporeon, 'knockoff')
         self.run_turn()
 

@@ -475,8 +475,8 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 2) # two-turn outrage
     def test_locked_move(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['return'], movedex['splash'],
-                                   movedex['outrage'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['splash'],
+                                  movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'outrage')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -493,8 +493,8 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
     def test_locked_move_with_1_pp(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['return'], movedex['splash'],
-                                   movedex['outrage'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['splash'],
+                                  movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'outrage')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -504,8 +504,8 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 3) # three-turn outrage
     def test_locked_move_unlocks_after_protect_without_confusion(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['return'], movedex['splash'],
-                                   movedex['outrage'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['splash'],
+                                  movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'outrage')
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
@@ -522,8 +522,8 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 2) # two-turn outrage
     def test_locked_move_unlocks_after_immunity_with_confusion(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['return'], movedex['splash'],
-                                   movedex['outrage'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['splash'],
+                                  movedex['outrage'], movedex['toxic']))
         self.add_pokemon('sylveon', 1)
         self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
         self.choose_move(self.vaporeon, 'outrage')
@@ -542,8 +542,8 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 3) # three-turn outrage
     def test_locked_move_unlocks_without_confusion_after_user_falls_asleep(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p0_moves=(movedex['return'], movedex['splash'],
-                                   movedex['outrage'], movedex['toxic']))
+                        p0_moves=(movedex['return'], movedex['splash'],
+                                  movedex['outrage'], movedex['toxic']))
         self.choose_move(self.vaporeon, 'petaldance')
         self.choose_move(self.leafeon, 'yawn')
         self.run_turn()
@@ -747,8 +747,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
     def test_disable_vs_sleeptalk(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
-                                   movedex['crunch'], movedex['xscissor']))
+                        p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
+                                  movedex['crunch'], movedex['xscissor']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, 'sleeptalk')
         self.choose_move(self.vaporeon, 'disable')
@@ -759,8 +759,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
     def test_disable_vs_copycat(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p1_moves=(movedex['dragonclaw'], movedex['copycat'],
-                                   movedex['crunch'], movedex['xscissor']))
+                        p1_moves=(movedex['dragonclaw'], movedex['copycat'],
+                                  movedex['crunch'], movedex['xscissor']))
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
         self.choose_move(self.leafeon, 'copycat')
@@ -772,8 +772,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
     def test_encore_vs_copycat(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p1_moves=(movedex['dragonclaw'], movedex['copycat'],
-                                   movedex['crunch'], movedex['xscissor']))
+                        p1_moves=(movedex['dragonclaw'], movedex['copycat'],
+                                  movedex['crunch'], movedex['xscissor']))
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
         self.choose_move(self.leafeon, 'copycat')
@@ -789,8 +789,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
     def test_encore_vs_sleeptalk(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
-                                   movedex['extremespeed'], movedex['xscissor']))
+                        p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
+                                  movedex['extremespeed'], movedex['xscissor']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
         self.leafeon.get_effect(Status.SLP).turns_left = 3
         self.leafeon.sleep_turns = 3
@@ -807,8 +807,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
     def test_copycat_vs_sleeptalk(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
-                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
-                                   movedex['extremespeed'], movedex['crunch']))
+                        p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
+                                  movedex['extremespeed'], movedex['crunch']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, 'sleeptalk')
         self.choose_move(self.vaporeon, 'copycat')
