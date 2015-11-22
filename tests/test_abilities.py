@@ -2053,6 +2053,17 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertBoosts(self.leafeon, {'spe': 1})
         self.assertStatus(self.leafeon, Status.PSN)
 
+        self.leafeon.cure_status()
+        self.engine.heal(self.leafeon, 300)
+
+        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-1))
+        with patch('random.randrange', lambda _: 15): # flinch and poison
+            self.choose_move(self.leafeon, 'substitute')
+            self.choose_move(self.vaporeon, 'ironhead')
+            self.run_turn()
+
+        self.assertStatus(self.leafeon, None)
+
     def test_prankster(self):
         self.new_battle(p0_ability='prankster')
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=-5))
