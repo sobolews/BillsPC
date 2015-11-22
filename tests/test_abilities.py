@@ -1352,6 +1352,18 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.leafeon)
         self.assertFainted(self.vaporeon)
 
+    def test_magicguard_with_struggle_and_substitute(self):
+        self.new_battle(p0_ability='magicguard')
+        self.choose_move(self.vaporeon, 'substitute')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 4)
+
+        self.choose_move(self.vaporeon, 'struggle')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 2 * self.vaporeon.max_hp / 4)
+
     def test_magicguard_vs_recoil(self):
         self.new_battle(p0_ability='magicguard')
         self.choose_move(self.vaporeon, 'flareblitz')
