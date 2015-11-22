@@ -273,7 +273,7 @@ class BattleEngine(object):
 
         if target is not None:
             for effect in target.effects:
-                effect.after_foe_hit(user, move, target, self)
+                effect.on_after_foe_hit(user, move, target, self)
 
         for s_effect in move.secondary_effects:
             self.apply_secondary_effect(user if s_effect.affects_user else target,

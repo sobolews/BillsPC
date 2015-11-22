@@ -300,7 +300,7 @@ class ToxicOrb(ItemEffect):
 class WeaknessPolicy(ItemEffect):
     single_use = True
 
-    def after_foe_hit(self, foe, move, target, engine):
+    def on_after_foe_hit(self, foe, move, target, engine):
         if (move.category is not MoveCategory.STATUS and
             not move.has_damage_callback and
             engine.get_effectiveness(foe, move, target) > 1 and

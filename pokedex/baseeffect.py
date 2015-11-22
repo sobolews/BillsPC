@@ -84,7 +84,7 @@ class BaseEffect(object):
         Called if user successfully hits target with a move.
         """
 
-    def after_foe_hit(self, foe, move, target, engine):
+    def on_after_foe_hit(self, foe, move, target, engine):
         """ Called when the foe sucessfully hits this effect's pokemon with a move """
 
     def on_modify_move(self, move, user, engine):
