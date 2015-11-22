@@ -727,5 +727,5 @@ class Transformed(BaseEffect):
     """ Used for transform and imposter """
     source = Volatile.TRANSFORMED
 
-    def on_end(self, pokemon, engine):
+    def on_end(self, pokemon, _):
         pokemon.revert_transform()
