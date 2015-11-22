@@ -988,6 +988,18 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertBoosts(self.leafeon, {'spa': -1, 'atk': -1})
 
+    def test_imposter_switch_into_toxic_spikes_with_poison_foe(self):
+        self.new_battle('vaporeon', 'muk', p1_ability='prankster')
+        self.add_pokemon('ditto', 0, ability='imposter', item='choicescarf')
+        self.choose_move(self.muk, 'toxicspikes')
+        self.choose_move(self.vaporeon, 'voltswitch')
+        self.run_turn()
+
+        self.assertActive(self.ditto)
+        self.assertStatus(self.ditto, Status.PSN)
+        self.assertEqual(self.ditto.types[0], Type.POISON)
+        self.assertDamageTaken(self.ditto, self.ditto.max_hp / 8)
+
     def test_infiltrator(self):
         self.new_battle(p0_ability='infiltrator', p1_ability='infiltrator')
         self.choose_move(self.leafeon, 'substitute')
