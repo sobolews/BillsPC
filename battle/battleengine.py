@@ -382,7 +382,7 @@ class BattleEngine(object):
         assert pokemon.is_active
 
         damage = self.calculate_damage(pokemon, movedex['confusiondamage'], pokemon)
-        self.damage(pokemon, damage, Cause.MOVE, movedex['confusiondamage'], pokemon)
+        self.damage(pokemon, damage, Cause.CONFUSE, movedex['confusiondamage'])
 
     def calculate_damage(self, user, move, target):
         """
@@ -542,6 +542,7 @@ class BattleEngine(object):
                       pokemon, cause, source, attacker)
             return 0
 
+        assert pokemon is not attacker
         assert pokemon.side.active_pokemon is pokemon
         assert pokemon.is_active
         assert damage >= 0
@@ -576,8 +577,9 @@ class BattleEngine(object):
             self.heal(attacker, int(math.ceil(damage * drain_pct / 100.0)), cause=Cause.DRAIN,
                       foe=pokemon)
 
-        for effect in pokemon.effects: # priority is unnecessary
-            effect.on_after_damage(self, pokemon, damage, cause, source, attacker)
+        if cause is Cause.MOVE:
+            for effect in pokemon.effects: # priority is unnecessary
+                effect.on_after_move_damage(self, pokemon, damage, source, attacker)
 
         if pokemon.hp <= 0:
             self.faint(pokemon, cause, source, attacker)

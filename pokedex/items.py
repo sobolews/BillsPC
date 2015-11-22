@@ -41,9 +41,8 @@ class AirBalloon(ItemEffect):
         if thing is Type.GROUND:
             return True
 
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and pokemon is not foe:
-            pokemon.use_item(engine)
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        pokemon.use_item(engine)
 
 class AssaultVest(ItemEffect):
     def on_get_move_choices(self, pokemon, moves):
@@ -161,7 +160,7 @@ class FocusSash(ItemEffect):
     def on_damage(self, pokemon, damage, cause, source, engine):
         if (pokemon.hp == pokemon.max_hp and
             damage >= pokemon.hp and
-            cause is Cause.MOVE and
+            cause in (Cause.MOVE, Cause.CONFUSE) and
             pokemon.use_item(engine) is not FAIL
         ):
             if __debug__: log.i("%s held on with FocusSash!", pokemon)
@@ -255,8 +254,8 @@ class RedCard(ItemEffect):
 #     pass # TODO when: implement forme changes
 
 class RockyHelmet(ItemEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if move.makes_contact:
             if __debug__: log.i("%s was damaged by %s's RockyHelmet", foe, pokemon)
             engine.damage(foe, foe.max_hp / 6.0, Cause.OTHER)
 

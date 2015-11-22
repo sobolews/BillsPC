@@ -49,12 +49,10 @@ class Adaptability(AbilityEffect):
                 log.i('%s was boosted by Adaptability!', move)
 
 class Aftermath(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if ((pokemon.hp <= 0 and # not pokemon.is_fainted() (BattleEngine.faint hasn't run yet)
-             cause is Cause.MOVE and
-             source.makes_contact and
-             foe is not None)):
-            if __debug__: log.i("%s was damaged by %s's aftermath", foe, pokemon)
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        # not using pokemon.is_fainted() as BattleEngine.faint hasn't run yet
+        if pokemon.hp <= 0 and move.makes_contact:
+            if __debug__: log.i("%s was damaged by %s's Aftermath", foe, pokemon)
             engine.damage(foe, foe.max_hp / 4.0, Cause.OTHER)
 
 class Aerilate(AbilityEffect):
@@ -84,8 +82,8 @@ class Analytic(AbilityEffect):
         return base_power
 
 class AngerPoint(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and source.crit:
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if move.crit:
             if __debug__: log.i("Anger Point maximized %s's atk!", pokemon)
             pokemon.boosts['atk'] = 6
 
@@ -194,16 +192,15 @@ class Contrary(AbilityEffect):
         return boosts
 
 class CursedBody(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and random.randrange(10) < 3: # 30% chance
-            if foe.pp.get(source):
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if random.randrange(10) < 3: # 30% chance
+            if foe.pp.get(move):
                 if __debug__: log.i('CursedBody activated!')
-                foe.set_effect(effects.Disable(source, 5))
+                foe.set_effect(effects.Disable(move, 5))
 
 class CuteCharm(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if (cause is not Cause.MOVE or
-            not source.makes_contact or
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if (not move.makes_contact or
             foe.has_effect(Volatile.ATTRACT) or
             foe.ability.name in ('oblivious', 'aromaveil') or
             not ((foe.gender == 'M' and pokemon.gender == 'F') or
@@ -308,9 +305,8 @@ class EarlyBird(AbilityEffect):
             user.sleep_turns -= 1
 
 class EffectSpore(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if (cause is Cause.MOVE and
-            source.makes_contact and
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if (move.makes_contact and
             foe.status is None and
             not foe.is_immune_to(POWDER)
         ):
@@ -339,9 +335,8 @@ class Filter(AbilityEffect):
         return damage
 
 class FlameBody(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if (cause is Cause.MOVE and
-            source.makes_contact and
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if (move.makes_contact and
             foe is not None and
             random.randrange(10) < 3
         ):
@@ -453,9 +448,8 @@ class Illusion(AbilityEffect):  # only used to block transform for now
     def on_start(self, pokemon, engine):
         pokemon.illusion = True
 
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and pokemon is not foe:
-            pokemon.illusion = False
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        pokemon.illusion = False
 
     def on_end(self, pokemon, engine):
         pokemon.illusion = False
@@ -503,8 +497,8 @@ class Intimidate(AbilityEffect):
             engine.apply_boosts(foe, Boosts(atk=-1), self_induced=False)
 
 class IronBarbs(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if move.makes_contact:
             if __debug__: log.i("%s was damaged by %s's IronBarbs", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
@@ -515,8 +509,8 @@ class IronFist(AbilityEffect):
         return base_power
 
 class Justified(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if (cause is Cause.MOVE and source.type is Type.DARK):
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if move.type is Type.DARK:
             if __debug__: log.i("%s's Justified raises its atk!", pokemon)
             engine.apply_boosts(pokemon, Boosts(atk=1), self_induced=True)
 
@@ -569,7 +563,7 @@ class MagicBounce(BaseAbility, effects.MagicBounceBase):
 class MagicGuard(AbilityEffect):
     @priority(0)
     def on_damage(self, pokemon, damage, cause, source, engine):
-        if cause is not Cause.MOVE:
+        if cause not in (Cause.MOVE, Cause.CONFUSE):
             if __debug__: log.i('Damage from (%s, %s) was prevented by MagicGuard',
                                 cause.name, source)
             return FAIL
@@ -656,8 +650,8 @@ class Multitype(AbilityEffect):
             pokemon.types = [pokemon.item.plate_type or Type.NORMAL, None]
 
 class Mummy(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if move.makes_contact:
             if __debug__: log.i("%s's ability was changed to Mummy!", foe)
             foe.change_ability(Mummy, engine)
 
@@ -842,8 +836,8 @@ class RockHead(AbilityEffect):
         return damage
 
 class RoughSkin(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if cause is Cause.MOVE and source.makes_contact and foe is not None:
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if move.makes_contact:
             if __debug__: log.i("%s was damaged by %s's RoughSkin", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
@@ -992,9 +986,8 @@ class StanceChange(AbilityEffect):
     pass # TODO when: implement forme change
 
 class Static(AbilityEffect):
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        if (cause is Cause.MOVE and
-            source.makes_contact and
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        if (move.makes_contact and
             foe is not None and
             random.randrange(10) < 3
         ):

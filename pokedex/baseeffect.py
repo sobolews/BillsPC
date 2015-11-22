@@ -207,8 +207,8 @@ class BaseEffect(object):
         """
         return boosts
 
-    def on_after_damage(self, engine, pokemon, damage, cause, source, foe):
-        """ Called after any type of damage is done to pokemon, before it faints. """
+    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+        """ Called after pokemon is damaged by a foe's move"""
 
     def on_foe_heal(self, foe, hp, cause, engine):
         """
