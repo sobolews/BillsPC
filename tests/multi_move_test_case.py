@@ -97,6 +97,7 @@ class MultiMoveTestCase(TestCase):
                    p0_ability='_none_', p1_ability='_none_',
                    p0_level=100, p1_level=100,
                    p0_gender=None, p1_gender=None,
+                   p0_evs=(0,)*6, p1_evs=(0,)*6,
                    tearDown=True):
         """
         `name` is the species name of a pokemon in the pokedex.
@@ -114,12 +115,12 @@ class MultiMoveTestCase(TestCase):
 
         setattr(self, p0_name, AnyMovePokemon(pokedex[p0_name], side=None,
                                               ability=abilitydex[p0_ability],
-                                              evs=(0,)*6, moveset=p0_moves,
+                                              evs=p0_evs, moveset=p0_moves,
                                               item=itemdex.get(p0_item),
                                               level=p0_level, gender=p0_gender))
         setattr(self, p1_name, AnyMovePokemon(pokedex[p1_name], side=None,
                                               ability=abilitydex[p1_ability],
-                                              evs=(0,)*6, moveset=p1_moves,
+                                              evs=p1_evs, moveset=p1_moves,
                                               item=itemdex.get(p1_item),
                                               level=p1_level, gender=p1_gender))
         self.engine = TestingEngine([getattr(self, p0_name)],
