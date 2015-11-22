@@ -1000,6 +1000,23 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.ditto.types[0], Type.POISON)
         self.assertDamageTaken(self.ditto, self.ditto.max_hp / 8)
 
+    def test_imposter_with_choice_scarf_struggles_after_5_moves(self):
+        self.new_battle('ditto', 'leafeon', p0_ability='imposter', p0_item='choicescarf',
+                        p1_ability='chlorophyll',
+                        p1_moves=('earthquake', 'xscissor', 'swordsdance', 'return'))
+        self.assertMoveChoices(self.ditto, {'earthquake', 'xscissor', 'swordsdance', 'return'})
+        for _ in range(4):
+            self.choose_move(self.leafeon, 'swordsdance')
+            self.choose_move(self.ditto, 'earthquake')
+            self.run_turn()
+            self.assertMoveChoices(self.ditto, {'earthquake'})
+
+        self.choose_move(self.leafeon, 'swordsdance')
+        self.choose_move(self.ditto, 'earthquake')
+        self.run_turn()
+        self.assertMoveChoices(self.ditto, {'struggle'})
+        self.assertEqual(self.ditto.pp[movedex['earthquake']], 0)
+
     def test_infiltrator(self):
         self.new_battle(p0_ability='infiltrator', p1_ability='infiltrator')
         self.choose_move(self.leafeon, 'substitute')
