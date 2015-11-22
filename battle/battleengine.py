@@ -625,6 +625,7 @@ class BattleEngine(object):
                 effect.on_foe_faint(attacker, cause, source, pokemon, self)
 
         pokemon.clear_effects(self)
+        pokemon.boosts = Boosts()
 
     def direct_damage(self, pokemon, damage):
         """
