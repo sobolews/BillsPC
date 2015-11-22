@@ -962,9 +962,9 @@ class BattleEngine(object):
 
             self.resolve_faint_queue()
 
-            if all(side.active_pokemon is not None and not side.active_pokemon.is_fainted()
-                   for side in sides):
-                break
+            if sides[0].active_pokemon is None or sides[1].active_pokemon is None:
+                continue
+            break
 
         actives = [side.active_pokemon for side in sides]
         for i in (0, 1): # This is only used for trapping abilities, so order doesn't matter
@@ -1006,6 +1006,7 @@ class BattleEngine(object):
     def _debug_sanity_check(self):
         if self.battlefield.win is None:
             for side in self.battlefield.sides:
+                assert not side.active_pokemon.is_fainted()
                 for pokemon in side.team:
                     if pokemon.hp == 0 or pokemon.status == Status.FNT:
                         assert pokemon.hp == 0
