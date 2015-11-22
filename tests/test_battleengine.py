@@ -1004,3 +1004,18 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertStatus(self.vaporeon, Status.FRZ)
         self.assertDamageTaken(self.vaporeon, 0)
+
+    def test_enormous_damage(self):
+        self.new_battle('darmanitan', 'paras',
+                        p0_item='choiceband', p0_ability='flashfire', p0_evs=(0, 252, 0, 0, 0, 0),
+                        p1_level=1, p1_ability='dryskin')
+        self.battlefield.set_weather(Weather.SUNNYDAY)
+        self.engine.apply_boosts(self.darmanitan, Boosts(atk=6))
+        self.engine.apply_boosts(self.paras, Boosts(def_=-6))
+        self.choose_move(self.paras, 'flamethrower')
+        self.run_turn()
+        self.assertTrue(self.darmanitan.has_effect(Volatile.FLASHFIRE))
+        self.engine.get_critical_hit = lambda crit: True
+
+        damage = self.engine.calculate_damage(self.darmanitan, movedex['vcreate'], self.paras)
+        self.assertEqual(damage, 8703184)
