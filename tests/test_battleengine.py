@@ -1019,3 +1019,17 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         damage = self.engine.calculate_damage(self.darmanitan, movedex['vcreate'], self.paras)
         self.assertEqual(damage, 8703184)
+
+    def test_two_turn_move_only_decrements_pp_once(self):
+        self.new_battle(p0_moves=('solarbeam', 'scald', 'toxic', 'protect'))
+        self.choose_move(self.vaporeon, 'solarbeam')
+        self.run_turn()
+        self.assertDamageTaken(self.leafeon, 0)
+
+        self.assertPpUsed(self.vaporeon, 'solarbeam', 1)
+
+        self.choose_move(self.vaporeon, 'solarbeam')
+        self.run_turn()
+        self.assertDamageTaken(self.leafeon, 78)
+
+        self.assertPpUsed(self.vaporeon, 'solarbeam', 1)

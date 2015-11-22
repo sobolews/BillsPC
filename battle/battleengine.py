@@ -98,7 +98,10 @@ class BattleEngine(object):
                 user.remove_effect(Volatile.TWOTURNMOVE) # remove bounce etc.'s invulnerability
                 return
 
-        if move != movedex['struggle'] and not user.has_effect(Volatile.LOCKEDMOVE):
+        if (move != movedex['struggle'] and
+            not user.has_effect(Volatile.LOCKEDMOVE) and
+            not user.has_effect(Volatile.TWOTURNMOVE)
+        ):
             self.deduct_pp(user, move, target)
 
         self.use_move(user, move, target)
