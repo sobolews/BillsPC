@@ -178,7 +178,6 @@ class BattleEngine(object):
                 effect.on_after_foe_move_secondary(user, move, target, self)
             for effect in user.effects:
                 effect.on_after_move_secondary(user, move, target, self)
-            move.on_after_move_secondary(user, target, self)
 
         return damage # for testing only
 

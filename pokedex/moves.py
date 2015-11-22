@@ -122,11 +122,6 @@ class Move(object):
         """ Return a number in {0.25, 0.5, 1, 2, 4}: effectiveness multipler against target """
         return effectiveness(self.type, target)
 
-    def on_after_move_secondary(self, user, target, engine):
-        """
-        A secondary effect that isn't representable by the SecondaryEffect class
-        """
-
     def on_move_fail(self, user, engine):
         """
         Called after BattleEngine.try_move_hit fails
@@ -2664,7 +2659,7 @@ class relicsong(Move):
         self.is_sound = True
         self.secondary_effects = SecondaryEffect(10, status=Status.SLP),
 
-    def on_after_move_secondary(self, user, target, engine):
+    def on_success(self, user, target, engine):
         if not user.is_fainted() and user.base_species == 'meloetta':
             user.change_forme('meloettapirouette' if user.name == 'meloetta' else 'meloetta')
 
