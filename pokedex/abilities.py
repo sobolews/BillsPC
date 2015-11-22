@@ -999,7 +999,7 @@ class Steadfast(AbilityEffect):
     @priority(20) # must be higher than Flinch
     def on_before_move(self, user, move, engine):
         if user.has_effect(Volatile.FLINCH):
-            engine.apply_boosts(user, Boosts(spe=1), self_induced=False)
+            engine.apply_boosts(user, Boosts(spe=1), self_induced=True)
 
 class StickyHold(AbilityEffect):
     pass # Implemented in BattlePokemon.take_item
