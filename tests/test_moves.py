@@ -1784,6 +1784,26 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertFalse(self.leafeon.has_effect(Volatile.PARTIALTRAP))
 
+    def test_rapidspin_with_lifeorb(self):
+        self.new_battle(p0_item='lifeorb')
+        self.vaporeon.hp = 1
+        self.choose_move(self.leafeon, 'spikes')
+        self.choose_move(self.vaporeon, 'rapidspin')
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.side.has_effect(Hazard.SPIKES))
+        self.assertFainted(self.vaporeon)
+
+    def test_rapidspin_vs_roughskin(self):
+        self.new_battle(p1_ability='roughskin')
+        self.vaporeon.hp = 1
+        self.choose_move(self.leafeon, 'spikes')
+        self.choose_move(self.vaporeon, 'rapidspin')
+        self.run_turn()
+
+        self.assertTrue(self.vaporeon.side.has_effect(Hazard.SPIKES))
+        self.assertFainted(self.vaporeon)
+
     def test_recover(self):
         for move in ('healorder', 'milkdrink', 'moonlight', 'recover', 'roost', 'slackoff',
                      'softboiled', 'morningsun', 'synthesis'):
