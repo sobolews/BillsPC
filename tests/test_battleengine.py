@@ -991,3 +991,16 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertFainted(self.leafeon)
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 10)
+
+    @patch('random.randrange', lambda _: 1) # icebeam always freeze, don't thaw
+    def test_scald_heals_but_doesnt_thaw_frozen_waterabsorber(self):
+        self.new_battle(p0_ability='waterabsorb')
+        self.choose_move(self.leafeon, 'icebeam')
+        self.run_turn()
+        self.assertStatus(self.vaporeon, Status.FRZ)
+        self.assertDamageTaken(self.vaporeon, 27)
+        self.choose_move(self.leafeon, 'scald')
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, Status.FRZ)
+        self.assertDamageTaken(self.vaporeon, 0)
