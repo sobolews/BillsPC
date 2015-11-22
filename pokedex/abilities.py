@@ -38,6 +38,13 @@ class BaseAbility(object):
             self.on_start(pokemon, engine)
             self.started = True
 
+    @staticmethod
+    def trap(pokemon, foe):
+        """ Cause `foe` to be trapped by `pokemon` """
+        trap_effect = effects.Trapped(pokemon)
+        foe.set_effect(trap_effect)
+        pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+
 class AbilityEffect(BaseAbility, BaseEffect):
     pass
 
@@ -90,9 +97,7 @@ class AngerPoint(AbilityEffect):
 class ArenaTrap(AbilityEffect):
     def on_before_turn(self, pokemon, foe):
         if not foe.is_immune_to(Type.GROUND) and not foe.has_effect(Volatile.TRAPPED):
-            trap_effect = effects.Trapped(pokemon)
-            foe.set_effect(trap_effect)
-            pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+            self.trap(pokemon, foe)
 
 class AromaVeil(AbilityEffect):
     BLOCKS = {'attract', 'disable', 'encore', 'healblock', 'taunt', 'torment'}
@@ -580,9 +585,7 @@ class Magician(AbilityEffect):
 class MagnetPull(AbilityEffect):
     def on_before_turn(self, pokemon, foe):
         if Type.STEEL in foe.types and not foe.has_effect(Volatile.TRAPPED):
-            trap_effect = effects.Trapped(pokemon)
-            foe.set_effect(trap_effect)
-            pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+            self.trap(pokemon, foe)
 
 class MarvelScale(AbilityEffect):
     def on_modify_def(self, pokemon, move, engine, def_):
@@ -891,9 +894,7 @@ class SereneGrace(AbilityEffect):
 class ShadowTag(AbilityEffect):
     def on_before_turn(self, pokemon, foe):
         if not foe.has_effect(Volatile.TRAPPED) and foe.ability is not ShadowTag:
-            trap_effect = effects.Trapped(pokemon)
-            foe.set_effect(trap_effect)
-            pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+            self.trap(pokemon, foe)
 
 class ShedSkin(AbilityEffect):
     @priority(-5.1)
