@@ -171,6 +171,25 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.vaporeon.take_item()
         self.assertMoveChoices(self.vaporeon, ('xscissor', 'protect', 'taunt', 'dragonclaw'))
 
+    @patch('random.randint', lambda *_: 1) # sleep 1 turn
+    def test_choiceband_sleeptalk(self):
+        self.new_battle(p0_item='choiceband',
+                        p0_moves=('ironhead', 'extremespeed', 'sleeptalk', 'dragonclaw'))
+        self.choose_move(self.leafeon, 'spore')
+        self.choose_move(self.vaporeon, 'sleeptalk')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 58)
+        self.assertMoveChoices(self.vaporeon, {'sleeptalk'})
+
+        self.choose_move(self.leafeon, 'bulkup')
+        self.choose_move(self.vaporeon, 'sleeptalk')
+        self.run_turn()
+        self.assertStatus(self.vaporeon, None)
+
+        self.assertDamageTaken(self.leafeon, 58)
+        self.assertMoveChoices(self.vaporeon, {'sleeptalk'})
+
     def test_choicescarf(self):
         self.new_battle(p0_item='choicescarf', p1_item='choicescarf',
                         p0_moves=('fakeout', 'protect', 'taunt', 'dragonclaw'),
