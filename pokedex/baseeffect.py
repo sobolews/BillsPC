@@ -164,9 +164,9 @@ class BaseEffect(object):
     def on_switch_out(self, pokemon, incoming, engine):
         """ Called immediately before a pokemon clears its volatiles/boosts and switches out """
 
-    def on_get_switch_choices(self, pokemon, choices):
-        """ Return an empty list to trap a pokemon """
-        return choices
+    def on_trap_check(self, pokemon):
+        """ Return True to trap the pokemon """
+        return False
 
     @priority(0)
     def on_residual(self, pokemon, foe, engine):

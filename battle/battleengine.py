@@ -859,7 +859,8 @@ class BattleEngine(object):
 
         if not forced and pokemon is not None:
             for effect in pokemon.effects:
-                switch_choices = effect.on_get_switch_choices(pokemon, switch_choices)
+                if effect.on_trap_check(pokemon):
+                    return []
         return switch_choices
 
     def get_switch_decision(self, side, pokemon=None, forced=False):

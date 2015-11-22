@@ -67,8 +67,8 @@ class TwoTurnMoveEffect(BaseEffect):
     def on_get_move_choices(self, pokemon, moves):
         return [self.move]
 
-    def on_get_switch_choices(self, pokemon, choices):
-        return []               # Can't switch during a two-turn move
+    def on_trap_check(self, pokemon):
+        return True
 
 class Bounce(TwoTurnMoveEffect):
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
@@ -246,8 +246,8 @@ class PartialTrap(BaseEffect):
         # 4 or 5 turns of residual effects, plus one turn of trap then release
         self.duration = random.randint(5, 6)
 
-    def on_get_switch_choices(self, pokemon, choices):
-        return choices if Type.GHOST in pokemon.types else []
+    def on_trap_check(self, pokemon):
+        return Type.GHOST not in pokemon.types
 
     @priority(-11)
     def on_residual(self, pokemon, foe, engine):
@@ -287,8 +287,8 @@ class Trapped(BaseEffect):
     def __init__(self, trapper):
         self.trapper = trapper
 
-    def on_get_switch_choices(self, pokemon, choices):
-        return choices if Type.GHOST in pokemon.types else []
+    def on_trap_check(self, pokemon):
+        return Type.GHOST not in pokemon.types
 
     def on_end(self, pokemon, _):  # could end by e.g. uturn or roar
         self.trapper.remove_effect(Volatile.TRAPPER)
@@ -403,8 +403,8 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
     def on_get_move_choices(self, pokemon, moves):
         return [self.move]
 
-    def on_get_switch_choices(self, pokemon, choices):
-        return []
+    def on_trap_check(self, pokemon):
+        return True
 
     @priority(0)
     def on_residual(self, pokemon, foe, engine):
