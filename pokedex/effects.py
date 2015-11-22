@@ -357,7 +357,8 @@ class Reflect(BaseEffect):
         if (move.category is MoveCategory.PHYSICAL and
             not crit and
             not move.infiltrates and
-            foe != target
+            foe != target and
+            move.name != 'brickbreak'
         ):
             if __debug__: log.i('Reflect halving %s damage from %s', damage, move)
             return damage * 0.5

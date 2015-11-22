@@ -137,12 +137,6 @@ class Move(object):
         Modifies attributes of self. This should only ever be called on a copy of the move object.
         """
 
-    def on_try_hit(self, target):
-        """
-        Called immediately before the immunity check and after success check in
-        BattleEngine.try_move_hit.
-        """
-
     def __repr__(self):
         return self.name
 
@@ -487,8 +481,9 @@ class brickbreak(Move):
         self.accuracy = 100
         self.makes_contact = True
         self.base_power = 75
+        self.on_success_ignores_substitute = True
 
-    def on_try_hit(self, target):
+    def on_success(self, user, target, engine):
         target.side.remove_effect(SideCondition.REFLECT)
         target.side.remove_effect(SideCondition.LIGHTSCREEN)
 

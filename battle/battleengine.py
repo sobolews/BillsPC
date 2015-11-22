@@ -205,8 +205,6 @@ class BattleEngine(object):
             if __debug__: log.i('%s is immune to %s', target, move)
             return FAIL
 
-        move.on_try_hit(target)
-
         if self.check_accuracy(user, move, target) is FAIL:
             return FAIL
 
