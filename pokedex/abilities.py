@@ -1250,5 +1250,5 @@ class _none_(AbilityEffect):
 abilitydex = {obj.__name__.lower(): obj for obj in vars().values() if
               inspect.isclass(obj) and
               issubclass(obj, BaseAbility) and
-              obj not in (AbilityEffect, AbilityEffect) and
+              obj is not AbilityEffect and
               'Base' not in obj.__name__}
