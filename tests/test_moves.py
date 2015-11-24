@@ -582,10 +582,18 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
         self.assertFainted(self.vaporeon)
 
-    def test_destinybond_bypasses_focussash(self):
+    def test_destinybond_bypasses_focussash_and_sturdy(self):
         self.new_battle(p0_ability='prankster', p1_ability='toughclaws', p1_item='focussash')
         self.choose_move(self.vaporeon, 'destinybond')
         self.choose_move(self.leafeon, 'leafblade')
+        self.run_turn()
+
+        self.assertFainted(self.leafeon)
+        self.assertFainted(self.vaporeon)
+
+        self.new_battle(p0_item='choicescarf', p1_ability='sturdy')
+        self.choose_move(self.vaporeon, 'destinybond')
+        self.choose_move(self.leafeon, 'woodhammer')
         self.run_turn()
 
         self.assertFainted(self.leafeon)
