@@ -1503,6 +1503,13 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 88 + 24)
         self.assertDamageTaken(self.vaporeon, 2 * 88)
 
+        self.engine.heal(self.vaporeon, 400)
+        self.choose_move(self.leafeon, 'mirrorcoat')
+        self.choose_move(self.vaporeon, 'nightshade')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 200)
+
     def test_moonlight(self):
         self.engine.battlefield.set_weather(Weather.SUNNYDAY)
         self.vaporeon.hp = 1
