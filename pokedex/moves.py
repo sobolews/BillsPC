@@ -3302,6 +3302,7 @@ class substitute(Move):
     def on_success(self, user, _, engine):
         engine.direct_damage(user, user.max_hp / 4.0)
         user.set_effect(effects.Substitute(user.max_hp / 4))
+        user.remove_effect(Volatile.PARTIALTRAP)
 
 class suckerpunch(Move):
     def __init__(self):

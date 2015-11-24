@@ -3009,3 +3009,11 @@ class TestSubstitute(MultiMoveTestCase):
 
         self.assertStatus(self.vaporeon, Status.PAR)
         self.assertStatus(self.leafeon, None)
+
+    def test_substitute_ends_partialtrap(self):
+        self.choose_move(self.leafeon, 'infestation')
+        self.choose_move(self.vaporeon, 'substitute')
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.PARTIALTRAP))
+        self.assertDamageTaken(self.vaporeon, 13 + self.vaporeon.max_hp / 4)
