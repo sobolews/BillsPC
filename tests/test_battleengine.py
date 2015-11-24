@@ -1033,3 +1033,15 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 78)
 
         self.assertPpUsed(self.vaporeon, 'solarbeam', 1)
+
+    def test_double_trap(self):
+        self.new_battle(p0_ability='arenatrap', p1_ability='shadowtag')
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('jolteon', 1)
+        self.engine.init_turn()
+        self.assertTrue(self.vaporeon.has_effect(Volatile.TRAPPER))
+        self.assertTrue(self.vaporeon.has_effect(Volatile.TRAPPED))
+        self.assertTrue(self.leafeon.has_effect(Volatile.TRAPPER))
+        self.assertTrue(self.leafeon.has_effect(Volatile.TRAPPED))
+        self.assertSwitchChoices(self.vaporeon, set())
+        self.assertSwitchChoices(self.vaporeon, set())
