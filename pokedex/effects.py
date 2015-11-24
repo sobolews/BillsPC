@@ -579,6 +579,7 @@ class Substitute(BaseEffect):
 
         foe.damage_done_this_turn = damage
         foe.must_switch = move.switch_user
+        target.was_attacked_this_turn = {'move': move, 'damage': 0}
 
         return 0
 

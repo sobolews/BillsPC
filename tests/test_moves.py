@@ -150,6 +150,20 @@ class TestMoves(MultiMoveTestCase):
         damage = self.engine.use_move(self.leafeon, movedex['avalanche'], self.vaporeon)
         self.assertEqual(damage, 83)
 
+    def test_avalanche_with_substitute(self):
+        self.choose_move(self.leafeon, 'substitute')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'avalanche')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 42)
+
+        self.choose_move(self.vaporeon, 'return')
+        self.choose_move(self.leafeon, 'avalanche')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 42 + 83)
+
     def test_batonpass_boosts(self):
         self.add_pokemon('flareon', 0)
         self.engine.apply_boosts(self.vaporeon, Boosts(spe=2, atk=-3))

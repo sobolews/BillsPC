@@ -301,11 +301,7 @@ class avalanche(Move):
         self.accuracy = 100
 
     def get_base_power(self, user, target, engine):
-        if (user.was_attacked_this_turn is not None and
-            user.was_attacked_this_turn['damage'] > 0
-        ):
-            return 120
-        return 60
+        return 60 if user.was_attacked_this_turn is None else 120
 
 class batonpass(Move):
     def __init__(self):
