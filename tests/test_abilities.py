@@ -3032,6 +3032,15 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.vaporeon, Status.SLP)
         self.assertStatus(self.leafeon, None)
 
+    def test_synchronize_doesnt_activate_for_status_orb(self):
+        self.new_battle(p0_item='toxicorb', p0_ability='synchronize')
+        self.choose_move(self.leafeon, 'return')
+        self.choose_move(self.vaporeon, 'return')
+        self.run_turn()
+        self.assertStatus(self.vaporeon, Status.TOX)
+
+        self.assertStatus(self.leafeon, None)
+
     @patch('random.randrange', lambda _: 49) # miss at 49%- accuracy
     def test_tangledfeet(self):
         self.new_battle(p0_ability='tangledfeet')
