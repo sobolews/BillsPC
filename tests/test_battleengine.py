@@ -1069,3 +1069,16 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertBoosts(self.vaporeon, {'spa': 1})
         self.assertDamageTaken(self.leafeon, 0)
+
+    def test_two_turn_move_vs_immunity_ability(self):
+        self.new_battle(p0_ability='wonderguard')
+        self.choose_move(self.leafeon, 'shadowforce')
+        self.run_turn()
+
+        self.assertTrue(self.leafeon.has_effect(Volatile.TWOTURNMOVE))
+
+        self.choose_move(self.leafeon, 'shadowforce')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertFalse(self.leafeon.has_effect(Volatile.TWOTURNMOVE))
