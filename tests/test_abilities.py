@@ -2429,6 +2429,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_scrappy(self):
         self.new_battle('gengar', 'drifblim', p0_ability='scrappy', p1_ability='scrappy')
+        self.add_pokemon('jellicent', 0, ability='soundproof')
         self.choose_move(self.gengar, 'earthquake')
         self.choose_move(self.drifblim, 'brickbreak')
         self.run_turn()
@@ -2442,6 +2443,12 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertDamageTaken(self.gengar, (self.gengar.max_hp / 4) + 89)
+
+        self.choose_switch(self.gengar, self.jellicent)
+        self.choose_move(self.drifblim, 'hypervoice')
+        self.run_turn()
+
+        self.assertDamageTaken(self.jellicent, 0)
 
     def test_scrappy_aurasphere_vs_bulletproof(self):
         self.new_battle(p0_ability='scrappy', p1_ability='bulletproof')
