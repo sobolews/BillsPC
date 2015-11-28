@@ -307,7 +307,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
     def test_fightinggem(self):
         self.new_battle(p0_item='fightinggem', p1_item='fightinggem',
                         p0_ability='noguard', p1_ability='shielddust')
-        self.add_pokemon('gengar', 0)
+        self.add_pokemon('gengar', 0, item='fightinggem', ability='shielddust')
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'focusblast')
         self.run_turn()
@@ -329,6 +329,19 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.gengar, 0)
         self.assertItem(self.leafeon, 'fightinggem')
+
+        self.engine.apply_boosts(self.leafeon, Boosts(spe=2))
+        self.choose_move(self.leafeon, 'bounce')
+        self.choose_move(self.gengar, 'brickbreak')
+        self.run_turn()
+
+        self.assertItem(self.gengar, 'fightinggem')
+
+        self.choose_move(self.leafeon, 'bounce')
+        self.choose_move(self.gengar, 'brickbreak')
+        self.run_turn()
+
+        self.assertItem(self.gengar, None)
 
     def test_flameorb(self):
         self.new_battle(p0_item='flameorb', p1_item='flameorb',
