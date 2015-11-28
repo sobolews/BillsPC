@@ -1091,3 +1091,10 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertFalse(self.vaporeon.boosts)
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 10)
         self.assertAbility(self.vaporeon, 'mummy')
+
+    def test_item_residual_doesnt_attempt_to_heal_fainted_pokemon(self):
+        self.new_battle('muk', 'leafeon', p0_ability='snowwarning', p0_item='blacksludge')
+        self.muk.hp = 10
+        self.run_turn()
+
+        self.assertFainted(self.muk)
