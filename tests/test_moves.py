@@ -2874,7 +2874,7 @@ class TestSubstitute(MultiMoveTestCase):
         self.assertFalse(self.vaporeon.is_active)
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
 
-    def test_batonpass_subsitute(self):
+    def test_batonpass_substitute(self):
         self.add_pokemon('jolteon', 1)
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'toxic')
