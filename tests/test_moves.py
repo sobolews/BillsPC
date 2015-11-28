@@ -3046,3 +3046,39 @@ class TestSubstitute(MultiMoveTestCase):
 
         self.assertFalse(self.vaporeon.has_effect(Volatile.PARTIALTRAP))
         self.assertDamageTaken(self.vaporeon, 13 + self.vaporeon.max_hp / 4)
+
+    def test_substitute_blocks_trick(self):
+        self.new_battle(p0_item='heatrock', p1_item='chestoberry')
+        self.choose_move(self.leafeon, 'substitute')
+        self.choose_move(self.vaporeon, 'trick')
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'heatrock')
+        self.assertItem(self.leafeon, 'chestoberry')
+
+    def test_substitute_blocks_magician(self):
+        self.new_battle(p0_ability='magician', p1_item='eviolite')
+        self.choose_move(self.leafeon, 'substitute')
+        self.choose_move(self.vaporeon, 'surf')
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, None)
+        self.assertItem(self.leafeon, 'eviolite')
+
+    def test_substitute_doesnt_block_pickup(self):
+        self.new_battle(p0_ability='pickup', p1_item='sitrusberry')
+        self.choose_move(self.leafeon, 'substitute')
+        self.choose_move(self.vaporeon, 'hypervoice')
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'sitrusberry')
+
+    def test_substitute_doesnt_block_pickpocket(self):
+        self.new_battle(p0_ability='pickpocket', p1_item='eviolite')
+        self.choose_move(self.leafeon, 'substitute')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'return')
+        self.run_turn()
+
+        self.assertItem(self.vaporeon, 'eviolite')
+        self.assertItem(self.leafeon, None)
