@@ -1098,3 +1098,21 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.run_turn()
 
         self.assertFainted(self.muk)
+
+    def test_taunt_mid_geomancy(self):
+        self.new_battle('xerneas', 'jolteon', p0_item='powerherb',
+                        p0_moves=('geomancy', 'moonblast', 'thunder', 'focusblast'))
+
+        self.choose_move(self.jolteon, 'knockoff')
+        self.choose_move(self.xerneas, 'geomancy')
+        self.run_turn()
+
+        self.assertTrue(self.xerneas.has_effect(Volatile.TWOTURNMOVE))
+
+        self.choose_move(self.jolteon, 'taunt')
+        self.choose_move(self.xerneas, 'geomancy')
+        self.run_turn()
+
+        self.assertMoveChoices(self.xerneas, ('moonblast', 'thunder', 'focusblast'))
+        self.assertFalse(self.xerneas.has_effect(Volatile.TWOTURNMOVE))
+        self.assertFalse(self.xerneas.boosts)
