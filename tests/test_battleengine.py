@@ -1082,3 +1082,12 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertFalse(self.leafeon.has_effect(Volatile.TWOTURNMOVE))
+
+    def test_sheerforce_lifeorb_recoil_when_mummified_mid_move(self):
+        self.new_battle(p0_ability='sheerforce', p0_item='lifeorb', p1_ability='mummy')
+        self.choose_move(self.vaporeon, 'flamecharge')
+        self.run_turn()
+
+        self.assertFalse(self.vaporeon.boosts)
+        self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 10)
+        self.assertAbility(self.vaporeon, 'mummy')

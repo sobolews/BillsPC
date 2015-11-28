@@ -910,6 +910,9 @@ class SheerForce(AbilityEffect):
             move.secondary_effects = ()
             user.set_effect(effects.SheerForceVolatile())
 
+    def on_end(self, pokemon, engine):
+        pokemon.remove_effect(Volatile.SHEERFORCE)
+
 class ShellArmor(AbilityEffect):
     pass # implemented in BattleEngine.modify_critical_hit
 
