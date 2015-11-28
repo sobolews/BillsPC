@@ -1156,7 +1156,7 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
 
         self.assertEqual(self.engine.battlefield.sides[0].active_pokemon, self.espeon)
-        self.assertTrue(self.espeon.is_active)
+        self.assertActive(self.espeon)
         self.assertSwitchChoices(self.espeon, {self.vaporeon})
         self.assertDamageTaken(self.vaporeon, 13)
         for pokemon in [self.espeon, self.vaporeon, self.leafeon]:
@@ -1352,7 +1352,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_switch(self.vaporeon, self.umbreon)
         self.run_turn()
 
-        self.assertTrue(self.umbreon.is_active)
+        self.assertActive(self.umbreon)
         self.assertDamageTaken(self.umbreon, 0)
         self.assertFalse(self.umbreon.has_effect(Volatile.LEECHSEED))
 
@@ -1408,8 +1408,8 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'magiccoat')
         self.run_turn()
 
-        self.assertTrue(self.flareon.is_active)
-        self.assertTrue(self.vaporeon.is_active)
+        self.assertActive(self.flareon)
+        self.assertActive(self.vaporeon)
         self.assertFalse(self.leafeon.is_active)
 
         self.choose_move(self.flareon, 'magiccoat')
@@ -1567,7 +1567,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
 
-        self.assertTrue(self.espeon.is_active)
+        self.assertActive(self.espeon)
         self.assertDamageTaken(self.espeon, 87)
 
     def test_perishsong(self):
@@ -1694,7 +1694,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 39)
         self.assertDamageTaken(self.umbreon, 0)
-        self.assertTrue(self.umbreon.is_active)
+        self.assertActive(self.umbreon)
         self.assertFalse(self.leafeon.is_active)
 
         self.choose_move(self.umbreon, 'quickattack')
@@ -1717,7 +1717,7 @@ class TestMoves(MultiMoveTestCase):
         self.engine.init_turn()
         # pursuit interrupts the choice to switch to umbreon, such that player1 is allowed to choose
         # again (and will choose flareon as the first choice by default)
-        self.assertTrue(self.flareon.is_active)
+        self.assertActive(self.flareon)
 
     def test_faster_pursuit_vs_switching_move(self):
         self.add_pokemon('flareon', 0)
@@ -1757,7 +1757,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 0)
         self.assertFainted(self.leafeon)
-        self.assertTrue(self.flareon.is_active)
+        self.assertActive(self.flareon)
 
     def test_switch_move_KO_pursuiter_before_pursuit(self):
         self.add_pokemon('flareon', 1)
@@ -1962,8 +1962,8 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.leafeon, 'roar')
         self.run_turn()
 
-        self.assertTrue(self.flareon.is_active)
-        self.assertTrue(self.leafeon.is_active)
+        self.assertActive(self.flareon)
+        self.assertActive(self.leafeon)
         self.assertFalse(self.vaporeon.is_active)
         self.assertFalse(self.jolteon.is_active)
 
@@ -2201,7 +2201,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.giratina, 0)
         self.assertFalse(self.vaporeon.is_active)
-        self.assertTrue(self.flareon.is_active)
+        self.assertActive(self.flareon)
 
         self.choose_move(self.giratina, 'sleeptalk')
         self.choose_move(self.flareon, 'dragonclaw')
@@ -2209,7 +2209,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.giratina, 0)
         self.assertFalse(self.flareon.is_active)
-        self.assertTrue(self.vaporeon.is_active)
+        self.assertActive(self.vaporeon)
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_sleeppowder(self):
@@ -2269,7 +2269,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'voltswitch')
         self.run_turn()
 
-        self.assertTrue(self.pidgeot.is_active)
+        self.assertActive(self.pidgeot)
         self.assertDamageTaken(self.pidgeot, 0)
 
     def test_spikes_fails_after_three_layers(self):
@@ -2308,7 +2308,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'batonpass')
         self.run_turn()
 
-        self.assertTrue(self.pidgeot.is_active)
+        self.assertActive(self.pidgeot)
         self.assertDamageTaken(self.pidgeot, self.pidgeot.max_hp / 4)
 
         self.choose_switch(self.pidgeot, self.volcarona)
@@ -2427,7 +2427,7 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'suckerpunch')
         self.run_turn()
 
-        self.assertTrue(self.espeon.is_active)
+        self.assertActive(self.espeon)
         self.assertDamageTaken(self.espeon, 0)
 
     @patch('random.randrange', lambda _: 0) # no miss
@@ -2870,7 +2870,7 @@ class TestSubstitute(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'uturn')
         self.run_turn()
 
-        self.assertTrue(self.umbreon.is_active)
+        self.assertActive(self.umbreon)
         self.assertFalse(self.vaporeon.is_active)
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
 

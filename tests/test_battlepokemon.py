@@ -74,7 +74,7 @@ class TestAbilityChange(MultiMoveTestCase):
         self.choose_switch(self.vaporeon, self.espeon)
         self.choose_move(self.leafeon, 'roar')
         self.run_turn()
-        self.assertTrue(self.vaporeon.is_active)
+        self.assertActive(self.vaporeon)
 
         self.assertEqual(self.vaporeon.ability.name, 'levitate')
 

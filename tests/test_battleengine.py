@@ -694,7 +694,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'uturn')
         self.run_turn()
 
-        self.assertTrue(self.vaporeon.is_active)
+        self.assertActive(self.vaporeon)
         self.assertDamageTaken(self.leafeon, 68)
         self.run_turn()
 
@@ -870,7 +870,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         # NOTE: relies on AutoDecisionMaker always choosing choices[0]
         self.assertListEqual(self.faint_log, [self.vaporeon, self.jolteon,
                                               self.espeon, self.umbreon])
-        self.assertTrue(self.flareon.is_active)
+        self.assertActive(self.flareon)
         self.assertDamageTaken(self.flareon, self.flareon.max_hp / 4)
 
     def test_order_of_abilities_depends_on_speed_of_switchins(self):
@@ -968,7 +968,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.engine.init_turn()
 
         self.assertFainted(self.leafeon)
-        self.assertTrue(self.vaporeon.is_active)
+        self.assertActive(self.vaporeon)
         self.assertFalse(self.flareon.is_active)
 
     def test_force_random_switch_with_target_faint(self):
@@ -981,7 +981,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
             self.run_turn()
             self.engine.init_turn()
 
-        self.assertTrue(self.flareon.is_active)
+        self.assertActive(self.flareon)
 
     def test_circlethrow_with_lifeorb_kos_foe_and_has_recoil(self):
         self.new_battle(p0_item='lifeorb', p0_ability='noguard')
