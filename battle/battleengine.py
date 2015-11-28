@@ -224,6 +224,8 @@ class BattleEngine(object):
 
                 if target.hp <= 0 or user.hp <= 0 or user.status is Status.SLP:
                     break
+                else:
+                    self.run_update()
 
             if __debug__: log.i('Hit %d times!', hit+1)
             return (damage, total_damage)

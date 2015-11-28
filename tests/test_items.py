@@ -847,6 +847,15 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertFainted(self.volcarona)
 
+    @patch('random.choice', lambda _: 4) # multihit hits 4 times
+    def test_sitrusberry_with_multihit_move(self):
+        self.new_battle(p0_item='sitrusberry')
+        self.choose_move(self.leafeon, 'bulletseed')
+        self.run_turn()
+
+        self.assertStatus(self.vaporeon, None)
+        self.assertDamageTaken(self.vaporeon, (4 * 108) - (self.vaporeon.max_hp / 4))
+
     def test_stick(self):
         crit = [None]
         def get_critical_hit(crit_ratio):
