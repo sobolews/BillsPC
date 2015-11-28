@@ -1045,3 +1045,27 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertTrue(self.leafeon.has_effect(Volatile.TRAPPED))
         self.assertSwitchChoices(self.vaporeon, set())
         self.assertSwitchChoices(self.vaporeon, set())
+
+    def test_multihit_vs_justified(self):
+        self.new_battle(p0_ability='justified', p1_ability='parentalbond')
+        self.choose_move(self.leafeon, 'nightslash')
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': 2})
+
+    @patch('random.choice', lambda _: 3) # tailslap hits 3 times
+    def test_multihit_contact_vs_ironbarbs_and_rockyhelmet(self):
+        self.new_battle(p0_ability='noguard', p1_ability='ironbarbs', p1_item='rockyhelmet')
+        self.choose_move(self.vaporeon, 'tailslap')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 3 * (self.vaporeon.max_hp / 8 +
+                                                   self.vaporeon.max_hp / 6))
+
+    def test_multihit_vs_immunity_ability(self):
+        self.new_battle(p0_ability='lightningrod', p1_ability='parentalbond')
+        self.choose_move(self.leafeon, 'wildcharge')
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'spa': 1})
+        self.assertDamageTaken(self.leafeon, 0)
