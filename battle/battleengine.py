@@ -102,20 +102,13 @@ class BattleEngine(object):
             not user.has_effect(Volatile.LOCKEDMOVE) and
             not user.has_effect(Volatile.TWOTURNMOVE)
         ):
-            self.deduct_pp(user, move, target)
+            user.deduct_pp(move, target)
 
         self.use_move(user, move, target)
 
         user.last_move_used = move
         if not move.calls_other_moves:
             self.battlefield.last_move_used = move
-
-    def deduct_pp(self, user, move, target):
-        deduction = (2 if (target is not None and
-                           target.ability is abilitydex['pressure'] and
-                           not move.targets_user)
-                     else 1)
-        user.pp[move] -= deduction
 
     def use_move(self, user, move, target):
         """

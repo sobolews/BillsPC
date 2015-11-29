@@ -422,6 +422,13 @@ class BattlePokemon(object):
         self.set_effect(new_ability())
         self.get_effect(ABILITY).start(self, engine)
 
+    def deduct_pp(self, move, target):
+        deduction = (2 if (target is not None and
+                           target.ability is abilitydex['pressure'] and
+                           not move.targets_user)
+                     else 1)
+        self.pp[move] -= deduction
+
     def __str__(self):
         if self.name == self.base_species:
             return self.name
