@@ -1709,7 +1709,7 @@ class hurricane(Move):
         self.base_power = 110
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.CONFUSE),
 
-    def accuracy_callback(self, user, target, engine):
+    def on_modify_move(self, user, target, engine):
         weather = engine.battlefield.weather
         if weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
             self.accuracy = None

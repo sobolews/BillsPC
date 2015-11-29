@@ -1094,6 +1094,32 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
         self.assertDamageTaken(self.vaporeon, 0)
 
+    def test_hurricane(self):
+        self.battlefield.set_weather(Weather.SUNNYDAY)
+        with patch('random.randrange', lambda _: 51): # miss at 50%
+            self.choose_move(self.vaporeon, 'hurricane')
+            self.run_turn()
+            self.assertDamageTaken(self.leafeon, 0)
+
+        self.battlefield.set_weather(Weather.HAIL)
+        with patch('random.randrange', lambda _: 71): # miss at 70%
+            self.choose_move(self.vaporeon, 'hurricane')
+            self.run_turn()
+            self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
+
+        self.battlefield.set_weather(Weather.RAINDANCE)
+        with patch('random.randrange', lambda _: 99): # miss if possible
+            self.choose_move(self.vaporeon, 'hurricane')
+            self.run_turn()
+            self.assertFainted(self.leafeon)
+
+        self.new_battle()
+        self.battlefield.set_weather(Weather.SUNNYDAY)
+        with patch('random.randrange', lambda _: 49): # hit at 50%
+            self.choose_move(self.vaporeon, 'hurricane')
+            self.run_turn()
+            self.assertFainted(self.leafeon)
+
     def test_hyperspacefury_hoopaunbound_only(self):
         self.new_battle('hoopaunbound', 'leafeon')
         self.choose_move(self.hoopaunbound, 'hyperspacefury')
