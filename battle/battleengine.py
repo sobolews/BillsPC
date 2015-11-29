@@ -427,9 +427,9 @@ class BattleEngine(object):
         defense = target.calculate_stat(defending_stat, defense_boosts)
 
         modify = self.modify_atk if attacking_stat == 'atk' else self.modify_spa
-        attack = int(modify(attack, user, move, target))
+        attack = int(modify(attack, user, move))
         modify = self.modify_def if defending_stat == 'def' else self.modify_spd
-        defense = int(modify(defense, user, move, target))
+        defense = int(modify(defense, target, move))
 
         damage = int(int(int(2 * user.level / 5 + 2) * base_power * attack / defense) / 50) + 2
 
@@ -490,22 +490,22 @@ class BattleEngine(object):
             effectiveness = effect.on_modify_effectiveness(user, move, target, effectiveness)
         return effectiveness
 
-    def modify_atk(self, atk, user, move, target):
+    def modify_atk(self, atk, user, move):
         for effect in user.effects:
             atk = effect.on_modify_atk(user, move, self, atk)
         return atk
 
-    def modify_spa(self, spa, user, move, target):
+    def modify_spa(self, spa, user, move):
         for effect in user.effects:
             spa = effect.on_modify_spa(user, move, self, spa)
         return spa
 
-    def modify_def(self, def_, user, move, target):
+    def modify_def(self, def_, target, move):
         for effect in target.effects:
             def_ = effect.on_modify_def(target, move, self, def_)
         return def_
 
-    def modify_spd(self, spd, user, move, target):
+    def modify_spd(self, spd, target, move):
         for effect in chain(target.effects,
                             self.battlefield.effects):
             spd = effect.on_modify_spd(target, move, self, spd)
