@@ -896,7 +896,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDictContainsSubset(ditto_stats, self.leafeon.stats)
         self.assertEqual(self.ditto.weight, self.leafeon.weight)
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
-        self.assertEqual(self.ditto._ability.name, 'imposter')
+        self.assertEqual(self.ditto.base_ability.name, 'imposter')
         self.assertEqual(self.ditto.gender, self.leafeon.gender)
         self.assertSequenceEqual(self.ditto.moveset, self.leafeon.moveset)
         self.assertListEqual(self.ditto.types, self.leafeon.types)
@@ -970,14 +970,14 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.ditto, 206)
         self.assertEqual(self.ditto.name, 'umbreon')
         self.assertAbility(self.ditto, 'flowerveil')
-        self.assertEqual(self.ditto._ability.name, 'imposter')
+        self.assertEqual(self.ditto.base_ability.name, 'imposter')
 
     def test_imposter_copy_ability(self):
         self.new_battle('ditto', p0_ability='imposter', p1_ability='magicbounce',
                         p1_moves=(movedex['partingshot'], movedex['xscissor'],
                                   movedex['swordsdance'], movedex['return']))
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
-        self.assertEqual(self.ditto._ability.name, 'imposter')
+        self.assertEqual(self.ditto.base_ability.name, 'imposter')
 
         self.choose_move(self.ditto, 'partingshot')
         self.run_turn()
@@ -1601,7 +1601,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertAbility(self.leafeon, 'mummy')
-        self.assertEqual(self.leafeon._ability.name, 'lightningrod')
+        self.assertEqual(self.leafeon.base_ability.name, 'lightningrod')
         self.assertDamageTaken(self.leafeon, 24)
 
         self.choose_switch(self.vaporeon, self.sylveon)
@@ -1618,7 +1618,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertActive(self.leafeon)
         self.assertAbility(self.leafeon, 'lightningrod')
-        self.assertEqual(self.leafeon._ability.name, 'lightningrod')
+        self.assertEqual(self.leafeon.base_ability.name, 'lightningrod')
         self.choose_move(self.sylveon, 'thunderwave')
         self.run_turn()
 
@@ -3262,7 +3262,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
         self.assertDamageTaken(self.vaporeon, 272)
-        self.assertEqual(self.vaporeon._ability.name, 'trace')
+        self.assertEqual(self.vaporeon.base_ability.name, 'trace')
         self.assertAbility(self.vaporeon, 'motordrive')
 
     def test_tracing_levitate_doesnt_block_hazards(self):

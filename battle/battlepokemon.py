@@ -30,7 +30,7 @@ class BattlePokemon(object):
         self.stats = self.calculate_initial_stats(evs, ivs)
         self.hp = self.max_hp = self.stats['max_hp']
         self._weight = pokedex_entry.weight
-        self.ability = self._ability = ability
+        self.ability = self.base_ability = ability
         self.status = None
         self.boosts = Boosts()
 
@@ -407,7 +407,7 @@ class BattlePokemon(object):
     def change_ability(self, new_ability, engine):
         """
         Change this pokemon's ability. This effect will only last while the pokemon is active.
-        This pokemon's original ability remains saved in self._ability.
+        This pokemon's original ability remains saved in self.base_ability.
         """
         assert self.is_active, "Tried to change inactive pokemon's ability"
         assert issubclass(new_ability, abilities.BaseAbility)

@@ -795,7 +795,7 @@ class BattleEngine(object):
         pokemon.last_move_used = None
         pokemon.turns_out = 0
         pokemon.must_switch = False
-        pokemon.ability = pokemon._ability
+        pokemon.ability = pokemon.base_ability
         pokemon.item_used_this_turn = None
         if __debug__: log.i('Switched in %s on side %s', pokemon, pokemon.side.index)
 
