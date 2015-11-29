@@ -911,11 +911,6 @@ class BattleEngine(object):
                         self.get_switch_decision(side, forced=True)))
 
             self.resolve_faint_queue()
-            if __debug__:
-                if self.event_queue and (self.event_queue[-1].type not in
-                                         (Decision.SWITCH, Decision.POSTSWITCH)):
-                    [pokemon._debug_sanity_check(self)
-                     for side in self.battlefield.sides for pokemon in side.team]
 
     def init_turn(self):
         """
@@ -1012,3 +1007,4 @@ class BattleEngine(object):
                         for effect in chain(pokemon.effects, pokemon.side.effects,
                                             self.battlefield.effects):
                             assert effect.duration > 0 or effect.duration is None
+                    pokemon.debug_sanity_check(self)

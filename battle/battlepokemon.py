@@ -445,7 +445,7 @@ class BattlePokemon(object):
             'effects: %r  %s' % ([e for e in self.effects], self.boosts or '')
         ])
 
-    def _debug_sanity_check(self, engine):
+    def debug_sanity_check(self, engine):
         for effect in self._effect_index.values():
             if effect not in self.effects:
                 log.wtf('%s: %s in _effect_index but not in effects', effect, self)
