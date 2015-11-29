@@ -640,9 +640,10 @@ class BattleEngine(object):
         boosts = pokemon.get_effect(ABILITY).on_boost(pokemon, boosts, self_induced)
 
         if __debug__:
-            for stat, val in filter(lambda x: x[1], boosts.items()):
-                log.i("%s's %s was %s by %s",
-                      pokemon, stat, "boosted" if val > 0 else "lowered", abs(val))
+            for stat, val in boosts.items():
+                if val:
+                    log.i("%s's %s was %s by %s",
+                          pokemon, stat, "boosted" if val > 0 else "lowered", abs(val))
         return pokemon.boosts.update(boosts)
 
     def force_random_switch(self, pokemon, forcer):
