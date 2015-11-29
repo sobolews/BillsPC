@@ -196,6 +196,7 @@ class BattleEngine(object):
                     random.choice(move.multihit))
 
             total_damage = 0
+            hit = 0
             for hit in range(hits):
                 damage = self.move_hit(user, move, target)
                 if damage is FAIL:
