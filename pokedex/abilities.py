@@ -8,6 +8,7 @@ import inspect
 import random
 
 if __debug__: from _logging import log
+from misc.autoname import AutoName
 from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
 from pokedex import effects
@@ -19,13 +20,7 @@ from pokedex.types import type_effectiveness
 
 
 class BaseAbility(object):
-    class __metaclass__(type):
-        def __new__(cls, name, bases, dct):
-            dct['name'] = name.lower()
-            return type.__new__(cls, name, bases, dct)
-
-        def __repr__(self):
-            return self.__name__
+    __metaclass__ = AutoName
 
     source = ABILITY
     started = False
