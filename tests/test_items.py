@@ -194,7 +194,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.new_battle(p0_item='choicescarf', p1_item='choicescarf',
                         p0_moves=('fakeout', 'protect', 'taunt', 'dragonclaw'),
                         p1_moves=('fakeout', 'toxic', 'ironhead', 'crunch'))
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
+        self.leafeon.apply_boosts(Boosts(spe=-1))
         self.choose_move(self.leafeon, 'fakeout')
         self.choose_move(self.vaporeon, 'fakeout')
         self.run_turn()
@@ -330,7 +330,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.gengar, 0)
         self.assertItem(self.leafeon, 'fightinggem')
 
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=2))
+        self.leafeon.apply_boosts(Boosts(spe=2))
         self.choose_move(self.leafeon, 'bounce')
         self.choose_move(self.gengar, 'brickbreak')
         self.run_turn()
@@ -374,7 +374,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
     def test_focussash(self):
         self.new_battle('vaporeon', 'shedinja',
                         p0_item='focussash', p1_item='focussash')
-        self.engine.apply_boosts(self.shedinja, Boosts(atk=5))
+        self.shedinja.apply_boosts(Boosts(atk=5))
         self.choose_move(self.vaporeon, 'pursuit')
         self.choose_move(self.shedinja, 'shadowclaw')
         self.assertItem(self.vaporeon, 'focussash')
@@ -410,7 +410,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.new_battle('vaporeon', 'shedinja', # shouldn't block recoil damage
                         p0_item='focussash', p1_item='focussash')
         self.add_pokemon('espeon', 1)
-        self.engine.apply_boosts(self.shedinja, Boosts(atk=4, spe=2))
+        self.shedinja.apply_boosts(Boosts(atk=4, spe=2))
         self.choose_move(self.shedinja, 'doubleedge')
         self.choose_move(self.vaporeon, 'synthesis')
         self.run_turn()

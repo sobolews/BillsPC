@@ -815,7 +815,7 @@ class defog(Move):
                                       # block evasion drop
     def on_success(self, user, target, engine):
         if not target.has_effect(Volatile.SUBSTITUTE) or user.ability.name == 'infiltrator':
-            engine.apply_boosts(target, Boosts(evn=-1), False)
+            target.apply_boosts(Boosts(evn=-1), False)
 
         target.side.remove_effect(SideCondition.REFLECT)
         target.side.remove_effect(SideCondition.LIGHTSCREEN)
@@ -1446,7 +1446,7 @@ class growth(Move):
     def on_success(self, user, _, engine):
         boost = (2 if engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND)
                  else 1)
-        engine.apply_boosts(user, Boosts(atk=boost, spa=boost), True)
+        user.apply_boosts(Boosts(atk=boost, spa=boost), True)
 
 class gunkshot(Move):
     def __init__(self):
@@ -2090,7 +2090,7 @@ class memento(Move):
         self.accuracy = 100
 
     def on_success(self, user, target, engine):
-        engine.apply_boosts(target, Boosts(atk=-2, spa=-2), False)
+        target.apply_boosts(Boosts(atk=-2, spa=-2), False)
         user.hp = 0
 
 class metalburst(Move):
@@ -2306,7 +2306,7 @@ class partingshot(Move):
         self.is_bounceable = True
 
     def on_success(self, user, target, engine):
-        engine.apply_boosts(target, Boosts(atk=-1, spa=-1), False)
+        target.apply_boosts(Boosts(atk=-1, spa=-1), False)
 
 class perishsong(Move):
     def __init__(self):

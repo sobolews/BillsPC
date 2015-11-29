@@ -254,7 +254,7 @@ class BattleEngine(object):
                 return FAIL     # all target_status moves do nothing else, so fail fast
 
         if move.user_boosts is not None and not user.is_fainted():
-            self.apply_boosts(user, move.user_boosts, True)
+            user.apply_boosts(move.user_boosts, True)
 
         for effect in user.effects:
             effect.on_move_success(user, move, target)
@@ -332,7 +332,7 @@ class BattleEngine(object):
         user.damage_done_this_turn = 0
 
         if move.user_boosts is not None:
-            if self.apply_boosts(user, move.user_boosts, True) is FAIL:
+            if user.apply_boosts(move.user_boosts, True) is FAIL:
                 if __debug__: log.i('(apply_boosts) But it failed')
                 return FAIL
 
@@ -356,7 +356,7 @@ class BattleEngine(object):
         if __debug__: log.d('Applying %s to %s', s_effect, pokemon)
 
         if s_effect.boosts is not None:
-            self.apply_boosts(pokemon, s_effect.boosts, s_effect.affects_user)
+            pokemon.apply_boosts(s_effect.boosts, s_effect.affects_user)
         elif s_effect.status is not None:
             self.set_status(pokemon, s_effect.status, user)
         elif s_effect.volatile is Volatile.FLINCH:
@@ -632,20 +632,6 @@ class BattleEngine(object):
         if pokemon.hp <= 0:
             self.faint(pokemon, Cause.DIRECT)
 
-    def apply_boosts(self, pokemon, boosts, self_induced=True):
-        assert not pokemon.is_fainted()
-        assert pokemon.is_active
-
-        # Only abilities have on_boost
-        boosts = pokemon.get_effect(ABILITY).on_boost(pokemon, boosts, self_induced)
-
-        if __debug__:
-            for stat, val in boosts.items():
-                if val:
-                    log.i("%s's %s was %s by %s",
-                          pokemon, stat, "boosted" if val > 0 else "lowered", abs(val))
-        return pokemon.boosts.update(boosts)
-
     def force_random_switch(self, pokemon, forcer):
         if (pokemon.is_fainted() or
             forcer.is_fainted() or
@@ -778,7 +764,8 @@ class BattleEngine(object):
         outgoing.is_switching_out = False
         outgoing.turns_out = 0
 
-    def switch_in(self, pokemon):
+    @staticmethod
+    def switch_in(pokemon):
         assert pokemon in pokemon.side.team
         assert (not pokemon.is_fainted()) and pokemon.hp > 0
 

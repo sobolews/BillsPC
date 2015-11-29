@@ -319,7 +319,7 @@ class KingsShield(BaseEffect):
             return
 
         if move.makes_contact:
-            engine.apply_boosts(foe, Boosts(atk=-2), self_induced=False)
+            foe.apply_boosts(Boosts(atk=-2), self_induced=False)
         return FAIL
 
 class LeechSeed(BaseEffect):
@@ -527,7 +527,7 @@ class StickyWeb(BaseEffect):
     def on_switch_in(self, pokemon, engine):
         if not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i("%s was caught in the StickyWeb", pokemon)
-            engine.apply_boosts(pokemon, Boosts(spe=-1), self_induced=False)
+            pokemon.apply_boosts(Boosts(spe=-1), self_induced=False)
 
 class Substitute(BaseEffect):
     source = Volatile.SUBSTITUTE
@@ -562,7 +562,7 @@ class Substitute(BaseEffect):
 
         # Run the remaining relevant effects of move_hit and damage so that move_hit can exit fast
         if move.user_boosts:
-            engine.apply_boosts(foe, move.user_boosts, self_induced=True)
+            foe.apply_boosts(move.user_boosts, self_induced=True)
         elif move.recoil > 0:
             engine.damage(foe, damage * move.recoil / 100, Cause.RECOIL)
         elif move.drain:

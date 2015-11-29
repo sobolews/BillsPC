@@ -69,7 +69,7 @@ class TestStatuses(MultiMoveTestCase):
     @patch('random.randint', lambda *_: 1) # sleep for 1 turn
     def test_sleep_block_move(self):
         self.new_battle('vaporeon', 'jolteon')
-        self.engine.apply_boosts(self.vaporeon, Boosts(spa=2))
+        self.vaporeon.apply_boosts(Boosts(spa=2))
         self.choose_move(self.jolteon, 'spore')
         self.choose_move(self.vaporeon, 'earthpower')
         self.run_turn()

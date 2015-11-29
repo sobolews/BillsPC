@@ -274,7 +274,7 @@ class Download(AbilityEffect):
             boosts = (Boosts(spa=1) if foe.calculate_stat('def') >= foe.calculate_stat('spd') else
                       Boosts(atk=1))
             if __debug__: log.i("%s is boosted by its Download!", pokemon)
-            engine.apply_boosts(pokemon, boosts, self_induced=True)
+            pokemon.apply_boosts(boosts, self_induced=True)
 
 class Drizzle(AbilityEffect):
     def on_start(self, pokemon, engine):
@@ -499,7 +499,7 @@ class Intimidate(AbilityEffect):
         foe = engine.get_foe(pokemon)
         if foe is not None:
             if __debug__: log.i("%s intimidates its foe!", pokemon)
-            engine.apply_boosts(foe, Boosts(atk=-1), self_induced=False)
+            foe.apply_boosts(Boosts(atk=-1), self_induced=False)
 
 class IronBarbs(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
@@ -517,7 +517,7 @@ class Justified(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
         if move.type is Type.DARK:
             if __debug__: log.i("%s's Justified raises its atk!", pokemon)
-            engine.apply_boosts(pokemon, Boosts(atk=1), self_induced=True)
+            pokemon.apply_boosts(Boosts(atk=1), self_induced=True)
 
 class KeenEye(AbilityEffect):
     def on_boost(self, pokemon, boosts, self_induced):
@@ -543,7 +543,7 @@ class LightningRod(AbilityEffect):
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.ELECTRIC:
             if __debug__: log.i("%s's LightningRod raises its SpA!", target)
-            engine.apply_boosts(target, Boosts(spa=1), self_induced=True)
+            target.apply_boosts(Boosts(spa=1), self_induced=True)
             return FAIL
 
 class Limber(AbilityEffect):
@@ -631,14 +631,14 @@ class MotorDrive(AbilityEffect):
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.ELECTRIC:
             if __debug__: log.i("%s's MotorDrive raises its speed!", target)
-            engine.apply_boosts(target, Boosts(spe=1), self_induced=True)
+            target.apply_boosts(Boosts(spe=1), self_induced=True)
             return FAIL
 
 class Moxie(AbilityEffect):
     def on_foe_faint(self, pokemon, cause, source, foe, engine):
         if cause is Cause.MOVE:
             if __debug__: log.i("%s's Moxie boosts its attack!", pokemon)
-            engine.apply_boosts(pokemon, Boosts(atk=1), self_induced=True)
+            pokemon.apply_boosts(Boosts(atk=1), self_induced=True)
 
 class Multiscale(AbilityEffect):
     def on_modify_foe_damage(self, foe, move, target, crit, effectiveness, damage):
@@ -876,7 +876,7 @@ class SapSipper(AbilityEffect):
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.GRASS:
             if __debug__: log.i("%s's SapSipper raises its atk!", target)
-            engine.apply_boosts(target, Boosts(atk=1), self_induced=True)
+            target.apply_boosts(Boosts(atk=1), self_induced=True)
             return FAIL
 
 class Scrappy(AbilityEffect):
@@ -984,7 +984,7 @@ class SpeedBoost(AbilityEffect):
     @priority(-26.1)
     def on_residual(self, pokemon, foe, engine):
         if pokemon.turns_out > 0:
-            engine.apply_boosts(pokemon, Boosts(spe=1))
+            pokemon.apply_boosts(Boosts(spe=1))
 
 class StanceChange(AbilityEffect):
     pass # TODO when: implement forme change
@@ -1002,7 +1002,7 @@ class Steadfast(AbilityEffect):
     @priority(20) # must be higher than Flinch
     def on_before_move(self, user, move, engine):
         if user.has_effect(Volatile.FLINCH):
-            engine.apply_boosts(user, Boosts(spe=1), self_induced=True)
+            user.apply_boosts(Boosts(spe=1), self_induced=True)
 
 class StickyHold(AbilityEffect):
     pass # Implemented in BattlePokemon.take_item
@@ -1012,7 +1012,7 @@ class StormDrain(AbilityEffect):
     def on_foe_try_hit(self, foe, move, target, engine):
         if move.type is Type.WATER:
             if __debug__: log.i("%s's StormDrain raises its SpA!", target)
-            engine.apply_boosts(target, Boosts(spa=1), self_induced=True)
+            target.apply_boosts(Boosts(spa=1), self_induced=True)
             return FAIL
 
 class StrongJaw(AbilityEffect):

@@ -439,6 +439,20 @@ class BattlePokemon(object):
             move_choices = effect.on_get_move_choices(self, move_choices)
         return move_choices or [movedex['struggle']]
 
+    def apply_boosts(self, boosts, self_induced=True):
+        assert not self.is_fainted()
+        assert self.is_active
+
+        # Only abilities have on_boost
+        boosts = self.get_effect(ABILITY).on_boost(self, boosts, self_induced)
+
+        if __debug__:
+            for stat, val in boosts.items():
+                if val:
+                    log.i("%s's %s was %s by %s",
+                          self, stat, "boosted" if val > 0 else "lowered", abs(val))
+        return self.boosts.update(boosts)
+
     def __str__(self):
         if self.name == self.base_species:
             return self.name

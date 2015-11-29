@@ -245,7 +245,7 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
     def test_acc_boost(self):
         self.leafeon.is_active = True
         self.leafeon.set_effect(self.leafeon.ability())
-        self.engine.apply_boosts(self.leafeon, Boosts(acc=1))
+        self.leafeon.apply_boosts(Boosts(acc=1))
 
         with patch('random.randrange', lambda _: 92): # accuracy is 93.3333, floors to 93
             damage = self.engine.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
@@ -261,7 +261,7 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
         self.vaporeon.is_active = True
         self.engine.battlefield.sides[0].active_pokemon = self.vaporeon
         self.engine.battlefield.sides[1].active_pokemon = self.leafeon
-        self.engine.apply_boosts(self.leafeon, Boosts(evn=-1))
+        self.leafeon.apply_boosts(Boosts(evn=-1))
 
         with patch('random.randrange', lambda _: 99): # miss if possible
             damage = self.engine.try_move_hit(self.vaporeon, movedex['stoneedge'], self.leafeon)
@@ -412,7 +412,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertIsNone(self.leafeon.status)
 
     def test_order_by_speed_boosted(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=1))
+        self.vaporeon.apply_boosts(Boosts(spe=1))
         self.leafeon.hp = 1
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, 'return')
@@ -523,7 +523,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
                         p0_moves=(movedex['return'], movedex['splash'],
                                   movedex['outrage'], movedex['toxic']))
         self.add_pokemon('sylveon', 1)
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
+        self.leafeon.apply_boosts(Boosts(spe=-1))
         self.choose_move(self.vaporeon, 'outrage')
         self.choose_move(self.leafeon, 'uturn')
         self.run_turn()
@@ -948,7 +948,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
 
         self.new_battle(p0_ability='noguard')
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=1))
+        self.vaporeon.apply_boosts(Boosts(spe=1))
         self.vaporeon.hp = self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'toxic')
         self.choose_move(self.vaporeon, 'toxic')
@@ -1008,8 +1008,8 @@ class TestMiscMultiTurn(MultiMoveTestCase):
                         p0_item='choiceband', p0_ability='flashfire', p0_evs=(0, 252, 0, 0, 0, 0),
                         p1_level=1, p1_ability='dryskin')
         self.battlefield.set_weather(Weather.SUNNYDAY)
-        self.engine.apply_boosts(self.darmanitan, Boosts(atk=6))
-        self.engine.apply_boosts(self.paras, Boosts(def_=-6))
+        self.darmanitan.apply_boosts(Boosts(atk=6))
+        self.paras.apply_boosts(Boosts(def_=-6))
         self.choose_move(self.paras, 'flamethrower')
         self.run_turn()
         self.assertTrue(self.darmanitan.has_effect(Volatile.FLASHFIRE))

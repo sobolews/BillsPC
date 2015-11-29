@@ -166,7 +166,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_batonpass_boosts(self):
         self.add_pokemon('flareon', 0)
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=2, atk=-3))
+        self.vaporeon.apply_boosts(Boosts(spe=2, atk=-3))
         self.choose_move(self.vaporeon, 'batonpass')
         self.run_turn()
 
@@ -201,7 +201,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.boosts['atk'], 0)
 
     def test_bellydrum_fails_already_maxed_atk(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(atk=6))
+        self.vaporeon.apply_boosts(Boosts(atk=6))
         damage = self.engine.use_move(self.vaporeon, movedex['bellydrum'], self.leafeon)
         self.assertEqual(damage, FAIL)
         self.assertDamageTaken(self.vaporeon, 0)
@@ -222,7 +222,7 @@ class TestMoves(MultiMoveTestCase):
 
     @patch('random.randrange', lambda _: 1) # no miss
     def test_bounce(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=3))
+        self.vaporeon.apply_boosts(Boosts(spe=3))
         self.choose_move(self.vaporeon, 'bounce')
         self.choose_move(self.leafeon, 'flamecharge')
         self.run_turn()
@@ -244,7 +244,7 @@ class TestMoves(MultiMoveTestCase):
     def test_bounce_hit_by_thunder(self):
         bounce = movedex['bounce']
         with patch.object(bounce, 'secondary_effects', ()): # no paralysis
-            self.engine.apply_boosts(self.vaporeon, Boosts(spe=3))
+            self.vaporeon.apply_boosts(Boosts(spe=3))
             self.choose_move(self.vaporeon, bounce)
             self.choose_move(self.leafeon, 'thunder')
             self.run_turn()
@@ -377,8 +377,8 @@ class TestMoves(MultiMoveTestCase):
         self.assertItem(self.leafeon, 'sitrusberry')
 
     def test_clearsmog(self):
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=2, spa=-3))
-        self.engine.apply_boosts(self.vaporeon, Boosts(spd=1))
+        self.leafeon.apply_boosts(Boosts(atk=2, spa=-3))
+        self.vaporeon.apply_boosts(Boosts(spd=1))
         self.choose_move(self.leafeon, 'swordsdance')
         self.choose_move(self.vaporeon, 'clearsmog')
         self.run_turn()
@@ -421,7 +421,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 39)
         self.assertDamageTaken(self.vaporeon, 112)
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=2))
+        self.vaporeon.apply_boosts(Boosts(spe=2))
         self.choose_switch(self.leafeon, self.umbreon)
         self.choose_move(self.vaporeon, 'copycat')
         self.run_turn()
@@ -522,7 +522,7 @@ class TestMoves(MultiMoveTestCase):
          for i in (0, 1)]
 
     def test_destinybond(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spa=6))
+        self.vaporeon.apply_boosts(Boosts(spa=6))
         self.choose_move(self.leafeon, 'destinybond')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -531,7 +531,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.vaporeon)
 
     def test_destinybond_next_turn(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spa=6))
+        self.vaporeon.apply_boosts(Boosts(spa=6))
         self.choose_move(self.leafeon, 'destinybond')
         self.choose_move(self.vaporeon, 'flareblitz')
         self.run_turn()
@@ -565,7 +565,7 @@ class TestMoves(MultiMoveTestCase):
 
     @patch('random.randrange', lambda _: 0) # always parahax
     def test_destinybond_ends_on_paralysis_move_fail(self):
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=6))
+        self.leafeon.apply_boosts(Boosts(spe=6))
         self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'destinybond')
         self.choose_move(self.vaporeon, 'thunderwave')
@@ -712,7 +712,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_electricterrain(self):
         self.new_battle('skarmory', 'flareon')
-        self.engine.apply_boosts(self.flareon, Boosts(spe=1))
+        self.flareon.apply_boosts(Boosts(spe=1))
         self.choose_move(self.flareon, 'electricterrain')
         self.choose_move(self.skarmory, 'spore')
         self.run_turn()
@@ -769,7 +769,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 0)
 
     def test_encore_failure_cases(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-1))
+        self.vaporeon.apply_boosts(Boosts(spe=-1))
         self.add_pokemon('umbreon', 1, moves=(movedex['toxic'], movedex['foulplay'],
                                               movedex['wish'], movedex['protect']))
         self.choose_move(self.leafeon, 'uturn')
@@ -846,8 +846,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_extremespeed_priority(self):
         self.vaporeon.hp = self.leafeon.hp = 1
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-6))
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=6))
+        self.vaporeon.apply_boosts(Boosts(spe=-6))
+        self.leafeon.apply_boosts(Boosts(spe=6))
         self.choose_move(self.vaporeon, 'extremespeed')
         self.choose_move(self.leafeon, 'quickattack')
         self.run_turn()
@@ -873,7 +873,7 @@ class TestMoves(MultiMoveTestCase):
         self.add_pokemon('jolteon', 1)
         self.add_pokemon('flareon', 0)
         self.vaporeon.hp = 1
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=-2))
+        self.vaporeon.apply_boosts(Boosts(spe=-2))
         self.choose_move(self.vaporeon, 'fakeout')
         self.choose_move(self.leafeon, 'extremespeed')
         self.run_turn()
@@ -939,8 +939,8 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 208)
 
     def test_foulplay(self):
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=3))
-        self.engine.apply_boosts(self.vaporeon, Boosts(atk=-3))
+        self.leafeon.apply_boosts(Boosts(atk=3))
+        self.vaporeon.apply_boosts(Boosts(atk=-3))
         damage = self.engine.use_move(self.vaporeon, movedex['foulplay'], self.leafeon)
         self.assertEqual(damage, 174)
 
@@ -980,7 +980,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertEqual(self.leafeon.boosts['atk'], 3)
 
     def test_gyroball(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=6))
+        self.vaporeon.apply_boosts(Boosts(spe=6))
         self.choose_move(self.leafeon, 'gyroball')
         self.choose_move(self.vaporeon, 'gyroball')
         self.run_turn()
@@ -997,8 +997,8 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.deoxysspeed, 172)
 
     def test_haze(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(def_=2, atk=-2))
-        self.engine.apply_boosts(self.leafeon, Boosts(spd=1))
+        self.vaporeon.apply_boosts(Boosts(def_=2, atk=-2))
+        self.leafeon.apply_boosts(Boosts(spd=1))
         self.choose_move(self.leafeon, 'haze')
         self.choose_move(self.vaporeon, 'dragonclaw')
         self.run_turn()
@@ -1230,7 +1230,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_knockoff(self):
         self.new_battle(p0_item='sitrusberry')
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=1))
+        self.leafeon.apply_boosts(Boosts(atk=1))
         self.choose_move(self.leafeon, 'knockoff')
         self.run_turn()
 
@@ -1255,7 +1255,7 @@ class TestMoves(MultiMoveTestCase):
     def test_knockoff_vs_focussash_and_evolite(self):
         self.new_battle(p0_item='focussash')
         self.add_pokemon('chansey', 0, item='eviolite')
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=4))
+        self.leafeon.apply_boosts(Boosts(atk=4))
         self.choose_move(self.leafeon, 'knockoff')
         self.choose_move(self.vaporeon, 'haze')
         self.run_turn()
@@ -1298,7 +1298,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_knockoff_berry(self):
         self.new_battle(p0_item='sitrusberry')
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=2))
+        self.leafeon.apply_boosts(Boosts(atk=2))
         self.choose_move(self.leafeon, 'knockoff')
         self.run_turn()
 
@@ -1319,7 +1319,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_knockoff_ko_target(self):
         self.new_battle(p0_item='lumberry', p0_ability='unburden')
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=4))
+        self.leafeon.apply_boosts(Boosts(atk=4))
         self.choose_move(self.leafeon, 'knockoff')
         self.run_turn()
 
@@ -1654,7 +1654,7 @@ class TestMoves(MultiMoveTestCase):
 
     @patch('random.randrange', lambda _: 1) # no parahax, no miss
     def test_psychoshift(self):
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=6))
+        self.leafeon.apply_boosts(Boosts(spe=6))
         self.choose_move(self.leafeon, 'thunderwave')
         self.choose_move(self.vaporeon, 'psychoshift')
         self.run_turn()
@@ -1729,7 +1729,7 @@ class TestMoves(MultiMoveTestCase):
 
     def test_slower_pursuit_vs_switching_move(self):
         self.add_pokemon('flareon', 0)
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
+        self.leafeon.apply_boosts(Boosts(spe=-1))
         self.choose_move(self.leafeon, 'pursuit')
         self.choose_move(self.vaporeon, 'uturn')
         self.run_turn()
@@ -1750,7 +1750,7 @@ class TestMoves(MultiMoveTestCase):
         self.add_pokemon('flareon', 0)
         self.add_pokemon('espeon', 1)
         self.leafeon.hp = 1
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1))
+        self.leafeon.apply_boosts(Boosts(spe=-1))
         self.choose_move(self.leafeon, 'pursuit')
         self.choose_move(self.vaporeon, 'uturn')
         self.run_turn()
@@ -1771,8 +1771,8 @@ class TestMoves(MultiMoveTestCase):
 
     def test_pursuit_vs_batonpass(self):
         self.add_pokemon('flareon', 0)
-        self.engine.apply_boosts(self.leafeon, Boosts(spe=-1, acc=1))
-        self.engine.apply_boosts(self.vaporeon, Boosts(spd=3))
+        self.leafeon.apply_boosts(Boosts(spe=-1, acc=1))
+        self.vaporeon.apply_boosts(Boosts(spd=3))
         self.choose_move(self.leafeon, 'leechseed')
         self.run_turn()
         self.choose_move(self.leafeon, 'pursuit')
@@ -1912,7 +1912,7 @@ class TestMoves(MultiMoveTestCase):
     def test_retaliate(self):
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 0)
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=1))
+        self.leafeon.apply_boosts(Boosts(atk=1))
         self.choose_move(self.leafeon, 'leafblade')
         self.choose_move(self.vaporeon, 'surf')
         self.run_turn()
@@ -1923,7 +1923,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 119) # 140 BP
 
-        self.engine.apply_boosts(self.flareon, Boosts(spe=1))
+        self.flareon.apply_boosts(Boosts(spe=1))
         self.choose_move(self.leafeon, 'earthquake')
         self.choose_move(self.flareon, 'retaliate')
         self.run_turn()
@@ -1947,7 +1947,7 @@ class TestMoves(MultiMoveTestCase):
         self.vaporeon.hp = self.vaporeon.max_hp
         self.leafeon.hp = 12
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(spe=1))
+        self.vaporeon.apply_boosts(Boosts(spe=1))
         self.choose_move(self.vaporeon, 'reversal')
         self.choose_move(self.leafeon, 'reversal')
         self.run_turn()
@@ -1996,7 +1996,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.types, [Type.WATER, None])
 
     def test_sacredsword(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(evn=6, def_=6))
+        self.vaporeon.apply_boosts(Boosts(evn=6, def_=6))
         self.choose_move(self.leafeon, 'sacredsword')
         self.choose_move(self.vaporeon, 'splash')
         self.run_turn()
@@ -2343,7 +2343,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertEqual(self.pidgeot.boosts['spe'], 0)
 
     def test_storedpower(self):
-        self.engine.apply_boosts(self.vaporeon, Boosts(spa=1, spd=1, def_=3))
+        self.vaporeon.apply_boosts(Boosts(spa=1, spd=1, def_=3))
         self.choose_move(self.vaporeon, 'storedpower')
         self.choose_move(self.leafeon, 'storedpower')
         self.run_turn()
@@ -2351,7 +2351,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.vaporeon, 9)
         self.assertDamageTaken(self.leafeon, 235)
 
-        self.engine.apply_boosts(self.vaporeon, Boosts(atk=-4))
+        self.vaporeon.apply_boosts(Boosts(atk=-4))
         self.choose_move(self.leafeon, 'rest')
         self.choose_move(self.vaporeon, 'storedpower')
         self.run_turn()
@@ -2720,7 +2720,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 66)
 
         self.leafeon.hp = self.leafeon.max_hp
-        self.engine.apply_boosts(self.vaporeon, Boosts(spa=-1))
+        self.vaporeon.apply_boosts(Boosts(spa=-1))
         self.choose_move(self.leafeon, 'sunnyday')
         self.choose_move(self.vaporeon, 'weatherball')
         self.run_turn()
@@ -2907,8 +2907,8 @@ class TestSubstitute(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 4)
 
     def test_haze_goes_through_substitute_but_clearsmog_doesnt(self):
-        self.engine.apply_boosts(self.leafeon, Boosts(atk=2, spa=-3))
-        self.engine.apply_boosts(self.vaporeon, Boosts(spd=1))
+        self.leafeon.apply_boosts(Boosts(atk=2, spa=-3))
+        self.vaporeon.apply_boosts(Boosts(spd=1))
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'clearsmog')
         self.run_turn()

@@ -231,7 +231,7 @@ class PetayaBerry(ItemEffect):
 
     @staticmethod
     def on_eat(pokemon, engine):
-        engine.apply_boosts(pokemon, Boosts(spa=1), self_induced=True)
+        pokemon.apply_boosts(Boosts(spa=1), self_induced=True)
 
 class PowerHerb(ItemEffect):
     single_use = True
@@ -306,7 +306,7 @@ class WeaknessPolicy(ItemEffect):
             engine.get_effectiveness(foe, move, target) > 1 and
             target.use_item(engine) is not FAIL
         ):
-            engine.apply_boosts(target, Boosts(atk=2, spa=2), self_induced=True)
+            target.apply_boosts(Boosts(atk=2, spa=2), self_induced=True)
 
 class WhiteHerb(ItemEffect):
     single_use = True
