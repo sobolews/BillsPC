@@ -826,7 +826,7 @@ class BattleEngine(object):
 
             spe = self.effective_spe(pokemon)
             move_choices = [MoveEvent(pokemon, spe, self.modify_priority(pokemon, move), move)
-                            for move in self.get_move_choices(pokemon)]
+                            for move in pokemon.get_move_choices()]
             switch_choices = [SwitchEvent(pokemon, spe, team_member)
                               for team_member in pokemon.get_switch_choices()]
 
@@ -840,13 +840,6 @@ class BattleEngine(object):
                                     pokemon.get_effect(ITEM))):
             priority += effect.on_modify_priority(pokemon, move, self)
         return priority
-
-    def get_move_choices(self, pokemon):
-        move_choices = [move for move in pokemon.moveset if pokemon.pp[move] > 0]
-
-        for effect in pokemon.effects:
-            move_choices = effect.on_get_move_choices(pokemon, move_choices)
-        return move_choices or [movedex['struggle']]
 
     def get_switch_decision(self, side, forced=False):
         choices = side.get_switch_choices(forced=forced)

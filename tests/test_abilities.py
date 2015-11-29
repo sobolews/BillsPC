@@ -401,8 +401,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
-        self.assertListEqual(self.engine.get_move_choices(self.leafeon),
-                             [movedex['protect'], movedex['foulplay'], movedex['toxic']])
+        self.assertMoveChoices(self.leafeon, ('protect', 'foulplay', 'toxic'))
 
         for _ in range(4):
             self.assertTrue(self.leafeon.has_effect(Volatile.DISABLE))

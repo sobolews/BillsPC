@@ -573,7 +573,7 @@ class BattleClient(object):
                                  (pokemon, request['active'][0]['moves'][i]['id'], move))
                             assert request['active'][0]['moves'][i]['pp'] == pokemon.pp[move], \
                                 '%s: %s has %d pp' % (pokemon, move, pokemon.pp[move])
-                            choices = BattleEngine.get_move_choices.__func__(None, pokemon)
+                            choices = BattlePokemon.get_move_choices.__func__(pokemon)
                             if not request['active'][0]['moves'][i]['disabled']:
                                 assert move in choices, \
                                     "%s's %s should be disabled, but it isn't" % (pokemon, move)

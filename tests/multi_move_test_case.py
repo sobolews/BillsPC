@@ -189,7 +189,7 @@ class MultiMoveTestCase(TestCase):
 
     def assertMoveChoices(self, pokemon, moves):
         moves = set([movedex[move] if isinstance(move, str) else move for move in moves])
-        self.assertSetEqual(set(self.engine.get_move_choices(pokemon)), moves)
+        self.assertSetEqual(set(pokemon.get_move_choices()), moves)
 
     def assertSwitchChoices(self, pokemon, choices):
         self.assertSetEqual(set(pokemon.get_switch_choices()), choices)
