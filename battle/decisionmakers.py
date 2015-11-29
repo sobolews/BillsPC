@@ -1,3 +1,4 @@
+from pokedex.enums import Decision
 import random
 
 class BaseDecisionMaker(object):
