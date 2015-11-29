@@ -132,3 +132,13 @@ class DeltaStreamWeather(BaseWeatherEffect):
                     log.i("DeltaStream suppressed %s's %s type move", user, move.type.name)
                 return effectiveness * 0.5
         return effectiveness
+
+WEATHER_EFFECTS = {
+    Weather.RAINDANCE: RainDanceWeather,
+    Weather.PRIMORDIALSEA: PrimordialSeaWeather,
+    Weather.SUNNYDAY: SunnyDayWeather,
+    Weather.DESOLATELAND: DesolateLandWeather,
+    Weather.HAIL: HailWeather,
+    Weather.SANDSTORM: SandstormWeather,
+    Weather.DELTASTREAM: DeltaStreamWeather
+}

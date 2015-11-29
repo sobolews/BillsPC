@@ -1,8 +1,8 @@
 from itertools import izip_longest
 from subprocess import check_output
 
-from pokedex import effects, weather
 from pokedex.enums import FAIL, Status, Hazard, Weather
+from pokedex.weather import WEATHER_EFFECTS
 
 if __debug__: from _logging import log
 
@@ -26,16 +26,6 @@ class BattleField(object):
         self._weather_suppressed = False
         self.win = None            # set to 0 or 1 when one side wins
         self.turns = 0
-
-    WEATHER_EFFECTS = {
-        Weather.RAINDANCE: weather.RainDanceWeather,
-        Weather.PRIMORDIALSEA: weather.PrimordialSeaWeather,
-        Weather.SUNNYDAY: weather.SunnyDayWeather,
-        Weather.DESOLATELAND: weather.DesolateLandWeather,
-        Weather.HAIL: weather.HailWeather,
-        Weather.SANDSTORM: weather.SandstormWeather,
-        Weather.DELTASTREAM: weather.DeltaStreamWeather
-    }
 
     @property
     def effects(self):
@@ -64,7 +54,7 @@ class BattleField(object):
             self.remove_effect(self._weather)
         if __debug__: log.i('The weather became %s', weather.name)
         self._weather = weather
-        w_effect = self.WEATHER_EFFECTS[weather](duration)
+        w_effect = WEATHER_EFFECTS[weather](duration)
         if self._weather_suppressed:
             w_effect.suppressed = True
         self.set_effect(w_effect)
