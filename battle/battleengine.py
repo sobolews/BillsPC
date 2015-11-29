@@ -864,7 +864,7 @@ class BattleEngine(object):
 
     def init_battle(self):
         if self.battlefield.turns > 0:
-            if __debug__: log.w('Trying to initialize battle already in progess:\n\n%r',
+            if __debug__: log.e('Trying to initialize battle already in progress:\n\n%r',
                                 self.battlefield)
             return
 
