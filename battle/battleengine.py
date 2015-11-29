@@ -780,7 +780,7 @@ class BattleEngine(object):
 
     def switch_in(self, pokemon):
         assert pokemon in pokemon.side.team
-        assert (not pokemon.is_fainted() and pokemon.hp > 0)
+        assert (not pokemon.is_fainted()) and pokemon.hp > 0
 
         pokemon.side.active_pokemon = pokemon
         pokemon.is_active = True
