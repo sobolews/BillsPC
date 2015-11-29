@@ -168,6 +168,16 @@ class BattleSide(object):
             for effect in pokemon.effects:
                 effect.on_update(pokemon, engine)
 
+    def get_switch_choices(self, pokemon=None, forced=False):
+        switch_choices = [team_member for team_member in self.team if
+                          not team_member.is_fainted() and not team_member.is_active]
+
+        if not forced and pokemon is not None:
+            for effect in pokemon.effects:
+                if effect.on_trap_check(pokemon):
+                    return []
+        return switch_choices
+
     def __str__(self):
         return 'Side %d: [%s]' % (self.index, ', '.join(str(p) for p in self.team))
 

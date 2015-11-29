@@ -429,6 +429,9 @@ class BattlePokemon(object):
                      else 1)
         self.pp[move] -= deduction
 
+    def get_switch_choices(self, forced=False):
+        return self.side.get_switch_choices(pokemon=self, forced=forced)
+
     def __str__(self):
         if self.name == self.base_species:
             return self.name

@@ -314,7 +314,7 @@ class batonpass(Move):
         self.targets_user = True
 
     def check_success(self, user, _, engine):
-        if not engine.get_switch_choices(user.side, user, forced=True):
+        if not user.get_switch_choices(forced=True):
             return FAIL # no possible switches
 
     def on_success(self, user, _, engine):

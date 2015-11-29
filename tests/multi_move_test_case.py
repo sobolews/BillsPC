@@ -192,7 +192,7 @@ class MultiMoveTestCase(TestCase):
         self.assertSetEqual(set(self.engine.get_move_choices(pokemon)), moves)
 
     def assertSwitchChoices(self, pokemon, choices):
-        self.assertSetEqual(set(self.engine.get_switch_choices(pokemon.side, pokemon)), choices)
+        self.assertSetEqual(set(pokemon.get_switch_choices()), choices)
 
     def assertAbility(self, pokemon, ability):
         ability = abilitydex[ability]

@@ -653,7 +653,7 @@ class BattleEngine(object):
         ):
             return FAIL
 
-        team_members = self.get_switch_choices(pokemon.side, forced=True)
+        team_members = pokemon.get_switch_choices(forced=True)
         if team_members:
             incoming = random.choice(team_members)
             if __debug__: log.d('Force switching %s for %s', pokemon, incoming)
@@ -828,7 +828,7 @@ class BattleEngine(object):
             move_choices = [MoveEvent(pokemon, spe, self.modify_priority(pokemon, move), move)
                             for move in self.get_move_choices(pokemon)]
             switch_choices = [SwitchEvent(pokemon, spe, team_member)
-                              for team_member in self.get_switch_choices(side, pokemon)]
+                              for team_member in pokemon.get_switch_choices()]
 
             decisions.append(dm.make_move_decision(move_choices + switch_choices, self.battlefield))
 
@@ -848,18 +848,8 @@ class BattleEngine(object):
             move_choices = effect.on_get_move_choices(pokemon, move_choices)
         return move_choices or [movedex['struggle']]
 
-    def get_switch_choices(self, side, pokemon=None, forced=False):
-        switch_choices = [team_member for team_member in side.team if
-                          not team_member.is_fainted() and not team_member.is_active]
-
-        if not forced and pokemon is not None:
-            for effect in pokemon.effects:
-                if effect.on_trap_check(pokemon):
-                    return []
-        return switch_choices
-
-    def get_switch_decision(self, side, pokemon=None, forced=False):
-        choices = self.get_switch_choices(side, pokemon, forced)
+    def get_switch_decision(self, side, forced=False):
+        choices = side.get_switch_choices(forced=forced)
         return self.decision_makers[side.index].make_switch_decision(choices, self.battlefield)
 
     def init_battle(self):
@@ -988,9 +978,8 @@ class BattleEngine(object):
                 if __debug__: log.i('Side %d wins!', self.battlefield.win)
 
             if __debug__:
-                if pokemon.effects or pokemon._effect_index:
+                if pokemon.effects:
                     log.w('Post-fainted pokemon has effects: %r', pokemon)
-            pokemon._effect_index.clear() # just in case
 
     def _debug_sanity_check(self):
         if self.battlefield.win is None:

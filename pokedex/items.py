@@ -245,7 +245,7 @@ class RedCard(ItemEffect):
             not foe.is_fainted() and
             move.category is not MoveCategory.STATUS and
             foe.is_active and
-            engine.get_switch_choices(foe.side, forced=True) and
+            foe.get_switch_choices(forced=True) and
             target.use_item(engine) is not FAIL
         ):
             engine.force_random_switch(foe, target)
