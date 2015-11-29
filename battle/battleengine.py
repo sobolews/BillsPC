@@ -148,15 +148,6 @@ class BattleEngine(object):
             return FAIL
 
         damage = self.try_move_hit(user, move, target)
-        if damage is not FAIL:
-            damage, total_damage = damage
-
-        if damage not in (FAIL, None, 0):
-            if move.recoil > 0 and not user.is_fainted():
-                self.damage(user, int(round(total_damage * move.recoil / 100.0)) or 1,
-                            Cause.RECOIL, move)
-
-            target.was_attacked_this_turn = {'move': move, 'damage': damage}
 
         if (user.hp == 0 or move.selfdestruct) and not user.status is Status.FNT:
             if __debug__: log.d('User has no HP after using move, fainting')
@@ -178,9 +169,6 @@ class BattleEngine(object):
         return damage # for testing only
 
     def try_move_hit(self, user, move, target):
-        """
-        Return either FAIL, or a tuple (damage, total_damage)
-        """
         assert target is not None
 
         if move.check_success(user, target, self) is FAIL:
@@ -221,11 +209,18 @@ class BattleEngine(object):
                     self.run_update()
 
             if __debug__: log.i('Hit %d times!', hit+1)
-            return (damage, total_damage)
 
         else:
             damage = total_damage = self.move_hit(user, move, target)
-            return (damage, total_damage)
+
+        if damage not in (FAIL, None, 0):
+            if move.recoil > 0 and not user.is_fainted():
+                self.damage(user, int(round(total_damage * move.recoil / 100.0)) or 1,
+                            Cause.RECOIL, move)
+
+            target.was_attacked_this_turn = {'move': move, 'damage': damage}
+
+        return total_damage
 
     def move_hit(self, user, move, target):
         assert target is not None

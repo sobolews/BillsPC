@@ -221,7 +221,7 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
 
     @patch('random.randrange', lambda _: 0) # hit
     def test_try_move_hit_no_miss(self):
-        damage, _ = self.engine.try_move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
+        damage = self.engine.try_move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
         self.assertEqual(damage, 91)
 
     def test_try_move_hit_fails_check_success(self):
@@ -238,11 +238,9 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
     def test_try_move_hit_multihit(self):
         bulletseed = movedex['bulletseed']
         with patch.object(bulletseed, 'multihit', (5,)): # hit 5 times
-            damage, total_damage = self.engine.try_move_hit(self.vaporeon, movedex['bulletseed'],
+            total_damage = self.engine.try_move_hit(self.vaporeon, movedex['bulletseed'],
                                                             self.flareon)
-            self.assertEqual(damage, 12) # damage returned is from one hit
-            self.assertEqual(self.flareon.hp, self.flareon.max_hp - (5 * damage))
-            self.assertEqual(total_damage, 5 * damage)
+            self.assertEqual(self.flareon.hp, self.flareon.max_hp - total_damage)
 
     def test_acc_boost(self):
         self.leafeon.is_active = True
@@ -250,7 +248,7 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
         self.engine.apply_boosts(self.leafeon, Boosts(acc=1))
 
         with patch('random.randrange', lambda _: 92): # accuracy is 93.3333, floors to 93
-            damage, _ = self.engine.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
+            damage = self.engine.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
             self.assertEqual(damage, 71)
 
         with patch('random.randrange', lambda _: 93):
@@ -266,7 +264,7 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
         self.engine.apply_boosts(self.leafeon, Boosts(evn=-1))
 
         with patch('random.randrange', lambda _: 99): # miss if possible
-            damage, _ = self.engine.try_move_hit(self.vaporeon, movedex['stoneedge'], self.leafeon)
+            damage = self.engine.try_move_hit(self.vaporeon, movedex['stoneedge'], self.leafeon)
             self.assertEqual(damage, 49)
 
 class TestBattleEngineUseMove(BattleEngineMovesTestCase):
