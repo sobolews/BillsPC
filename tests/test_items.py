@@ -1,7 +1,6 @@
 from mock import patch
 
 from battle.battleengine import BattleEngine
-from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition
 from pokedex.items import itemdex
 from pokedex.moves import movedex

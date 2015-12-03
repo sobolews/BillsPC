@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from battle.battlepokemon import BattlePokemon
-from battle.battlefield import BattleSide
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
 from mining import create_pokedex

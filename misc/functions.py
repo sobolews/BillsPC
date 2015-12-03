@@ -1,5 +1,3 @@
-from math import ceil
-
 def clamp_int(num, lower, upper=float('inf')):
     assert lower <= upper, 'Wrong order: (%d %d %d)' % (num, lower, upper)
     assert isinstance(num, int)

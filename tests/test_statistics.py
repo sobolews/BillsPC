@@ -2,7 +2,7 @@ from random import randint
 from unittest import TestCase
 
 from mining import statistics
-from test_statistics_data import TEAM1, TEAM2, TEAM3
+from tests.test_statistics_data import TEAM1, TEAM2, TEAM3
 
 class TestRandbatsCounter(TestCase):
     def test_sample(self):

@@ -5,10 +5,7 @@ Usage:
 Type a pokemon, get move/ability/item probabilities, weakness/resistances, and stats.
 """
 import cmd
-import os
-import pickle
 import sys
-from itertools import izip_longest
 
 from mining.pokedexmaker import create_pokedex
 from mining.statistics import RandbatsStatistics

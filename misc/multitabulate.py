@@ -1,4 +1,3 @@
-from itertools import izip_longest
 from tabulate import tabulate
 
 def multitabulate(tables, tablefmt='psql'):

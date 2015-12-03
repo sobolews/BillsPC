@@ -5,7 +5,6 @@ from functools import partial
 
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
-from battle.battleengine import BattleEngine
 from bot.foeside import FoeBattleSide
 from bot.unrevealedpokemon import UnrevealedPokemon
 from bot.cheatsheetengine import CheatSheetEngine

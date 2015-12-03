@@ -15,7 +15,6 @@ from pokedex.abilities import abilitydex
 from pokedex.enums import (MoveCategory, Volatile, Status, Cause, FAIL, Type, Decision, ABILITY,
                            ITEM)
 from pokedex.moves import movedex, Move
-from pokedex.items import itemdex
 from pokedex.stats import Boosts
 
 if __debug__: from _logging import log

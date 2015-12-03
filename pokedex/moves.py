@@ -9,7 +9,7 @@ if __debug__: from _logging import log
 from misc.functions import clamp_int
 from pokedex import effects, statuses
 from pokedex.enums import (Type, Status, Volatile, SideCondition, STATUS, PHYSICAL, SPECIAL,
-                           FAIL, PseudoWeather, Cause, Weather, Hazard, Decision, ABILITY, ITEM)
+                           FAIL, PseudoWeather, Cause, Weather, Hazard, Decision)
 from pokedex.items import itemdex
 from pokedex.stats import Boosts
 from pokedex.secondaryeffect import SecondaryEffect

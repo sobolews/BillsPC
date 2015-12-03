@@ -1,14 +1,6 @@
 import os
-import pickle
-import shlex
 import tempfile
-from datetime import datetime, timedelta
-from subprocess import check_call
 from unittest import TestCase
-
-from mock import patch
-from nose.plugins.attrib import attr
-from nose.tools import nottest
 
 from mining.pokedexmaker import create_pokedex
 from pokedex.enums import Type

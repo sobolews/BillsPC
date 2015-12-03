@@ -3,7 +3,7 @@ Most tests of the core battling mechanics, including moves, items, abilities, ef
 complex interactions between them should use the MultiMoveTestCase and associated helper functions
 and classes.
 """
-from collections import defaultdict, deque
+from collections import defaultdict
 from unittest import TestCase
 
 from battle.battleengine import BattleEngine
