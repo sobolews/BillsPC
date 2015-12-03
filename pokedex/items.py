@@ -386,6 +386,152 @@ class ToxicPlate(BasePlate):
 class ZapPlate(BasePlate):
     plate_type = Type.ELECTRIC
 
+class BaseMegaStone(ItemEffect):
+    forme = None
+    is_mega_stone = True
+    removable = False
+
+class Venusaurite(BaseMegaStone):
+    forme = 'venusaurmega'
+
+class CharizarditeX(BaseMegaStone):
+    forme = 'charizardmegax'
+
+class CharizarditeY(BaseMegaStone):
+    forme = 'charizardmegay'
+
+class Blastoisinite(BaseMegaStone):
+    forme = 'blastoisemega'
+
+class Alakazite(BaseMegaStone):
+    forme = 'alakazammega'
+
+class Gengarite(BaseMegaStone):
+    forme = 'gengarmega'
+
+class Kangaskhanite(BaseMegaStone):
+    forme = 'kangaskhanmega'
+
+class Pinsirite(BaseMegaStone):
+    forme = 'pinsirmega'
+
+class Gyaradosite(BaseMegaStone):
+    forme = 'gyaradosmega'
+
+class Aerodactylite(BaseMegaStone):
+    forme = 'aerodactylmega'
+
+class MewtwoniteX(BaseMegaStone):
+    forme = 'mewtwomegax'
+
+class MewtwoniteY(BaseMegaStone):
+    forme = 'mewtwomegay'
+
+class Ampharosite(BaseMegaStone):
+    forme = 'ampharosmega'
+
+class Scizorite(BaseMegaStone):
+    forme = 'scizormega'
+
+class Heracronite(BaseMegaStone):
+    forme = 'heracrossmega'
+
+class Houndoominite(BaseMegaStone):
+    forme = 'houndoommega'
+
+class Tyranitarite(BaseMegaStone):
+    forme = 'tyranitarmega'
+
+class Blazikenite(BaseMegaStone):
+    forme = 'blazikenmega'
+
+class Gardevoirite(BaseMegaStone):
+    forme = 'gardevoirmega'
+
+class Mawilite(BaseMegaStone):
+    forme = 'mawilemega'
+
+class Aggronite(BaseMegaStone):
+    forme = 'aggronmega'
+
+class Medichamite(BaseMegaStone):
+    forme = 'medichammega'
+
+class Manectite(BaseMegaStone):
+    forme = 'manectricmega'
+
+class Banettite(BaseMegaStone):
+    forme = 'banettemega'
+
+class Absolite(BaseMegaStone):
+    forme = 'absolmega'
+
+class Garchompite(BaseMegaStone):
+    forme = 'garchompmega'
+
+class Lucarionite(BaseMegaStone):
+    forme = 'lucariomega'
+
+class Abomasite(BaseMegaStone):
+    forme = 'abomasnowmega'
+
+class Beedrillite(BaseMegaStone):
+    forme = 'beedrillmega'
+
+class Pidgeotite(BaseMegaStone):
+    forme = 'pidgeotmega'
+
+class Slowbronite(BaseMegaStone):
+    forme = 'slowbromega'
+
+class Steelixite(BaseMegaStone):
+    forme = 'steelixmega'
+
+class Sceptilite(BaseMegaStone):
+    forme = 'sceptilemega'
+
+class Swampertite(BaseMegaStone):
+    forme = 'swampertmega'
+
+class Sablenite(BaseMegaStone):
+    forme = 'sableyemega'
+
+class Sharpedonite(BaseMegaStone):
+    forme = 'sharpedomega'
+
+class Cameruptite(BaseMegaStone):
+    forme = 'cameruptmega'
+
+class Altarianite(BaseMegaStone):
+    forme = 'altariamega'
+
+class Glalitite(BaseMegaStone):
+    forme = 'glaliemega'
+
+class Salamencite(BaseMegaStone):
+    forme = 'salamencemega'
+
+class Metagrossite(BaseMegaStone):
+    forme = 'metagrossmega'
+
+class Latiasite(BaseMegaStone):
+    forme = 'latiasmega'
+
+class Latiosite(BaseMegaStone):
+    forme = 'latiosmega'
+
+class Lopunnite(BaseMegaStone):
+    forme = 'lopunnymega'
+
+class Galladite(BaseMegaStone):
+    forme = 'gallademega'
+
+class Audinite(BaseMegaStone):
+    forme = 'audinomega'
+
+class Diancite(BaseMegaStone):
+    forme = 'dianciemega'
+
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
            inspect.isclass(obj) and
