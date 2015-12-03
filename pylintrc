@@ -1,0 +1,132 @@
+[MASTER]
+
+# Add files or directories to the blacklist. They should be base names, not
+# paths.
+ignore=tests
+
+# Use multiple processes to speed up Pylint.
+jobs=4
+
+[MESSAGES CONTROL]
+
+# Disable the message, report, category or checker with the given id(s). You
+# can either give multiple identifiers separated by comma (,) or put this
+# option multiple times (only on the command line, not in the configuration
+# file where it should appear only once).You can also use "--disable=all" to
+# disable everything first and then reenable specific checks. For example, if
+# you want to run only the similarities checker, you can use "--disable=all
+# --enable=similarities". If you want to run only the classes checker, but have
+# no Warning level messages displayed, use"--disable=all --enable=classes
+# --disable=W"
+disable=E1608,W1627,E1601,E1603,E1602,W1621,W1620,W1623,W1622,W1624,W1609,W1608,W1607,W1606,W1605,W1604,W1603,W1602,W1601,W1639,W1640,I0021,W1638,I0020,W1618,W1619,W1630,W1626,W1637,W1634,W1635,W1610,W1611,W1612,W1613,W1614,W1615,W1616,W1617,W1632,W1633,W0704,W1628,W1629,W1636,C0111,R0904,R0903,C0321,C0330,R0911,R0912,R0913,R0914,R0915,R0902,W0621,W0231,C0103,R0201,I0011
+
+[REPORTS]
+# Tells whether to display a full report or only the messages
+reports=no
+
+# Template used to display messages. This is a python new-style format string
+# used to format the message information. See doc for all details
+msg-template=[38;5;9m[{msg_id} {symbol}][0m [2m{line}: {obj}:[0m {msg}
+
+[SIMILARITIES]
+
+# Minimum lines number of a similarity.
+min-similarity-lines=5
+
+# Ignore comments when computing similarities.
+ignore-comments=yes
+
+# Ignore docstrings when computing similarities.
+ignore-docstrings=yes
+
+# Ignore imports when computing similarities.
+ignore-imports=no
+
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+# notes=FIXME,XXX,TODO
+notes=
+
+[BASIC]
+
+# Required attributes for module, separated by a comma
+required-attributes=
+
+# List of builtins function names that should not be used, separated by a comma
+bad-functions=
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=100
+
+# Regexp for a line that is allowed to be longer than the limit.
+ignore-long-lines=^$
+
+# Maximum number of lines in a module
+max-module-lines=5000
+
+# String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
+# tab).
+indent-string='    '
+
+# Number of spaces of indent required inside a hanging or continued line.
+indent-after-paren=4
+
+# Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
+expected-line-ending-format=LF
+
+[VARIABLES]
+
+# Tells whether we should check for unused import in __init__ files.
+init-import=no
+
+# A regular expression matching the name of dummy variables (i.e. expectedly
+# not used).
+dummy-variables-rgx=_$|dummy|ignore|args|kwargs|msg
+
+# List of strings which can identify a callback function by name. A callback
+# name must start or end with one of those strings.
+callbacks=on_,callback,get_base_power
+
+[CLASSES]
+
+# List of method names used to declare (i.e. assign) instance attributes.
+defining-attr-methods=__init__,__new__,setUp
+
+# List of valid names for the first argument in a class method.
+valid-classmethod-first-arg=cls
+
+# List of valid names for the first argument in a metaclass class method.
+valid-metaclass-classmethod-first-arg=mcs
+
+# List of member names, which should be excluded from the protected access
+# warning.
+exclude-protected=_effect_index
+
+[EXCEPTIONS]
+
+# Exceptions that will emit a warning when being caught. Defaults to
+# "Exception"
+overgeneral-exceptions=BaseException
+
+[TYPECHECK]
+
+# Tells whether missing members accessed in mixin class should be ignored. A
+# mixin class is detected if its name ends with "mixin" (case insensitive).
+ignore-mixin-members=yes
+
+# List of module names for which member attributes should not be checked
+# (useful for modules/projects where namespaces are manipulated during runtime
+# and thus existing member attributes cannot be deduced by static analysis
+ignored-modules=
+
+# List of classes names for which member attributes should not be checked
+# (useful for classes with attributes dynamically set).
+ignored-classes=
+
+# List of members which are set dynamically and missed by pylint inference
+# system, and so shouldn't trigger E0201 when accessed. Python regular
+# expressions are accepted.
+generated-members=TRIO
