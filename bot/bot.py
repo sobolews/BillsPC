@@ -35,6 +35,7 @@ class Bot(WebSocketClient):
         self.latest_request = None
         self.battleclient = None
         self.battleroom = None
+        self.logged_in = False
 
     def start(self, interactive=True):
         self.logged_in = False
@@ -47,7 +48,7 @@ class Bot(WebSocketClient):
     def opened(self):
         print "Connected to %s" % self.url
 
-    def send(self, msg):
+    def send(self, msg, _=False):
         print sent(msg)
         super(Bot, self).send(msg)
 
@@ -157,7 +158,7 @@ class InteractiveBot(Bot):
                          protocols=['http-only', 'chat'],
                          username='user', password='password')
     """
-    def start(self):
+    def start(self, interactive=True):
         super(InteractiveBot, self).start(interactive=True)
 
     def process_message(self, msg):

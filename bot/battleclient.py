@@ -48,6 +48,8 @@ class BattleClient(object):
         self.battlefield = None # BattleField
         self.is_active = True
         self.last_sent = None
+        self.request = None
+        self.rqid = None
 
         self.make_moves = False # set to True to have the bot make random choices (TODO: use an AI
                                 # module for choices)
@@ -111,10 +113,10 @@ class BattleClient(object):
         side = int(json['side']['id'][1]) - 1
         assert self.my_player == side
         j_team = json['side']['pokemon']
-        team = [self.my_pokemon_from_json(j_pokemon, side) for j_pokemon in j_team]
+        team = [self.my_pokemon_from_json(j_pokemon) for j_pokemon in j_team]
         self.my_side = BattleSide(team, side, self.name)
 
-    def my_pokemon_from_json(self, j_pokemon, side):
+    def my_pokemon_from_json(self, j_pokemon):
         details = j_pokemon['details'].split(', ')
         species = normalize_name(details[0])
         level = int(details[1].lstrip('L'))
@@ -365,7 +367,7 @@ class BattleClient(object):
 
         weather = Weather[msg[1].upper()]
 
-        if (len(msg) > 2 and msg[2] == '[upkeep]'):
+        if len(msg) > 2 and msg[2] == '[upkeep]':
             if msg[1].lower() not in ('desolateland', 'primordialsea', 'deltastream'):
                 assert self.battlefield.weather is not None, \
                     'Handling upkeep (%s) but weather is None' % msg[1]

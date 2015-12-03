@@ -39,7 +39,7 @@ class CheatSheetCli(cmd.Cmd):
                                       if char in pokemon]))
         self.pokedex = create_pokedex()
 
-    def completenames(self, text, line, begidx, endidx):
+    def completenames(self, text, *ignore):
         if not text:
             return "Enter a pokemon."
         return sorted(list(set(self.completions[pokemon]

@@ -1,6 +1,8 @@
+# pylint: disable=bad-whitespace
 """
 Pokemon type chart
 """
+
 from pokedex.enums import Type
 
 _TYPE_MATRIX = (                                                                     # v Attack

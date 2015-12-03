@@ -597,6 +597,8 @@ class MegaLauncher(AbilityEffect):
         return base_power
 
 class MoldBreaker(AbilityEffect):
+    suppressed = None
+
     def on_break_mold(self, target, engine):
         if target.ability.name in MOLDS:
             self.suppressed = True

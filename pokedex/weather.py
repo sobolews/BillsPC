@@ -18,7 +18,7 @@ class BaseWeatherEffect(BaseEffect):
                 for effect in pokemon.effects:
                     effect.on_weather(pokemon, self.source, engine)
 
-    def weather_modify_damage(self, move, damage):
+    def weather_modify_damage(self, _, damage):
         return damage
 
 class SunnyDayWeather(BaseWeatherEffect):

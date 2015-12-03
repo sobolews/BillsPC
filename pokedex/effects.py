@@ -37,6 +37,8 @@ class Attract(BaseEffect):
             return FAIL
 
 class BaseAuraFieldEffect(BaseEffect):
+    aura_type = None
+
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if move.type is self.aura_type:
             if __debug__: log.i("%s boosted %s's power!", self.source.name, move)

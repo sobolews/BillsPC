@@ -96,7 +96,7 @@ class BattlePokemon(object):
         """
         effect = self._effect_index.pop(source, None)
         if effect is None:
-            if __debug__: log.d("Trying to remove %s from %s, but it wasn't found!" , source, self)
+            if __debug__: log.d("Trying to remove %s from %s, but it wasn't found!", source, self)
             return False
 
         if __debug__: log.i('Removed %s from %s', effect, self)

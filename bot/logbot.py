@@ -8,6 +8,7 @@ class LogBot(Bot):
     def __init__(self, logfile=None, *args, **kwargs):
         super(LogBot, self).__init__(*args, **kwargs)
         self.logfile_path = logfile or ('./logbot.%s.log' % self.username)
+        self.logfile = None
 
     def __enter__(self):
         self.logfile = open(self.logfile_path, 'a')
@@ -17,7 +18,7 @@ class LogBot(Bot):
         self.logfile.close()
         self.close_connection()
 
-    def send(self, msg):
+    def send(self, msg, _=False):
         super(LogBot, self).send(msg)
         self.logfile.write('>>> ' + msg + '\n')
 

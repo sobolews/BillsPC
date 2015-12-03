@@ -1,2 +1,2 @@
-from statistics import collect_team_stats
-from pokedexmaker import create_pokedex
+from mining.statistics import collect_team_stats
+from mining.pokedexmaker import create_pokedex

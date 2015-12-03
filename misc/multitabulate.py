@@ -16,7 +16,7 @@ def multitabulate(tables, tablefmt='psql'):
     tabulated = [tabulate(table[1:], table[0], tablefmt=tablefmt).splitlines() for table in tables]
     total_lines = len(max(tabulated, key=len))
     for table in tabulated:
-        for i in range(total_lines - len(table)):
+        for _ in range(total_lines - len(table)):
             table.append(' ' * len(table[0]))
     return '\n'.join('  '.join(line) for line in zip(*tabulated))
 

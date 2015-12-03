@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=unused-variable
 """
 Entry points for various BillsPC utilities.
 """
@@ -56,13 +57,13 @@ def get_parser():
 
     return parser
 
-def rbstats_(args):
+def rbstats_(_):
     from mining.statistics import RandbatsStatistics
     rbstats = r = RandbatsStatistics.from_pickle()
     import IPython
     IPython.embed()
 
-def interactive(args):
+def interactive(_):
     """
     Example usage: (see tests/multi_move_test_case.py for details)
 

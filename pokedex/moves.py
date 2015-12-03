@@ -3293,7 +3293,7 @@ class substitute(Move):
 
     def check_success(self, user, _, engine):
         if user.has_effect(Volatile.SUBSTITUTE) or user.hp <= user.max_hp / 4 or user.hp == 1:
-           return FAIL
+            return FAIL
 
     def on_success(self, user, _, engine):
         engine.direct_damage(user, user.max_hp / 4.0)

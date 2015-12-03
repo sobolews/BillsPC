@@ -39,7 +39,7 @@ def _create_logger(testing=False):
     logger.i = logger.info
     if testing:
         # when testing, anything that produces a warning or higher should be a test failure
-        def logger_assert(self, msg, *fmt):
+        def logger_assert(_, msg, *fmt):
             raise AssertionError(msg % fmt)
         logger.w = logger.e = logger.c = logger.wtf = types.MethodType(logger_assert, logger)
     else:
