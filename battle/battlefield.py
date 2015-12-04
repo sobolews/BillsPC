@@ -110,6 +110,7 @@ class BattleSide(object):
         self.team = team
         self.last_fainted_on_turn = None
         self.username = username or '<side-%d>' % index
+        self.has_mega_evolved = False
 
         for pokemon in self.team:
             pokemon.side = self # ! circular reference; BattleSide owns BattlePokemon

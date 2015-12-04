@@ -55,6 +55,14 @@ class BattlePokemon(object):
         self._effect_index = {}
 
     @property
+    def can_mega_evolve(self):
+        return (self.item is not None and
+                self.item.is_mega_stone and
+                not self.side.has_mega_evolved and
+                not self.is_mega and
+                self.item.forme in self.pokedex_entry.mega_formes)
+
+    @property
     def effects(self):
         return self._effect_index.values()
 
