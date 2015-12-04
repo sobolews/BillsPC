@@ -42,7 +42,7 @@ def parse_pokedex_js(pokedex):
         pokemon = str(pokemon)
         species = str(attrs['species'])
         weight = attrs['weightkg']
-        mega_formes = [forme for forme in attrs.get('otherFormes', ()) if 'mega' in forme]
+        mega_formes = [str(forme) for forme in attrs.get('otherFormes', ()) if 'mega' in forme]
         types = (Type[attrs['types'][0].upper()],
                  Type[attrs['types'][1].upper()] if len(attrs['types']) > 1 else None)
         base_stats = PokemonStats(
