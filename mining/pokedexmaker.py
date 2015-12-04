@@ -10,6 +10,7 @@ from pprint import pformat
 
 from pokedex.stats import PokemonStats
 from pokedex.enums import Type
+from misc.functions import normalize_name
 
 SHOWDOWN_DIR = abspath(join(dirname(__file__), 'Pokemon-Showdown'))
 POKEDEX_JS_PATH = join(SHOWDOWN_DIR, 'data', 'pokedex.js')
@@ -52,15 +53,17 @@ def parse_pokedex_js(pokedex):
             attrs['baseStats']['spd'],
             attrs['baseStats']['spe'])
         fully_evolved = (attrs.get('evos') is None)
+        abilities = [normalize_name(str(ability)) for ability in attrs['abilities'].values()]
 
         pokedex[pokemon] = pokedex[species] = PokedexEntry(
-            pokemon, species, weight, mega_formes, fully_evolved, types, base_stats)
+            pokemon, species, weight, mega_formes, fully_evolved, types, base_stats, abilities)
         pokedex[pokemon[:18]] = pokedex[pokemon] # workaround: the showdown server
                                                  # cuts names off at 18 chars
 
 
 class PokedexEntry(object):
-    def __init__(self, name, species, weight, mega_formes, fully_evolved, types, base_stats):
+    def __init__(self, name, species, weight, mega_formes, fully_evolved,
+                 types, base_stats, abilities):
         self.name = name
         self.species = species
         self.weight = weight
@@ -68,6 +71,7 @@ class PokedexEntry(object):
         self.fully_evolved = fully_evolved
         self.types = types
         self.base_stats = base_stats
+        self.abilities = abilities
 
     def __repr__(self):
         return pformat(self.__dict__)
