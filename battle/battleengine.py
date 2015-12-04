@@ -8,7 +8,7 @@ from functools import partial
 from battle.battlefield import BattleField, BattleSide
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import BaseDecisionMaker
-from battle.events import MoveEvent, SwitchEvent, InstaSwitchEvent, ResidualEvent
+from battle.events import MoveEvent, SwitchEvent, InstaSwitchEvent, ResidualEvent, MegaEvoEvent
 from misc.functions import gf_round
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
@@ -802,7 +802,7 @@ class BattleEngine(object):
 
         pokemon.get_effect(ABILITY).start(pokemon, self)
 
-    def get_move_decisions(self): # TODO: deal with mega evolution decision
+    def get_move_decisions(self):
         decisions = []
         for dm in self.decision_makers:
             side = self.battlefield.sides[dm.index]
@@ -817,6 +817,8 @@ class BattleEngine(object):
                               for team_member in pokemon.get_switch_choices()]
 
             decisions.append(dm.make_move_decision(move_choices + switch_choices, self.battlefield))
+            if pokemon.can_mega_evolve and dm.make_mega_evo_decision(self.battlefield):
+                decisions.append(MegaEvoEvent(pokemon, spe))
 
         return [d for d in decisions if d is not None] # None is not a valid decision unless testing
 

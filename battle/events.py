@@ -99,7 +99,7 @@ class MegaEvoEvent(BaseEvent):
         super(MegaEvoEvent, self).__init__(pokemon, spe)
 
     def run_event(self, engine, queue):
-        engine.run_mega_evo(self.pokemon)
+        self.pokemon.mega_evolve(engine)
 
     def __repr__(self):
         return 'MegaEvoEvent(pokemon=%s)' % self.pokemon

@@ -11,12 +11,18 @@ class BaseDecisionMaker(object):
     def make_switch_decision(self, choices, battlefield):
         raise NotImplementedError
 
+    def make_mega_evo_decision(self, battlefield):
+        raise NotImplementedError
+
 class RandomDecisionMaker(BaseDecisionMaker):
     def make_move_decision(self, choices, battlefield):
         return random.choice([choice for choice in choices if choice.type is Decision.MOVE])
 
     def make_switch_decision(self, choices, battlefield):
         return random.choice(choices)
+
+    def make_mega_evo_decision(self, battlefield):
+        return random.choice((True, False))
 
 class ScriptedDecisionMaker(BaseDecisionMaker):
     def __init__(self, side, decisions):
@@ -31,6 +37,9 @@ class ScriptedDecisionMaker(BaseDecisionMaker):
 
     make_switch_decision = make_move_decision
 
+    def make_mega_evo_decision(self, battlefield):
+        return True
+
 class AutoDecisionMaker(BaseDecisionMaker):
     """ Always return the first choice """
     def make_move_decision(self, choices, battlefield):
@@ -38,3 +47,6 @@ class AutoDecisionMaker(BaseDecisionMaker):
 
     def make_switch_decision(self, choices, battlefield):
         return choices[0]
+
+    def make_mega_evo_decision(self, battlefield):
+        return True
