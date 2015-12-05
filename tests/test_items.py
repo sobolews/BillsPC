@@ -100,8 +100,30 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.muk, (self.muk.max_hp / 2) - (self.muk.max_hp / 16))
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
 
-    # def test_blueorb(self):
-    #     pass # TODO when: implement forme changes
+    def test_blueorb(self):
+        self.new_battle(p1_ability='drought')
+        self.add_pokemon('kyogre', 0, ability='drizzle', item='blueorb')
+
+        self.choose_switch(self.vaporeon, self.kyogre)
+        self.choose_move(self.leafeon, 'sacredfire')
+        self.run_turn()
+
+        self.assertEqual(self.battlefield.weather, Weather.PRIMORDIALSEA)
+        self.assertDamageTaken(self.kyogre, 0)
+        self.assertEqual(self.kyogre.name, 'kyogreprimal')
+        self.assertDictEqual(self.kyogre.stats, {'max_hp': 341, 'atk': 336, 'def': 216,
+                                                 'spa': 396, 'spd': 356, 'spe': 216})
+
+        self.choose_move(self.vaporeon, 'trick')
+        self.run_turn()
+
+        self.assertItem(self.kyogre, 'blueorb')
+
+        self.choose_switch(self.kyogre, self.vaporeon)
+        self.choose_move(self.leafeon, 'flamecharge')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 35)
 
     def test_chestoberry(self):
         self.new_battle(p0_ability='baddreams', p1_ability='noguard',

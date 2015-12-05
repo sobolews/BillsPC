@@ -54,8 +54,15 @@ class BlackSludge(ItemEffect):
         else:
             engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
-# class BlueOrb(ItemEffect):
-#     pass # TODO when: implement forme changes
+class BlueOrb(ItemEffect):
+    removable = False
+
+    @priority(-6)
+    def on_switch_in(self, pokemon, engine):
+        assert pokemon.base_species == 'kyogre'
+
+        if pokemon.name != 'kyogreprimal':
+            pokemon.forme_change('kyogreprimal', engine)
 
 class ChestoBerry(ItemEffect):
     is_berry = True

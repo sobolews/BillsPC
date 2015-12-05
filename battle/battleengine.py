@@ -793,7 +793,8 @@ class BattleEngine(object):
         """
         Foe may be None (e.g. was KO'd with voltswitch)
         """
-        for effect in sorted(pokemon.side.effects, key=lambda c: c.on_switch_in.priority,
+        for effect in sorted(pokemon.effects + pokemon.side.effects,
+                             key=lambda c: c.on_switch_in.priority,
                              reverse=True):
             effect.on_switch_in(pokemon, self)
 
