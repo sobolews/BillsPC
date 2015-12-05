@@ -984,7 +984,18 @@ class SpeedBoost(AbilityEffect):
             pokemon.apply_boosts(Boosts(spe=1))
 
 class StanceChange(AbilityEffect):
-    pass # TODO when: implement forme change
+    @priority(11)
+    def on_before_move(self, user, move, engine):
+        assert user.base_species == 'aegislash'
+
+        if move.name == 'kingsshield' and user.name == 'aegislashblade':
+            user.forme_change('aegislash')
+        elif move.category is not MoveCategory.STATUS and user.name == 'aegislash':
+            user.forme_change('aegislashblade')
+
+    def on_switch_out(self, pokemon, incoming, engine):
+        if pokemon.name == 'aegislashblade':
+            pokemon.forme_change('aegislash')
 
 class Static(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):

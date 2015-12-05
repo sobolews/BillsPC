@@ -2747,8 +2747,74 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertBoosts(self.vaporeon, {'spe': 6})
 
-    # def test_stancechange(self):
-    #     pass # TODO when: implement forme change
+    def test_stancechange(self):
+        self.new_battle('vaporeon', 'aegislash', p0_ability='shielddust', p1_ability='stancechange')
+        self.assertEqual(self.aegislash.name, 'aegislash')
+        self.choose_move(self.vaporeon, 'surf')
+        self.choose_move(self.aegislash, 'shadowball')
+        self.run_turn()
+
+        self.assertDamageTaken(self.aegislash, 88)
+        self.assertDamageTaken(self.vaporeon, 151)
+        self.assertEqual(self.aegislash.name, 'aegislashblade')
+        self.assertDictEqual(self.aegislash.stats, {'max_hp': 261, 'atk': 336, 'def': 136,
+                                                    'spa': 336, 'spd': 136, 'spe': 156})
+
+        self.choose_move(self.vaporeon, 'flareblitz')
+        self.choose_move(self.aegislash, 'kingsshield')
+        self.run_turn()
+
+        self.assertBoosts(self.vaporeon, {'atk': -2})
+        self.assertDictEqual(self.aegislash.stats, {'max_hp': 261, 'atk': 136, 'def': 336,
+                                                    'spa': 136, 'spd': 336, 'spe': 156})
+
+        self.choose_move(self.aegislash, 'shadowsneak')
+        self.choose_move(self.vaporeon, 'surf')
+        self.engine.heal(self.aegislash, 300)
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 151 + 111)
+        self.assertDamageTaken(self.aegislash, 216)
+
+    def test_imposter_vs_stancechange(self):
+        self.new_battle('aegislash', 'ditto', p0_ability='stancechange', p1_ability='imposter',
+                        p0_moves=('ironhead', 'shadowsneak', 'kingsshield'))
+        self.add_pokemon('leafeon', 1, ability='noguard')
+        self.choose_move(self.ditto, 'shadowsneak')
+        self.choose_move(self.aegislash, 'ironhead')
+        self.run_turn()
+
+        self.assertDamageTaken(self.aegislash, 44)
+        self.assertDamageTaken(self.ditto, 51)
+
+        self.choose_switch(self.ditto, self.leafeon)
+        self.choose_move(self.aegislash, movedex['circlethrow'])
+        self.run_turn()
+
+        self.assertDictContainsSubset({'atk': 336, 'def': 136}, self.ditto.stats)
+
+        self.choose_move(self.ditto, 'kingsshield')
+        self.choose_move(self.aegislash, 'ironhead')
+        self.run_turn()
+        self.assertBoosts(self.aegislash, {'atk': -2})
+
+        self.assertDictContainsSubset({'atk': 336, 'def': 136}, self.ditto.stats)
+
+    def test_stancechange_reverts_upon_switch_out(self):
+        self.new_battle('aegislash', 'leafeon', p0_ability='stancechange')
+        self.add_pokemon('vaporeon', 0)
+        self.choose_move(self.leafeon, 'aerialace')
+        self.choose_move(self.aegislash, 'ironhead')
+        self.run_turn()
+
+        self.assertEqual(self.aegislash.name, 'aegislashblade')
+
+        self.choose_switch(self.aegislash, self.vaporeon)
+        self.choose_move(self.leafeon, 'roar')
+        self.run_turn()
+
+        self.assertEqual(self.aegislash.name, 'aegislash')
+        self.assertDictContainsSubset({'atk': 136, 'def': 336}, self.aegislash.stats)
 
     @patch('random.randrange', lambda _: 0) # no miss, static success
     def test_static(self):
