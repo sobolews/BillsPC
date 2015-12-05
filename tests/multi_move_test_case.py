@@ -9,7 +9,7 @@ from unittest import TestCase
 from battle.battleengine import BattleEngine
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import AutoDecisionMaker
-from battle.events import MoveEvent, SwitchEvent
+from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
 from mining import create_pokedex
 from pokedex.abilities import abilitydex
 from pokedex.items import itemdex
@@ -63,6 +63,8 @@ class TestingEngine(BattleEngine):
             elif decision_type == 'switch':
                 incoming = action
                 decisions.append(SwitchEvent(pokemon, spe, incoming))
+            elif decision_type == 'megaevo':
+                decisions.append(MegaEvoEvent(pokemon, spe))
 
         return decisions
 
@@ -162,6 +164,13 @@ class MultiMoveTestCase(TestCase):
         `outgoing` will switch out for `incoming` next turn.
         """
         self.engine.testing_decisions.append(('switch', outgoing, incoming))
+
+    def choose_mega_evo(self, pokemon):
+        """
+        `pokemon` will mega evolve next turn
+        """
+        self.assertTrue(pokemon.can_mega_evolve)
+        self.engine.testing_decisions.append(('megaevo', pokemon, None))
 
     def run_turn(self):
         self.engine.run_turn()

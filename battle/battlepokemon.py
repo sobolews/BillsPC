@@ -1,3 +1,4 @@
+from mining import create_pokedex
 from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
@@ -6,7 +7,10 @@ from pokedex.items import itemdex
 from pokedex.stats import Boosts, PokemonStats
 from pokedex.types import effectiveness
 from pokedex.moves import movedex
+
 if __debug__: from _logging import log
+
+POKEDEX = create_pokedex()
 
 class BattlePokemon(object):
     """
@@ -28,6 +32,8 @@ class BattlePokemon(object):
         self.item = item
         self.gender = gender    # None, 'M', or 'F'
         self.stats = self.calculate_initial_stats(evs, ivs)
+        self.evs = evs
+        self.ivs = ivs
         self.hp = self.max_hp = self.stats['max_hp']
         self._weight = pokedex_entry.weight
         self.ability = self.base_ability = ability
@@ -61,6 +67,25 @@ class BattlePokemon(object):
                 not self.side.has_mega_evolved and
                 not self.is_mega and
                 self.item.forme in self.pokedex_entry.mega_formes)
+
+    def mega_evolve(self, engine):
+        if __debug__: log.i('%s is mega-evolving!', self)
+        forme = self.item.forme
+        self.forme_change(forme, engine)
+        self.side.has_mega_evolved = True
+        self.is_mega = True
+
+    def forme_change(self, forme, engine=None):
+        self.pokedex_entry = new_forme = POKEDEX[forme]
+        self.name = new_forme.name
+        self._weight = new_forme.weight
+        self.stats = self.calculate_initial_stats(self.evs, self.ivs)
+        self.types = list(new_forme.types)
+        new_ability = abilitydex[new_forme.abilities[0]]
+        if new_ability != self.ability:
+            self.change_ability(new_ability, engine)
+            self.base_ability = new_ability
+        if __debug__: log.i('%s changed forme to %s!', self.base_species, self.name)
 
     @property
     def effects(self):
@@ -462,7 +487,7 @@ class BattlePokemon(object):
         return self.boosts.update(boosts)
 
     def __str__(self):
-        if self.name == self.base_species:
+        if self.name == self.base_species or self.is_mega:
             return self.name
         else:
             return '%s (%s)' % (self.name, self.base_species)
