@@ -782,8 +782,19 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertItem(self.vaporeon, None)
         self.assertActive(self.leafeon)
 
-    # def test_redorb(self):
-    #     pass # TODO when: implement forme changes
+    def test_redorb(self):
+        self.new_battle('vaporeon', 'groudon', p1_ability='drought', p1_item='redorb')
+        self.choose_move(self.vaporeon, 'surf')
+        self.choose_move(self.groudon, 'eruption')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 212)
+        self.assertDamageTaken(self.groudon, 0)
+
+        self.choose_move(self.vaporeon, 'knockoff')
+        self.run_turn()
+
+        self.assertDamageTaken(self.groudon, 27)
 
     def test_rockyhelmet(self):
         self.new_battle(p0_item='rockyhelmet', p1_item='rockyhelmet',

@@ -252,8 +252,15 @@ class RedCard(ItemEffect):
         ):
             engine.force_random_switch(foe, target)
 
-# class RedOrb(ItemEffect):
-#     pass # TODO when: implement forme changes
+class RedOrb(ItemEffect):
+    removable = False
+
+    @priority(-6)
+    def on_switch_in(self, pokemon, engine):
+        assert pokemon.base_species == 'groudon'
+
+        if pokemon.name != 'groudonprimal':
+            pokemon.forme_change('groudonprimal', engine)
 
 class RockyHelmet(ItemEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
