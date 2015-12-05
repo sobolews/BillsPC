@@ -684,6 +684,34 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.new_battle(p0_ability='illusion')
         self.new_battle(p0_ability='symbiosis')
 
+    def test_forecast(self):
+        self.new_battle('vaporeon', 'castform',
+                        p0_ability='snowwarning', p1_ability='forecast')
+        self.add_pokemon('espeon', 0, ability='airlock')
+        self.add_pokemon('flareon', 0)
+
+        self.assertEqual(self.castform.types[0], Type.ICE)
+
+        self.choose_move(self.castform, 'sunnyday')
+        self.choose_move(self.vaporeon, 'raindance')
+        self.run_turn()
+
+        self.assertEqual(self.castform.types[0], Type.WATER)
+
+        self.choose_switch(self.vaporeon, self.espeon)
+        self.choose_move(self.castform, 'surf')
+        self.run_turn()
+
+        self.assertDamageTaken(self.espeon, 60)
+        self.assertEqual(self.castform.types[0], Type.NORMAL)
+
+        self.choose_switch(self.espeon, self.flareon)
+        self.choose_move(self.castform, 'aquajet')
+        self.run_turn()
+
+        self.assertDamageTaken(self.flareon, 174)
+        self.assertEqual(self.castform.types[0], Type.WATER)
+
     def test_furcoat(self):
         self.new_battle(p0_ability='furcoat')
         self.choose_move(self.leafeon, 'leafblade')

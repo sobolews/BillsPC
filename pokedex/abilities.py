@@ -368,7 +368,22 @@ class FlowerVeil(AbilityEffect): # no effect in randbats
     pass
 
 class Forecast(AbilityEffect):
-    pass # TODO: formechange
+    FORMES = {
+        Weather.SUNNYDAY: 'castformsunny',
+        Weather.DESOLATELAND: 'castformsunny',
+        Weather.RAINDANCE: 'castformrainy',
+        Weather.PRIMORDIALSEA: 'castformrainy',
+        Weather.HAIL: 'castformsnowy',
+        Weather.SANDSTORM: 'castform',
+        None: 'castform'
+    }
+
+    def on_update(self, pokemon, engine):
+        assert pokemon.base_species == 'castform'
+
+        new_forme = self.FORMES[engine.battlefield.weather]
+        if pokemon.name != new_forme:
+            pokemon.forme_change(new_forme)
 
 class Frisk(AbilityEffect): # client only
     pass
