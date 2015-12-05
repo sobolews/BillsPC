@@ -996,7 +996,7 @@ class Static(AbilityEffect):
             engine.set_status(foe, Status.PAR, pokemon)
 
 class Steadfast(AbilityEffect):
-    @priority(20) # must be higher than Flinch
+    @priority(8.1) # must be higher than Flinch
     def on_before_move(self, user, move, engine):
         if user.has_effect(Volatile.FLINCH):
             user.apply_boosts(Boosts(spe=1), self_induced=True)
