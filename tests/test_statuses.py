@@ -1,6 +1,6 @@
 from mock import patch
 
-from pokedex.enums import Status
+from pokedex.enums import Status, Type
 from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
@@ -65,6 +65,31 @@ class TestStatuses(MultiMoveTestCase):
 
         self.assertEqual(self.leafeon.status, Status.FNT)
         self.assertIsNone(self.flareon.status)
+
+    @patch('random.randrange', lambda *_: 1) # no auto thaw, always freeze
+    def test_freeze_shayminsky_causes_forme_change(self):
+        self.new_battle('vaporeon', 'shayminsky', p1_ability='serenegrace')
+        self.add_pokemon('leafeon', 1)
+        self.assertEqual(self.shayminsky.name, 'shayminsky')
+        self.choose_move(self.vaporeon, 'freezedry')
+        self.run_turn()
+        self.assertStatus(self.shayminsky, Status.FRZ)
+
+        self.assertEqual(self.shayminsky.name, 'shaymin')
+        self.assertEqual(self.shayminsky.types, [Type.GRASS, None])
+        self.assertEqual(self.shayminsky.stats, {'max_hp': 341, 'atk': 236, 'def': 236,
+                                                 'spa': 236, 'spd': 236, 'spe': 236})
+
+        self.choose_switch(self.shayminsky, self.leafeon)
+        self.run_turn()
+        self.choose_switch(self.leafeon, self.shayminsky)
+        self.run_turn()
+
+        self.assertStatus(self.shayminsky, None) # naturalcure
+        self.assertEqual(self.shayminsky.name, 'shaymin')
+        self.assertEqual(self.shayminsky.types, [Type.GRASS, None])
+        self.assertEqual(self.shayminsky.stats, {'max_hp': 341, 'atk': 236, 'def': 236,
+                                                 'spa': 236, 'spd': 236, 'spe': 236})
 
     @patch('random.randint', lambda *_: 1) # sleep for 1 turn
     def test_sleep_block_move(self):

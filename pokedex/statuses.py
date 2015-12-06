@@ -43,6 +43,10 @@ class Freeze(BaseStatusEffect):
         if move.type is Type.FIRE or move.thaw_target:
             target.cure_status()
 
+    def on_after_set_status(self, status, pokemon, setter, engine):
+        if pokemon.name == 'shayminsky' and pokemon.base_species == 'shayminsky':
+            pokemon.forme_change('shaymin')
+
 class Sleep(BaseStatusEffect):
     source = Status.SLP
     # no duration; uses turns_left (because pokemon wakes up before move, not between turns)
