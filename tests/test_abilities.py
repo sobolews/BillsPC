@@ -2499,6 +2499,21 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertBoosts(self.leafeon, {'def': 0})
 
+    def test_serenegrace_with_triattack(self):
+        def roll(stop):
+            if roll.first:
+                roll.first = False
+                return 35
+            return 2 # FRZ
+        roll.first = True
+
+        with patch('random.randrange', roll):
+            self.new_battle(p0_ability='serenegrace')
+            self.choose_move(self.vaporeon, 'triattack')
+            self.run_turn()
+
+            self.assertStatus(self.leafeon, Status.FRZ)
+
     def test_shadowtag(self):
         self.new_battle(p0_ability='shadowtag')
         self.add_pokemon('jolteon', 1, ability='shadowtag')
