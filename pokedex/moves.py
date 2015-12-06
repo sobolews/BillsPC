@@ -2657,7 +2657,8 @@ class relicsong(Move):
 
     def on_success(self, user, target, engine):
         if not user.is_fainted() and user.base_species == 'meloetta':
-            user.change_forme('meloettapirouette' if user.name == 'meloetta' else 'meloetta')
+            user.forme_change('meloettapirouette' if user.name == 'meloetta' else 'meloetta')
+            user.set_effect(effects.PirouetteForme())
 
 class rest(Move):
     def __init__(self):

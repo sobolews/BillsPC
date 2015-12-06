@@ -1894,8 +1894,39 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 31)
         self.assertDamageTaken(self.vaporeon, 0)
 
-    # def test_relicsong_forme_change(self):
-    #     pass # TODO: implement forme change
+    @patch('random.randrange', lambda _: 0) # no miss
+    def test_relicsong_forme_change(self):
+        self.new_battle('vaporeon', 'meloetta', p0_ability='shielddust', p1_ability='serenegrace')
+        self.add_pokemon('leafeon', 1)
+        self.choose_move(self.meloetta, 'relicsong')
+        self.choose_move(self.vaporeon, 'surf')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 124)
+        self.assertDamageTaken(self.meloetta, 154)
+        self.assertEqual(self.meloetta.name, 'meloettapirouette')
+        self.assertEqual(self.meloetta.types, [Type.NORMAL, Type.FIGHTING])
+
+        self.choose_move(self.meloetta, 'relicsong')
+        self.choose_move(self.vaporeon, 'surf')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 124 + 81)
+        self.assertDamageTaken(self.meloetta, 154 + 102)
+        self.assertEqual(self.meloetta.name, 'meloetta')
+        self.assertEqual(self.meloetta.types, [Type.NORMAL, Type.PSYCHIC])
+
+        self.choose_move(self.meloetta, 'relicsong')
+        self.choose_move(self.vaporeon, 'circlethrow')
+        self.run_turn()
+
+        self.assertDamageTaken(self.meloetta, 154 + 102 + 80)
+
+        self.choose_switch(self.leafeon, self.meloetta)
+        self.run_turn()
+
+        self.assertEqual(self.meloetta.name, 'meloetta')
+        self.assertEqual(self.meloetta.types, [Type.NORMAL, Type.PSYCHIC])
 
     def test_rest(self):
         self.choose_move(self.leafeon, 'uturn')
