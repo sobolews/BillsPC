@@ -365,7 +365,7 @@ class BattlePokemon(object):
 
         if not stolen:
             foe = engine.get_foe(self)
-            if foe.ability is abilitydex['unnerve']:
+            if foe is not None and foe.ability is abilitydex['unnerve']:
                 return FAIL
 
         if __debug__: log.i("%s ate the %s", self, berry)
