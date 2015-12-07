@@ -679,10 +679,10 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.cherrim, 42)
 
     def test_existence_of_noneffect_abilities(self):
-        self.new_battle(p0_ability='flowerveil')
-        self.new_battle(p0_ability='frisk')
-        self.new_battle(p0_ability='illusion')
-        self.new_battle(p0_ability='symbiosis')
+        self.new_battle(p0_ability='flowerveil', p1_ability='frisk')
+        self.add_pokemon('glaceon', 0, ability='frisk')
+        self.add_pokemon('flareon', 0, ability='illusion')
+        self.add_pokemon('jolteon', 0, ability='symbiosis')
 
     def test_forecast(self):
         self.new_battle('vaporeon', 'castform',
