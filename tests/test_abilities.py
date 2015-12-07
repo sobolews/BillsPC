@@ -1,5 +1,9 @@
 from mock import patch
 
+if __debug__: from _logging import log
+from mining import create_pokedex
+from mining.statistics import RandbatsStatistics
+from misc.functions import normalize_name
 from pokedex import statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Weather, Volatile, Hazard, PseudoWeather, Type
@@ -7,7 +11,20 @@ from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
+pokedex = create_pokedex()
+
 class TestAbilities(MultiMoveTestCaseWithoutSetup):
+    def test_all_abilities_in_randbatsstatistics_are_implemented(self):
+        rbstats = RandbatsStatistics.from_pickle()
+        unimplemented_abilities = [ability for ability in rbstats.ability_index
+                                   if normalize_name(ability) not in abilitydex]
+        for pokemon in pokedex.values():
+            for mega in pokemon.mega_formes:
+                if pokedex[mega].abilities[0] not in abilitydex:
+                    if __debug__: log.d('%s: %s', mega, pokedex[mega].abilities[0])
+                    unimplemented_abilities.extend(pokedex[mega].abilities)
+        self.assertListEqual(unimplemented_abilities, [])
+
     def test_adaptability(self):
         self.new_battle('vaporeon', 'blastoise', p0_ability='adaptability')
         self.choose_move(self.vaporeon, 'surf')
