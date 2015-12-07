@@ -416,6 +416,9 @@ class Harvest(AbilityEffect):
             if __debug__: log.i("%s harvested a %s!", pokemon, pokemon.last_berry_used)
             pokemon.set_item(pokemon.last_berry_used)
 
+class Healer(AbilityEffect):
+    pass # no effect
+
 class HugePower(AbilityEffect):
     def on_modify_atk(self, pokemon, move, engine, atk):
         return atk * 2

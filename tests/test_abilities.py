@@ -683,6 +683,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.add_pokemon('glaceon', 0, ability='frisk')
         self.add_pokemon('flareon', 0, ability='illusion')
         self.add_pokemon('jolteon', 0, ability='symbiosis')
+        self.add_pokemon('umbreon', 0, ability='healer')
 
     def test_forecast(self):
         self.new_battle('vaporeon', 'castform',
