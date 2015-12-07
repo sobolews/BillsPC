@@ -2,6 +2,7 @@ from mock import patch
 
 from mining.pokedexmaker import create_pokedex
 from pokedex.enums import Status, Weather
+from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
 
 pokedex = create_pokedex()
@@ -152,6 +153,18 @@ class TestWeather(MultiMoveTestCase):
             self.run_turn()
 
             self.assertEqual(self.leafeon.side.index, self.battlefield.win)
+
+    def test_faint_during_sandstorm_and_hail(self):
+        """ Sandstorm and Hail's on_residual should handle fainted pokemon appropriately """
+        for weather in (Weather.SANDSTORM, Weather.HAIL):
+            self.new_battle('vaporeon', 'leafeon')
+            self.add_pokemon('flareon', 0)
+            self.engine.battlefield.set_weather(weather)
+            self.vaporeon.apply_boosts(Boosts(def_=-1))
+            self.choose_move(self.leafeon, 'leafblade')
+            self.run_turn()
+            self.assertFainted(self.vaporeon)
+            self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
 
     def test_deltastream_suppresses_moves_supereffective_vs_flying(self):
         self.new_battle('rayquaza', 'leafeon')

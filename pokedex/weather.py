@@ -100,7 +100,8 @@ class HailWeather(BaseWeatherEffect):
     def on_residual(self, pokemon0, pokemon1, engine):
         super(HailWeather, self).on_residual(pokemon0, pokemon1, engine)
         if not self.suppressed:
-            for pokemon in sorted((pokemon0, pokemon1), key=lambda p: -engine.effective_spe(p)):
+            for pokemon in sorted(filter(None, (pokemon0, pokemon1)),
+                                  key=lambda p: -engine.effective_spe(p)):
                 engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.HAIL)
 
 class SandstormWeather(BaseWeatherEffect):
@@ -110,7 +111,8 @@ class SandstormWeather(BaseWeatherEffect):
     def on_residual(self, pokemon0, pokemon1, engine):
         super(SandstormWeather, self).on_residual(pokemon0, pokemon1, engine)
         if not self.suppressed:
-            for pokemon in sorted((pokemon0, pokemon1), key=lambda p: -engine.effective_spe(p)):
+            for pokemon in sorted(filter(None, (pokemon0, pokemon1)),
+                                  key=lambda p: -engine.effective_spe(p)):
                 engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.SANDSTORM)
 
     def on_modify_spd(self, pokemon, move, engine, spd):
