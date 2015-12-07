@@ -1201,6 +1201,16 @@ class TestMoves(MultiMoveTestCase):
             self.assertFalse(pokemon.has_effect(Volatile.TRAPPER))
         self.assertDamageTaken(self.vaporeon, 13)
 
+    def test_infestation_when_trappee_faints(self):
+        self.add_pokemon('espeon', 0)
+        self.add_pokemon('glaceon', 1)
+        self.choose_move(self.leafeon, 'infestation')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'woodhammer')
+        self.run_turn()
+
+        self.assertFalse(self.leafeon.has_effect(Volatile.TRAPPER))
+
     def test_infestation_doesnt_trap_ghosts(self):
         self.new_battle('gengar', 'leafeon')
         self.add_pokemon('flareon', 0)
