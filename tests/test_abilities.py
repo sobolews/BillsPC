@@ -2388,6 +2388,24 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertEqual(self.battlefield.win, self.leafeon.side.index)
 
+    def test_sandforce(self):
+        self.new_battle(p0_ability='sandforce', p1_ability='sandstream')
+        self.choose_move(self.vaporeon, 'bulldoze')
+        self.run_turn()
+        self.choose_move(self.vaporeon, 'bulletpunch')
+        self.run_turn()
+        self.choose_move(self.vaporeon, 'hiddenpowerrock')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 19 + 26 + 103 + 3 * (self.leafeon.max_hp / 16))
+
+        self.engine.heal(self.leafeon, 300)
+        self.choose_move(self.vaporeon, 'psychic')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 118 + self.leafeon.max_hp / 16)
+        self.assertDamageTaken(self.vaporeon, 0)
+
     def test_sandrush(self):
         self.new_battle(p0_ability='sandrush')
         self.add_pokemon('jolteon', 1, ability='airlock')
