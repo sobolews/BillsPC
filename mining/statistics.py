@@ -82,6 +82,10 @@ class RandbatsStatistics(object):
             pickle.dump(self, fout)
 
     @property
+    def total_counted(self):
+        return sum(val['number'] for val in self.counter.values())
+
+    @property
     def probability(self):
         """
         Dictionary {pokemon: value} where value is the same format as __getitem__
