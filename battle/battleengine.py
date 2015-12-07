@@ -84,7 +84,10 @@ class BattleEngine(object):
         assert not user.has_moved_this_turn
         assert user.will_move_this_turn
         assert user.is_active
-        assert user.pp[move] > 0 or move.max_pp == 0 or user.has_effect(Volatile.LOCKEDMOVE)
+        assert (move == movedex['struggle'] or
+                user.pp[move] > 0 or
+                move.max_pp == 0 or
+                user.has_effect(Volatile.LOCKEDMOVE))
 
         user.has_moved_this_turn = True
         user.will_move_this_turn = False
