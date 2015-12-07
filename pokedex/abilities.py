@@ -113,7 +113,7 @@ class AuraBreak(AbilityEffect):
 class BadDreams(AbilityEffect):
     @priority(-26.1)
     def on_residual(self, pokemon, foe, engine):
-        if pokemon.is_fainted():
+        if pokemon.is_fainted() or foe is None:
             return
 
         if foe.status is Status.SLP:
@@ -744,6 +744,8 @@ class Pickpocket(AbilityEffect):
 class Pickup(AbilityEffect):
     @priority(-26.1)
     def on_residual(self, pokemon, foe, engine):
+        if foe is None:
+            return
         foe_item = foe.item_used_this_turn
         if (foe_item is not None and
             pokemon.item is None and

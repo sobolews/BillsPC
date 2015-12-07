@@ -286,6 +286,9 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, self.vaporeon.max_hp / 8)
         self.assertDamageTaken(self.leafeon, 50)
 
+        self.choose_move(self.leafeon, 'woodhammer')
+        self.run_turn() # Regression: fainted opponent caused NoneType error
+
     def test_battlearmor(self):
         self.new_battle(p0_ability='battlearmor')
         self.choose_move(self.leafeon, 'stormthrow')
@@ -2003,6 +2006,10 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.choose_move(self.leafeon, 'woodhammer')
         self.run_turn()
         self.assertItem(self.leafeon, 'focussash')
+
+        self.new_battle(p0_item='leftovers', p1_ability='pickup')
+        self.choose_move(self.leafeon, 'woodhammer')
+        self.run_turn()
 
     def test_pickup_doesnt_pick_up_knocked_off_items(self):
         self.new_battle(p0_ability='pickup', p1_item='sitrusberry')
