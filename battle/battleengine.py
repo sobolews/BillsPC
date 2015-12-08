@@ -116,12 +116,15 @@ class BattleEngine(object):
         """
         Wrap _use_move in moldbreaker handling
         """
-        ability = user.get_effect(ABILITY)
-        ability.on_break_mold(target, self)
+        if target is not None:
+            ability = user.get_effect(ABILITY)
+            ability.on_break_mold(target, self)
 
         result = self._use_move(user, move, target)
 
-        ability.on_unbreak_mold(self.get_foe(user)) # roar, etc. could have changed the active foe
+        if target is not None:
+            ability.on_unbreak_mold(self.get_foe(user)) # roar, etc. could have changed the foe
+
         return result
 
     def _use_move(self, user, move, target):

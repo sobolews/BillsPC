@@ -246,12 +246,13 @@ class BaseEffect(object):
 
     def on_break_mold(self, target, engine):
         """
-        Called whenever a move is used, and when an opponent is being forced to switch in
+        Called whenever a move is used, and when an opponent is being forced to switch in. target is
+        guaranteed not None.
         """
 
     def on_unbreak_mold(self, target):
         """
-        Called when use_move returns
+        Called when use_move returns. target is guaranteed not None.
         """
 
     @staticmethod
