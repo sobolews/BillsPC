@@ -1066,6 +1066,13 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertMoveChoices(self.ditto, {'struggle'})
         self.assertEqual(self.ditto.pp[movedex['earthquake']], 0)
 
+    def test_imposter_copy_hiddenpower(self):
+        self.new_battle('ditto', 'alakazam', p0_ability='imposter', p0_item='choicescarf',
+                        p1_ability='magicguard', p1_item='lifeorb',
+                        p1_moves=('focusblast', 'psyshock', 'hiddenpowerice', 'shadowball'))
+        self.assertMoveChoices(self.ditto, {'focusblast', 'psyshock',
+                                            'hiddenpowerdark', 'shadowball'})
+
     def test_infiltrator(self):
         self.new_battle(p0_ability='infiltrator', p1_ability='infiltrator')
         self.choose_move(self.leafeon, 'substitute')
