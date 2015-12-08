@@ -2332,7 +2332,7 @@ class petaldance(Move):
         self.base_power = 120
 
     on_success = outrage.on_success.__func__
-    on_move_fail = outrage.on_success.__func__
+    on_move_fail = outrage.on_move_fail.__func__
 
 class phantomforce(Move):
     def __init__(self):
