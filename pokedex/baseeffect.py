@@ -211,7 +211,12 @@ class BaseEffect(object):
         return boosts
 
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        """ Called after pokemon is damaged by a foe's move"""
+        """
+        Called after pokemon is damaged by a foe's move.
+
+        NOTE: pokemon.is_fainted() should not be called here, as this method run during the only
+        time that it is valid for hp <= 0 but status != FNT.
+        """
 
     def on_foe_heal(self, foe, hp, cause, engine):
         """

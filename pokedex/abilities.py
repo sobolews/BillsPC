@@ -528,7 +528,7 @@ class IronFist(AbilityEffect):
 
 class Justified(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        if move.type is Type.DARK:
+        if move.type is Type.DARK and pokemon.hp > 0: # not using pokemon.is_fainted()
             if __debug__: log.i("%s's Justified raises its atk!", pokemon)
             pokemon.apply_boosts(Boosts(atk=1), self_induced=True)
 
