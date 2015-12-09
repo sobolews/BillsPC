@@ -2735,6 +2735,16 @@ class TestMoves(MultiMoveTestCase):
         self.assertTrue(self.ditto.is_transformed)
         self.assertEqual(self.ditto.name, 'vaporeon')
 
+    def test_transform_fail_then_switch(self):
+        self.new_battle('zoroark', 'ditto', p0_ability='illusion',
+                        p0_item='choiceband', p1_item='choicescarf')
+        self.add_pokemon('leafeon', 1)
+        self.choose_move(self.ditto, 'transform')
+        self.choose_move(self.zoroark, 'trick')
+        self.run_turn()
+        self.choose_switch(self.ditto, self.leafeon)
+        self.choose_move(self.zoroark, 'trick')
+        self.run_turn()
 
     @patch('random.randrange', lambda _: 1) # triattack causes paralysis
     def test_triattack_status(self):

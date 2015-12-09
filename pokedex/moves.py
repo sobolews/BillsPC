@@ -3592,8 +3592,10 @@ class transform(Move):
         self.is_protectable = False
 
     def on_success(self, user, foe, engine):
-        user.transform_into(foe, engine)
-        user.set_effect(effects.Transformed())
+        if user.transform_into(foe, engine) is FAIL:
+            return FAIL
+        else:
+            user.set_effect(effects.Transformed())
 
 class triattack(Move):
     def __init__(self):

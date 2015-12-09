@@ -962,6 +962,9 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertActive(self.ditto)
         self.assertFalse(self.ditto.is_transformed)
 
+        self.choose_switch(self.ditto, self.vaporeon)
+        self.run_turn()
+
     def test_imposter_fail_to_transform_illusion(self):
         self.new_battle('ditto', p0_ability='imposter', p1_ability='illusion')
         self.assertFalse(self.ditto.is_transformed)

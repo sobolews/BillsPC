@@ -485,9 +485,11 @@ class Imposter(AbilityEffect):
     def on_start(self, pokemon, engine):
         foe = engine.get_foe(pokemon)
         if foe is None:
+            if __debug__: log.d("%s's Imposter: couldn't transform", pokemon)
             return FAIL
-        pokemon.transform_into(foe, engine)
-        pokemon.set_effect(effects.Transformed())
+
+        if pokemon.transform_into(foe, engine) is not FAIL:
+            pokemon.set_effect(effects.Transformed())
 
 class Infiltrator(AbilityEffect):
     def on_modify_move(self, move, user, engine):
