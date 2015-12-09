@@ -151,8 +151,8 @@ class CheekPouch(AbilityEffect):
 
 class Chlorophyll(AbilityEffect):
     def on_modify_spe(self, pokemon, engine, spe):
-        if __debug__: log.i("Chlorophyll boosted %s's speed!", pokemon)
         if engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
+            if __debug__: log.d("Chlorophyll boosted %s's speed!", pokemon)
             return spe * 2
         return spe
 
