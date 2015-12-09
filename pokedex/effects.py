@@ -450,7 +450,10 @@ class Pursuit(BaseEffect):
     def on_switch_out(self, pokemon, incoming, engine):
         assert self.pursuiter.is_active or self.pursuiter.is_fainted()
 
-        if not self.pursuiter.is_fainted() and not pokemon.has_effect(Volatile.BATONPASS):
+        if (not self.pursuiter.is_fainted() and
+            not pokemon.has_effect(Volatile.BATONPASS) and
+            not self.pursuiter.has_moved_this_turn
+        ):
             if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuiter, pokemon)
             engine.run_move(self.pursuiter, self.move, pokemon)
 

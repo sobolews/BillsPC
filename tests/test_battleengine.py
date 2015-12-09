@@ -1114,3 +1114,17 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertMoveChoices(self.xerneas, ('moonblast', 'thunder', 'focusblast'))
         self.assertFalse(self.xerneas.has_effect(Volatile.TWOTURNMOVE))
         self.assertFalse(self.xerneas.boosts)
+
+    def test_pursuit_with_truant_vs_voltswitch(self):
+        self.new_battle('slaking', 'rotomfan', p0_ability='truant', p0_item='choicescarf')
+        self.add_pokemon('drapion', 1)
+        self.choose_move(self.slaking, 'pursuit')
+        self.choose_move(self.rotomfan, 'airslash')
+        self.run_turn()
+        self.choose_move(self.slaking, 'pursuit')
+        self.choose_move(self.rotomfan, 'voltswitch')
+        self.run_turn()
+
+        self.assertDamageTaken(self.rotomfan, 49)
+        self.assertActive(self.drapion)
+        self.assertDamageTaken(self.drapion, 0)
