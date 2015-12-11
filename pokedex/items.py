@@ -184,7 +184,9 @@ class HeatRock(ItemEffect):
 class Leftovers(ItemEffect):
     @priority(-5.2)
     def on_residual(self, pokemon, foe, engine):
-        if __debug__: log.i('%s restored a little HP using its Leftovers!', pokemon)
+        if __debug__:
+            if pokemon.hp < pokemon.max_hp:
+                log.i('%s restored a little HP using its Leftovers!', pokemon)
         engine.heal(pokemon, pokemon.max_hp / 16)
 
 class LifeOrb(ItemEffect):
