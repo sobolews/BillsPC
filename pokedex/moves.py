@@ -130,6 +130,7 @@ class Move(object):
     def on_modify_move(self, user, target, engine):
         """
         Modifies attributes of self. This should only ever be called on a copy of the move object.
+        The target may be None.
         """
 
     def __repr__(self):
@@ -2543,7 +2544,7 @@ class pursuit(Move):
         target.remove_effect(Volatile.PURSUIT)
 
     def on_modify_move(self, user, target, engine):
-        if target.is_switching_out:
+        if target is not None and target.is_switching_out:
             self.accuracy = None
 
     def get_base_power(self, user, target, engine):

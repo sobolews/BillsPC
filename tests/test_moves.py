@@ -1795,6 +1795,15 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.leafeon)
         self.assertActive(self.flareon)
 
+    def test_slower_pursuit_vs_no_target(self):
+        """ Regression: pursuit didn't correctly handle a lack of target """
+        self.new_battle(p1_item='lifeorb')
+        self.leafeon.hp = 10
+        self.choose_move(self.leafeon, 'return')
+        self.choose_move(self.vaporeon, 'pursuit')
+        self.run_turn()
+        self.assertFainted(self.leafeon)
+
     def test_switch_move_KO_pursuiter_before_pursuit(self):
         self.add_pokemon('flareon', 1)
         self.vaporeon.hp = self.leafeon.hp = 1
