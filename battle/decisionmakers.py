@@ -24,6 +24,13 @@ class RandomDecisionMaker(BaseDecisionMaker):
     def make_mega_evo_decision(self, battlefield):
         return random.choice((True, False))
 
+class RandomDecisionMakerWithSwitches(RandomDecisionMaker):
+    def make_move_decision(self, choices, battlefield):
+        switches = [choice for choice in choices if choice.type is Decision.SWITCH]
+        if switches and random.randrange(10) == 0:
+            return random.choice(switches)
+        return random.choice([choice for choice in choices if choice.type is Decision.MOVE])
+
 class ScriptedDecisionMaker(BaseDecisionMaker):
     def __init__(self, side, decisions):
         BaseDecisionMaker.__init__(self, side)
