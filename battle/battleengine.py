@@ -803,9 +803,8 @@ class BattleEngine(object):
                              key=lambda c: c.on_switch_in.priority,
                              reverse=True):
             effect.on_switch_in(pokemon, self)
-
-        if pokemon.is_fainted():
-            return
+            if pokemon.is_fainted():
+                return
 
         pokemon.get_effect(ABILITY).start(pokemon, self)
 

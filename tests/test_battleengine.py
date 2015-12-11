@@ -4,6 +4,7 @@ from mock import patch, Mock
 from battle.battleengine import BattleEngine
 from battle.battlepokemon import BattlePokemon
 from mining.pokedexmaker import create_pokedex
+from pokedex import effects
 from pokedex.moves import movedex
 from pokedex.abilities import abilitydex
 from pokedex.items import itemdex
@@ -1128,3 +1129,16 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.rotomfan, 49)
         self.assertActive(self.drapion)
         self.assertDamageTaken(self.drapion, 0)
+
+    def test_spikes_ko_with_toxicspikes(self):
+        # make sure toxicspikes runs after spikes; they normally have the same priority
+        with patch.object(effects.ToxicSpikes.on_switch_in.__func__, 'priority', -100):
+            self.add_pokemon('flareon', 0)
+            self.flareon.hp = 10
+            self.choose_move(self.leafeon, 'spikes')
+            self.run_turn()
+            self.choose_move(self.leafeon, 'toxicspikes')
+            self.run_turn()
+            self.choose_move(self.vaporeon, 'voltswitch')
+            self.run_turn()
+            self.assertFainted(self.flareon)
