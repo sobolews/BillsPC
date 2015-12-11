@@ -1142,3 +1142,15 @@ class TestMiscMultiTurn(MultiMoveTestCase):
             self.choose_move(self.vaporeon, 'voltswitch')
             self.run_turn()
             self.assertFainted(self.flareon)
+
+    def test_run_out_of_pp_mid_two_turn_move(self):
+        self.new_battle(p0_moves=('return', 'toxic', 'solarbeam', 'scald'))
+        self.vaporeon.pp[movedex['solarbeam']] = 1
+        self.choose_move(self.vaporeon, 'solarbeam')
+        self.choose_move(self.leafeon, 'bulkup')
+        self.run_turn()
+        self.assertEqual(self.vaporeon.pp[movedex['solarbeam']], 0)
+        self.choose_move(self.vaporeon, 'solarbeam')
+        self.choose_move(self.leafeon, 'bulkup')
+        self.run_turn()         # don't assert on 0 pp
+        self.assertDamageTaken(self.leafeon, 78)
