@@ -822,8 +822,13 @@ class BattleEngine(object):
             switch_choices = [SwitchEvent(pokemon, spe, team_member)
                               for team_member in pokemon.get_switch_choices()]
 
-            decisions.append(dm.make_move_decision(move_choices + switch_choices, self.battlefield))
-            if pokemon.can_mega_evolve and dm.make_mega_evo_decision(self.battlefield):
+            choice = dm.make_move_decision(move_choices + switch_choices, self.battlefield)
+            decisions.append(choice)
+
+            if (pokemon.can_mega_evolve and
+                choice.type is Decision.MOVE and
+                dm.make_mega_evo_decision(self.battlefield)
+            ):
                 decisions.append(MegaEvoEvent(pokemon, spe))
 
         return [d for d in decisions if d is not None] # None is not a valid decision unless testing
