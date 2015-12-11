@@ -443,19 +443,19 @@ class Pursuit(BaseEffect):
     source = Volatile.PURSUIT
     duration = 1
 
-    def __init__(self, pursuiter, move):
-        self.pursuiter = pursuiter
+    def __init__(self, pursuer, move):
+        self.pursuer = pursuer
         self.move = move
 
     def on_switch_out(self, pokemon, incoming, engine):
-        assert self.pursuiter.is_active or self.pursuiter.is_fainted()
+        assert self.pursuer.is_active or self.pursuer.is_fainted()
 
-        if (not self.pursuiter.is_fainted() and
+        if (not self.pursuer.is_fainted() and
             not pokemon.has_effect(Volatile.BATONPASS) and
-            not self.pursuiter.has_moved_this_turn
+            not self.pursuer.has_moved_this_turn
         ):
-            if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuiter, pokemon)
-            engine.run_move(self.pursuiter, self.move, pokemon)
+            if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuer, pokemon)
+            engine.run_move(self.pursuer, self.move, pokemon)
 
 class Roost(BaseEffect):
     source = Volatile.ROOST
