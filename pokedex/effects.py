@@ -456,6 +456,9 @@ class Pursuit(BaseEffect):
         ):
             if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuer, pokemon)
             engine.run_move(self.pursuer, self.move, pokemon)
+            # Don't let the pursuer move again afterwards
+            engine.event_queue = [event for event in engine.event_queue
+                                  if not event.pokemon is self.pursuer]
 
 class Roost(BaseEffect):
     source = Volatile.ROOST

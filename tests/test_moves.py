@@ -1828,6 +1828,18 @@ class TestMoves(MultiMoveTestCase):
         self.assertBoosts(self.flareon, {'spd': 3})
         self.assertTrue(self.flareon.has_effect(Volatile.LEECHSEED))
 
+    @patch('random.randrange', lambda _: 0) # always parahax
+    def test_pursuit_catches_switcher_but_fails(self):
+        self.add_pokemon('flareon', 0)
+        self.choose_move(self.vaporeon, 'thunderwave')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'pursuit')
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.run_turn() # Don't run pursuit a second time
+        self.assertActive(self.flareon)
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.flareon, 0)
+
     def test_raindance(self):
         self.choose_move(self.leafeon, 'protect')
         self.choose_move(self.vaporeon, 'raindance')

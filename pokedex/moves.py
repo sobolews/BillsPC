@@ -2536,10 +2536,7 @@ class pursuit(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def on_success(self, user, target, engine): # don't hit twice
-        # if hitting opponent mid-switch, remove regularly scheduled attack from queue
-        engine.event_queue = [event for event in engine.event_queue if not event.pokemon is user]
-
+    def on_success(self, user, target, engine):
         # if hitting opponent normally (with faster speed): prevent another hit on a foe uturn
         target.remove_effect(Volatile.PURSUIT)
 
