@@ -572,7 +572,9 @@ class Substitute(BaseEffect):
         if move.user_boosts:
             foe.apply_boosts(move.user_boosts, self_induced=True)
         elif move.recoil > 0:
-            engine.damage(foe, damage * move.recoil / 100, Cause.RECOIL)
+            recoil = round(damage * move.recoil / 100.0)
+            if recoil > 0:
+                engine.damage(foe, recoil, Cause.RECOIL)
         elif move.drain:
             engine.heal(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.DRAIN, move, target)
         elif move.on_success_ignores_substitute:

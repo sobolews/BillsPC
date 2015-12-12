@@ -1180,3 +1180,13 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertEqual(self.castform.types[0], Type.WATER)
         self.assertEqual(self.ditto.types[0], Type.NORMAL)
         self.assertAbility(self.ditto, 'forecast')
+
+    def test_recoil_move_vs_substitute_with_1_hp(self):
+        self.choose_move(self.leafeon, 'substitute')
+        self.run_turn()
+        self.leafeon.get_effect(Volatile.SUBSTITUTE).hp = 1
+        self.choose_move(self.vaporeon, 'bravebird')
+        self.run_turn()
+        self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
+
+        self.assertDamageTaken(self.vaporeon, 0)
