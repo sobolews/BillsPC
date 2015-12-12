@@ -387,6 +387,7 @@ class Forecast(AbilityEffect):
         new_forme = self.FORMES[engine.battlefield.weather]
         if pokemon.name != new_forme:
             pokemon.forme_change(new_forme)
+            pokemon.set_effect(effects.ForecastForme())
 
 class Frisk(AbilityEffect): # client only
     pass

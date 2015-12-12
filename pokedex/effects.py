@@ -96,7 +96,7 @@ NO_BATONPASS = frozenset({
     Volatile.TRAPPED, Volatile.IGNOREITEM, Volatile.IGNOREABILITY, Volatile.UNBURDEN, Volatile.YAWN,
     Volatile.SHEERFORCE, Volatile.BATONPASS, Volatile.TWOTURNMOVE, Volatile.LOCKEDMOVE,
     Volatile.ATTRACT, Volatile.TRANSFORMED, Volatile.FLINCH, Volatile.CHOICELOCK, Volatile.VANISHED,
-    Volatile.MAGNETRISE, Volatile.PURSUIT, Volatile.PIROUETTE, ABILITY, ITEM})
+    Volatile.MAGNETRISE, Volatile.PURSUIT, Volatile.PIROUETTE, Volatile.FORECAST, ABILITY, ITEM})
 
 class BatonPass(BaseEffect):
     source = Volatile.BATONPASS
@@ -750,3 +750,12 @@ class PirouetteForme(BaseEffect):
 
         if pokemon.name == 'meloettapirouette' and not pokemon.is_fainted():
             pokemon.forme_change('meloetta')
+
+class ForecastForme(BaseEffect):
+    source = Volatile.FORECAST
+
+    def on_end(self, pokemon, _):
+        assert pokemon.base_species == 'castform'
+
+        if pokemon.name != 'castform' and not pokemon.is_fainted():
+            pokemon.forme_change('castform')

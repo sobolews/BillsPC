@@ -733,6 +733,22 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.flareon, 174)
         self.assertEqual(self.castform.types[0], Type.WATER)
 
+    def test_forecast_reswitch_with_status_immunity(self):
+        self.new_battle('castform', 'leafeon', p0_ability='forecast', p1_ability='noguard')
+        self.add_pokemon('vaporeon', 0)
+        self.choose_move(self.leafeon, 'willowisp')
+        self.choose_move(self.castform, 'sunnyday')
+        self.run_turn()
+        self.assertStatus(self.castform, Status.BRN)
+        self.choose_switch(self.castform, self.vaporeon)
+        self.run_turn()
+        self.choose_switch(self.vaporeon, self.castform)
+        self.run_turn()
+
+        self.assertEqual(self.castform.types[0], Type.FIRE)
+        self.assertStatus(self.castform, Status.BRN)
+        self.assertDamageTaken(self.castform, 2 * (self.castform.max_hp / 8))
+
     def test_furcoat(self):
         self.new_battle(p0_ability='furcoat')
         self.choose_move(self.leafeon, 'leafblade')
