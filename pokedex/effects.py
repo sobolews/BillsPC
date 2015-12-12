@@ -102,19 +102,19 @@ NO_BATONPASS = frozenset({
 
 class BatonPass(BaseEffect):
     source = Volatile.BATONPASS
+    duration = 1
 
     def on_switch_out(self, pokemon, incoming, engine):
-        if pokemon.has_effect(Volatile.BATONPASS):
-            incoming.boosts = pokemon.boosts
-            # TODO: test that this (just transferring the effect) works properly with each effect
-            for source, effect in pokemon._effect_index.items():
-                if source not in NO_BATONPASS:
-                    incoming._effect_index[source] = effect
-                    del pokemon._effect_index[source]
+        incoming.boosts = pokemon.boosts
+        # TODO: test that this (just transferring the effect) works properly with each effect
+        for source, effect in pokemon._effect_index.items():
+            if source not in NO_BATONPASS:
+                incoming._effect_index[source] = effect
+                del pokemon._effect_index[source]
 
-            if __debug__: log.i('Batonpassed %s to %s',
-                                filter(None, chain([incoming.boosts], incoming.effects)) or None,
-                                incoming)
+        if __debug__: log.i('Batonpassed %s to %s',
+                            filter(None, chain([incoming.boosts], incoming.effects)) or None,
+                            incoming)
 
 
 class ChoiceLock(BaseEffect):
