@@ -1190,3 +1190,12 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.assertFalse(self.leafeon.has_effect(Volatile.SUBSTITUTE))
 
         self.assertDamageTaken(self.vaporeon, 0)
+
+    @patch('random.randrange', lambda _: 1) # flamebody always burns
+    def test_synchronize_vs_flamebody_from_fainted_pokemon(self):
+        self.new_battle(p0_ability='synchronize', p1_ability='flamebody')
+        self.leafeon.hp = 10
+        self.choose_move(self.vaporeon, 'return')
+        self.run_turn()
+        self.assertFainted(self.leafeon)
+        self.assertStatus(self.vaporeon, Status.BRN)

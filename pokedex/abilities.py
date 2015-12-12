@@ -1119,7 +1119,8 @@ class Synchronize(AbilityEffect):
     def on_after_set_status(self, status, pokemon, setter, engine):
         if (setter is not None and
             setter != pokemon and
-            status not in (Status.FRZ, Status.SLP)
+            status not in (Status.FRZ, Status.SLP) and
+            setter.hp > 0
         ):
             if __debug__: log.i("%s's Synchronize activated!", pokemon)
             engine.set_status(setter, status, pokemon)
