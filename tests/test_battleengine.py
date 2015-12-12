@@ -1155,6 +1155,16 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.run_turn()         # don't assert on 0 pp
         self.assertDamageTaken(self.leafeon, 78)
 
+    def test_hazards_with_shedinja(self):
+        for hazard in ('stealthrock', 'spikes', 'toxicspikes'):
+            self.new_battle()
+            self.add_pokemon('shedinja', 0)
+            self.choose_move(self.leafeon, hazard)
+            self.choose_move(self.vaporeon, 'voltswitch')
+            self.run_turn()
+
+            self.assertFainted(self.shedinja)
+
     def test_second_after_move_damage_after_first_kos(self):
         self.new_battle('vaporeon', 'ferrothorn', p1_item='rockyhelmet', p1_ability='ironbarbs')
         self.vaporeon.hp = 10

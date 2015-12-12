@@ -525,7 +525,7 @@ class StealthRock(BaseEffect):
     @priority(0)
     def on_switch_in(self, pokemon, engine):
         if __debug__: log.i("%s was damaged by StealthRock", pokemon)
-        engine.damage(pokemon, int(pokemon.max_hp / (8.0 / effectiveness(Type.ROCK, pokemon))),
+        engine.damage(pokemon, pokemon.max_hp / (8.0 / effectiveness(Type.ROCK, pokemon)),
                       Cause.HAZARD, self)
 
 class StickyWeb(BaseEffect):
