@@ -346,7 +346,8 @@ class BattleEngine(object):
             if __debug__: log.i('(on_success) But it failed')
             return FAIL
 
-        user.must_switch = move.switch_user
+        if not move.calls_other_moves: # don't override switch moves called via copycat/sleeptalk
+            user.must_switch = move.switch_user
 
         if (user.hp == 0 or move.selfdestruct) and not user.status is Status.FNT:
             if __debug__: log.d('User has no HP after using move, fainting')

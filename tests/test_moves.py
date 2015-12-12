@@ -474,6 +474,28 @@ class TestMoves(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 44)
         self.assertFalse(self.vaporeon.has_effect(Volatile.TWOTURNMOVE))
 
+    def test_copycat_switching_moves(self):
+        self.add_pokemon('flareon', 0)
+        self.add_pokemon('jolteon', 1)
+        self.choose_move(self.leafeon, 'tailglow')
+        self.choose_move(self.vaporeon, 'copycat')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'batonpass')
+        self.choose_move(self.vaporeon, 'copycat')
+        self.run_turn()
+
+        self.assertActive(self.flareon)
+        self.assertActive(self.jolteon)
+        self.assertBoosts(self.flareon, {'spa': 3})
+        self.assertBoosts(self.jolteon, {'spa': 3})
+
+        self.choose_move(self.jolteon, 'uturn')
+        self.choose_move(self.flareon, 'copycat')
+        self.run_turn()
+
+        self.assertActive(self.vaporeon)
+        self.assertActive(self.leafeon)
+
     def test_counter_success(self):
         self.choose_move(self.leafeon, 'counter')
         self.choose_move(self.vaporeon, 'dragonclaw')
