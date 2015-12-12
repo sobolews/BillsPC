@@ -18,6 +18,9 @@ from pokedex.moves import movedex
 
 pokedex = create_pokedex()
 
+class AnyMovePPDict(defaultdict):
+    def get(self, key, default=None):
+        return self[key]
 
 class AnyMovePokemon(BattlePokemon):
     """
@@ -27,7 +30,7 @@ class AnyMovePokemon(BattlePokemon):
     """
     def __init__(self, *args, **kwargs):
         super(AnyMovePokemon, self).__init__(*args, **kwargs)
-        self.pp = defaultdict(lambda: 100, **{move: move.max_pp for move in self.moveset})
+        self.pp = AnyMovePPDict(lambda: 100, **{move: move.max_pp for move in self.moveset})
 
 class LoggingFaintQueue(list):
     """
