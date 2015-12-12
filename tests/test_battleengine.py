@@ -1154,3 +1154,10 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, 'bulkup')
         self.run_turn()         # don't assert on 0 pp
         self.assertDamageTaken(self.leafeon, 78)
+
+    def test_second_after_move_damage_after_first_kos(self):
+        self.new_battle('vaporeon', 'ferrothorn', p1_item='rockyhelmet', p1_ability='ironbarbs')
+        self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, 'facade')
+        self.run_turn() # no warnings
+        self.assertFainted(self.vaporeon)

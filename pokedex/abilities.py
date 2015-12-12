@@ -53,7 +53,7 @@ class Adaptability(AbilityEffect):
 class Aftermath(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
         # not using pokemon.is_fainted() as BattleEngine.faint hasn't run yet
-        if pokemon.hp <= 0 and move.makes_contact:
+        if pokemon.hp <= 0 and move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s was damaged by %s's Aftermath", foe, pokemon)
             engine.damage(foe, foe.max_hp / 4.0, Cause.OTHER)
 
@@ -193,7 +193,7 @@ class Contrary(AbilityEffect):
 
 class CursedBody(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        if random.randrange(10) < 3: # 30% chance
+        if not foe.is_fainted() and random.randrange(10) < 3: # 30% chance
             if foe.pp.get(move):
                 if __debug__: log.i('CursedBody activated!')
                 foe.set_effect(effects.Disable(move, 5))
@@ -202,6 +202,7 @@ class CuteCharm(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
         if (not move.makes_contact or
             foe.has_effect(Volatile.ATTRACT) or
+            foe.is_fainted() or
             foe.ability.name in ('oblivious', 'aromaveil') or
             not ((foe.gender == 'M' and pokemon.gender == 'F') or
                  (foe.gender == 'F' and pokemon.gender == 'M')) or
@@ -308,6 +309,7 @@ class EffectSpore(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
         if (move.makes_contact and
             foe.status is None and
+            not foe.is_fainted() and
             not foe.is_immune_to(POWDER)
         ):
             rand = random.randrange(100)
@@ -337,7 +339,7 @@ class Filter(AbilityEffect):
 class FlameBody(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
         if (move.makes_contact and
-            foe is not None and
+            not foe.is_fainted() and
             random.randrange(10) < 3
         ):
             if __debug__: log.i("%s was burned by %s's FlameBody", foe, pokemon)
@@ -518,7 +520,7 @@ class Intimidate(AbilityEffect):
 
 class IronBarbs(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        if move.makes_contact:
+        if move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s was damaged by %s's IronBarbs", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
@@ -671,7 +673,7 @@ class Multitype(AbilityEffect):
 
 class Mummy(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        if move.makes_contact:
+        if move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s's ability was changed to Mummy!", foe)
             foe.change_ability(Mummy, engine)
 
@@ -859,7 +861,7 @@ class RockHead(AbilityEffect):
 
 class RoughSkin(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        if move.makes_contact:
+        if move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s was damaged by %s's RoughSkin", foe, pokemon)
             engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
@@ -1036,6 +1038,7 @@ class Static(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
         if (move.makes_contact and
             foe is not None and
+            not foe.is_fainted() and
             random.randrange(10) < 3
         ):
             if __debug__: log.i("%s's Static activated!", pokemon)

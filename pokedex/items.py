@@ -266,7 +266,7 @@ class RedOrb(ItemEffect):
 
 class RockyHelmet(ItemEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        if move.makes_contact:
+        if move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s was damaged by %s's RockyHelmet", foe, pokemon)
             engine.damage(foe, foe.max_hp / 6.0, Cause.OTHER)
 
