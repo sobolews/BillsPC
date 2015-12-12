@@ -1122,6 +1122,8 @@ class Synchronize(AbilityEffect):
 
 class TangledFeet(AbilityEffect):
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if accuracy is None:
+            return accuracy
         if target.has_effect(Volatile.CONFUSE):
             if __debug__: log.i("%s's TangledFeet raised its evasion!", target)
             return accuracy * 0.5
@@ -1282,6 +1284,8 @@ class WonderGuard(AbilityEffect):
 
 class WonderSkin(AbilityEffect):
     def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+        if accuracy is None:
+            return accuracy
         if move.category is MoveCategory.STATUS and accuracy is not None:
             if __debug__: log.i("%s's accuracy is reduced by WonderSkin", move)
             return accuracy * 0.5
