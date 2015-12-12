@@ -85,7 +85,7 @@ class BattleEngine(object):
         assert user.will_move_this_turn
         assert user.is_active
         assert (move == movedex['struggle'] or
-                user.pp[move] > 0 or
+                user.pp.get(move, -1) > 0 or
                 move.max_pp == 0 or
                 user.has_effect(Volatile.LOCKEDMOVE) or
                 user.has_effect(Volatile.TWOTURNMOVE))

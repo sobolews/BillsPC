@@ -447,6 +447,23 @@ class TestMoves(MultiMoveTestCase):
             result = self.engine.use_move(self.vaporeon, movedex['copycat'], self.leafeon)
             self.assertEqual(result, FAIL)
 
+    def test_copycat_two_turn_move(self):
+        self.new_battle(p0_moves=('copycat', 'scald'),
+                        p1_moves=('leafblade', 'phantomforce'), any_move=False)
+        self.choose_move(self.leafeon, 'phantomforce')
+        self.choose_move(self.vaporeon, 'copycat')
+        self.run_turn()
+        self.assertTrue(self.leafeon.has_effect(Volatile.TWOTURNMOVE))
+        self.assertTrue(self.vaporeon.has_effect(Volatile.TWOTURNMOVE))
+        self.assertMoveChoices(self.vaporeon, {'phantomforce'})
+        self.choose_move(self.leafeon, 'phantomforce')
+        self.choose_move(self.vaporeon, 'phantomforce')
+        self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+        self.assertDamageTaken(self.leafeon, 44)
+        self.assertFalse(self.vaporeon.has_effect(Volatile.TWOTURNMOVE))
+
     def test_counter_success(self):
         self.choose_move(self.leafeon, 'counter')
         self.choose_move(self.vaporeon, 'dragonclaw')
