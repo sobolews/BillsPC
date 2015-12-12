@@ -192,6 +192,9 @@ class MultiMoveTestCase(TestCase):
         self.assertEqual(pokemon.status, status)
         if status not in (None, Status.FNT):
             self.assertTrue(pokemon.has_effect(status))
+        if status is None:
+            for status in Status:
+                self.assertFalse(pokemon.has_effect(status))
 
     def assertFainted(self, pokemon):
         self.assertEqual(pokemon.status, Status.FNT)

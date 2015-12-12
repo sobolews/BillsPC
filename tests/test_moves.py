@@ -187,6 +187,16 @@ class TestMoves(MultiMoveTestCase):
         self.assertTrue(self.flareon.has_effect(Volatile.CONFUSE)) # should be batonpassed
         self.assertFalse(self.flareon.has_effect(Volatile.YAWN))   # should not be batonpassed
 
+    def test_batonpass_doesnt_pass_status(self):
+        self.new_battle(p0_ability='noguard')
+        self.add_pokemon('umbreon', 0)
+        self.choose_move(self.leafeon, movedex['willowisp'])
+        self.run_turn()
+        self.choose_move(self.vaporeon, 'batonpass')
+        self.run_turn()
+
+        self.assertStatus(self.umbreon, None)
+
     def test_bellydrum_successful(self):
         damage = self.engine.use_move(self.vaporeon, movedex['bellydrum'], self.leafeon)
         self.assertIsNone(damage)

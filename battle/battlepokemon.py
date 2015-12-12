@@ -516,6 +516,10 @@ class BattlePokemon(object):
         if self.is_active and self.status not in (None, Status.FNT):
             assert self.has_effect(self.status), repr(self)
 
+        if self.is_active and self.status is None:
+            for status in Status:
+                assert not self.has_effect(status)
+
         if self.is_active:
             assert engine.battlefield.sides[self.side.index].active_pokemon is self
             assert self.side.active_pokemon is self

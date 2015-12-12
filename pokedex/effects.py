@@ -96,7 +96,9 @@ NO_BATONPASS = frozenset({
     Volatile.TRAPPED, Volatile.IGNOREITEM, Volatile.IGNOREABILITY, Volatile.UNBURDEN, Volatile.YAWN,
     Volatile.SHEERFORCE, Volatile.BATONPASS, Volatile.TWOTURNMOVE, Volatile.LOCKEDMOVE,
     Volatile.ATTRACT, Volatile.TRANSFORMED, Volatile.FLINCH, Volatile.CHOICELOCK, Volatile.VANISHED,
-    Volatile.MAGNETRISE, Volatile.PURSUIT, Volatile.PIROUETTE, Volatile.FORECAST, ABILITY, ITEM})
+    Volatile.MAGNETRISE, Volatile.PURSUIT, Volatile.PIROUETTE, Volatile.FORECAST, ABILITY, ITEM,
+    Status.BRN, Status.FRZ, Status.PAR, Status.PSN, Status.TOX, Status.SLP
+})
 
 class BatonPass(BaseEffect):
     source = Volatile.BATONPASS
