@@ -102,7 +102,8 @@ class HailWeather(BaseWeatherEffect):
         if not self.suppressed:
             for pokemon in sorted(filter(None, (pokemon0, pokemon1)),
                                   key=lambda p: -engine.effective_spe(p)):
-                engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.HAIL)
+                if not pokemon.is_fainted():
+                    engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.HAIL)
 
 class SandstormWeather(BaseWeatherEffect):
     source = Weather.SANDSTORM
@@ -113,7 +114,9 @@ class SandstormWeather(BaseWeatherEffect):
         if not self.suppressed:
             for pokemon in sorted(filter(None, (pokemon0, pokemon1)),
                                   key=lambda p: -engine.effective_spe(p)):
-                engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.SANDSTORM)
+                if not pokemon.is_fainted():
+                    engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER,
+                                  Weather.SANDSTORM)
 
     def on_modify_spd(self, pokemon, move, engine, spd):
         if not self.suppressed and Type.ROCK in pokemon.types:
