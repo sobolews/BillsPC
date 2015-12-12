@@ -103,7 +103,7 @@ class MultiMoveTestCase(TestCase):
                    p0_level=100, p1_level=100,
                    p0_gender=None, p1_gender=None,
                    p0_evs=(0,)*6, p1_evs=(0,)*6,
-                   tearDown=True):
+                   tearDown=True, any_move=True):
         """
         `name` is the species name of a pokemon in the pokedex.
         `moves` is a list of up to four moves
@@ -111,6 +111,7 @@ class MultiMoveTestCase(TestCase):
         `ability` is the name of an ability in the abilitydex.
         `level` is an int in [1..100]
         `gender` is in [None, 'M', 'F']
+        `any_move` controls whether to use AnyMovePokemon
         """
         if tearDown:
             self.tearDown()
@@ -118,16 +119,17 @@ class MultiMoveTestCase(TestCase):
         p0_moves = [movedex[move] if isinstance(move, str) else move for move in p0_moves]
         p1_moves = [movedex[move] if isinstance(move, str) else move for move in p1_moves]
 
-        setattr(self, p0_name, AnyMovePokemon(pokedex[p0_name], side=None,
-                                              ability=abilitydex[p0_ability],
-                                              evs=p0_evs, moveset=p0_moves,
-                                              item=itemdex.get(p0_item),
-                                              level=p0_level, gender=p0_gender))
-        setattr(self, p1_name, AnyMovePokemon(pokedex[p1_name], side=None,
-                                              ability=abilitydex[p1_ability],
-                                              evs=p1_evs, moveset=p1_moves,
-                                              item=itemdex.get(p1_item),
-                                              level=p1_level, gender=p1_gender))
+        PokemonClass = AnyMovePokemon if any_move else BattlePokemon
+        setattr(self, p0_name, PokemonClass(pokedex[p0_name], side=None,
+                                            ability=abilitydex[p0_ability],
+                                            evs=p0_evs, moveset=p0_moves,
+                                            item=itemdex.get(p0_item),
+                                            level=p0_level, gender=p0_gender))
+        setattr(self, p1_name, PokemonClass(pokedex[p1_name], side=None,
+                                            ability=abilitydex[p1_ability],
+                                            evs=p1_evs, moveset=p1_moves,
+                                            item=itemdex.get(p1_item),
+                                            level=p1_level, gender=p1_gender))
         self.engine = TestingEngine([getattr(self, p0_name)],
                                     [getattr(self, p1_name)],
                                     dm0=TestingDecisionMaker(0),
