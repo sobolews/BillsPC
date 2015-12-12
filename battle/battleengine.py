@@ -794,7 +794,7 @@ class BattleEngine(object):
             pokemon.set_effect(pokemon.item())
 
         if pokemon.status is not None:
-            pokemon.set_effect(STATUS_EFFECTS[pokemon.status](pokemon))
+            pokemon.set_effect(STATUS_EFFECTS[pokemon.status](pokemon), override_immunity=True)
 
     def post_switch_in(self, pokemon):
         """
