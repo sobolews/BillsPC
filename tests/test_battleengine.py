@@ -1171,3 +1171,12 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'facade')
         self.run_turn() # no warnings
         self.assertFainted(self.vaporeon)
+
+    def test_imposter_copies_forecast_but_no_forme_change(self):
+        self.new_battle('castform', 'ditto', p0_ability='forecast', p1_ability='imposter')
+        self.choose_move(self.castform, 'raindance')
+        self.run_turn()
+
+        self.assertEqual(self.castform.types[0], Type.WATER)
+        self.assertEqual(self.ditto.types[0], Type.NORMAL)
+        self.assertAbility(self.ditto, 'forecast')

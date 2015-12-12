@@ -381,7 +381,8 @@ class Forecast(AbilityEffect):
     }
 
     def on_update(self, pokemon, engine):
-        assert pokemon.base_species == 'castform'
+        if pokemon.base_species != 'castform':
+            return
 
         new_forme = self.FORMES[engine.battlefield.weather]
         if pokemon.name != new_forme:
