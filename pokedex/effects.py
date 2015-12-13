@@ -664,7 +664,8 @@ class Yawn(BaseEffect):
 
     @priority(0)
     def on_timeout(self, pokemon, engine):
-        engine.set_status(pokemon, Status.SLP, setter=pokemon) # unaffected by Safeguard
+        if not pokemon.is_fainted():
+            engine.set_status(pokemon, Status.SLP, setter=pokemon) # unaffected by Safeguard
 
 class SheerForceVolatile(BaseEffect):
     """
