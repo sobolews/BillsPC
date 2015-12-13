@@ -38,9 +38,9 @@ Bill's PC is currently in development!
 | implement moves                                     | done | :white_check_mark: 
 | implement abilities                                 | done | :white_check_mark: 
 | implement items                                     | done | :white_check_mark:
-| implement mega evolution                            | in progress | :large_blue_diamond:
-| implement forme changes                             | to do | :white_medium_square:
-| implement a Showdown battle client/bot              | on hold | :large_blue_diamond: 
+| implement mega evolution                            | done | :white_check_mark:
+| implement forme changes                             | done | :white_check_mark:
+| implement a Showdown battle client/bot              | in progress | :large_blue_diamond: 
 | implement AI (using [Simultaneous-Move](http://mlanctot.info/files/papers/cig14-smmctsggp.pdf) [Monte Carlo Tree Search](http://pubs.doc.ic.ac.uk/survey-mcts-methods/survey-mcts-methods.pdf)) | to do | :white_medium_square:
 | implement remaining non-randbats moves/abilities/items | maybe | :interrobang:
 
