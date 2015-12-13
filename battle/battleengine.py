@@ -701,6 +701,8 @@ class BattleEngine(object):
 
         residuals = []
 
+        # First pass: decrement duration of all residual effects, and add their on_timeout handler
+        # if they time out
         for thing in filter(None, (actives[0], actives[1], sides[0], sides[1], self.battlefield)):
             for effect in thing.effects:
                 if effect.duration is not None:
@@ -709,10 +711,13 @@ class BattleEngine(object):
 
                     if effect.duration == 0:
                         if __debug__: log.i('%s timed out', effect)
+                        # No holder/effect for timed out effects, because they are removed so they
+                        # cannot be checked for existence
                         residuals.append(Residual(None, None,
                                                   partial(effect.on_timeout, thing, self)))
                         thing.remove_effect(effect.source, self)
 
+        # Second pass: gather all non-timed-out effects' on_residual handlers
         for pokemon, foe in ((actives[0], actives[1]), (actives[1], actives[0])):
             if pokemon is not None:
                 residuals.extend(Residual(pokemon, effect.source,
