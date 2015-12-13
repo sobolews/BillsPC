@@ -387,9 +387,12 @@ class BattlePokemon(object):
         if ((other.is_fainted() or
              other.has_effect(Volatile.SUBSTITUTE) or
              self.is_transformed or
+             other.is_transformed or
              other.ability == abilitydex['illusion'])):
             return FAIL
         if __debug__: log.i('%s transformed into %s!', self, other)
+
+        self.is_transformed = True
 
         self.base_data['moveset'] = self.moveset
         self.base_data['pp'] = self.pp
@@ -420,8 +423,6 @@ class BattlePokemon(object):
             ability_effect = self.ability()
             self.set_effect(ability_effect)
             ability_effect.start(self, engine)
-
-        self.is_transformed = True
 
     def revert_transform(self):
         """ This should only be done on switch out or on faint """

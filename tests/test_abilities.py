@@ -1092,6 +1092,12 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertMoveChoices(self.ditto, {'focusblast', 'psyshock',
                                             'hiddenpowerdark', 'shadowball'})
 
+    def test_double_imposter(self):
+        self.new_battle('vaporeon', 'ditto', p0_ability='imposter', p1_ability='imposter')
+        # no infinite recursion
+        self.assertTrue(self.vaporeon.is_transformed)
+        self.assertFalse(self.ditto.is_transformed)
+
     def test_infiltrator(self):
         self.new_battle(p0_ability='infiltrator', p1_ability='infiltrator')
         self.choose_move(self.leafeon, 'substitute')
