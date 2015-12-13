@@ -1678,7 +1678,8 @@ class highjumpkick(Move):
         self.recoil = -1
 
     def on_move_fail(self, user, engine):
-        engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
+        if not user.is_fainted(): # e.g. by spikyshield
+            engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class honeclaws(Move):
     def __init__(self):
@@ -1902,7 +1903,8 @@ class jumpkick(Move):
         self.recoil = -1
 
     def on_move_fail(self, user, engine):
-        engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
+        if not user.is_fainted(): # e.g. by spikyshield
+            engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class kingsshield(Move):
     def __init__(self):

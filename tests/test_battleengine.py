@@ -1231,3 +1231,13 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.run_turn()
 
         self.assertDamageTaken(self.aegislash, 256) # takes the hit in blade forme
+
+    def test_crash_damage_after_spikyshield_ko(self):
+        self.new_battle('blaziken', 'chesnaught', p0_ability='noguard')
+        self.blaziken.hp = 10
+        self.choose_move(self.blaziken, 'highjumpkick')
+        self.choose_move(self.chesnaught, 'spikyshield')
+        self.run_turn()
+
+        # no warning: tried to damage fainted pokemon
+        self.assertFainted(self.blaziken)
