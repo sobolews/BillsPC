@@ -164,6 +164,7 @@ class BaseEffect(object):
         The foe may be None when this runs.
         """
 
+    @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
         """ Called immediately before a pokemon clears its volatiles/boosts and switches out """
 

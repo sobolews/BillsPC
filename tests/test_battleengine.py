@@ -1199,3 +1199,35 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.run_turn()
         self.assertFainted(self.leafeon)
         self.assertStatus(self.vaporeon, Status.BRN)
+
+    def test_ko_hard_switching_regenerator_with_pursuit(self):
+        self.new_battle(p0_ability='regenerator')
+        self.add_pokemon('flareon', 0)
+        self.vaporeon.hp = 10
+        self.choose_switch(self.vaporeon, self.flareon)
+        self.choose_move(self.leafeon, 'pursuit')
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+
+    def test_ko_switch_move_regenerator_with_pursuit(self):
+        self.new_battle(p0_ability='regenerator')
+        self.vaporeon.apply_boosts(Boosts(spe=1))
+        self.add_pokemon('flareon', 0)
+        self.vaporeon.hp = 10
+        self.choose_move(self.vaporeon, 'uturn')
+        self.choose_move(self.leafeon, 'pursuit')
+        self.run_turn()
+
+        self.assertFainted(self.vaporeon)
+
+    def test_pursuit_hits_before_stancechange_reversion(self):
+        self.new_battle('aegislash', 'leafeon', p0_ability='stancechange')
+        self.add_pokemon('vaporeon', 0)
+        self.choose_move(self.aegislash, 'aerialace')
+        self.run_turn()
+        self.choose_switch(self.aegislash, self.vaporeon)
+        self.choose_move(self.leafeon, 'pursuit')
+        self.run_turn()
+
+        self.assertDamageTaken(self.aegislash, 256) # takes the hit in blade forme

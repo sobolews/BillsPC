@@ -104,6 +104,7 @@ class BatonPass(BaseEffect):
     source = Volatile.BATONPASS
     duration = 1
 
+    @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
         incoming.boosts = pokemon.boosts
         # TODO: test that this (just transferring the effect) works properly with each effect
@@ -449,6 +450,7 @@ class Pursuit(BaseEffect):
         self.pursuer = pursuer
         self.move = move
 
+    @priority(1)
     def on_switch_out(self, pokemon, incoming, engine):
         assert self.pursuer.is_active or self.pursuer.is_fainted()
 

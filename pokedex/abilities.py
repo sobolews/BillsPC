@@ -680,6 +680,7 @@ class Mummy(AbilityEffect):
             foe.change_ability(Mummy, engine)
 
 class NaturalCure(AbilityEffect):
+    @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
         pokemon.cure_status()
 
@@ -850,9 +851,11 @@ class Refrigerate(AbilityEffect):
         return base_power
 
 class Regenerator(AbilityEffect):
+    @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
-        if __debug__: log.i("%s was healed by its Regenerator!", pokemon)
-        engine.heal(pokemon, pokemon.max_hp / 3)
+        if not pokemon.is_fainted(): # from pursuit
+            if __debug__: log.i("%s was healed by its Regenerator!", pokemon)
+            engine.heal(pokemon, pokemon.max_hp / 3)
 
 class RockHead(AbilityEffect):
     @priority(0)
@@ -1032,6 +1035,7 @@ class StanceChange(AbilityEffect):
         elif move.category is not MoveCategory.STATUS and user.name == 'aegislash':
             user.forme_change('aegislashblade')
 
+    @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
         if pokemon.name == 'aegislashblade':
             pokemon.forme_change('aegislash')

@@ -96,6 +96,7 @@ class Toxic(BaseStatusEffect):
     source = Status.TOX
     stage = 0
 
+    @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
         self.stage = 0
 

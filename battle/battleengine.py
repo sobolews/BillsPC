@@ -765,7 +765,7 @@ class BattleEngine(object):
     def switch_out(self, outgoing, incoming):
         outgoing.is_switching_out = True
 
-        for effect in outgoing.effects:
+        for effect in sorted(outgoing.effects, key=lambda e: -e.on_switch_out.priority):
             effect.on_switch_out(outgoing, incoming, self)
 
         outgoing.clear_effects(self)
