@@ -10,7 +10,7 @@ class UnrevealedPokemon(BattlePokemon):
         self.name = UNREVEALED
 
     def not_implemented(self, *args, **kwargs):
-        raise NotImplementedError('This pokemon has not been revealed yet')
+        raise AssertionError('This pokemon has not been revealed yet')
 
     set_effect = has_effect = get_effect = remove_effect = clear_effects = \
     suppress_ability = unsuppress_ability = \
