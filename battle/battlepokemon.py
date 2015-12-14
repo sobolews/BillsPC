@@ -413,7 +413,7 @@ class BattlePokemon(object):
         self._weight = other.weight
 
         self.boosts = Boosts()
-        self.boosts.update(other.boosts)
+        self.boosts.update(other.boosts, self.name)
         if __debug__:
             if self.boosts: log.i('%s copied %r', self, self.boosts)
 
@@ -480,12 +480,7 @@ class BattlePokemon(object):
         # Only abilities have on_boost
         boosts = self.get_effect(ABILITY).on_boost(self, boosts, self_induced)
 
-        if __debug__:
-            for stat, val in boosts.items():
-                if val:
-                    log.i("%s's %s was %s by %s",
-                          self, stat, "boosted" if val > 0 else "lowered", abs(val))
-        return self.boosts.update(boosts)
+        return self.boosts.update(boosts, self.name)
 
     def __str__(self):
         if self.name == self.base_species or self.is_mega:
