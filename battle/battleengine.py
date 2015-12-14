@@ -566,8 +566,9 @@ class BattleEngine(object):
                 return FAIL
 
         pokemon.hp -= damage
-        if __debug__: log.i('%s took %s damage from (%s, %s); hp=(%s)' %
-                            (pokemon, damage, cause.name, source, pokemon.hp))
+        if __debug__: log.i('%s took %s (%.1f%%) damage from %s: %s; hp=%d/%d' %
+                            (pokemon, damage, 100*float(damage)/pokemon.max_hp, cause.name, source,
+                             pokemon.hp, pokemon.max_hp))
         if pokemon.hp <= 0:
             damage += pokemon.hp
 
