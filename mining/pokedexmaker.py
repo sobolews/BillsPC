@@ -5,6 +5,7 @@ contains information such as the types and base stats of the pokemon.
 import json
 import shlex
 import subprocess
+from distutils.spawn import find_executable
 from os.path import dirname, abspath, join
 from pprint import pformat
 
@@ -12,6 +13,7 @@ from pokedex.stats import PokemonStats
 from pokedex.enums import Type
 from misc.functions import normalize_name
 
+NODE_EXECUTABLE = 'node' if find_executable('nodejs') is None else 'nodejs'
 SHOWDOWN_DIR = abspath(join(dirname(__file__), 'Pokemon-Showdown'))
 POKEDEX_JS_PATH = join(SHOWDOWN_DIR, 'data', 'pokedex.js')
 
@@ -27,7 +29,7 @@ def _js_file_to_dict(path):
     Parse a javascript data file and return the data as a dict.
     """
     json_data = subprocess.check_output(shlex.split(
-        'nodejs -p "JSON.stringify(require(\'%s\'));"' % path))
+        '%s -p "JSON.stringify(require(\'%s\'));"' % (NODE_EXECUTABLE, path)))
     return json.loads(json_data)
 
 def parse_pokedex_js(pokedex):

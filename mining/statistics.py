@@ -31,7 +31,7 @@ from os.path import dirname, abspath, join, exists
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from mining.pokedexmaker import SHOWDOWN_DIR, create_pokedex
+from mining.pokedexmaker import SHOWDOWN_DIR, create_pokedex, NODE_EXECUTABLE
 from misc.functions import normalize_name
 
 if __debug__: from _logging import log
@@ -270,7 +270,7 @@ def get_json_teams(n_teams):
     concurrently due to the other process(es) removing ./logs/repl/battle-engine-XXXX, where XXXX is
     the node process id. In this case just try again.
     """
-    node_cmd = 'nodejs %s %d' % (SHOWDOWN_MINER, n_teams)
+    node_cmd = '%s %s %d' % (NODE_EXECUTABLE, SHOWDOWN_MINER, n_teams)
     while True:
         json_teams = subprocess.check_output(shlex.split(node_cmd))
         try:
