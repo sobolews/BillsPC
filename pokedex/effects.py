@@ -15,7 +15,7 @@ if __debug__: from _logging import log
 from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, SideCondition,
-                           Hazard, PseudoWeather, ABILITY, ITEM)
+                           Hazard, PseudoWeather)
 from pokedex.stats import Boosts
 from pokedex.types import effectiveness
 
@@ -91,13 +91,14 @@ class Autotomize(BaseEffect):
     multiplier = 1
     # Weight modification is implemented in BattlePokemon.weight
 
-NO_BATONPASS = frozenset({
-    Volatile.FLASHFIRE, Volatile.AUTOTOMIZE, Volatile.DISABLE, Volatile.TRAPPER, Volatile.STALL,
-    Volatile.TRAPPED, Volatile.IGNOREITEM, Volatile.IGNOREABILITY, Volatile.UNBURDEN, Volatile.YAWN,
-    Volatile.SHEERFORCE, Volatile.BATONPASS, Volatile.TWOTURNMOVE, Volatile.LOCKEDMOVE,
-    Volatile.ATTRACT, Volatile.TRANSFORMED, Volatile.FLINCH, Volatile.CHOICELOCK, Volatile.VANISHED,
-    Volatile.MAGNETRISE, Volatile.PURSUIT, Volatile.PIROUETTE, Volatile.FORECAST, ABILITY, ITEM,
-    Status.BRN, Status.FRZ, Status.PAR, Status.PSN, Status.TOX, Status.SLP
+CAN_BATONPASS = frozenset({
+    Volatile.CONFUSE,
+    Volatile.LEECHSEED,
+    Volatile.MAGNETRISE,
+    Volatile.PARTIALTRAP,
+    Volatile.PERISHSONG,
+    Volatile.SUBSTITUTE,
+    Volatile.TAUNT,
 })
 
 class BatonPass(BaseEffect):
@@ -109,7 +110,7 @@ class BatonPass(BaseEffect):
         incoming.boosts = pokemon.boosts
         # TODO: test that this (just transferring the effect) works properly with each effect
         for source, effect in pokemon._effect_index.items():
-            if source not in NO_BATONPASS:
+            if source in CAN_BATONPASS:
                 incoming._effect_index[source] = effect
                 del pokemon._effect_index[source]
 
