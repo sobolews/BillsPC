@@ -215,15 +215,6 @@ class RandbatsStatistics(object):
                        sum(attrs_counter[attrset] for attrset in possible_attrs))
         return probability
 
-    def item_probability(self, item, pokemon):
-        """ Return the probability [0.0, 1.0] that `pokemon` is holding `item` """
-        return self.counter[pokemon]['item'].get(item, 0) / float(self.counter[pokemon]['number'])
-
-    def ability_probability(self, ability, pokemon):
-        """ Return the probability [0.0, 1.0] that `pokemon` has `ability` """
-        return (self.counter[pokemon]['ability'].get(ability, 0) /
-                float(self.counter[pokemon]['number']))
-
 
 def copy_miner_file():
     shutil.copyfile(SHOWDOWN_MINER_LOCAL, SHOWDOWN_MINER)
