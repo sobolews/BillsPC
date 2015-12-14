@@ -13,8 +13,8 @@ class TestRandbatsCounter(TestCase):
         self.assertEqual(counter['rotomwash']['number'], 1)
         self.assertIn('hydropump', counter['rotomwash']['moves'])
         self.assertEqual(counter['rotomwash']['moves']['hydropump'], 1)
-        self.assertEqual(counter['rotomwash']['ability']['Levitate'], 1)
-        self.assertEqual(counter['rotomwash']['item']['Leftovers'], 1)
+        self.assertEqual(counter['rotomwash']['ability']['levitate'], 1)
+        self.assertEqual(counter['rotomwash']['item']['leftovers'], 1)
 
         for pokemon in TEAM1:
             counter.sample(pokemon)
@@ -56,7 +56,7 @@ class TestRandbatsCounter(TestCase):
         self.assertEqual(counter.moves_index['thunderbolt']['starmie'], 1)
         self.assertEqual(counter.moves_index['rapidspin']['starmie'], 0.5)
 
-    def test_move_probability(self):
+    def test_attr_probability(self):
         starmie = {'ability': 'Natural Cure',
                    'evs': {'atk': 85, 'def': 85, 'hp': 85, 'spa': 85, 'spd': 85, 'spe': 85},
                    'item': 'Life Orb',
@@ -76,11 +76,11 @@ class TestRandbatsCounter(TestCase):
         starmie['moves'][2] = 'grassknot'
         counter.sample(starmie)
 
-        self.assertEqual(0.7, counter.move_probability('starmie', 'rapidspin', []))
-        self.assertEqual(1, counter.move_probability('starmie', 'rapidspin', ['hydropump']))
-        self.assertEqual(6.0/7, counter.move_probability('starmie', 'hydropump', ['rapidspin']))
-        self.assertEqual(0, counter.move_probability('starmie', 'grassknot', ['thunderbolt']))
-        self.assertEqual(0, counter.move_probability('starmie', 'darkvoid', []))
+        self.assertEqual(0.7, counter.attr_probability('starmie', 'rapidspin', []))
+        self.assertEqual(1, counter.attr_probability('starmie', 'rapidspin', ['hydropump']))
+        self.assertEqual(6.0/7, counter.attr_probability('starmie', 'hydropump', ['rapidspin']))
+        self.assertEqual(0, counter.attr_probability('starmie', 'grassknot', ['thunderbolt']))
+        self.assertEqual(0, counter.attr_probability('starmie', 'darkvoid', []))
 
     def get_counter(self):
         """

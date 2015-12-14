@@ -4,8 +4,9 @@ format. By running Showdown's randomTeam() function many times and collecting th
 answer questions like:
 
 - If my opponent's first pokemon is a Gengar, what is the probability that it knows Protect?
-- If my opponent's Gengar Mega-Evolves and uses Disable, what is the new probability that it knows
-  Protect? (it's more likely that it will have Disable and Protect together than Disable alone)
+- If my opponent's Gengar Mega-Evolves and uses Perish Song, what is the new probability that it
+  knows Protect? (it's more likely that it will have Perish Song and Protect together than Perish
+  Song alone)
 - If my opponent's Charizard uses Flare Blitz, how likely is it to be holding Leftovers vs
   Charizardite X or Y?
 - What are the odds my opponent's Lanturn's ability is Volt Absorb vs Water Absorb?
@@ -31,6 +32,7 @@ from os.path import dirname, abspath, join, exists
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from mining.pokedexmaker import SHOWDOWN_DIR, create_pokedex
+from misc.functions import normalize_name
 
 if __debug__: from _logging import log
 
@@ -56,7 +58,7 @@ class RandbatsStatistics(object):
          'item': Counter({'Life Orb': 9, 'Black Sludge': 8, 'Choice Band': 1}),
          'level': Counter({86: 18}),
          'moves': Counter({'shadowsneak': 14, 'gunkshot': 13, 'icepunch': 12, 'firepunch': 11}),
-         'movesets' Counter({(<tuple of four sorted moves>): 10, (...)})
+         'sets' Counter({(<tuple of four sorted moves, ability, item>): 10, (...)})
          'number': 18}
         """
         return self.counter[index]
@@ -159,17 +161,23 @@ class RandbatsStatistics(object):
         if name not in self.counter:
             self.counter[name] = self.new_entry()
 
+        pokemon['moves'] = [normalize_name(str(move)) for move in pokemon['moves']]
+        pokemon['ability'] = normalize_name(str(pokemon['ability']))
+        pokemon['item'] = normalize_name(str(pokemon['item']))
+
         self.counter[name]['number'] += 1
         for move in pokemon['moves']:
-            self.counter[name]['moves'][str(move)] += 1
-        self.counter[name]['ability'][str(pokemon['ability'])] += 1
-        self.counter[name]['item'][str(pokemon['item'])] += 1
+            self.counter[name]['moves'][move] += 1
+        self.counter[name]['ability'][pokemon['ability']] += 1
+        self.counter[name]['item'][pokemon['item']] += 1
         self.counter[name]['level'][pokemon['level']] += 1
-        self.counter[name]['movesets'][tuple(sorted(pokemon['moves']))] += 1
+        self.counter[name]['sets'][tuple(sorted(pokemon['moves']) +
+                                                    [pokemon['ability'],
+                                                     pokemon['item']])] += 1
 
     def new_entry(self):
         return {'number': 0, 'moves': Counter(), 'ability': Counter(), 'item': Counter(),
-                'level': Counter(), 'movesets': Counter()}
+                'level': Counter(), 'sets': Counter()}
 
     def update(self, other):
         """
@@ -183,28 +191,28 @@ class RandbatsStatistics(object):
             self.counter[name]['ability'].update(other.counter[name]['ability'])
             self.counter[name]['item'].update(other.counter[name]['item'])
             self.counter[name]['level'].update(other.counter[name]['level'])
-            self.counter[name]['movesets'].update(other.counter[name]['movesets'])
+            self.counter[name]['sets'].update(other.counter[name]['sets'])
 
-    def move_probability(self, pokemon, move, known_moves):
+    def attr_probability(self, pokemon, attr, known_attrs):
         """
-        Return the probability [0.0, 1.0] that pokemon knows move, given that it knows [known_moves]
-        pokemon: str, move: str, known_moves: list<str>
+        Return the probability [0.0, 1.0] that pokemon has attr, given that it has [known_attrs].
+        pokemon: str, attr: str, known_attrs: list<str>
         """
-        moveset_counter = self.counter[pokemon]['movesets']
-        possible_movesets = [moveset for moveset in moveset_counter if
-                             all(move_ in moveset for move_ in known_moves)]
+        attrs_counter = self.counter[pokemon]['sets']
+        possible_attrs = [attrset for attrset in attrs_counter if
+                          all(attr_ in attrset for attr_ in known_attrs)]
 
-        if not possible_movesets:
+        if not possible_attrs:
             if __debug__:
-                log.e("%s's known_moves %s does not correspond to any known moveset in rbstats. "
-                      "Cannot calculate move probabilities; returning 0.5", pokemon, known_moves)
+                log.e("%s's known_attrs %s does not correspond to any known attrset in rbstats. "
+                      "Cannot calculate move probabilities; returning 0.5", pokemon, known_attrs)
             return 0.5
 
-        target_movesets = [moveset for moveset in possible_movesets if
-                           move in moveset]
+        target_attrs = [attrset for attrset in possible_attrs if
+                        attr in attrset]
 
-        probability = (float(sum(moveset_counter[moveset] for moveset in target_movesets)) /
-                       sum(moveset_counter[moveset] for moveset in possible_movesets))
+        probability = (float(sum(attrs_counter[attrset] for attrset in target_attrs)) /
+                       sum(attrs_counter[attrset] for attrset in possible_attrs))
         return probability
 
     def item_probability(self, item, pokemon):

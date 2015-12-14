@@ -52,7 +52,7 @@ class CheatSheetEngine(BattleEngine):
                           if movedex[move] not in foe.moveset]
         data = []
         for move in possible_moves[:]:
-            prob = rbstats.move_probability(foe.name, move.name,
+            prob = rbstats.attr_probability(foe.name, move.name,
                                             [move_.name for move_ in foe.moveset])
             if not prob:
                 possible_moves.remove(move)
