@@ -123,3 +123,13 @@ class TestMegaEvolution(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.slowbro, 92 + 114)
         self.assertEqual(self.slowbro.weight, 120)
+
+    def test_mega_evo_catching_hard_switch_with_pursuit(self):
+        self.new_battle('gallade', 'leafeon', p0_item='galladite')
+        self.add_pokemon('espeon', 1)
+        self.choose_switch(self.leafeon, self.espeon)
+        self.choose_mega_evo(self.gallade)
+        self.choose_move(self.gallade, 'pursuit')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 85)

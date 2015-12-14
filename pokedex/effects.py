@@ -15,7 +15,7 @@ if __debug__: from _logging import log
 from misc.functions import priority
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, SideCondition,
-                           Hazard, PseudoWeather)
+                           Hazard, PseudoWeather, Decision)
 from pokedex.stats import Boosts
 from pokedex.types import effectiveness
 
@@ -460,6 +460,13 @@ class Pursuit(BaseEffect):
             not self.pursuer.has_moved_this_turn
         ):
             if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuer, pokemon)
+
+            # mega evolve before attacking
+            for event in engine.event_queue:
+                if event.pokemon is self.pursuer and event.type is Decision.MEGAEVO:
+                    self.pursuer.mega_evolve(engine)
+                    break
+
             engine.run_move(self.pursuer, self.move, pokemon)
             # Don't let the pursuer move again afterwards
             engine.event_queue = [event for event in engine.event_queue
