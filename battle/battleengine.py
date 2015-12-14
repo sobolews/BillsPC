@@ -698,7 +698,8 @@ class BattleEngine(object):
         if __debug__: log.i('Between turns')
         sides = self.battlefield.sides
         actives = sorted([sides[0].active_pokemon, sides[1].active_pokemon],
-                         key=lambda p: 0 if p is None else -self.effective_spe(p))
+                         key=lambda p: 0 if p is None else (-self.effective_spe(p),
+                                                            random.random()))
 
         residuals = []
 
@@ -743,7 +744,7 @@ class BattleEngine(object):
         sides = self.battlefield.sides
         actives = [side.active_pokemon for side in sides if side.active_pokemon is not None]
 
-        for pokemon in sorted(actives, key=lambda p: -self.effective_spe(p)):
+        for pokemon in sorted(actives, key=lambda p: (-self.effective_spe(p), random.random())):
             for effect in pokemon.effects:
                 effect.on_update(pokemon, self)
 
@@ -861,7 +862,7 @@ class BattleEngine(object):
         sides = self.battlefield.sides
         if __debug__: log.i('Starting battle: %s %s', sides[0], sides[1])
         leads = sorted([side.active_pokemon for side in sides],
-                       key=lambda p: -p.calculate_stat('spe'))
+                       key=lambda p: (-p.calculate_stat('spe'), random.random()))
         for lead in leads:
             self.switch_in(lead)
         for lead in leads:
