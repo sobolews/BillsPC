@@ -6,40 +6,40 @@ Type = Enum(
              '???')) # '???' type used for confusion damage and struggle
 
 Status = Enum(
-    'Status', ('BRN', 'FRZ', 'PAR', 'PSN', 'TOX', 'SLP', 'FNT'))
+    'Status', ('BRN', 'FNT', 'FRZ', 'PAR', 'PSN', 'SLP', 'TOX'))
 
 Volatile = Enum(
-    'Volatile', ('CONFUSE', 'FLINCH', 'PARTIALTRAP', 'TRAPPED', 'TRAPPER', 'TWOTURNMOVE',
-                 'CHOICELOCK', 'PROTECT', 'LOCKEDMOVE', 'DISABLE', 'ENCORE', 'PERISHSONG',
-                 'LEECHSEED', 'YAWN', 'MAGICCOAT', 'SUBSTITUTE', 'VANISHED', 'AUTOTOMIZE',
-                 'FLASHFIRE', 'TAUNT', 'IGNOREABILITY', 'IGNOREITEM', 'UNBURDEN', 'DESTINYBOND',
-                 'SHEERFORCE', 'KINGSSHIELD', 'SPIKYSHIELD', 'STALL', 'MAGNETRISE', 'ROOST',
-                 'BATONPASS', 'PURSUIT', 'ATTRACT', 'TRANSFORMED', 'PARENTALBOND', 'SLOWSTART',
-                 'TRUANT', 'GEM', 'PIROUETTE', 'FORECAST'))
+    'Volatile', ('ATTRACT', 'AUTOTOMIZE', 'BATONPASS', 'CHOICELOCK', 'CONFUSE', 'DESTINYBOND',
+                 'DISABLE', 'ENCORE', 'FLASHFIRE', 'FLINCH', 'FORECAST', 'GEM', 'KINGSSHIELD',
+                 'LEECHSEED', 'LOCKEDMOVE', 'MAGICCOAT', 'MAGNETRISE', 'PARENTALBOND',
+                 'PARTIALTRAP', 'PERISHSONG', 'PIROUETTE', 'PROTECT', 'PURSUIT', 'ROOST',
+                 'SHEERFORCE', 'SLOWSTART', 'SPIKYSHIELD', 'STALL', 'SUBSTITUTE', 'TAUNT',
+                 'TRANSFORMED', 'TRAPPED', 'TRAPPER', 'TRUANT', 'TWOTURNMOVE', 'UNBURDEN',
+                 'VANISHED', 'YAWN'))
 
 SideCondition = Enum(
-    'SideCondition', ('LIGHTSCREEN', 'REFLECT', 'TAILWIND', 'HEALINGWISH', 'WISH', 'SAFEGUARD'))
+    'SideCondition', ('HEALINGWISH', 'LIGHTSCREEN', 'REFLECT', 'SAFEGUARD', 'TAILWIND', 'WISH'))
 
 Hazard = Enum(
-    'Hazard', ('SPIKES', 'TOXICSPIKES', 'STEALTHROCK', 'STICKYWEB'))
+    'Hazard', ('TOXICSPIKES', 'SPIKES', 'STEALTHROCK', 'STICKYWEB'))
 
 PseudoWeather = Enum(
-    'PseudoWeather', ('ELECTRICTERRAIN', 'TRICKROOM', 'DARKAURA', 'FAIRYAURA', 'AURABREAK'))
+    'PseudoWeather', ('AURABREAK', 'DARKAURA', 'ELECTRICTERRAIN', 'FAIRYAURA', 'TRICKROOM'))
 
 Weather = Enum(
-    'Weather', ('RAINDANCE', 'PRIMORDIALSEA', 'SUNNYDAY', 'DESOLATELAND', 'HAIL', 'SANDSTORM',
-                'DELTASTREAM'))
+    'Weather', ('DELTASTREAM', 'DESOLATELAND', 'HAIL', 'PRIMORDIALSEA', 'RAINDANCE', 'SANDSTORM',
+                'SUNNYDAY'))
 Weather.TRIO = (Weather.PRIMORDIALSEA, Weather.DESOLATELAND, Weather.DELTASTREAM)
 
 Cause = Enum(
-    'Cause', ('MOVE', 'RESIDUAL', 'WEATHER', 'HAZARD', 'RECOIL', 'SELFDESTRUCT', 'OTHER',
-              'CONFUSE', 'DIRECT', 'DRAIN', 'CRASH'))
+    'Cause', ('CONFUSE', 'CRASH', 'DIRECT', 'DRAIN', 'HAZARD', 'MOVE', 'OTHER', 'RECOIL',
+              'RESIDUAL', 'SELFDESTRUCT', 'WEATHER'))
 
 Decision = Enum(
-    'Decision', ('MOVE', 'SWITCH', 'MEGAEVO', 'RESIDUAL', 'POSTSWITCH'))
+    'Decision', ('MOVE', 'MEGAEVO', 'POSTSWITCH', 'RESIDUAL', 'SWITCH'))
 
 MoveCategory = Enum(
-    'MoveCategory', ('STATUS', 'PHYSICAL', 'SPECIAL'))
+    'MoveCategory', ('PHYSICAL', 'SPECIAL', 'STATUS'))
 STATUS, PHYSICAL, SPECIAL = MoveCategory.STATUS, MoveCategory.PHYSICAL, MoveCategory.SPECIAL
 
 FAIL = type('', (object,), {'__repr__': lambda _: '<FAIL>'})()
