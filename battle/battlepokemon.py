@@ -490,12 +490,13 @@ class BattlePokemon(object):
 
     def __repr__(self):
         return '\n'.join([
-            '%s %d/%d   L%d (side %d%s)' % (self.name, self.hp, self.max_hp, self.level,
-                                            self.side.index, ', active' if self.is_active else ''),
+            '%s %d/%d   L%d (side %d)' % (self.name, self.hp, self.max_hp, self.level,
+                                            self.side.index),
             'moves: [%s]' % ', '.join(move.name for move in self.moveset),
             'status: %s   ability: %s   item: %s' % (self.status and self.status.name, self.ability,
                                                      self.item),
-            'effects: %r  %s' % ([e for e in self.effects], self.boosts or '')
+            ('Active effects: %r  %s' % ([e for e in self.effects], self.boosts or '')
+             if self.is_active else '')
         ])
 
     def debug_sanity_check(self, engine):
