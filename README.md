@@ -23,8 +23,8 @@ mkvirtualenv -a . -p /usr/bin/python2.7 BillsPC
 ```
 
 ```
-make install
-make test
+./install.sh
+./test.sh
 ```
 --- 
 Bill's PC is currently in development!
