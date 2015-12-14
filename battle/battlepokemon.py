@@ -76,6 +76,8 @@ class BattlePokemon(object):
         self.is_mega = True
 
     def forme_change(self, forme, engine=None):
+        assert not self.is_transformed
+
         self.pokedex_entry = new_forme = POKEDEX[forme]
         self.name = new_forme.name
         self._weight = new_forme.weight
