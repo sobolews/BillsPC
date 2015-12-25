@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/sobolews/BillsPC.svg?branch=master)](https://travis-ci.org/sobolews/BillsPC)
 ## Bill's PC
 Bill's PC is an AI project, intended for playing [Pokemon Showdown](http://pokemonshowdown.com/)'s Random Battle format.
 
