@@ -26,10 +26,13 @@ class RandomDecisionMaker(BaseDecisionMaker):
 
 class RandomDecisionMakerWithSwitches(RandomDecisionMaker):
     def make_move_decision(self, choices, battlefield):
-        switches = [choice for choice in choices if choice.type is Decision.SWITCH]
+        switches, moves = [], []
+        for choice in choices:
+            (switches if choice.type is Decision.SWITCH else moves).append(choice)
+
         if switches and random.randrange(10) == 0:
             return random.choice(switches)
-        return random.choice([choice for choice in choices if choice.type is Decision.MOVE])
+        return random.choice(moves)
 
 class ScriptedDecisionMaker(BaseDecisionMaker):
     def __init__(self, side, decisions):
