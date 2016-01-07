@@ -54,4 +54,6 @@ testing = (os.getenv('BILLSPC_TEST') == '1') or ('nosetests' in sys.argv[0])
 log = _create_logger(testing)
 
 def silence_console():
+    if len(log.handlers) < 2:
+        return
     log.handlers[1].setLevel(logging.WARNING)
