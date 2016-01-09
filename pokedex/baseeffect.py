@@ -36,11 +36,34 @@ from misc.functions import priority
 from pokedex.enums import ABILITY
 
 class BaseEffect(object):
+    class __metaclass__(type):
+        def __init__(cls, name, bases, dct):
+            cls.name = name.lower()
+
+            # search through the class and its bases for at least one handler method. classes using
+            # multiple inheritance must inherit from the class defining handlers first.
+            cls.handler_names = ()
+            search_cls = cls
+            while not cls.handler_names:
+                cls.handler_names = tuple(hname for hname in search_cls.__dict__
+                                          if hname.startswith('on_'))
+                if cls.handler_names or search_cls is object:
+                    break
+                search_cls = search_cls.__bases__[0]
+                if search_cls is BaseEffect:
+                    break
+
+        def __repr__(cls):
+            return cls.__name__
+
     source = None   # must be overriden
     duration = None # default: effect does not expire
 
     def on_end(self, pokemon, engine):
         """ Called when an effect ends, regardless of cause """
+
+    def on_start(self, pokemon, engine):
+        """ Called on abilities only when they activate """
 
     @priority(0)
     def on_timeout(self, pokemon, engine):
@@ -275,6 +298,11 @@ class BaseEffect(object):
     def on_lose_item(self, pokemon, item):
         """
         Called when a pokemon loses its item, by using it or by theft.
+        """
+
+    def on_hit_substitute(self, foe, move, target, engine):
+        """
+        Called on the Substitute effect when it is hit by a move
         """
 
     def __repr__(self):

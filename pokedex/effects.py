@@ -108,16 +108,17 @@ class BatonPass(BaseEffect):
     @priority(0)
     def on_switch_out(self, pokemon, incoming, engine):
         incoming.boosts = pokemon.boosts
-        # TODO: test that this (just transferring the effect) works properly with each effect
         for source, effect in pokemon._effect_index.items():
             if source in CAN_BATONPASS:
                 incoming._effect_index[source] = effect
+                for name in effect.handler_names:
+                    pokemon.effect_handlers[name].remove(getattr(effect, name))
+                    incoming.effect_handlers[name].add(getattr(effect, name))
                 del pokemon._effect_index[source]
 
         if __debug__: log.i('Batonpassed %s to %s',
                             filter(None, chain([incoming.boosts], incoming.effects)) or None,
                             incoming)
-
 
 class ChoiceLock(BaseEffect):
     source = Volatile.CHOICELOCK
@@ -555,7 +556,7 @@ class Substitute(BaseEffect):
     def __init__(self, hp):
         self.hp = hp
 
-    def on_hit_substitute(self, foe, move, target, engine): # not an override
+    def on_hit_substitute(self, foe, move, target, engine):
         """
         - Return FAIL to fail the move.
         - Return None to continue as though there was no substitute.

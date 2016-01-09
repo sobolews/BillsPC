@@ -1143,13 +1143,6 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
             self.assertDamageTaken(self.vaporeon, 142)
             self.assertStatus(self.vaporeon, None)
 
-            # hack a sleep onto vaporeon, check that it wakes up anyway
-            self.vaporeon.status = Status.SLP
-            self.vaporeon._effect_index[Status.SLP] = statuses.Sleep(self.vaporeon, 2)
-            self.run_turn()
-
-            self.assertIsNone(self.vaporeon.status)
-
     def test_intimidate(self):
         self.new_battle(p0_ability='intimidate', p1_ability='competitive')
         self.add_pokemon('flareon', 0, ability='intimidate')

@@ -5,7 +5,6 @@ Items are named in CamelCase, but their .name attribute is lowercasenospaces.
 import inspect
 
 if __debug__: from _logging import log
-from misc.autoname import AutoName
 from misc.functions import priority
 from pokedex import effects
 from pokedex.baseeffect import BaseEffect
@@ -13,8 +12,6 @@ from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile, FAI
 from pokedex.stats import Boosts
 
 class BaseItem(object):
-    __metaclass__ = AutoName
-
     is_mega_stone = False
     is_berry = False
     plate_type = False
