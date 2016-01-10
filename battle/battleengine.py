@@ -479,8 +479,9 @@ class BattleEngine(object):
 
     def get_effectiveness(self, user, move, target):
         effectiveness = move.get_effectiveness(target)
-        for effect in chain(user.effects, self.battlefield.effects):
-            effectiveness = effect.on_modify_effectiveness(user, move, target, effectiveness)
+        for effector in (user, self.battlefield):
+            effectiveness = effector.accumulate_effect('on_modify_effectiveness',
+                                                       user, move, target, effectiveness)
         return effectiveness
 
     def modify_atk(self, atk, user, move):
