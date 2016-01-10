@@ -175,9 +175,9 @@ class BattleEngine(object):
         if move.check_success(user, target, self) is FAIL:
             return FAIL # moves are responsible for logging their own failure
 
-        for effect in self.battlefield.effects:
-            if effect.on_try_hit(user, move, target, self) is FAIL:
-                return FAIL
+        if self.battlefield.activate_effect('on_try_hit',
+                                            user, move, target, self, failfast=True) is FAIL:
+            return FAIL
 
         for effect in chain(sorted(target.effects, key=lambda e: e.on_foe_try_hit.priority,
                                    reverse=True),
