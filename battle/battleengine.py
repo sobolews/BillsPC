@@ -494,10 +494,8 @@ class BattleEngine(object):
         return spd
 
     def modify_spe(self, spe, pokemon):
-        for effect in chain(pokemon.effects,
-                            pokemon.side.effects,
-                            self.battlefield.effects):
-            spe = effect.on_modify_spe(pokemon, self, spe)
+        for effector in (pokemon, pokemon.side, self.battlefield):
+            spe = effector.accumulate_effect('on_modify_spe', pokemon, self, spe)
         return spe
 
     def effective_spe(self, pokemon):
