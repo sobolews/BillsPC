@@ -124,10 +124,20 @@ class BattlePokemon(object):
 
         if __debug__: log.i('Set effect %s on %s', effect, self)
 
-    def activate_effect(self, name, *args):
-        for effect in self.effect_handlers[name]:
-            effect(*args)
+    def activate_effect(self, name, *args, **kwargs):
+        """
+        Call all bound handlers for the named effect type, with *args as the handler method's
+        arguments. Handlers are already in sorted priority order, if applicable.
+
+        When failfast is passed as a keyword arg, bail out and return FAIL as soon as any handler
+        returns FAIL.
+        """
+        failfast = kwargs.get('failfast', False)
+        for effect in self.effect_handlers[name][:]:
             log.d('effect %s of %r activated', name, effect.__self__)
+            rv = effect(*args)
+            if failfast and rv is FAIL:
+                return FAIL
 
     def confuse(self, infiltrates=False):
         if not infiltrates and self.side.has_effect(SideCondition.SAFEGUARD):
