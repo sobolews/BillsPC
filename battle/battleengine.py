@@ -96,10 +96,9 @@ class BattleEngine(object):
         if user.has_effect(Volatile.ENCORE) and move != movedex['struggle']:
             move = user.get_effect(Volatile.ENCORE).override_move_choice()
 
-        for effect in sorted(user.effects, key=lambda e: e.on_before_move.priority, reverse=True):
-            if effect.on_before_move(user, move, self) is FAIL:
-                user.remove_effect(Volatile.TWOTURNMOVE) # remove bounce etc.'s invulnerability
-                return
+        if user.activate_effect('on_before_move', user, move, self, failfast=True) is FAIL:
+            user.remove_effect(Volatile.TWOTURNMOVE) # remove bounce etc.'s invulnerability
+            return
 
         if (move != movedex['struggle'] and
             not user.has_effect(Volatile.LOCKEDMOVE) and
