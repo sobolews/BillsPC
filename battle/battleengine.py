@@ -550,8 +550,7 @@ class BattleEngine(object):
                       foe=pokemon)
 
         if cause is Cause.MOVE:
-            for effect in pokemon.effects: # priority is unnecessary
-                effect.on_after_move_damage(self, pokemon, damage, source, attacker)
+            pokemon.activate_effect('on_after_move_damage', self, pokemon, damage, source, attacker)
 
         if pokemon.hp <= 0:
             self.faint(pokemon, cause, source, attacker)
