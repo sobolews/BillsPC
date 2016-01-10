@@ -156,7 +156,7 @@ class FocusSash(ItemEffect):
     single_use = True
 
     @priority(0)
-    def on_damage(self, pokemon, damage, cause, source, engine):
+    def on_damage(self, pokemon, cause, source, engine, damage):
         if (pokemon.hp == pokemon.max_hp and
             damage >= pokemon.hp and
             cause in (Cause.MOVE, Cause.CONFUSE) and

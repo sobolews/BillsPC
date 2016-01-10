@@ -223,7 +223,7 @@ class BaseEffect(object):
         """
 
     @priority(0)
-    def on_damage(self, pokemon, damage, cause, source, engine):
+    def on_damage(self, pokemon, cause, source, engine, damage):
         """ Return a modified amount of damage, or FAIL """
         return damage
 
