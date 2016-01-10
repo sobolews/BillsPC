@@ -969,7 +969,7 @@ class SlowStart(AbilityEffect):
         pokemon.set_effect(effects.SlowStartVolatile())
 
 class Sniper(AbilityEffect):
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def on_modify_damage(self, user, move, effectiveness, damage):
         if move.crit:
             if __debug__: log.i("%s was boosted by %s's Sniper!", move, user)
             return damage * 1.5
@@ -1162,7 +1162,7 @@ class ThickFat(AbilityEffect):
         return spd
 
 class TintedLens(AbilityEffect):
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def on_modify_damage(self, user, move, effectiveness, damage):
         if effectiveness < 1:
             return damage * 2
         return damage

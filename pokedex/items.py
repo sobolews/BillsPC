@@ -124,7 +124,7 @@ class Eviolite(ItemEffect):
         return spd
 
 class ExpertBelt(ItemEffect):
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def on_modify_damage(self, user, move, effectiveness, damage):
         if effectiveness > 1:
             if __debug__: log.i("%s's damage was boosted by %s's ExpertBelt!", move, user)
             return damage * 1.2
@@ -187,7 +187,7 @@ class Leftovers(ItemEffect):
         engine.heal(pokemon, pokemon.max_hp / 16)
 
 class LifeOrb(ItemEffect):
-    def on_modify_damage(self, user, move, damage, effectiveness):
+    def on_modify_damage(self, user, move, effectiveness, damage):
         if __debug__: log.d("%s was boosted by %s's LifeOrb", move, user)
         return damage * 1.3
 
