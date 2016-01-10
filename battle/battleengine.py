@@ -533,10 +533,10 @@ class BattleEngine(object):
         else:
             damage = int(damage)
 
-        for effect in sorted(pokemon.effects, key=lambda e: e.on_damage.priority, reverse=True):
-            damage = effect.on_damage(pokemon, damage, cause, source, self)
-            if damage is FAIL:
-                return FAIL
+        damage = pokemon.accumulate_effect('on_damage',
+                                           pokemon, cause, source, self, damage, failfast=True)
+        if damage is FAIL:
+            return FAIL
 
         pokemon.hp -= damage
         if __debug__: log.i('%s took %s (%.1f%%) damage from %s: %s; hp=%d/%d' %
