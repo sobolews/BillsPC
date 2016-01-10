@@ -110,11 +110,8 @@ class BatonPass(BaseEffect):
         incoming.boosts = pokemon.boosts
         for source, effect in pokemon._effect_index.items():
             if source in CAN_BATONPASS:
-                incoming._effect_index[source] = effect
-                for name in effect.handler_names:
-                    pokemon.effect_handlers[name].remove(getattr(effect, name))
-                    incoming.effect_handlers[name].add(getattr(effect, name))
-                del pokemon._effect_index[source]
+                pokemon.remove_effect(source, batonpassed=True)
+                incoming.set_effect(effect)
 
         if __debug__: log.i('Batonpassed %s to %s',
                             filter(None, chain([incoming.boosts], incoming.effects)) or None,

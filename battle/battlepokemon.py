@@ -1,6 +1,7 @@
 from mining import create_pokedex
 from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
+from pokedex.baseeffect import BaseEffect
 from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
                            SideCondition, ITEM)
 from pokedex.items import itemdex
@@ -59,6 +60,7 @@ class BattlePokemon(object):
         self.base_data = {}     # for transform
         self._suppressed_ability = None
         self._effect_index = {}
+        self.effect_handlers = {key: list() for key in BaseEffect.handler_names}
 
     @property
     def can_mega_evolve(self):
@@ -105,7 +107,27 @@ class BattlePokemon(object):
             return FAIL
 
         self._effect_index[effect.source] = effect
+
+        for name in effect.handler_names:
+            method = getattr(effect, name)
+            priority = getattr(method, 'priority', None)
+            handlers = self.effect_handlers[name]
+            if priority is None:
+                handlers.append(method)
+            else:
+                for i, existing_effect in enumerate(self.effect_handlers[name][::-1]):
+                    if priority <= existing_effect.priority:
+                        handlers.insert(len(handlers) - i, method)
+                        break
+                else:
+                    handlers.insert(0, method)
+
         if __debug__: log.i('Set effect %s on %s', effect, self)
+
+    def activate_effect(self, name, *args):
+        for effect in self.effect_handlers[name]:
+            effect(*args)
+            log.d('effect %s of %r activated', name, effect.__self__)
 
     def confuse(self, infiltrates=False):
         if not infiltrates and self.side.has_effect(SideCondition.SAFEGUARD):
@@ -119,7 +141,7 @@ class BattlePokemon(object):
     def get_effect(self, source):
         return self._effect_index.get(source)
 
-    def remove_effect(self, source, engine=None):
+    def remove_effect(self, source, engine=None, batonpassed=False):
         """
         `engine` must be passed if there is a possibility that `source`'s effect has an on_end
         method that uses engine.
@@ -133,9 +155,12 @@ class BattlePokemon(object):
         if effect is None:
             if __debug__: log.d("Trying to remove %s from %s, but it wasn't found!", source, self)
             return False
+        for name in effect.handler_names:
+            self.effect_handlers[name].remove(getattr(effect, name))
 
         if __debug__: log.i('Removed %s from %s', effect, self)
-        effect.on_end(self, engine)
+        if not batonpassed:
+            effect.on_end(self, engine)
         if source is self.status:
             self.status = None
 
@@ -146,6 +171,7 @@ class BattlePokemon(object):
             effect.on_end(self, engine)
 
         self._effect_index.clear()
+        self.effect_handlers = {key: list() for key in self.effect_handlers}
 
     def suppress_ability(self, engine):
         if __debug__: log.d("Suppressing %s's ability", self)
@@ -525,5 +551,6 @@ class BattlePokemon(object):
         else:
             assert engine.battlefield.sides[self.side.index].active_pokemon is not self
             assert self in self.side.team
+            assert not any([handler_list for handler_list in self.effect_handlers.values()])
 
         assert self.hp <= self.max_hp
