@@ -587,8 +587,7 @@ class BattleEngine(object):
         if __debug__: log.i('%s fainted: %s (source=%s)', pokemon, cause, source)
         self.faint_queue.insert(0, pokemon)
 
-        for effect in pokemon.effects:
-            effect.on_faint(pokemon, cause, source, self)
+        pokemon.activate_effect('on_faint', pokemon, cause, source, self)
 
         if attacker is not None and not attacker.is_fainted():
             for effect in attacker.effects:
