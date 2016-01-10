@@ -179,10 +179,9 @@ class BattleEngine(object):
                                             user, move, target, self, failfast=True) is FAIL:
             return FAIL
 
-        for effect in chain(sorted(target.effects, key=lambda e: e.on_foe_try_hit.priority,
-                                   reverse=True),
-                            target.side.effects):
-            if effect.on_foe_try_hit(user, move, target, self) is FAIL:
+        for effector in (target, target.side):
+            if effector.activate_effect('on_foe_try_hit', user, move, target, self,
+                                        failfast=True) is FAIL:
                 return FAIL
 
         if target.is_immune_to_move(user, move):
