@@ -453,8 +453,9 @@ class BattleEngine(object):
         return damage
 
     def modify_base_power(self, user, move, target, base_power):
-        for effect in chain(user.effects, self.battlefield.effects):
-            base_power = effect.on_modify_base_power(user, move, target, self, base_power)
+        for effector in (user, self.battlefield):
+            base_power = effector.accumulate_effect('on_modify_base_power',
+                                                    user, move, target, self, base_power)
         if target.ability is abilitydex['dryskin'] and move.type is Type.FIRE:
             base_power *= 1.25
         return base_power
