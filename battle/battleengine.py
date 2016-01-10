@@ -281,13 +281,8 @@ class BattleEngine(object):
         An accuracy value of None means to skip the accuracy check, i.e. it always hits.
         """
         accuracy = move.accuracy
-
-        for effect in user.effects:
-            accuracy = effect.on_accuracy(user, move, target, self, accuracy)
-
-        for effect in target.effects:
-            accuracy = effect.on_foe_accuracy(user, move, target, self, accuracy)
-
+        accuracy = user.accumulate_effect('on_accuracy', user, move, target, self, accuracy)
+        accuracy = target.accumulate_effect('on_foe_accuracy', user, move, target, self, accuracy)
         if accuracy is None:
             return
 
