@@ -419,8 +419,9 @@ class BattleEngine(object):
         attack = attack_stat_source.calculate_stat(attacking_stat, attack_boosts)
         defense = target.calculate_stat(defending_stat, defense_boosts)
 
-        modify = self.modify_atk if attacking_stat == 'atk' else self.modify_spa
-        attack = int(modify(attack, user, move))
+        attack = int(user.accumulate_effect('on_modify_' + attacking_stat,
+                                            user, move, self, attack))
+
         modify = self.modify_def if defending_stat == 'def' else self.modify_spd
         defense = int(modify(defense, target, move))
 
@@ -483,16 +484,6 @@ class BattleEngine(object):
             effectiveness = effector.accumulate_effect('on_modify_effectiveness',
                                                        user, move, target, effectiveness)
         return effectiveness
-
-    def modify_atk(self, atk, user, move):
-        for effect in user.effects:
-            atk = effect.on_modify_atk(user, move, self, atk)
-        return atk
-
-    def modify_spa(self, spa, user, move):
-        for effect in user.effects:
-            spa = effect.on_modify_spa(user, move, self, spa)
-        return spa
 
     def modify_def(self, def_, target, move):
         for effect in target.effects:
