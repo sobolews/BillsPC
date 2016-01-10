@@ -139,8 +139,7 @@ class BattleEngine(object):
         move.on_modify_move(user, target, self)
         user.activate_effect('on_modify_move', move, user, self)
         if target is not None:
-            for effect in target.effects:
-                effect.on_modify_foe_move(move, user, self)
+            target.activate_effect('on_modify_foe_move', move, user, self)
 
         if move.targets_user:
             return self.fast_use_move(user, move) # fast path for moves not targeting opponent
