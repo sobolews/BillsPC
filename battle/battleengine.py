@@ -255,8 +255,7 @@ class BattleEngine(object):
         if move.user_boosts is not None and not user.is_fainted():
             user.apply_boosts(move.user_boosts, True)
 
-        for effect in user.effects:
-            effect.on_move_success(user, move, target)
+        user.activate_effect('on_move_success', user, move, target)
 
         if move.on_success(user, target, self) is FAIL:
             if __debug__: log.i('Move "%s" failed in on_success', move)
