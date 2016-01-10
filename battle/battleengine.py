@@ -566,10 +566,9 @@ class BattleEngine(object):
         assert isinstance(hp, int)
         assert hp >= 0
 
-        if foe is not None:
-            for effect in foe.effects:
-                if effect.on_foe_heal(pokemon, hp, cause, self) is FAIL:
-                    return FAIL
+        if foe is not None and foe.activate_effect('on_foe_heal',
+                                                   pokemon, hp, cause, self, failfast=True) is FAIL:
+            return FAIL
 
         if __debug__: prev_hp = pokemon.hp
         pokemon.hp = min(hp + pokemon.hp, pokemon.max_hp)
