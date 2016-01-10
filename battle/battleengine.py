@@ -652,9 +652,9 @@ class BattleEngine(object):
                                  '%s is immune') % pokemon)
             return FAIL
 
-        for effect in chain(pokemon.effects, pokemon.side.effects, self.battlefield.effects):
-            if effect.on_set_status(status, pokemon, setter, self) is FAIL:
-                if __debug__: log.i('Failed to set status %s: prevented by %s', status.name, effect)
+        for effector in (pokemon, pokemon.side, self.battlefield):
+            if effector.activate_effect('on_set_status',
+                                        status, pokemon, setter, self, failfast=True) is FAIL:
                 return FAIL
 
         pokemon.status = status
