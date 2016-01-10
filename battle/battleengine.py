@@ -137,8 +137,7 @@ class BattleEngine(object):
         move = move.__class__()
 
         move.on_modify_move(user, target, self)
-        for effect in user.effects:
-            effect.on_modify_move(move, user, self)
+        user.activate_effect('on_modify_move', move, user, self)
         if target is not None:
             for effect in target.effects:
                 effect.on_modify_foe_move(move, user, self)
