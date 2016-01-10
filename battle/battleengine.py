@@ -590,8 +590,7 @@ class BattleEngine(object):
         pokemon.activate_effect('on_faint', pokemon, cause, source, self)
 
         if attacker is not None and not attacker.is_fainted():
-            for effect in attacker.effects:
-                effect.on_foe_faint(attacker, cause, source, pokemon, self)
+            attacker.activate_effect('on_foe_faint', attacker, cause, source, pokemon, self)
 
         pokemon.clear_effects(self)
         pokemon.boosts = Boosts()
