@@ -232,8 +232,7 @@ class BattleEngine(object):
     def move_hit(self, user, move, target):
         assert target is not None
 
-        for effect in user.effects:
-            effect.on_move_hit(user, move, self)
+        user.activate_effect('on_move_hit', user, move, self)
 
         substitute = target.get_effect(Volatile.SUBSTITUTE)
         if substitute is not None:
