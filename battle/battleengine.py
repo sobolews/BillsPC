@@ -472,9 +472,9 @@ class BattleEngine(object):
         for effector in (user, user.side, self.battlefield):
             damage = effector.accumulate_effect('on_modify_damage',
                                                 user, move, effectiveness, damage)
-        for effect in chain(target.effects,
-                            target.side.effects):
-            damage = effect.on_modify_foe_damage(user, move, target, crit, effectiveness, damage)
+        for effector in (target, target.side):
+            damage = effector.accumulate_effect('on_modify_foe_damage',
+                                                user, move, target, crit, effectiveness, damage)
         return damage
 
     def get_effectiveness(self, user, move, target):
