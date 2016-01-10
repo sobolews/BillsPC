@@ -264,8 +264,7 @@ class BattleEngine(object):
         target = self.get_foe(user) # roar, etc. could have changed the active foe
 
         if target is not None:
-            for effect in target.effects:
-                effect.on_after_foe_hit(user, move, target, self)
+            target.activate_effect('on_after_foe_hit', user, move, target, self)
 
         for s_effect in move.secondary_effects:
             self.apply_secondary_effect(user if s_effect.affects_user else target,
