@@ -1,12 +1,14 @@
 from itertools import izip_longest
 from subprocess import check_output
 
+from battle.effecthandler import EffectHandlerMixin
+from pokedex.baseeffect import BaseEffect
 from pokedex.enums import FAIL, Status, Hazard, Weather
 from pokedex.weather import WEATHER_EFFECTS
 
 if __debug__: from _logging import log
 
-class BattleField(object):
+class BattleField(object, EffectHandlerMixin):
     """
     Encapsulates the entire state of a battle. At any point in the battle (but only at the decision
     points in between turns), it should be possible to (de)serialize a BattleField, inject it into a
@@ -26,6 +28,7 @@ class BattleField(object):
         self._weather_suppressed = False
         self.win = None            # set to 0 or 1 when one side wins
         self.turns = 0
+        self.effect_handlers = {key: list() for key in BaseEffect.handler_names}
 
     @property
     def effects(self):
@@ -69,6 +72,7 @@ class BattleField(object):
             return FAIL
 
         self._effect_index[effect.source] = effect
+        self._set_handlers(effect)
 
     def get_effect(self, source):
         return self._effect_index.get(source)
@@ -81,6 +85,7 @@ class BattleField(object):
         if effect is None:
             if __debug__: log.d("Tried to remove nonexistent %s from battlefield", source)
             return
+        self._remove_handlers(effect)
 
         if source in Weather:
             self._weather = None
@@ -98,7 +103,7 @@ class BattleField(object):
         return '\n\n'.join((header, teams))
 
 
-class BattleSide(object):
+class BattleSide(object, EffectHandlerMixin):
     def __init__(self, team, index, username=None):
         """ :param team: 6-element list of BattlePokemon """
         assert index in (0, 1)
@@ -111,6 +116,7 @@ class BattleSide(object):
         self.last_fainted_on_turn = None
         self.username = username or '<side-%d>' % index
         self.has_mega_evolved = False
+        self.effect_handlers = {key: list() for key in BaseEffect.handler_names}
 
         for pokemon in self.team:
             pokemon.side = self # ! circular reference; BattleSide owns BattlePokemon
@@ -133,6 +139,7 @@ class BattleSide(object):
             return FAIL
 
         self._effect_index[effect.source] = effect
+        self._set_handlers(effect)
 
     def has_effect(self, source):
         return source in self._effect_index
@@ -147,6 +154,7 @@ class BattleSide(object):
                                 source, self.index)
             return
 
+        self._remove_handlers(effect)
         if __debug__: log.i('Removed %s from side %d', effect, self.index)
 
     def clear_hazards(self):

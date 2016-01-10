@@ -1,3 +1,4 @@
+from battle.effecthandler import EffectHandlerMixin
 from mining import create_pokedex
 from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
@@ -13,7 +14,7 @@ if __debug__: from _logging import log
 
 POKEDEX = create_pokedex()
 
-class BattlePokemon(object):
+class BattlePokemon(object, EffectHandlerMixin):
     """
     Represents a pokemon in a battle.
     """
@@ -107,37 +108,9 @@ class BattlePokemon(object):
             return FAIL
 
         self._effect_index[effect.source] = effect
-
-        for name in effect.handler_names:
-            method = getattr(effect, name)
-            priority = getattr(method, 'priority', None)
-            handlers = self.effect_handlers[name]
-            if priority is None:
-                handlers.append(method)
-            else:
-                for i, existing_effect in enumerate(self.effect_handlers[name][::-1]):
-                    if priority <= existing_effect.priority:
-                        handlers.insert(len(handlers) - i, method)
-                        break
-                else:
-                    handlers.insert(0, method)
+        self._set_handlers(effect)
 
         if __debug__: log.i('Set effect %s on %s', effect, self)
-
-    def activate_effect(self, name, *args, **kwargs):
-        """
-        Call all bound handlers for the named effect type, with *args as the handler method's
-        arguments. Handlers are already in sorted priority order, if applicable.
-
-        When failfast is passed as a keyword arg, bail out and return FAIL as soon as any handler
-        returns FAIL.
-        """
-        failfast = kwargs.get('failfast', False)
-        for effect in self.effect_handlers[name][:]:
-            log.d('effect %s of %r activated', name, effect.__self__)
-            rv = effect(*args)
-            if failfast and rv is FAIL:
-                return FAIL
 
     def confuse(self, infiltrates=False):
         if not infiltrates and self.side.has_effect(SideCondition.SAFEGUARD):
@@ -165,8 +138,7 @@ class BattlePokemon(object):
         if effect is None:
             if __debug__: log.d("Trying to remove %s from %s, but it wasn't found!", source, self)
             return False
-        for name in effect.handler_names:
-            self.effect_handlers[name].remove(getattr(effect, name))
+        self._remove_handlers(effect)
 
         if __debug__: log.i('Removed %s from %s', effect, self)
         if not batonpassed:
