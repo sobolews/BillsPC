@@ -164,10 +164,8 @@ class BattleEngine(object):
             return FAIL
 
         if not user.has_effect(Volatile.SHEERFORCE):
-            for effect in target.effects:
-                effect.on_after_foe_move_secondary(user, move, target, self)
-            for effect in user.effects:
-                effect.on_after_move_secondary(user, move, target, self)
+            target.activate_effect('on_after_foe_move_secondary', user, move, target, self)
+            user.activate_effect('on_after_move_secondary', user, move, target, self)
 
         return damage # for testing only
 
