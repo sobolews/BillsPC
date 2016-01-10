@@ -469,10 +469,9 @@ class BattleEngine(object):
         return 100 - random.randrange(16)
 
     def modify_damage(self, damage, user, move, target, crit, effectiveness):
-        for effect in chain(user.effects,
-                            user.side.effects,
-                            self.battlefield.effects):
-            damage = effect.on_modify_damage(user, move, damage, effectiveness)
+        for effector in (user, user.side, self.battlefield):
+            damage = effector.accumulate_effect('on_modify_damage',
+                                                user, move, effectiveness, damage)
         for effect in chain(target.effects,
                             target.side.effects):
             damage = effect.on_modify_foe_damage(user, move, target, crit, effectiveness, damage)
