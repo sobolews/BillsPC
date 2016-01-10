@@ -486,14 +486,11 @@ class BattleEngine(object):
         return effectiveness
 
     def modify_def(self, def_, target, move):
-        for effect in target.effects:
-            def_ = effect.on_modify_def(target, move, self, def_)
-        return def_
+        return target.accumulate_effect('on_modify_def', target, move, self, def_)
 
     def modify_spd(self, spd, target, move):
-        for effect in chain(target.effects,
-                            self.battlefield.effects):
-            spd = effect.on_modify_spd(target, move, self, spd)
+        for effector in (target, self.battlefield):
+            spd = effector.accumulate_effect('on_modify_spd', target, move, self, spd)
         return spd
 
     def modify_spe(self, spe, pokemon):
