@@ -328,8 +328,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         ):
             return FAIL
 
-        for effect in self.effects:
-            effect.on_lose_item(self, item)
+        self.activate_effect('on_lose_item', self, item)
 
         if __debug__: log.i('Removed %s from %s', self.item, self)
         self.remove_effect(ITEM)
@@ -359,9 +358,8 @@ class BattlePokemon(object, EffectHandlerMixin):
             if __debug__: log.i("%s used its %s", self, item)
             self.last_berry_used = None
 
-        for effect in self.effects:
-            effect.on_use_item(self, item, engine)
-            effect.on_lose_item(self, item)
+        self.activate_effect('on_use_item', self, item, engine)
+        self.activate_effect('on_lose_item', self, item)
         self.remove_effect(ITEM)
         self.item = None
         self.item_used_this_turn = item
