@@ -171,8 +171,8 @@ class BattleSide(object, EffectHandlerMixin):
                           not team_member.is_fainted() and not team_member.is_active]
 
         if not forced and pokemon is not None:
-            for effect in pokemon.effects:
-                if effect.on_trap_check(pokemon):
+            for on_trap_check in pokemon.effect_handlers['on_trap_check'][:]:
+                if on_trap_check(pokemon):
                     return []
         return switch_choices
 
