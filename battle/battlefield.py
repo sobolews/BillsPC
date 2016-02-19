@@ -164,8 +164,7 @@ class BattleSide(object, EffectHandlerMixin):
     def update(self, engine):
         pokemon = self.active_pokemon
         if pokemon is not None:
-            for effect in pokemon.effects:
-                effect.on_update(pokemon, engine)
+            pokemon.activate_effect('on_update', pokemon, engine)
 
     def get_switch_choices(self, pokemon=None, forced=False):
         switch_choices = [team_member for team_member in self.team if
