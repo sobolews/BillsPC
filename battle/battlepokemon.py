@@ -149,8 +149,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         return True
 
     def clear_effects(self, engine):
-        for effect in self.effects:
-            effect.on_end(self, engine)
+        self.activate_effect('on_end', self, engine)
 
         self._effect_index.clear()
         self.effect_handlers = {key: list() for key in self.effect_handlers}
