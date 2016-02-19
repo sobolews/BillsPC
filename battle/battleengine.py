@@ -913,8 +913,7 @@ class BattleEngine(object):
         for i in (0, 1): # This is only used for trapping abilities, so order doesn't matter
             actives[i].will_move_this_turn = True
             actives[i].turns_out += 1
-            for effect in actives[i].effects:
-                effect.on_before_turn(actives[i], actives[not i])
+            actives[i].activate_effect('on_before_turn', actives[i], actives[not i])
 
         self.battlefield.turns += 1
         if __debug__:
