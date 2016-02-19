@@ -713,8 +713,7 @@ class BattleEngine(object):
         actives = [side.active_pokemon for side in sides if side.active_pokemon is not None]
 
         for pokemon in sorted(actives, key=lambda p: (-self.effective_spe(p), random.random())):
-            for effect in pokemon.effects:
-                effect.on_update(pokemon, self)
+            pokemon.activate_effect('on_update', pokemon, self)
 
     def run_switch(self, outgoing, incoming):
         assert outgoing is None or outgoing.side == incoming.side
