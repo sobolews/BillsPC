@@ -813,7 +813,7 @@ class BattleEngine(object):
         priority = 0
         for effect in filter(None, (pokemon.get_effect(ABILITY),
                                     pokemon.get_effect(ITEM))):
-            priority += effect.on_modify_priority(pokemon, move, self)
+            priority = effect.on_modify_priority(pokemon, move, self, priority)
         return priority
 
     def get_switch_decision(self, side, forced=False):

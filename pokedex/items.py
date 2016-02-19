@@ -102,11 +102,11 @@ class CustapBerry(ItemEffect):
     is_berry = True
     single_use = True
 
-    def on_modify_priority(self, pokemon, move, engine):
+    def on_modify_priority(self, pokemon, move, engine, priority):
         if (pokemon.hp <= pokemon.max_hp / 4.0 and
             pokemon.use_item(engine) is not FAIL):
-            return 0.1
-        return 0
+            return priority + 0.1
+        return priority
 
 class DampRock(ItemEffect):
     # Implemented in drizzle and raindance

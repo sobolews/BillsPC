@@ -394,10 +394,10 @@ class FurCoat(AbilityEffect):
         return def_ * 2
 
 class GaleWings(AbilityEffect):
-    def on_modify_priority(self, pokemon, move, engine):
+    def on_modify_priority(self, pokemon, move, engine, priority):
         if move.type is Type.FLYING:
-            return 1
-        return 0
+            return priority + 1
+        return priority
 
 class Guts(AbilityEffect):
     def on_modify_atk(self, pokemon, move, engine, atk):
@@ -785,10 +785,10 @@ class PoisonTouch(AbilityEffect):
             move.secondary_effects += SecondaryEffect(30, status=Status.PSN),
 
 class Prankster(AbilityEffect):
-    def on_modify_priority(self, pokemon, move, engine):
+    def on_modify_priority(self, pokemon, move, engine, priority):
         if move.category is MoveCategory.STATUS:
-            return 1
-        return 0
+            return priority + 1
+        return priority
 
 class Pressure(AbilityEffect):
     pass # implemented in BattleEngine.deduct_pp
