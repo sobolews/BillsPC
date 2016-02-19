@@ -40,17 +40,18 @@ class BaseEffect(object):
         def __init__(cls, name, bases, dct):
             cls.name = name.lower()
 
-            # search through the class and its bases for at least one handler method. classes using
-            # multiple inheritance must inherit from the class defining handlers first.
+            # search through the class and its bases for all handler methods. classes using multiple
+            # inheritance must inherit from the class defining handlers first.
             cls.handler_names = ()
             search_cls = cls
-            while not cls.handler_names:
-                cls.handler_names = tuple(hname for hname in search_cls.__dict__
-                                          if hname.startswith('on_'))
-                if cls.handler_names or search_cls is object:
+            while True:
+                cls.handler_names += tuple(hname for hname in search_cls.__dict__
+                                           if hname.startswith('on_') and
+                                           hname not in cls.handler_names)
+                if search_cls is object:
                     break
                 search_cls = search_cls.__bases__[0]
-                if search_cls is BaseEffect:
+                if search_cls.__name__ == 'BaseEffect':
                     break
 
         def __repr__(cls):
