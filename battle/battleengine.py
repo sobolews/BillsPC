@@ -774,10 +774,11 @@ class BattleEngine(object):
         """
         Foe may be None (e.g. was KO'd with voltswitch)
         """
-        for effect in sorted(pokemon.effects + pokemon.side.effects,
-                             key=lambda c: c.on_switch_in.priority,
-                             reverse=True):
-            effect.on_switch_in(pokemon, self)
+        # Assumes that all side-based on_switch_in handlers have higher priority than the
+        # pokemon-based ones
+        for on_switch_in in chain(pokemon.side.effect_handlers['on_switch_in'][:],
+                                  pokemon.effect_handlers['on_switch_in'][:]):
+            on_switch_in(pokemon, self)
             if pokemon.is_fainted():
                 return
 
