@@ -680,22 +680,23 @@ class BattleEngine(object):
 
                     if effect.duration == 0:
                         if __debug__: log.i('%s timed out', effect)
-                        # No holder/effect for timed out effects, because they are removed so they
-                        # cannot be checked for existence
-                        residuals.append(Residual(None, None,
-                                                  partial(effect.on_timeout, thing, self)))
+                        if 'on_timeout' in effect.handler_names:
+                            # No holder/effect for timed out effects, because they are removed so
+                            # they cannot be checked for existence
+                            residuals.append(Residual(None, None,
+                                                      partial(effect.on_timeout, thing, self)))
                         thing.remove_effect(effect.source, self)
 
         # Second pass: gather all non-timed-out effects' on_residual handlers
         for pokemon, foe in ((actives[0], actives[1]), (actives[1], actives[0])):
             if pokemon is not None:
-                residuals.extend(Residual(pokemon, effect.source,
-                                          partial(effect.on_residual, pokemon, foe, self))
-                                 for effect in pokemon.effects)
+                residuals.extend(Residual(pokemon, on_residual.__self__.source,
+                                          partial(on_residual, pokemon, foe, self))
+                                 for on_residual in pokemon.effect_handlers['on_residual'])
 
-        residuals.extend(Residual(self.battlefield, effect.source,
-                                  partial(effect.on_residual, actives[0], actives[1], self))
-                         for effect in self.battlefield.effects)
+        residuals.extend(Residual(self.battlefield, on_residual.__self__.source,
+                                  partial(on_residual, actives[0], actives[1], self))
+                         for on_residual in self.battlefield.effect_handlers['on_residual'])
 
         # For each residual, check first if its effect still exists on the holder, because another
         # residual may have removed it (e.g. shedskin and poison).
