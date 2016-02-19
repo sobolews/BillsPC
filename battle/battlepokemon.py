@@ -269,10 +269,10 @@ class BattlePokemon(object, EffectHandlerMixin):
 
     def is_immune_to_move(self, user, move):
         """Return True if self is immune to move"""
-        for effect in self.effects:
-            immune = effect.on_get_immunity(move.type) # check type immunity first, then move
+        for on_get_immunity in self.effect_handlers['on_get_immunity']:
+            immune = on_get_immunity(move.type) # check type immunity first, then move
             if immune is None:
-                immune = effect.on_get_immunity(move) # for bulletproof, overcoat, etc.
+                immune = on_get_immunity(move) # for bulletproof, overcoat, etc.
             if immune is not None:
                 return immune
 
@@ -288,8 +288,8 @@ class BattlePokemon(object, EffectHandlerMixin):
 
     def is_immune_to(self, thing):
         """ `thing` may be a move Type, Status, Weather, POWDER, or Volatile """
-        for effect in self.effects:
-            immune = effect.on_get_immunity(thing)
+        for on_get_immunity in self.effect_handlers['on_get_immunity']:
+            immune = on_get_immunity(thing)
             if immune is not None:
                 return immune
 
