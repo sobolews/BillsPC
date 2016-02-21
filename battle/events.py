@@ -13,7 +13,7 @@ Generally, a turn proceeds in this order:
 - Residuals (the "between turns" effects such as poison or speedboost)
 - if any pokemon are fainted, then InstaSwitch+PostSwitch until the side has an active pokemon
 """
-import random
+from random import random
 from bisect import insort
 from functools import total_ordering
 
@@ -28,10 +28,6 @@ class BaseEvent(object):
     move = None
     type = None
 
-    def __init__(self, pokemon, spe):
-        self.pokemon = pokemon
-        self.priority = (self.priority, spe, random.random())
-
     def __eq__(self, other):
         return self.priority == other.priority
 
@@ -43,11 +39,10 @@ class BaseEvent(object):
 
 class MoveEvent(BaseEvent):
     type = Decision.MOVE
-    priority = 100 # + move.priority
 
     def __init__(self, pokemon, spe, priority_modifier, move):
-        self.priority = self.priority + move.priority + (priority_modifier or 0)
-        super(MoveEvent, self).__init__(pokemon, spe)
+        self.pokemon = pokemon
+        self.priority = (100 + move.priority + priority_modifier, spe, random())
         self.move = move
 
     def run_event(self, engine, queue):
@@ -62,10 +57,11 @@ class MoveEvent(BaseEvent):
 
 class SwitchEvent(BaseEvent):
     type = Decision.SWITCH
-    priority = 300
+    _priority = 300
 
     def __init__(self, pokemon, spe, incoming):
-        super(SwitchEvent, self).__init__(pokemon, spe)
+        self.pokemon = pokemon
+        self.priority = (self._priority, spe, random())
         self.incoming = incoming
 
     def run_event(self, engine, queue):
@@ -76,14 +72,14 @@ class SwitchEvent(BaseEvent):
         return 'SwitchEvent(pokemon=%s, incoming=%s)' % (self.pokemon, self.incoming)
 
 class InstaSwitchEvent(SwitchEvent):
-    priority = 400
+    _priority = 400
 
 class PostSwitchInEvent(BaseEvent):
     type = Decision.POSTSWITCH
-    priority = 350
 
     def __init__(self, pokemon, spe):
-        super(PostSwitchInEvent, self).__init__(pokemon, spe)
+        self.pokemon = pokemon
+        self.priority = (350, spe, random())
 
     def run_event(self, engine, queue):
         engine.post_switch_in(self.pokemon)
@@ -93,10 +89,10 @@ class PostSwitchInEvent(BaseEvent):
 
 class MegaEvoEvent(BaseEvent):
     type = Decision.MEGAEVO
-    priority = 200
 
     def __init__(self, pokemon, spe):
-        super(MegaEvoEvent, self).__init__(pokemon, spe)
+        self.pokemon = pokemon
+        self.priority = (200, spe, random())
 
     def run_event(self, engine, queue):
         self.pokemon.mega_evolve(engine)
@@ -106,10 +102,9 @@ class MegaEvoEvent(BaseEvent):
 
 class ResidualEvent(BaseEvent):
     type = Decision.RESIDUAL
-    priority = -1
 
     def __init__(self):
-        super(ResidualEvent, self).__init__(None, 0)
+        self.priority = (-1, 0, 0)
 
     def run_event(self, engine, queue):
         engine.run_residual()
