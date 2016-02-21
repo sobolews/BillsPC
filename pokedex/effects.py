@@ -66,6 +66,7 @@ class TwoTurnMoveEffect(BaseEffect):
     def __init__(self, move):
         self.move = move
 
+    @priority(-1) # run last so that disable doesn't override
     def on_get_move_choices(self, pokemon, moves):
         return [self.move]
 
@@ -123,6 +124,7 @@ class ChoiceLock(BaseEffect):
     def __init__(self, move):
         self.move = move
 
+    @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         if self.move not in pokemon.moveset:
             pokemon.remove_effect(Volatile.CHOICELOCK)
@@ -184,6 +186,7 @@ class Disable(BaseEffect):
         self.move = move
         self.duration = duration
 
+    @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         return [move for move in moves if move != self.move]
 
@@ -226,6 +229,7 @@ class Encore(BaseEffect):
             pokemon.remove_effect(Volatile.ENCORE)
             if __debug__: log.i('Ending Encore on %s because %s has no pp left', pokemon, self.move)
 
+    @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         return [self.move] if self.move in moves else []
 
@@ -405,6 +409,7 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
         self.move = move
         self.duration = random.randint(2, 3) # 2 or 3 turns
 
+    @priority(-1) # must run last so that disable can't prevent prevent selection
     def on_get_move_choices(self, pokemon, moves):
         return [self.move]
 
@@ -616,6 +621,7 @@ class Taunt(BaseEffect):
     def __init__(self, duration):
         self.duration = duration
 
+    @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         return [move for move in moves if move.category != MoveCategory.STATUS]
 

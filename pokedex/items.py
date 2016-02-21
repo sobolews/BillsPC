@@ -37,6 +37,7 @@ class AirBalloon(ItemEffect):
         pokemon.use_item(engine)
 
 class AssaultVest(ItemEffect):
+    @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         return [move for move in moves if not move.category is MoveCategory.STATUS]
 

@@ -70,6 +70,7 @@ class BaseEffect(object):
     def on_timeout(self, pokemon, engine):
         """ Called when the effect wears off (by self.duration hitting 0) """
 
+    @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         """ Return a modified list of valid move choices """
         return moves
