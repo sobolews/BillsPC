@@ -474,10 +474,8 @@ class BattlePokemon(object, EffectHandlerMixin):
         return self.side.get_switch_choices(pokemon=self, forced=forced)
 
     def get_move_choices(self):
-        move_choices = [move for move in self.moveset if self.pp[move] > 0]
-
-        for effect in self.effects:
-            move_choices = effect.on_get_move_choices(self, move_choices)
+        move_choices = self.accumulate_effect('on_get_move_choices', self,
+                                              [move for move in self.moveset if self.pp[move] > 0])
         return move_choices or [movedex['struggle']]
 
     def apply_boosts(self, boosts, self_induced=True):
