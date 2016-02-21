@@ -12,8 +12,7 @@ from battle.events import MoveEvent, SwitchEvent, InstaSwitchEvent, ResidualEven
 from misc.functions import gf_round
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import (MoveCategory, Volatile, Status, Cause, FAIL, Type, Decision, ABILITY,
-                           ITEM)
+from pokedex.enums import MoveCategory, Volatile, Status, Cause, FAIL, Type, Decision, ABILITY
 from pokedex.moves import movedex, Move
 from pokedex.stats import Boosts
 
