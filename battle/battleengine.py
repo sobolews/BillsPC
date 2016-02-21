@@ -708,8 +708,8 @@ class BattleEngine(object):
                 residual.call()
 
     def run_update(self):
-        sides = self.battlefield.sides
-        actives = [side.active_pokemon for side in sides if side.active_pokemon is not None]
+        actives = (side.active_pokemon for side in self.battlefield.sides if
+                   side.active_pokemon is not None)
 
         for pokemon in sorted(actives, key=lambda p: (-self.effective_spe(p), random.random())):
             pokemon.activate_effect('on_update', pokemon, self)
