@@ -909,11 +909,13 @@ class BattleEngine(object):
                 continue
             break
 
-        actives = [side.active_pokemon for side in sides]
-        for i in (0, 1): # This is only used for trapping abilities, so order doesn't matter
-            actives[i].will_move_this_turn = True
-            actives[i].turns_out += 1
-            actives[i].activate_effect('on_before_turn', actives[i], actives[not i])
+        pokemon0, pokemon1 = sides[0].active_pokemon, sides[1].active_pokemon
+        pokemon0.will_move_this_turn = True
+        pokemon0.turns_out += 1
+        pokemon0.activate_effect('on_before_turn', pokemon0, pokemon1)
+        pokemon1.turns_out += 1
+        pokemon1.will_move_this_turn = True
+        pokemon1.activate_effect('on_before_turn', pokemon1, pokemon0)
 
         self.battlefield.turns += 1
         if __debug__:
