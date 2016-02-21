@@ -34,21 +34,6 @@ class RandomDecisionMakerWithSwitches(RandomDecisionMaker):
             return random.choice(switches)
         return random.choice(moves)
 
-class ScriptedDecisionMaker(BaseDecisionMaker):
-    def __init__(self, side, decisions):
-        BaseDecisionMaker.__init__(self, side)
-        self.decisions = decisions
-        self._counter = 0
-
-    def make_move_decision(self, choices, battlefield):
-        decision = self.decisions[self._counter]
-        self._counter += 1
-        return decision
-
-    make_switch_decision = make_move_decision
-
-    def make_mega_evo_decision(self, battlefield):
-        return True
 
 class AutoDecisionMaker(BaseDecisionMaker):
     """ Always return the first choice """
