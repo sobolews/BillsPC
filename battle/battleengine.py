@@ -809,7 +809,7 @@ class BattleEngine(object):
         return [d for d in decisions if d is not None] # None is not a valid decision unless testing
 
     def modify_priority(self, pokemon, move):
-        return pokemon.accumulate_effect('on_modify_priority', pokemon, move, self, 0)
+        return pokemon.accumulate_effect('on_modify_priority', pokemon, move, self, move.priority)
 
     def get_switch_decision(self, side, forced=False):
         choices = side.get_switch_choices(forced=forced)

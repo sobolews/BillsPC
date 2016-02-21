@@ -40,9 +40,9 @@ class BaseEvent(object):
 class MoveEvent(BaseEvent):
     type = Decision.MOVE
 
-    def __init__(self, pokemon, spe, priority_modifier, move):
+    def __init__(self, pokemon, spe, priority, move):
         self.pokemon = pokemon
-        self.priority = (100 + move.priority + priority_modifier, spe, random())
+        self.priority = (100 + priority, spe, random())
         self.move = move
 
     def run_event(self, engine, queue):
