@@ -36,7 +36,7 @@ class EffectHandlerMixin:
         """
         failfast = kwargs.get('failfast', False)
         for effect in self.effect_handlers[name][:]:
-            log.d('effect %s of %r activated', name, effect.__self__)
+            if __debug__: log.d('effect %s of %r activated', name, effect.__self__)
             rv = effect(*args)
             if failfast and rv is FAIL:
                 if __debug__: log.d('Effect %s was failed by %r', name, effect.__self__)
@@ -53,7 +53,7 @@ class EffectHandlerMixin:
         failfast = kwargs.get('failfast', False)
         accumulator = args[-1]
         for effect in self.effect_handlers[name][:]:
-            log.d('effect %s of %r activated', name, effect.__self__)
+            if __debug__: log.d('effect %s of %r activated', name, effect.__self__)
             accumulator = effect(*(args[:-1] + (accumulator,)))
             if failfast and accumulator is FAIL:
                 return FAIL
