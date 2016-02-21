@@ -185,11 +185,13 @@ class BattlePokemon(object, EffectHandlerMixin):
             boost = override_boost
         else:
             boost = self.boosts[which_stat]
-        boost_factor = (1, 1.5, 2, 2.5, 3, 3.5, 4)
+        if boost == 0:
+            return stat
 
+        boost_factor = (1, 1.5, 2, 2.5, 3, 3.5, 4)
         if boost > 0:
             stat = int(stat * boost_factor[boost])
-        elif boost < 0:
+        else:
             stat = int(stat / boost_factor[-boost])
 
         return stat
