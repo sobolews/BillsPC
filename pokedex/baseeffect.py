@@ -3,24 +3,28 @@ Each Effect class that inherits from BaseEffect typically overrides a few (about
 order to cause an effect or interrupt execution at certain points in the battle loop.
 
 The 'effects' attribute of BattlePokemon, BattleSide, and BattleField contains a set of these
-Effects. At certain points in the battle, the BattleEngine will call a handler on each** of these
-effects; for example (during damage calculation):
+Effects. At certain points in the battle, the BattleEngine will call handlers on these effects. For
+example (during damage calculation):
 
-    for effect in chain(pokemon.effects, self.battlefield.effects):
-        base_power = effect.on_modify_base_power(user, move, target, self, base_power)
+    for effector in (user, self.battlefield):
+        base_power = effector.accumulate_effect('on_modify_base_power',
+                                                user, move, target, self, base_power)
 
-In this example, for each effect on the pokemon and the battlefield, if it is an effect that affects
-the base power of a move, it may modify the value of base_power that it returns. BaseEffect's
-default implementation of each handler is a no-op. This allows each Effect to only override the
-methods that correspond to battle events related to the Effect.
+In this example, for each effect on the pokemon and the battlefield, if it is an effect that can
+modify the base power of a move, it may return a value that is accumulated into the returned
+base_power. The on_modify_base_power handler will only be called if the effect overrides
+BaseEffect's no-op implementation.
 
 In cases such as the on_before_move handler, the order in which the handlers are called is
 important. The @priority decorator assigns a number to the handler, and when multiple effects are
 present on the pokemon, they run in order of priority (highest first). For example:
 
-    for effect in sorted(pokemon.effects, key=lambda e: e.on_before_move.priority, reverse=True):
-        if effect.on_before_move(user, move, self) is FAIL:
-            return
+    if user.activate_effect('on_before_move', user, move, self, failfast=True) is FAIL:
+        return
+
+If a higher priority effect causes the move to fail, then the lower priority on_before_move handler
+will not run. (This is important e.g. for making Flinch block a move before Confuse, because a
+Flinching pokemon can't take confusion damage.)
 
 Each effect has a `source`, which is an enum that uniquely identifies the effect on the pokemon,
 side, or battlefield to which it is attached. (Note that each effect class is not necessarily
@@ -28,9 +32,6 @@ identified uniqely by its source though, for example all Abilities have the same
 but only one ability at a time is ever in effect on a pokemon.)
 
 Effects inheriting from BaseEffect are in the effects, abilities, statuses and weather modules.
-
-**This results in the vast majority of handler calls being no-ops. Once the prototype is complete,
-some optimizations may be in order, such as registering only methods that aren't no-ops.
 """
 from misc.functions import priority
 from pokedex.enums import ABILITY
