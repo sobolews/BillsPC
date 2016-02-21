@@ -167,14 +167,13 @@ class BattleSide(object, EffectHandlerMixin):
             pokemon.activate_effect('on_update', pokemon, engine)
 
     def get_switch_choices(self, pokemon=None, forced=False):
-        switch_choices = [team_member for team_member in self.team if
-                          not team_member.is_fainted() and not team_member.is_active]
-
         if not forced and pokemon is not None:
-            for on_trap_check in pokemon.effect_handlers['on_trap_check'][:]:
+            for on_trap_check in pokemon.effect_handlers['on_trap_check']:
                 if on_trap_check(pokemon):
                     return []
-        return switch_choices
+
+        return [team_member for team_member in self.team if
+                not team_member.is_fainted() and not team_member.is_active]
 
     def __str__(self):
         return 'Side %d: [%s]' % (self.index, ', '.join(str(p) for p in self.team))
