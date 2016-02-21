@@ -797,6 +797,8 @@ class BattleEngine(object):
                                                     self.battlefield)
             if is_move:
                 event = MoveEvent(pokemon, spe, self.modify_priority(pokemon, choice), choice)
+                if choice == movedex['pursuit']:
+                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon, choice))
             else:
                 event = SwitchEvent(pokemon, spe, choice)
             decisions.append(event)
@@ -922,14 +924,7 @@ class BattleEngine(object):
             log.i('\nTurn %d', self.battlefield.turns)
             self._debug_sanity_check()
 
-        decisions = self.get_move_decisions()
-
-        for decision in decisions:
-            if decision.type is Decision.MOVE and decision.move == movedex['pursuit']:
-                pokemon = decision.pokemon
-                self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon, decision.move))
-
-        self.event_queue.extend(decisions)
+        self.event_queue.extend(self.get_move_decisions())
         self.event_queue.append(ResidualEvent())
         self.event_queue.sort()
 

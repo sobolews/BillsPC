@@ -11,6 +11,7 @@ from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import AutoDecisionMaker
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
 from mining import create_pokedex
+from pokedex import effects
 from pokedex.abilities import abilitydex
 from pokedex.items import itemdex
 from pokedex.enums import Status, ABILITY, ITEM
@@ -63,6 +64,9 @@ class TestingEngine(BattleEngine):
                 move = action
                 priority = self.modify_priority(pokemon, move)
                 decisions.append(MoveEvent(pokemon, spe, priority, move))
+                if move == movedex['pursuit']:
+                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon, move))
+
             elif decision_type == 'switch':
                 incoming = action
                 decisions.append(SwitchEvent(pokemon, spe, incoming))
