@@ -141,7 +141,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self._remove_handlers(effect)
 
         if __debug__: log.i('Removed %s from %s', effect, self)
-        if not batonpassed:
+        if not batonpassed and 'on_end' in effect.handler_names:
             effect.on_end(self, engine)
         if source is self.status:
             self.status = None
