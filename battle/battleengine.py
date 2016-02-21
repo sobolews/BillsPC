@@ -792,21 +792,22 @@ class BattleEngine(object):
             assert not pokemon.is_fainted()
 
             spe = self.effective_spe(pokemon)
-            move_choices = [MoveEvent(pokemon, spe, self.modify_priority(pokemon, move), move)
-                            for move in pokemon.get_move_choices()]
-            switch_choices = [SwitchEvent(pokemon, spe, team_member)
-                              for team_member in pokemon.get_switch_choices()]
-
-            choice = dm.make_move_decision(move_choices + switch_choices, self.battlefield)
-            decisions.append(choice)
+            choice, is_move = dm.make_move_decision(pokemon.get_move_choices(),
+                                                    pokemon.get_switch_choices(),
+                                                    self.battlefield)
+            if is_move:
+                event = MoveEvent(pokemon, spe, self.modify_priority(pokemon, choice), choice)
+            else:
+                event = SwitchEvent(pokemon, spe, choice)
+            decisions.append(event)
 
             if (pokemon.can_mega_evolve and
-                choice.type is Decision.MOVE and
+                is_move and
                 dm.make_mega_evo_decision(self.battlefield)
             ):
                 decisions.append(MegaEvoEvent(pokemon, spe))
 
-        return [d for d in decisions if d is not None] # None is not a valid decision unless testing
+        return decisions
 
     def modify_priority(self, pokemon, move):
         return pokemon.accumulate_effect('on_modify_priority', pokemon, move, self, move.priority)
