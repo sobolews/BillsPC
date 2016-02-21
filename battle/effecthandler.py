@@ -2,7 +2,7 @@ if __debug__: from _logging import log
 
 from pokedex.enums import FAIL
 
-class EffectHandlerMixin:
+class EffectHandlerMixin: #pylint: disable=old-style-class
     """
     Provides common functionality to classes that register effect handlers.  Such classes must
     initialize an effect_handlers dictionary mapping handler name to list of bound handler methods.
