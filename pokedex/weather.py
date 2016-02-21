@@ -15,8 +15,7 @@ class BaseWeatherEffect(BaseEffect):
     def on_residual(self, pokemon0, pokemon1, engine):
         if not self.suppressed:
             for pokemon in filter(None, (pokemon0, pokemon1)):
-                for effect in pokemon.effects:
-                    effect.on_weather(pokemon, self.source, engine)
+                pokemon.activate_effect('on_weather', pokemon, self.source, engine)
 
     def weather_modify_damage(self, _, damage):
         return damage
