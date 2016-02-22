@@ -128,7 +128,8 @@ class TestStatisticsModule(TestCase):
         json_team = statistics.get_json_teams(1)[0]
         self.assertEqual(len(json_team), 6)
         pokemon_dict = json_team[0]
-        self.assertEqual(set(['ability', 'evs', 'item', 'ivs', 'level', 'moves', 'name', 'shiny']),
+        self.assertEqual(set(['ability', 'evs', 'item', 'ivs', 'level', 'moves', 'name', 'shiny',
+                              'species']),
                          set(pokemon_dict.keys()))
         self.assertTrue(set(['atk', 'def', 'hp', 'spa', 'spd', 'spe']) ==
                         set(pokemon_dict['evs'].keys()) ==
