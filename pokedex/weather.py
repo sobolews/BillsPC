@@ -133,7 +133,7 @@ class DeltaStreamWeather(BaseWeatherEffect):
         if not self.suppressed:
             if Type.FLYING in target.types and type_effectiveness(move.type, Type.FLYING) == 2:
                 if __debug__:
-                    log.i("DeltaStream suppressed %s's %s type move", user, move.type.name)
+                    log.i("DeltaStream suppressed %s's %s type move", user, move.type)
                 return effectiveness * 0.5
         return effectiveness
 

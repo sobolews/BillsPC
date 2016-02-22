@@ -10,7 +10,8 @@ import sys
 from mining.pokedexmaker import create_pokedex
 from mining.statistics import RandbatsStatistics
 from misc.multitabulate import multitabulate
-from pokedex.types import Type, effectiveness
+from pokedex.enums import Type
+from pokedex.types import effectiveness
 
 RBSTATS_PKL = 'mining/rbstats.pkl'
 

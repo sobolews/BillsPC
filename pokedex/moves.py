@@ -87,7 +87,7 @@ class Move(object):
         self.name = self.__class__.__name__.rstrip('_')
 
     def __eq__(self, other):
-        return self.name == other.name
+        return isinstance(other, Move) and self.name == other.name
 
     def __ne__(self, other):
         return not self.name == other.name
@@ -628,7 +628,7 @@ class confusiondamage(Move):
         super(confusiondamage, self).__init__()
         self.max_pp = 0
         self.category = PHYSICAL
-        self.type = Type['???']
+        self.type = Type.NOTYPE
         self.never_crit = True
         self.targets_user = True
         self.ignore_substitute = True
@@ -3263,7 +3263,7 @@ class struggle(Move):
         super(struggle, self).__init__()
         self.max_pp = 0
         self.category = PHYSICAL
-        self.type = Type['???']
+        self.type = Type.NOTYPE
         self.makes_contact = True
         self.base_power = 50
         self.on_success_ignores_substitute = True

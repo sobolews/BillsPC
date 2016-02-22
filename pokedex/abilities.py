@@ -586,7 +586,7 @@ class MagicGuard(AbilityEffect):
     def on_damage(self, pokemon, cause, source, engine, damage):
         if cause not in (Cause.MOVE, Cause.CONFUSE):
             if __debug__: log.i('Damage from (%s, %s) was prevented by MagicGuard',
-                                cause.name, source)
+                                cause, source)
             return FAIL
         return damage
 
@@ -806,8 +806,8 @@ class PrimordialSea(AbilityEffect):
 
 class Protean(AbilityEffect):
     def on_modify_move(self, move, user, engine):
-        if move.type is not Type['???']:
-            if __debug__: log.i("%s's type changed to %s", user, move.type.name)
+        if move.type is not Type.NOTYPE:
+            if __debug__: log.i("%s's type changed to %s", user, move.type)
             user.types = [move.type, None]
 
 class PurePower(AbilityEffect):
@@ -919,7 +919,7 @@ class Scrappy(AbilityEffect):
     def on_modify_effectiveness(self, user, move, target, effectiveness):
         if move.type in (Type.FIGHTING, Type.NORMAL) and Type.GHOST in target.types:
             return type_effectiveness(
-                move.type, target.types[not target.types.index(Type.GHOST)] or Type['???'])
+                move.type, target.types[not target.types.index(Type.GHOST)] or Type.NOTYPE)
         return effectiveness
 
 class SereneGrace(AbilityEffect):
@@ -1283,7 +1283,7 @@ class WonderGuard(AbilityEffect):
     def on_foe_try_hit(self, foe, move, target, engine):
         if (move.category is not MoveCategory.STATUS and
             engine.get_effectiveness(foe, move, target) <= 1 and
-            move.type is not Type['???'] and
+            move.type is not Type.NOTYPE and
             foe is not target
         ):
             if __debug__: log.i("WonderGuard makes %s immune to %s!", target, move)

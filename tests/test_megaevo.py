@@ -1,5 +1,4 @@
-from pokedex.enums import Weather
-from pokedex.types import Type
+from pokedex.enums import Weather, Type
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestMegaEvolution(MultiMoveTestCaseWithoutSetup):

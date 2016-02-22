@@ -104,7 +104,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             return FAIL
 
         if self.is_immune_to(effect.source) and not override_immunity:
-            if __debug__: log.i('%s is immune to %s!', self, effect.source.name)
+            if __debug__: log.i('%s is immune to %s!', self, effect.source)
             return FAIL
 
         self._effect_index[effect.source] = effect
@@ -173,7 +173,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         if self.status in (None, Status.FNT):
             if __debug__: log.d("Tried to cure %s's status but it was %s", self, self.status)
         else:
-            if __debug__: log.i("%s's status (%s) was cured", self, self.status.name)
+            if __debug__: log.i("%s's status (%s) was cured", self, self.status)
             self.remove_effect(self.status)
             self.status = None
             self.is_resting = False
@@ -295,7 +295,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             if immune is not None:
                 return immune
 
-        if thing in Type:
+        if thing in Type.values:
             return effectiveness(thing, self) == 0
 
         if thing in self.STATUS_IMMUNITIES:
@@ -500,7 +500,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             '%s %d/%d   L%d (side %d)' % (self.name, self.hp, self.max_hp, self.level,
                                             self.side.index),
             'moves: [%s]' % ', '.join(move.name for move in self.moveset),
-            'status: %s   ability: %s   item: %s' % (self.status and self.status.name, self.ability,
+            'status: %s   ability: %s   item: %s' % (self.status and self.status, self.ability,
                                                      self.item),
             ('Active effects: %r  %s' % ([e for e in self.effects], self.boosts or '')
              if self.is_active else '')
@@ -521,7 +521,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             assert self.has_effect(self.status), repr(self)
 
         if self.is_active and self.status is None:
-            for status in Status:
+            for status in Status.values:
                 assert not self.has_effect(status)
 
         if self.is_active:

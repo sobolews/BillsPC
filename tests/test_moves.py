@@ -4,10 +4,9 @@ from unittest import TestCase
 from battle.battleengine import BattleEngine
 from pokedex import effects
 from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile, Hazard,
-                           PseudoWeather, SideCondition)
+                           PseudoWeather, SideCondition, Type)
 from pokedex.items import itemdex
 from pokedex.moves import movedex, Move, _MAX_PP
-from pokedex.types import Type
 from pokedex.stats import Boosts
 from mining.statistics import RandbatsStatistics
 from tests.multi_move_test_case import MultiMoveTestCase
@@ -18,8 +17,8 @@ class TestMoveDefinitions(TestCase):
 
     def test_all_moves_have_correct_enums(self):
         for move in self.all_moves:
-            self.assertIsInstance(move.category, MoveCategory)
-            self.assertIsInstance(move.type, Type)
+            self.assertIn(move.category, MoveCategory.values)
+            self.assertIn(move.type, Type.values)
 
     def test_nonstatus_moves_have_base_power_or_damage(self):
         for move in self.all_moves:

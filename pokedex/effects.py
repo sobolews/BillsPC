@@ -41,7 +41,7 @@ class BaseAuraFieldEffect(BaseEffect):
 
     def on_modify_base_power(self, user, move, target, engine, base_power):
         if move.type is self.aura_type:
-            if __debug__: log.i("%s boosted %s's power!", self.source.name, move)
+            if __debug__: log.i("%s boosted %s's power!", self.source, move)
             if engine.battlefield.has_effect(PseudoWeather.AURABREAK):
                 if __debug__: log.i('Aura Break broke the aura!')
                 return 0.75 * base_power
@@ -742,7 +742,7 @@ class GemVolatile(BaseEffect):
     duration = 1
 
     def on_modify_base_power(self, user, move, target, engine, base_power):
-        if __debug__: log.i("%s's power was boosted by the %s gem", move, move.type.name)
+        if __debug__: log.i("%s's power was boosted by the %s gem", move, move.type)
         return base_power * 1.3
 
 class UnburdenVolatile(BaseEffect):

@@ -11,7 +11,7 @@ class TestTypes(TestCase):
         self.arcanine = Mock()
         self.arcanine.types = (Type.FIRE, None)
         self.typeless = Mock()
-        self.typeless.types = (Type['???'], None)
+        self.typeless.types = (Type.NOTYPE, None)
 
     def test_type_multiplier(self):
         assert effectiveness(Type.GRASS, self.ferrothorn) == 0.25
@@ -19,12 +19,12 @@ class TestTypes(TestCase):
         assert effectiveness(Type.ICE, self.ferrothorn) == 1
         assert effectiveness(Type.FIGHTING, self.ferrothorn) == 2
         assert effectiveness(Type.STEEL, self.ferrothorn) == 0.5
-        assert effectiveness(Type['???'], self.ferrothorn) == 1
+        assert effectiveness(Type.NOTYPE, self.ferrothorn) == 1
 
         assert effectiveness(Type.WATER, self.arcanine) == 2
         assert effectiveness(Type.NORMAL, self.arcanine) == 1
         assert effectiveness(Type.FAIRY, self.arcanine) == 0.5
-        assert effectiveness(Type['???'], self.arcanine) == 1
+        assert effectiveness(Type.NOTYPE, self.arcanine) == 1
 
         assert effectiveness(Type.POISON, self.typeless) == 1
-        assert effectiveness(Type['???'], self.typeless) == 1
+        assert effectiveness(Type.NOTYPE, self.typeless) == 1

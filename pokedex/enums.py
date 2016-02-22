@@ -1,45 +1,61 @@
-from enum import Enum
+class EnumMeta(type):
+    """ Enum metaclass. Creates a values dictionary with the attribute name as its own value """
+    def __new__(mcs, name, bases, dct):
+        for val in dct:
+            dct[val] = val
+        dct['values'] = {k: v for k, v in dct.items() if not k.startswith('__')}
+        return type.__new__(mcs, name, bases, dct)
 
-Type = Enum(
-    'Type', ('NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL',
-             'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK', 'FAIRY',
-             '???')) # '???' type used for confusion damage and struggle
+class Type(object):
+    __metaclass__ = EnumMeta
+    (NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK,
+     BUG, GHOST, STEEL, FIRE, WATER, GRASS, ELECTRIC,
+     PSYCHIC, ICE, DRAGON, DARK, FAIRY, NOTYPE) = [()]*19
 
-Status = Enum(
-    'Status', ('BRN', 'FNT', 'FRZ', 'PAR', 'PSN', 'SLP', 'TOX'))
+class Status(object):
+    __metaclass__ = EnumMeta
+    BRN, FNT, FRZ, PAR, PSN, SLP, TOX = [()]*7
 
-Volatile = Enum(
-    'Volatile', ('ATTRACT', 'AUTOTOMIZE', 'BATONPASS', 'CHOICELOCK', 'CONFUSE', 'DESTINYBOND',
-                 'DISABLE', 'ENCORE', 'FLASHFIRE', 'FLINCH', 'FORECAST', 'GEM', 'KINGSSHIELD',
-                 'LEECHSEED', 'LOCKEDMOVE', 'MAGICCOAT', 'MAGNETRISE', 'PARENTALBOND',
-                 'PARTIALTRAP', 'PERISHSONG', 'PIROUETTE', 'PROTECT', 'PURSUIT', 'ROOST',
-                 'SHEERFORCE', 'SLOWSTART', 'SPIKYSHIELD', 'STALL', 'SUBSTITUTE', 'TAUNT',
-                 'TRANSFORMED', 'TRAPPED', 'TRAPPER', 'TRUANT', 'TWOTURNMOVE', 'UNBURDEN',
-                 'VANISHED', 'YAWN'))
+class Volatile(object):
+    __metaclass__ = EnumMeta
+    (ATTRACT, AUTOTOMIZE, BATONPASS, CHOICELOCK, CONFUSE, DESTINYBOND,
+     DISABLE, ENCORE, FLASHFIRE, FLINCH, FORECAST, GEM, KINGSSHIELD,
+     LEECHSEED, LOCKEDMOVE, MAGICCOAT, MAGNETRISE, PARENTALBOND,
+     PARTIALTRAP, PERISHSONG, PIROUETTE, PROTECT, PURSUIT, ROOST,
+     SHEERFORCE, SLOWSTART, SPIKYSHIELD, STALL, SUBSTITUTE, TAUNT,
+     TRANSFORMED, TRAPPED, TRAPPER, TRUANT, TWOTURNMOVE, UNBURDEN,
+     VANISHED, YAWN) = [()]*38
 
-SideCondition = Enum(
-    'SideCondition', ('HEALINGWISH', 'LIGHTSCREEN', 'REFLECT', 'SAFEGUARD', 'TAILWIND', 'WISH'))
+class SideCondition(object):
+    __metaclass__ = EnumMeta
+    HEALINGWISH, LIGHTSCREEN, REFLECT, SAFEGUARD, TAILWIND, WISH = [()]*6
 
-Hazard = Enum(
-    'Hazard', ('TOXICSPIKES', 'SPIKES', 'STEALTHROCK', 'STICKYWEB'))
+class Hazard(object):
+    __metaclass__ = EnumMeta
+    TOXICSPIKES, SPIKES, STEALTHROCK, STICKYWEB = [()]*4
 
-PseudoWeather = Enum(
-    'PseudoWeather', ('AURABREAK', 'DARKAURA', 'ELECTRICTERRAIN', 'FAIRYAURA', 'TRICKROOM'))
+class PseudoWeather(object):
+    __metaclass__ = EnumMeta
+    AURABREAK, DARKAURA, ELECTRICTERRAIN, FAIRYAURA, TRICKROOM = [()]*5
 
-Weather = Enum(
-    'Weather', ('DELTASTREAM', 'DESOLATELAND', 'HAIL', 'PRIMORDIALSEA', 'RAINDANCE', 'SANDSTORM',
-                'SUNNYDAY'))
+class Weather(object):
+    __metaclass__ = EnumMeta
+    (DELTASTREAM, DESOLATELAND, HAIL, PRIMORDIALSEA,
+     RAINDANCE, SANDSTORM, SUNNYDAY) = [()]*7
 Weather.TRIO = (Weather.PRIMORDIALSEA, Weather.DESOLATELAND, Weather.DELTASTREAM)
 
-Cause = Enum(
-    'Cause', ('CONFUSE', 'CRASH', 'DIRECT', 'DRAIN', 'HAZARD', 'MOVE', 'OTHER', 'RECOIL',
-              'RESIDUAL', 'SELFDESTRUCT', 'WEATHER'))
+class Cause(object):
+    __metaclass__ = EnumMeta
+    (CONFUSE, CRASH, DIRECT, DRAIN, HAZARD, MOVE,
+     OTHER, RECOIL, RESIDUAL, SELFDESTRUCT, WEATHER) = [()]*11
 
-Decision = Enum(
-    'Decision', ('MOVE', 'MEGAEVO', 'POSTSWITCH', 'RESIDUAL', 'SWITCH'))
+class Decision(object):
+    __metaclass__ = EnumMeta
+    MOVE, MEGAEVO, POSTSWITCH, RESIDUAL, SWITCH = [()]*5
 
-MoveCategory = Enum(
-    'MoveCategory', ('PHYSICAL', 'SPECIAL', 'STATUS'))
+class MoveCategory(object):
+    __metaclass__ = EnumMeta
+    PHYSICAL, SPECIAL, STATUS = [()]*3
 STATUS, PHYSICAL, SPECIAL = MoveCategory.STATUS, MoveCategory.PHYSICAL, MoveCategory.SPECIAL
 
 FAIL = type('', (object,), {'__repr__': lambda _: '<FAIL>'})()

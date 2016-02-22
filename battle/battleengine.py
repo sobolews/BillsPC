@@ -524,7 +524,7 @@ class BattleEngine(object):
             return 0
 
         if cause is Cause.WEATHER and pokemon.is_immune_to(source):
-            if __debug__: log.i('Weather immunity: %s / %s', pokemon, source.name)
+            if __debug__: log.i('Weather immunity: %s / %s', pokemon, source)
             return 0
 
         if damage < 1:
@@ -539,7 +539,7 @@ class BattleEngine(object):
 
         pokemon.hp -= damage
         if __debug__: log.i('%s took %s (%.1f%%) damage from %s: %s; hp=%d/%d' %
-                            (pokemon, damage, 100*float(damage)/pokemon.max_hp, cause.name, source,
+                            (pokemon, damage, 100*float(damage)/pokemon.max_hp, cause, source,
                              pokemon.hp, pokemon.max_hp))
         if pokemon.hp <= 0:
             damage += pokemon.hp
@@ -645,8 +645,8 @@ class BattleEngine(object):
             return FAIL
 
         if pokemon.status is not None or pokemon.is_immune_to(status):
-            if __debug__: log.i('Failed to set status %s: ' % status.name +
-                                ('%%s is already statused (%s)' % pokemon.status.name
+            if __debug__: log.i('Failed to set status %s: ' % status +
+                                ('%%s is already statused (%s)' % pokemon.status
                                  if pokemon.status is not None else
                                  '%s is immune') % pokemon)
             return FAIL

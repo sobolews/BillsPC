@@ -55,7 +55,7 @@ class BattleField(object, EffectHandlerMixin):
             return FAIL
         if self._weather is not None:
             self.remove_effect(self._weather)
-        if __debug__: log.i('The weather became %s', weather.name)
+        if __debug__: log.i('The weather became %s', weather)
         self._weather = weather
         w_effect = WEATHER_EFFECTS[weather](duration)
         if self._weather_suppressed:
@@ -87,7 +87,7 @@ class BattleField(object, EffectHandlerMixin):
             return
         self._remove_handlers(effect)
 
-        if source in Weather:
+        if source in Weather.values:
             self._weather = None
         if __debug__: log.i('Removed %s from battlefield', effect)
 
@@ -158,7 +158,7 @@ class BattleSide(object, EffectHandlerMixin):
         if __debug__: log.i('Removed %s from side %d', effect, self.index)
 
     def clear_hazards(self):
-        for hazard in Hazard:
+        for hazard in Hazard.values:
             self.remove_effect(hazard)
 
     def update(self, engine):

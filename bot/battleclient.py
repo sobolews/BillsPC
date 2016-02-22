@@ -364,7 +364,7 @@ class BattleClient(object):
             self.battlefield.clear_weather()
             return
 
-        weather = Weather[msg[1].upper()]
+        weather = Weather.values[msg[1].upper()]
 
         if len(msg) > 2 and msg[2] == '[upkeep]':
             if msg[1].lower() not in ('desolateland', 'primordialsea', 'deltastream'):
