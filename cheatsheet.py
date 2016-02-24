@@ -63,15 +63,15 @@ class CheatSheetCli(cmd.Cmd):
                                              bs['spa'], bs['spd'], bs['spe'])])
 
     def pweaknesses(self, pokemon):
-        weaknesses = [type_.name.capitalize() if
+        weaknesses = [type_.capitalize() if
                       effectiveness(type_, self.pokedex[pokemon]) == 2 else
-                      self.bu(type_.name.capitalize()) for type_ in Type if
+                      self.bu(type_.capitalize()) for type_ in Type.values if
                       effectiveness(type_, self.pokedex[pokemon]) > 1]
-        resistances = [type_.name.capitalize() if
+        resistances = [type_.capitalize() if
                        effectiveness(type_, self.pokedex[pokemon]) == 0.5 else
-                       self.bu(type_.name.capitalize()) for type_ in Type if
+                       self.bu(type_.capitalize()) for type_ in Type.values if
                        0 < effectiveness(type_, self.pokedex[pokemon]) < 1]
-        immunities = [type_.name.capitalize() for type_ in Type if
+        immunities = [type_.capitalize() for type_ in Type.values if
                       effectiveness(type_, self.pokedex[pokemon]) == 0]
         return '\n'.join(['Weaknesses:  ' + ', '.join(weaknesses),
                           'Resistances: ' + ', '.join(resistances),
