@@ -147,7 +147,7 @@ class Bot(WebSocketClient):
         r = requests.post(url, data=values)
         response = json.loads(r.text[1:])  # for reasons, the JSON response starts with a ']'
 
-        self.send('|/trn %s,0,%s', self.username, response['assertion'])
+        self.send('|/trn %s,0,%s' % (self.username, response['assertion']))
         self.logged_in = True
 
 
