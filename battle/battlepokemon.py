@@ -7,7 +7,7 @@ from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, 
                            SideCondition, ITEM)
 from pokedex.items import itemdex
 from pokedex.stats import Boosts, PokemonStats
-from pokedex.types import effectiveness
+from pokedex.types import effectiveness, HPivs
 from pokedex.moves import movedex
 
 if __debug__: from _logging import log
@@ -228,56 +228,53 @@ class BattlePokemon(object, EffectHandlerMixin):
                 int(int(2 * base_hp + iv + int(ev / 4) + 100) * self.level / 100 + 10))
 
     def calculate_evs_ivs(self):
-        if self.base_species == 'shedinja':
-            evs = [0, 252, 0, 85, 0, 85]
-            ivs = [31, 31, 31, 31, 31, 31]
-            return evs, ivs
+        """
+        Order of stats: hp, atk, def, spa, spd, spe
+        """
+        evs = [85, 85, 85, 85, 85, 85]
 
-        if movedex['gyroball'] in self.moveset:
-            evs = [85, 170, 85, 85, 85, 0]
-            ivs = [31, 31, 31, 31, 31, 0]
-
-        elif movedex['trickroom'] in self.moveset:
-            evs = [170, 85, 85, 85, 85, 0]
-            ivs = [31, 31, 31, 31, 31, 0]
-
+        # Use correct IVs for hiddenpower
+        for move in self.moveset:
+            if move.is_hiddenpower:
+                has_hiddenpower = True
+                ivs = list(HPivs[move.type])
+                break
         else:
-            evs = [85, 85, 85, 85, 85, 85]
+            has_hiddenpower = False
             ivs = [31, 31, 31, 31, 31, 31]
 
-        HP, ATK, SPA = 0, 1, 3
+        HP, ATK, SPE = 0, 1, 5
         hp = self._calc_hp(evs[HP], ivs[HP])
 
-        physical = special = 0
-        for move in self.moveset:
-            if move.category is MoveCategory.PHYSICAL:
-                physical += 1
-            elif move.category is MoveCategory.SPECIAL:
-                special += 1
-
-        if (movedex['bellydrum'] in self.moveset and
-            self.item is itemdex['sitrusberry'] and
-            hp % 2 == 1
-        ):
-            evs[HP] -= 4
-            evs[ATK] += 4
+        # Adjust HP stat for substitute/bellydrum/stealthrock
+        if self.item is itemdex['sitrusberry']:
+            if ((movedex['substitute'] in self.moveset and hp % 4 > 0) or
+                (movedex['bellydrum'] in self.moveset and hp % 2 > 0)):
+                evs[HP] -= 4
         else:
             eff = effectiveness(Type.ROCK, self)
             if ((eff == 2 and hp % 4 == 0) or
                 (eff == 4 and hp % 2 == 0)):
                 evs[HP] -= 4
-                evs[ATK if physical > special else SPA] += 4
 
         # Minimize confusion damage for non-physical pokemon
-        if (physical == 0 and
+        if (not any(move.category == MoveCategory.PHYSICAL for move in self.moveset) and
             movedex['copycat'] not in self.moveset and
             movedex['transform'] not in self.moveset
         ):
             evs[ATK] = 0
-            if any(move.name.startswith('hiddenpower') for move in self.moveset):
+            if has_hiddenpower:
                 ivs[ATK] -= 30
             else:
                 ivs[ATK] = 0
+
+        # Reduce speed for gyroball/trickroom
+        if movedex['gyroball'] in self.moveset or movedex['trickroom'] in self.moveset:
+            evs[SPE] = 0
+            ivs[SPE] = 0
+
+        assert all(0 <= ev <= 85 for ev in evs), evs
+        assert all(0 <= iv <= 31 for iv in ivs), ivs
 
         return evs, ivs
 

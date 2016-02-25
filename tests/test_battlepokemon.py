@@ -42,7 +42,7 @@ class TestCalculateInitialStats(TestCase):
                                           movedex['toxic'],
                                           movedex['reflect'],
                                           movedex['earthquake']))
-        self.assertDictEqual(bronzong.stats, {'max_hp': 235, 'atk': 203, 'def': 229,
+        self.assertDictEqual(bronzong.stats, {'max_hp': 235, 'atk': 186, 'def': 229,
                                               'spa': 170, 'spd': 229, 'spe': 57})
         delphox = BattlePokemon(pokedex['delphox'], level=79, moveset=(movedex['return'],
                                                                        movedex['fireblast']))
@@ -54,7 +54,7 @@ class TestCalculateInitialStats(TestCase):
                                           movedex['signalbeam'],
                                           movedex['psyshock'],
                                           movedex['trickroom']))
-        self.assertDictEqual(beheeyem.stats, {'atk': 172, 'def': 172, 'max_hp': 278,
+        self.assertDictEqual(beheeyem.stats, {'atk': 172, 'def': 172, 'max_hp': 260,
                                               'spa': 255, 'spd': 205, 'spe': 71})
 
         # No physical attacks, so use min attack
@@ -63,6 +63,13 @@ class TestCalculateInitialStats(TestCase):
                                            movedex['blizzard'], movedex['earthpower']))
         self.assertDictEqual(abomasnow.stats, {'atk': 189, 'def': 207, 'max_hp': 342,
                                                'spa': 241, 'spd': 227, 'spe': 177})
+
+        # stealthrock weakness: lower hp
+        volcarona = BattlePokemon(pokedex['volcarona'], level=76,
+                                  moveset=(movedex['fireblast'], movedex['gigadrain'],
+                                           movedex['bugbuzz'], movedex['quiverdance']))
+        self.assertDictEqual(volcarona.stats, {'atk': 96, 'def': 143, 'max_hp': 253,
+                                               'spa': 249, 'spd': 204, 'spe': 196})
 
 
 class TestAbilityChange(MultiMoveTestCase):
