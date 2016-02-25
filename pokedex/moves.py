@@ -85,6 +85,10 @@ class Move(object):
 
     def __init__(self):
         self.name = self.__class__.__name__.rstrip('_')
+        self.init_move()
+
+    def init_move():
+        raise NotImplementedError
 
     def __eq__(self, other):
         return isinstance(other, Move) and self.name == other.name
@@ -139,8 +143,7 @@ class Move(object):
 # Moves are implemented alphabetically starting here.
 
 class acidspray(Move):
-    def __init__(self):
-        super(acidspray, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.base_power = 40
@@ -149,8 +152,7 @@ class acidspray(Move):
         self.secondary_effects = SecondaryEffect(100, Boosts(spd=-2)),
 
 class acrobatics(Move):
-    def __init__(self):
-        super(acrobatics, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FLYING
@@ -161,8 +163,7 @@ class acrobatics(Move):
         return 110 if user.item is None else 55
 
 class aerialace(Move):
-    def __init__(self):
-        super(aerialace, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.base_power = 60
@@ -170,8 +171,7 @@ class aerialace(Move):
         self.type = Type.FLYING
 
 class aeroblast(Move):
-    def __init__(self):
-        super(aeroblast, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.base_power = 100
@@ -180,8 +180,7 @@ class aeroblast(Move):
         self.crit_ratio = 1
 
 class agility(Move):
-    def __init__(self):
-        super(agility, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -190,8 +189,7 @@ class agility(Move):
         self.user_boosts = Boosts(spe=2)
 
 class aircutter(Move):
-    def __init__(self):
-        super(aircutter, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[25]
         self.category = SPECIAL
         self.base_power = 60
@@ -200,8 +198,7 @@ class aircutter(Move):
         self.crit_ratio = 1
 
 class airslash(Move):
-    def __init__(self):
-        super(airslash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.base_power = 75
@@ -210,8 +207,7 @@ class airslash(Move):
         self.secondary_effects = SecondaryEffect(chance=30, volatile=Volatile.FLINCH),
 
 class ancientpower(Move):
-    def __init__(self):
-        super(ancientpower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.base_power = 60
@@ -221,8 +217,7 @@ class ancientpower(Move):
                                                   affects_user=True),
 
 class aquajet(Move):
-    def __init__(self):
-        super(aquajet, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.base_power = 40
@@ -232,8 +227,7 @@ class aquajet(Move):
         self.accuracy = 100
 
 class aquatail(Move):
-    def __init__(self):
-        super(aquatail, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.base_power = 90
@@ -242,8 +236,7 @@ class aquatail(Move):
         self.accuracy = 90
 
 class aromatherapy(Move):
-    def __init__(self):
-        super(aromatherapy, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.GRASS
@@ -255,8 +248,7 @@ class aromatherapy(Move):
             pokemon.cure_status()
 
 class attackorder(Move):
-    def __init__(self):
-        super(attackorder, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.BUG
@@ -265,8 +257,7 @@ class attackorder(Move):
         self.crit_ratio = 1
 
 class aurasphere(Move):
-    def __init__(self):
-        super(aurasphere, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.FIGHTING
@@ -275,8 +266,7 @@ class aurasphere(Move):
         self.is_bullet = True
 
 class autotomize(Move):
-    def __init__(self):
-        super(autotomize, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.STEEL
@@ -292,8 +282,7 @@ class autotomize(Move):
             effect.multiplier += 1
 
 class avalanche(Move):
-    def __init__(self):
-        super(avalanche, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.ICE
@@ -305,8 +294,7 @@ class avalanche(Move):
         return 60 if user.was_attacked_this_turn is None else 120
 
 class batonpass(Move):
-    def __init__(self):
-        super(batonpass, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[40]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -322,8 +310,7 @@ class batonpass(Move):
         user.set_effect(effects.BatonPass())
 
 class bellydrum(Move):
-    def __init__(self):
-        super(bellydrum, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -342,8 +329,7 @@ class bellydrum(Move):
         user.boosts['atk'] = 6
 
 class bite(Move):
-    def __init__(self):
-        super(bite, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[25]
         self.accuracy = 100
         self.base_power = 60
@@ -354,8 +340,7 @@ class bite(Move):
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.FLINCH),
 
 class blazekick(Move):
-    def __init__(self):
-        super(blazekick, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -366,8 +351,7 @@ class blazekick(Move):
         self.crit_ratio = 1
 
 class blizzard(Move):
-    def __init__(self):
-        super(blizzard, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.ICE
@@ -381,8 +365,7 @@ class blizzard(Move):
             self.accuracy = 70
 
 class blueflare(Move):
-    def __init__(self):
-        super(blueflare, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -391,8 +374,7 @@ class blueflare(Move):
         self.secondary_effects = SecondaryEffect(20, status=Status.BRN),
 
 class bodyslam(Move):
-    def __init__(self):
-        super(bodyslam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -402,8 +384,7 @@ class bodyslam(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.PAR),
 
 class boltstrike(Move):
-    def __init__(self):
-        super(boltstrike, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.ELECTRIC
@@ -413,8 +394,7 @@ class boltstrike(Move):
         self.secondary_effects = SecondaryEffect(20, status=Status.PAR),
 
 class bonemerang(Move):
-    def __init__(self):
-        super(bonemerang, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GROUND
@@ -423,8 +403,7 @@ class bonemerang(Move):
         self.multihit = (2,)
 
 class boomburst(Move):
-    def __init__(self):
-        super(boomburst, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -433,8 +412,7 @@ class boomburst(Move):
         self.is_sound = True
 
 class bounce(Move):
-    def __init__(self):
-        super(bounce, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FLYING
@@ -454,8 +432,7 @@ class bounce(Move):
             return FAIL
 
 class bravebird(Move):
-    def __init__(self):
-        super(bravebird, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FLYING
@@ -465,8 +442,7 @@ class bravebird(Move):
         self.recoil = 33
 
 class brickbreak(Move):
-    def __init__(self):
-        super(brickbreak, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -480,8 +456,7 @@ class brickbreak(Move):
         target.side.remove_effect(SideCondition.LIGHTSCREEN)
 
 class bugbite(Move):
-    def __init__(self):
-        super(bugbite, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.BUG
@@ -495,8 +470,7 @@ class bugbite(Move):
             user.eat_berry(engine, item, stolen=True)
 
 class bugbuzz(Move):
-    def __init__(self):
-        super(bugbuzz, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.BUG
@@ -506,8 +480,7 @@ class bugbuzz(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(spd=-1)),
 
 class bulkup(Move):
-    def __init__(self):
-        super(bulkup, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.is_protectable = False
@@ -516,8 +489,7 @@ class bulkup(Move):
         self.user_boosts = Boosts(atk=1, def_=1)
 
 class bulldoze(Move):
-    def __init__(self):
-        super(bulldoze, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.GROUND
@@ -526,8 +498,7 @@ class bulldoze(Move):
         self.secondary_effects = SecondaryEffect(100, Boosts(spe=-1)),
 
 class bulletpunch(Move):
-    def __init__(self):
-        super(bulletpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -537,8 +508,7 @@ class bulletpunch(Move):
         self.priority = 1
 
 class bulletseed(Move):
-    def __init__(self):
-        super(bulletseed, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.GRASS
@@ -547,8 +517,7 @@ class bulletseed(Move):
         self.multihit = (2, 2, 3, 3, 4, 5)
 
 class calmmind(Move):
-    def __init__(self):
-        super(calmmind, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -557,8 +526,7 @@ class calmmind(Move):
         self.user_boosts = Boosts(spa=1, spd=1)
 
 class chargebeam(Move):
-    def __init__(self):
-        super(chargebeam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.ELECTRIC
@@ -567,8 +535,7 @@ class chargebeam(Move):
         self.secondary_effects = SecondaryEffect(70, Boosts(spa=1), affects_user=True),
 
 class chatter(Move):
-    def __init__(self):
-        super(chatter, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.FLYING
@@ -578,8 +545,7 @@ class chatter(Move):
         self.is_sound = True
 
 class circlethrow(Move):
-    def __init__(self):
-        super(circlethrow, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -592,8 +558,7 @@ class circlethrow(Move):
         engine.force_random_switch(target, user)
 
 class clearsmog(Move):
-    def __init__(self):
-        super(clearsmog, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.POISON
@@ -603,8 +568,7 @@ class clearsmog(Move):
         target.boosts = Boosts() # not affected by clearbody or any Showdown "onBoost" events
 
 class closecombat(Move):
-    def __init__(self):
-        super(closecombat, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -614,8 +578,7 @@ class closecombat(Move):
         self.user_boosts = Boosts(def_=-1, spd=-1)
 
 class coil(Move):
-    def __init__(self):
-        super(coil, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.POISON
@@ -624,8 +587,7 @@ class coil(Move):
         self.user_boosts = Boosts(atk=1, def_=1, acc=1)
 
 class confusiondamage(Move):
-    def __init__(self):
-        super(confusiondamage, self).__init__()
+    def init_move(self):
         self.max_pp = 0
         self.category = PHYSICAL
         self.type = Type.NOTYPE
@@ -636,8 +598,7 @@ class confusiondamage(Move):
         self.is_protectable = False
 
 class confuseray(Move):
-    def __init__(self):
-        super(confuseray, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.GHOST
@@ -648,8 +609,7 @@ class confuseray(Move):
         target.confuse(self.infiltrates)
 
 class copycat(Move):
-    def __init__(self):
-        super(copycat, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -681,8 +641,7 @@ class copycat(Move):
         user.last_move_used = move
 
 class cosmicpower(Move):
-    def __init__(self):
-        super(cosmicpower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -691,8 +650,7 @@ class cosmicpower(Move):
         self.user_boosts = Boosts(def_=1, spd=1)
 
 class cottonguard(Move):
-    def __init__(self):
-        super(cottonguard, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.GRASS
@@ -701,8 +659,7 @@ class cottonguard(Move):
         self.user_boosts = Boosts(def_=3)
 
 class counter(Move):
-    def __init__(self):
-        super(counter, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -722,8 +679,7 @@ class counter(Move):
         return 2 * user.was_attacked_this_turn['damage'] or 1
 
 class crabhammer(Move):
-    def __init__(self):
-        super(crabhammer, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.WATER
@@ -733,8 +689,7 @@ class crabhammer(Move):
         self.crit_ratio = 1
 
 class crosschop(Move):
-    def __init__(self):
-        super(crosschop, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -744,8 +699,7 @@ class crosschop(Move):
         self.crit_ratio = 1
 
 class crunch(Move):
-    def __init__(self):
-        super(crunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -756,8 +710,7 @@ class crunch(Move):
         self.secondary_effects = SecondaryEffect(20, Boosts(def_=-1)),
 
 class curse(Move):              # NOTE: currently deliberately excluding GHOST effect of curse
-    def __init__(self):         # because no ghost in randbats gets it
-        super(curse, self).__init__()
+    def init_move(self):         # because no ghost in randbats gets it
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.GHOST
@@ -766,8 +719,7 @@ class curse(Move):              # NOTE: currently deliberately excluding GHOST e
         self.user_boosts = Boosts(atk=1, def_=1, spe=-1)
 
 class darkpulse(Move):
-    def __init__(self):
-        super(darkpulse, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.DARK
@@ -777,8 +729,7 @@ class darkpulse(Move):
         self.secondary_effects = SecondaryEffect(20, volatile=Volatile.FLINCH),
 
 class darkvoid(Move):
-    def __init__(self):
-        super(darkvoid, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.DARK
@@ -787,8 +738,7 @@ class darkvoid(Move):
         self.target_status = Status.SLP
 
 class dazzlinggleam(Move):
-    def __init__(self):
-        super(dazzlinggleam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FAIRY
@@ -796,8 +746,7 @@ class dazzlinggleam(Move):
         self.base_power = 80
 
 class defendorder(Move):
-    def __init__(self):
-        super(defendorder, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.BUG
@@ -806,8 +755,7 @@ class defendorder(Move):
         self.user_boosts = Boosts(def_=1, spd=1)
 
 class defog(Move):
-    def __init__(self):
-        super(defog, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.FLYING
@@ -825,8 +773,7 @@ class defog(Move):
         user.side.clear_hazards()
 
 class destinybond(Move):
-    def __init__(self):
-        super(destinybond, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.GHOST
@@ -837,8 +784,7 @@ class destinybond(Move):
         user.set_effect(effects.DestinyBond())
 
 class diamondstorm(Move):
-    def __init__(self):
-        super(diamondstorm, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.ROCK
@@ -846,8 +792,7 @@ class diamondstorm(Move):
         self.base_power = 100
 
 class disable(Move):
-    def __init__(self):
-        super(disable, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -875,8 +820,7 @@ class disable(Move):
         target.set_effect(effects.Disable(move, duration))
 
 class discharge(Move):
-    def __init__(self):
-        super(discharge, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.ELECTRIC
@@ -885,8 +829,7 @@ class discharge(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.PAR),
 
 class doubleedge(Move):
-    def __init__(self):
-        super(doubleedge, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -896,8 +839,7 @@ class doubleedge(Move):
         self.recoil = 33
 
 class dracometeor(Move):
-    def __init__(self):
-        super(dracometeor, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.DRAGON
@@ -906,8 +848,7 @@ class dracometeor(Move):
         self.user_boosts = Boosts(spa=-2)
 
 class dragonascent(Move):
-    def __init__(self):
-        super(dragonascent, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FLYING
@@ -917,8 +858,7 @@ class dragonascent(Move):
         self.user_boosts = Boosts(def_=-1, spd=-1)
 
 class dragonclaw(Move):
-    def __init__(self):
-        super(dragonclaw, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.DRAGON
@@ -927,8 +867,7 @@ class dragonclaw(Move):
         self.base_power = 80
 
 class dragondance(Move):
-    def __init__(self):
-        super(dragondance, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.DRAGON
@@ -937,8 +876,7 @@ class dragondance(Move):
         self.user_boosts = Boosts(atk=1, spe=1)
 
 class dragonpulse(Move):
-    def __init__(self):
-        super(dragonpulse, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.DRAGON
@@ -947,8 +885,7 @@ class dragonpulse(Move):
         self.is_pulse = True
 
 class dragontail(Move):
-    def __init__(self):
-        super(dragontail, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.DRAGON
@@ -961,8 +898,7 @@ class dragontail(Move):
         engine.force_random_switch(target, user)
 
 class drainingkiss(Move):
-    def __init__(self):
-        super(drainingkiss, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FAIRY
@@ -971,8 +907,7 @@ class drainingkiss(Move):
         self.drain = 75
 
 class drainpunch(Move):
-    def __init__(self):
-        super(drainpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -983,8 +918,7 @@ class drainpunch(Move):
         self.drain = 50
 
 class drillpeck(Move):
-    def __init__(self):
-        super(drillpeck, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FLYING
@@ -993,8 +927,7 @@ class drillpeck(Move):
         self.base_power = 80
 
 class drillrun(Move):
-    def __init__(self):
-        super(drillrun, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GROUND
@@ -1004,8 +937,7 @@ class drillrun(Move):
         self.crit_ratio = 1
 
 class dynamicpunch(Move):
-    def __init__(self):
-        super(dynamicpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -1016,8 +948,7 @@ class dynamicpunch(Move):
         self.secondary_effects = SecondaryEffect(100, volatile=Volatile.CONFUSE),
 
 class earthpower(Move):
-    def __init__(self):
-        super(earthpower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.GROUND
@@ -1026,8 +957,7 @@ class earthpower(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(spd=-1)),
 
 class earthquake(Move):
-    def __init__(self):
-        super(earthquake, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GROUND
@@ -1035,8 +965,7 @@ class earthquake(Move):
         self.base_power = 100
 
 class electricterrain(Move):
-    def __init__(self):
-        super(electricterrain, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.ELECTRIC
@@ -1054,8 +983,7 @@ class electricterrain(Move):
         engine.battlefield.set_effect(effects.ElectricTerrain())
 
 class encore(Move):
-    def __init__(self):
-        super(encore, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -1078,8 +1006,7 @@ class encore(Move):
         target.set_effect(effects.Encore(target.last_move_used, duration))
 
 class endeavor(Move):
-    def __init__(self):
-        super(endeavor, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1094,8 +1021,7 @@ class endeavor(Move):
         return target.hp - user.hp
 
 class energyball(Move):
-    def __init__(self):
-        super(energyball, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -1105,8 +1031,7 @@ class energyball(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(spd=-1)),
 
 class eruption(Move):
-    def __init__(self):
-        super(eruption, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1116,8 +1041,7 @@ class eruption(Move):
         return (150 * user.hp // user.max_hp) or 1
 
 class explosion(Move):
-    def __init__(self):
-        super(explosion, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1126,8 +1050,7 @@ class explosion(Move):
         self.selfdestruct = True
 
 class extrasensory(Move):
-    def __init__(self):
-        super(extrasensory, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -1136,8 +1059,7 @@ class extrasensory(Move):
         self.secondary_effects = SecondaryEffect(10, volatile=Volatile.FLINCH),
 
 class extremespeed(Move):
-    def __init__(self):
-        super(extremespeed, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1147,8 +1069,7 @@ class extremespeed(Move):
         self.priority = 2
 
 class facade(Move):
-    def __init__(self):
-        super(facade, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1160,8 +1081,7 @@ class facade(Move):
     # Negation of power-loss from burn is handled in statuses.Burn.on_base_power
 
 class fakeout(Move):
-    def __init__(self):
-        super(fakeout, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1176,8 +1096,7 @@ class fakeout(Move):
             return FAIL
 
 class fierydance(Move):
-    def __init__(self):
-        super(fierydance, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1186,8 +1105,7 @@ class fierydance(Move):
         self.secondary_effects = SecondaryEffect(50, Boosts(spa=1), affects_user=True),
 
 class fireblast(Move):
-    def __init__(self):
-        super(fireblast, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1196,8 +1114,7 @@ class fireblast(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.BRN),
 
 class firefang(Move):
-    def __init__(self):
-        super(firefang, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -1209,8 +1126,7 @@ class firefang(Move):
                                   SecondaryEffect(10, volatile=Volatile.FLINCH))
 
 class firepunch(Move):
-    def __init__(self):
-        super(firepunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -1221,8 +1137,7 @@ class firepunch(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.BRN),
 
 class flamecharge(Move):
-    def __init__(self):
-        super(flamecharge, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -1232,8 +1147,7 @@ class flamecharge(Move):
         self.secondary_effects = SecondaryEffect(100, Boosts(spe=1), affects_user=True),
 
 class flamewheel(Move):
-    def __init__(self):
-        super(flamewheel, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[25]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -1243,8 +1157,7 @@ class flamewheel(Move):
         self.thaw_user = True
 
 class flamethrower(Move):
-    def __init__(self):
-        super(flamethrower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1253,8 +1166,7 @@ class flamethrower(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.BRN),
 
 class flareblitz(Move):
-    def __init__(self):
-        super(flareblitz, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -1266,8 +1178,7 @@ class flareblitz(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.BRN),
 
 class flashcannon(Move):
-    def __init__(self):
-        super(flashcannon, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.STEEL
@@ -1276,8 +1187,7 @@ class flashcannon(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(spd=-1)),
 
 class flyingpress(Move):
-    def __init__(self):
-        super(flyingpress, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -1289,8 +1199,7 @@ class flyingpress(Move):
         return effectiveness(Type.FIGHTING, target) * effectiveness(Type.FLYING, target)
 
 class focusblast(Move):
-    def __init__(self):
-        super(focusblast, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FIGHTING
@@ -1300,8 +1209,7 @@ class focusblast(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(spd=-1)),
 
 class focuspunch(Move):
-    def __init__(self):
-        super(focuspunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -1319,8 +1227,7 @@ class focuspunch(Move):
             return FAIL
 
 class foulplay(Move):
-    def __init__(self):
-        super(foulplay, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -1330,8 +1237,7 @@ class foulplay(Move):
         self.use_opponent_attack = True
 
 class freezedry(Move):
-    def __init__(self):
-        super(freezedry, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.ICE
@@ -1343,8 +1249,7 @@ class freezedry(Move):
         return effectiveness(Type.ICE, target) * (4 if Type.WATER in target.types else 1)
 
 class fusionbolt(Move):
-    def __init__(self):
-        super(fusionbolt, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.ELECTRIC
@@ -1352,8 +1257,7 @@ class fusionbolt(Move):
         self.base_power = 100
 
 class fusionflare(Move):
-    def __init__(self):
-        super(fusionflare, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1362,8 +1266,7 @@ class fusionflare(Move):
         self.thaw_user = True
 
 class geargrind(Move):
-    def __init__(self):
-        super(geargrind, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -1373,8 +1276,7 @@ class geargrind(Move):
         self.multihit = (2,)
 
 class geomancy(Move):
-    def __init__(self):
-        super(geomancy, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.FAIRY
@@ -1393,8 +1295,7 @@ class geomancy(Move):
             return FAIL
 
 class gigadrain(Move):
-    def __init__(self):
-        super(gigadrain, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -1403,8 +1304,7 @@ class gigadrain(Move):
         self.drain = 50
 
 class glare(Move):
-    def __init__(self):
-        super(glare, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -1413,8 +1313,7 @@ class glare(Move):
         self.is_bounceable = True
 
 class grassknot(Move):
-    def __init__(self):
-        super(grassknot, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -1436,8 +1335,7 @@ class grassknot(Move):
         return 20
 
 class growth(Move):
-    def __init__(self):
-        super(growth, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -1450,8 +1348,7 @@ class growth(Move):
         user.apply_boosts(Boosts(atk=boost, spa=boost), True)
 
 class gunkshot(Move):
-    def __init__(self):
-        super(gunkshot, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.POISON
@@ -1460,8 +1357,7 @@ class gunkshot(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.PSN),
 
 class gyroball(Move):
-    def __init__(self):
-        super(gyroball, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -1474,8 +1370,7 @@ class gyroball(Move):
         return clamp_int(power, 1, 150)
 
 class hammerarm(Move):
-    def __init__(self):
-        super(hammerarm, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -1486,8 +1381,7 @@ class hammerarm(Move):
         self.user_boosts = Boosts(spe=-1)
 
 class haze(Move):
-    def __init__(self):
-        super(haze, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.ICE
@@ -1502,8 +1396,7 @@ class haze(Move):
             foe.boosts = Boosts()
 
 class headbutt(Move):
-    def __init__(self):
-        super(headbutt, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1513,8 +1406,7 @@ class headbutt(Move):
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.FLINCH),
 
 class headcharge(Move):
-    def __init__(self):
-        super(headcharge, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -1524,8 +1416,7 @@ class headcharge(Move):
         self.recoil = 25
 
 class headsmash(Move):
-    def __init__(self):
-        super(headsmash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.ROCK
@@ -1535,8 +1426,7 @@ class headsmash(Move):
         self.recoil = 50
 
 class healbell(Move):
-    def __init__(self):
-        super(healbell, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -1546,8 +1436,7 @@ class healbell(Move):
     on_success = aromatherapy.on_success.__func__
 
 class healingwish(Move):
-    def __init__(self):
-        super(healingwish, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -1563,8 +1452,7 @@ class healingwish(Move):
         user.hp = 0
 
 class healorder(Move):
-    def __init__(self):
-        super(healorder, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.BUG
@@ -1575,8 +1463,7 @@ class healorder(Move):
         engine.heal(user, int(round(user.max_hp * 0.5)))
 
 class heatwave(Move):
-    def __init__(self):
-        super(heatwave, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1585,8 +1472,7 @@ class heatwave(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.BRN),
 
 class heavyslam(Move):
-    def __init__(self):
-        super(heavyslam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -1607,68 +1493,60 @@ class heavyslam(Move):
         return 40
 
 class hiddenpower(Move):
-    def __init__(self):
-        super(hiddenpower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.DARK   # default type for (31,)*6 IVs
         self.accuracy = 100
         self.base_power = 60
         self.is_hiddenpower = True
+        self.init_hp_type()
+
+    def init_hp_type(self):
+        pass
 
 class hiddenpowerelectric(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerelectric, self).__init__()
+    def init_hp_type(self):
         self.type = Type.ELECTRIC
 
 class hiddenpowerfighting(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerfighting, self).__init__()
+    def init_hp_type(self):
         self.type = Type.FIGHTING
 
 class hiddenpowerfire(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerfire, self).__init__()
+    def init_hp_type(self):
         self.type = Type.FIRE
 
 class hiddenpowerflying(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerflying, self).__init__()
+    def init_hp_type(self):
         self.type = Type.FLYING
 
 class hiddenpowergrass(hiddenpower):
-    def __init__(self):
-        super(hiddenpowergrass, self).__init__()
+    def init_hp_type(self):
         self.type = Type.GRASS
 
 class hiddenpowerground(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerground, self).__init__()
+    def init_hp_type(self):
         self.type = Type.GROUND
 
 class hiddenpowerice(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerice, self).__init__()
+    def init_hp_type(self):
         self.type = Type.ICE
 
 class hiddenpowerpsychic(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerpsychic, self).__init__()
+    def init_hp_type(self):
         self.type = Type.PSYCHIC
 
 class hiddenpowerrock(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerrock, self).__init__()
+    def init_hp_type(self):
         self.type = Type.ROCK
 
 class hiddenpowerdark(hiddenpower):
-    def __init__(self):
-        super(hiddenpowerdark, self).__init__()
+    def init_hp_type(self):
         self.type = Type.DARK
 
 class highjumpkick(Move):
-    def __init__(self):
-        super(highjumpkick, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -1682,8 +1560,7 @@ class highjumpkick(Move):
             engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class honeclaws(Move):
-    def __init__(self):
-        super(honeclaws, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.DARK
@@ -1692,8 +1569,7 @@ class honeclaws(Move):
         self.user_boosts = Boosts(atk=1, acc=1)
 
 class hornleech(Move):
-    def __init__(self):
-        super(hornleech, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GRASS
@@ -1703,8 +1579,7 @@ class hornleech(Move):
         self.drain = 50
 
 class hurricane(Move):
-    def __init__(self):
-        super(hurricane, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FLYING
@@ -1721,8 +1596,7 @@ class hurricane(Move):
             self.accuracy = 70
 
 class hydropump(Move):
-    def __init__(self):
-        super(hydropump, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -1730,8 +1604,7 @@ class hydropump(Move):
         self.base_power = 110
 
 class hyperspacefury(Move):
-    def __init__(self):
-        super(hyperspacefury, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -1746,8 +1619,7 @@ class hyperspacefury(Move):
             return FAIL
 
 class hypervoice(Move):
-    def __init__(self):
-        super(hypervoice, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -1756,8 +1628,7 @@ class hypervoice(Move):
         self.is_sound = True
 
 class hypnosis(Move):
-    def __init__(self):
-        super(hypnosis, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -1766,8 +1637,7 @@ class hypnosis(Move):
         self.is_bounceable = True
 
 class icebeam(Move):
-    def __init__(self):
-        super(icebeam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.ICE
@@ -1776,8 +1646,7 @@ class icebeam(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.FRZ),
 
 class icefang(Move):
-    def __init__(self):
-        super(icefang, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.ICE
@@ -1789,8 +1658,7 @@ class icefang(Move):
                                   SecondaryEffect(10, volatile=Volatile.FLINCH))
 
 class icepunch(Move):
-    def __init__(self):
-        super(icepunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.ICE
@@ -1801,8 +1669,7 @@ class icepunch(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.FRZ),
 
 class iceshard(Move):
-    def __init__(self):
-        super(iceshard, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.ICE
@@ -1811,8 +1678,7 @@ class iceshard(Move):
         self.priority = 1
 
 class iciclecrash(Move):
-    def __init__(self):
-        super(iciclecrash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.ICE
@@ -1821,8 +1687,7 @@ class iciclecrash(Move):
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.FLINCH),
 
 class iciclespear(Move):
-    def __init__(self):
-        super(iciclespear, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.ICE
@@ -1831,8 +1696,7 @@ class iciclespear(Move):
         self.multihit = (2, 2, 3, 3, 4, 5)
 
 class icywind(Move):
-    def __init__(self):
-        super(icywind, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.ICE
@@ -1841,8 +1705,7 @@ class icywind(Move):
         self.secondary_effects = SecondaryEffect(100, Boosts(spe=-1)),
 
 class infestation(Move):
-    def __init__(self):
-        super(infestation, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.BUG
@@ -1857,8 +1720,7 @@ class infestation(Move):
             user.set_effect(effects.Trapper(trap_effect.duration, target))
 
 class ironhead(Move):
-    def __init__(self):
-        super(ironhead, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -1868,8 +1730,7 @@ class ironhead(Move):
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.FLINCH),
 
 class irontail(Move):
-    def __init__(self):
-        super(irontail, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -1879,8 +1740,7 @@ class irontail(Move):
         self.secondary_effects = SecondaryEffect(30, Boosts(def_=-1)),
 
 class judgment(Move):
-    def __init__(self):
-        super(judgment, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -1892,8 +1752,7 @@ class judgment(Move):
             self.type = user.item.plate_type or Type.NORMAL
 
 class jumpkick(Move):
-    def __init__(self):
-        super(jumpkick, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -1907,8 +1766,7 @@ class jumpkick(Move):
             engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class kingsshield(Move):
-    def __init__(self):
-        super(kingsshield, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.STEEL
@@ -1928,8 +1786,7 @@ class kingsshield(Move):
         user.set_effect(effects.StallCounter())
 
 class knockoff(Move):
-    def __init__(self):
-        super(knockoff, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -1947,8 +1804,7 @@ class knockoff(Move):
             target.take_item()
 
 class lavaplume(Move):
-    def __init__(self):
-        super(lavaplume, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -1957,8 +1813,7 @@ class lavaplume(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.BRN),
 
 class leafblade(Move):
-    def __init__(self):
-        super(leafblade, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.GRASS
@@ -1968,8 +1823,7 @@ class leafblade(Move):
         self.crit_ratio = 1
 
 class leafstorm(Move):
-    def __init__(self):
-        super(leafstorm, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -1978,8 +1832,7 @@ class leafstorm(Move):
         self.user_boosts = Boosts(spa=-2)
 
 class leechseed(Move):
-    def __init__(self):
-        super(leechseed, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.GRASS
@@ -1990,8 +1843,7 @@ class leechseed(Move):
         target.set_effect(effects.LeechSeed())
 
 class lightofruin(Move):
-    def __init__(self):
-        super(lightofruin, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FAIRY
@@ -2000,8 +1852,7 @@ class lightofruin(Move):
         self.recoil = 50
 
 class lightscreen(Move):
-    def __init__(self):
-        super(lightscreen, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -2017,8 +1868,7 @@ class lightscreen(Move):
         user.side.set_effect(effects.LightScreen(duration))
 
 class lovelykiss(Move):
-    def __init__(self):
-        super(lovelykiss, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2027,8 +1877,7 @@ class lovelykiss(Move):
         self.target_status = Status.SLP
 
 class lowkick(Move):
-    def __init__(self):
-        super(lowkick, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -2038,8 +1887,7 @@ class lowkick(Move):
     get_base_power = grassknot.get_base_power.__func__
 
 class machpunch(Move):
-    def __init__(self):
-        super(machpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -2050,8 +1898,7 @@ class machpunch(Move):
         self.priority = 1
 
 class magiccoat(Move):
-    def __init__(self):
-        super(magiccoat, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -2063,8 +1910,7 @@ class magiccoat(Move):
         user.set_effect(effects.MagicCoat())
 
 class magnetrise(Move):
-    def __init__(self):
-        super(magnetrise, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.ELECTRIC
@@ -2075,8 +1921,7 @@ class magnetrise(Move):
         user.set_effect(effects.MagnetRise())
 
 class megahorn(Move):
-    def __init__(self):
-        super(megahorn, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.BUG
@@ -2085,8 +1930,7 @@ class megahorn(Move):
         self.base_power = 120
 
 class memento(Move):
-    def __init__(self):
-        super(memento, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.DARK
@@ -2097,8 +1941,7 @@ class memento(Move):
         user.hp = 0
 
 class metalburst(Move):
-    def __init__(self):
-        super(metalburst, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -2116,8 +1959,7 @@ class metalburst(Move):
         return int(1.5 * user.was_attacked_this_turn['damage']) or 1
 
 class meteormash(Move):
-    def __init__(self):
-        super(meteormash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.STEEL
@@ -2128,8 +1970,7 @@ class meteormash(Move):
         self.secondary_effects = SecondaryEffect(20, Boosts(atk=1)),
 
 class milkdrink(Move):
-    def __init__(self):
-        super(milkdrink, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2140,8 +1981,7 @@ class milkdrink(Move):
         engine.heal(user, int(round(user.max_hp * 0.5)))
 
 class mirrorcoat(Move):
-    def __init__(self):
-        super(mirrorcoat, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -2160,8 +2000,7 @@ class mirrorcoat(Move):
         return 2 * user.was_attacked_this_turn['damage'] or 1
 
 class moonblast(Move):
-    def __init__(self):
-        super(moonblast, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.FAIRY
@@ -2170,8 +2009,7 @@ class moonblast(Move):
         self.secondary_effects = SecondaryEffect(30, Boosts(spa=-1)),
 
 class moonlight(Move):
-    def __init__(self):
-        super(moonlight, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.FAIRY
@@ -2183,8 +2021,7 @@ class moonlight(Move):
                                     _WEATHER_HEAL_FACTOR[engine.battlefield.weather])))
 
 class morningsun(Move):
-    def __init__(self):
-        super(morningsun, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2194,8 +2031,7 @@ class morningsun(Move):
     on_success = moonlight.on_success.__func__
 
 class nastyplot(Move):
-    def __init__(self):
-        super(nastyplot, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.DARK
@@ -2204,8 +2040,7 @@ class nastyplot(Move):
         self.user_boosts = Boosts(spa=2)
 
 class nightshade(Move):
-    def __init__(self):
-        super(nightshade, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.GHOST
@@ -2216,8 +2051,7 @@ class nightshade(Move):
         return user.level
 
 class nightslash(Move):
-    def __init__(self):
-        super(nightslash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -2227,8 +2061,7 @@ class nightslash(Move):
         self.crit_ratio = 1
 
 class nuzzle(Move):
-    def __init__(self):
-        super(nuzzle, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.ELECTRIC
@@ -2238,8 +2071,7 @@ class nuzzle(Move):
         self.secondary_effects = SecondaryEffect(100, status=Status.PAR),
 
 class oblivionwing(Move):
-    def __init__(self):
-        super(oblivionwing, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FLYING
@@ -2248,8 +2080,7 @@ class oblivionwing(Move):
         self.drain = 75
 
 class originpulse(Move):
-    def __init__(self):
-        super(originpulse, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -2258,8 +2089,7 @@ class originpulse(Move):
         self.is_pulse = True
 
 class outrage(Move):
-    def __init__(self):
-        super(outrage, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.DRAGON
@@ -2275,8 +2105,7 @@ class outrage(Move):
         user.remove_effect(Volatile.LOCKEDMOVE)
 
 class overheat(Move):
-    def __init__(self):
-        super(overheat, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.FIRE
@@ -2285,8 +2114,7 @@ class overheat(Move):
         self.user_boosts = Boosts(spa=-2)
 
 class painsplit(Move):
-    def __init__(self):
-        super(painsplit, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2298,8 +2126,7 @@ class painsplit(Move):
         if __debug__: log.i("Set %s's and %s's hp to %s", user, target, average_hp)
 
 class partingshot(Move):
-    def __init__(self):
-        super(partingshot, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.DARK
@@ -2312,8 +2139,7 @@ class partingshot(Move):
         target.apply_boosts(Boosts(atk=-1, spa=-1), False)
 
 class perishsong(Move):
-    def __init__(self):
-        super(perishsong, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2325,8 +2151,7 @@ class perishsong(Move):
         target.set_effect(effects.PerishSong())
 
 class petaldance(Move):
-    def __init__(self):
-        super(petaldance, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -2338,8 +2163,7 @@ class petaldance(Move):
     on_move_fail = outrage.on_move_fail.__func__
 
 class phantomforce(Move):
-    def __init__(self):
-        super(phantomforce, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GHOST
@@ -2359,8 +2183,7 @@ class phantomforce(Move):
             return FAIL
 
 class pinmissile(Move):
-    def __init__(self):
-        super(pinmissile, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.BUG
@@ -2369,8 +2192,7 @@ class pinmissile(Move):
         self.multihit = (2, 2, 3, 3, 4, 5)
 
 class playrough(Move):
-    def __init__(self):
-        super(playrough, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FAIRY
@@ -2380,8 +2202,7 @@ class playrough(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(atk=-1)),
 
 class pluck(Move):
-    def __init__(self):
-        super(pluck, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FLYING
@@ -2392,8 +2213,7 @@ class pluck(Move):
     on_success = bugbite.on_success.__func__
 
 class poisonjab(Move):
-    def __init__(self):
-        super(poisonjab, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.POISON
@@ -2403,8 +2223,7 @@ class poisonjab(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.PSN),
 
 class powergem(Move):
-    def __init__(self):
-        super(powergem, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.ROCK
@@ -2412,8 +2231,7 @@ class powergem(Move):
         self.base_power = 80
 
 class poweruppunch(Move):
-    def __init__(self):
-        super(poweruppunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -2424,8 +2242,7 @@ class poweruppunch(Move):
         self.secondary_effects = SecondaryEffect(100, Boosts(atk=1), affects_user=True),
 
 class powerwhip(Move):
-    def __init__(self):
-        super(powerwhip, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GRASS
@@ -2434,8 +2251,7 @@ class powerwhip(Move):
         self.base_power = 120
 
 class precipiceblades(Move):
-    def __init__(self):
-        super(precipiceblades, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.GROUND
@@ -2443,8 +2259,7 @@ class precipiceblades(Move):
         self.base_power = 120
 
 class protect(Move):
-    def __init__(self):
-        super(protect, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2464,8 +2279,7 @@ class protect(Move):
         user.set_effect(effects.StallCounter())
 
 class psychic(Move):
-    def __init__(self):
-        super(psychic, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -2474,8 +2288,7 @@ class psychic(Move):
         self.secondary_effects = SecondaryEffect(10, Boosts(spd=-1)),
 
 class psychoboost(Move):
-    def __init__(self):
-        super(psychoboost, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -2484,8 +2297,7 @@ class psychoboost(Move):
         self.user_boosts = Boosts(spa=-2)
 
 class psychocut(Move):
-    def __init__(self):
-        super(psychocut, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.PSYCHIC
@@ -2494,8 +2306,7 @@ class psychocut(Move):
         self.crit_ratio = 1
 
 class psychoshift(Move):
-    def __init__(self):
-        super(psychoshift, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -2510,8 +2321,7 @@ class psychoshift(Move):
             user.cure_status()
 
 class psyshock(Move):
-    def __init__(self):
-        super(psyshock, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -2520,8 +2330,7 @@ class psyshock(Move):
         self.defensive_category = PHYSICAL
 
 class psystrike(Move):
-    def __init__(self):
-        super(psystrike, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -2530,8 +2339,7 @@ class psystrike(Move):
         self.defensive_category = PHYSICAL
 
 class pursuit(Move):
-    def __init__(self):
-        super(pursuit, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -2550,8 +2358,7 @@ class pursuit(Move):
         return 80 if target.is_switching_out else 40
 
 class quickattack(Move):
-    def __init__(self):
-        super(quickattack, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -2561,8 +2368,7 @@ class quickattack(Move):
         self.priority = 1
 
 class quiverdance(Move):
-    def __init__(self):
-        super(quiverdance, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.BUG
@@ -2571,8 +2377,7 @@ class quiverdance(Move):
         self.user_boosts = Boosts(spa=1, spd=1, spe=1)
 
 class raindance(Move):
-    def __init__(self):
-        super(raindance, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.WATER
@@ -2588,8 +2393,7 @@ class raindance(Move):
         engine.battlefield.set_weather(Weather.RAINDANCE, duration)
 
 class rapidspin(Move):
-    def __init__(self):
-        super(rapidspin, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[40]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -2605,8 +2409,7 @@ class rapidspin(Move):
             user.side.clear_hazards()
 
 class razorshell(Move):
-    def __init__(self):
-        super(razorshell, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.WATER
@@ -2616,8 +2419,7 @@ class razorshell(Move):
         self.secondary_effects = SecondaryEffect(50, Boosts(def_=-1)),
 
 class recover(Move):
-    def __init__(self):
-        super(recover, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2628,8 +2430,7 @@ class recover(Move):
         engine.heal(user, int(round(user.max_hp * 0.5)))
 
 class reflect(Move):
-    def __init__(self):
-        super(reflect, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -2645,8 +2446,7 @@ class reflect(Move):
         user.side.set_effect(effects.Reflect(duration))
 
 class relicsong(Move):
-    def __init__(self):
-        super(relicsong, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -2661,8 +2461,7 @@ class relicsong(Move):
             user.set_effect(effects.PirouetteForme())
 
 class rest(Move):
-    def __init__(self):
-        super(rest, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -2685,8 +2484,7 @@ class rest(Move):
         engine.heal(user, user.max_hp)
 
 class retaliate(Move):
-    def __init__(self):
-        super(retaliate, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -2700,8 +2498,7 @@ class retaliate(Move):
         return 70
 
 class return_(Move):
-    def __init__(self):
-        super(return_, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -2710,8 +2507,7 @@ class return_(Move):
         self.base_power = 102
 
 class reversal(Move):
-    def __init__(self):
-        super(reversal, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -2733,8 +2529,7 @@ class reversal(Move):
         return 20
 
 class roar(Move):
-    def __init__(self):
-        super(roar, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2747,8 +2542,7 @@ class roar(Move):
         return engine.force_random_switch(target, user)
 
 class rockblast(Move):
-    def __init__(self):
-        super(rockblast, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.ROCK
@@ -2757,8 +2551,7 @@ class rockblast(Move):
         self.multihit = (2, 2, 3, 3, 4, 5)
 
 class rockclimb(Move):
-    def __init__(self):
-        super(rockclimb, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -2768,8 +2561,7 @@ class rockclimb(Move):
         self.secondary_effects = SecondaryEffect(20, volatile=Volatile.CONFUSE),
 
 class rockpolish(Move):
-    def __init__(self):
-        super(rockpolish, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.ROCK
@@ -2778,8 +2570,7 @@ class rockpolish(Move):
         self.user_boosts = Boosts(spe=2)
 
 class rockslide(Move):
-    def __init__(self):
-        super(rockslide, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.ROCK
@@ -2789,8 +2580,7 @@ class rockslide(Move):
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.FLINCH),
 
 class rocktomb(Move):
-    def __init__(self):
-        super(rocktomb, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.ROCK
@@ -2799,8 +2589,7 @@ class rocktomb(Move):
         self.secondary_effects = SecondaryEffect(100, Boosts(spe=-1)),
 
 class roost(Move):
-    def __init__(self):
-        super(roost, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.FLYING
@@ -2816,8 +2605,7 @@ class roost(Move):
         user.set_effect(effects.Roost(user))
 
 class sacredfire(Move):
-    def __init__(self):
-        super(sacredfire, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -2827,8 +2615,7 @@ class sacredfire(Move):
         self.secondary_effects = SecondaryEffect(50, status=Status.BRN),
 
 class sacredsword(Move):
-    def __init__(self):
-        super(sacredsword, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -2839,8 +2626,7 @@ class sacredsword(Move):
         self.ignore_evasion_boosts = True
 
 class safeguard(Move):
-    def __init__(self):
-        super(safeguard, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[25]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2855,8 +2641,7 @@ class safeguard(Move):
         user.side.set_effect(effects.Safeguard())
 
 class scald(Move):
-    def __init__(self):
-        super(scald, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -2867,8 +2652,7 @@ class scald(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.BRN),
 
 class secretsword(Move):
-    def __init__(self):
-        super(secretsword, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.FIGHTING
@@ -2877,8 +2661,7 @@ class secretsword(Move):
         self.defensive_category = PHYSICAL
 
 class seedbomb(Move):
-    def __init__(self):
-        super(seedbomb, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.GRASS
@@ -2887,8 +2670,7 @@ class seedbomb(Move):
         self.is_bullet = True
 
 class seedflare(Move):
-    def __init__(self):
-        super(seedflare, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -2897,8 +2679,7 @@ class seedflare(Move):
         self.secondary_effects = SecondaryEffect(40, Boosts(spd=-2)),
 
 class seismictoss(Move):
-    def __init__(self):
-        super(seismictoss, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -2910,8 +2691,7 @@ class seismictoss(Move):
         return user.level
 
 class shadowball(Move):
-    def __init__(self):
-        super(shadowball, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.GHOST
@@ -2921,8 +2701,7 @@ class shadowball(Move):
         self.secondary_effects = SecondaryEffect(20, Boosts(spd=-1)),
 
 class shadowclaw(Move):
-    def __init__(self):
-        super(shadowclaw, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.GHOST
@@ -2932,8 +2711,7 @@ class shadowclaw(Move):
         self.crit_ratio = True
 
 class shadowforce(Move):
-    def __init__(self):
-        super(shadowforce, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.GHOST
@@ -2946,8 +2724,7 @@ class shadowforce(Move):
     check_success = phantomforce.check_success.__func__
 
 class shadowpunch(Move):
-    def __init__(self):
-        super(shadowpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.GHOST
@@ -2956,8 +2733,7 @@ class shadowpunch(Move):
         self.is_punch = True
 
 class shadowsneak(Move):
-    def __init__(self):
-        super(shadowsneak, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = PHYSICAL
         self.type = Type.GHOST
@@ -2967,8 +2743,7 @@ class shadowsneak(Move):
         self.priority = 1
 
 class shellsmash(Move):
-    def __init__(self):
-        super(shellsmash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -2977,8 +2752,7 @@ class shellsmash(Move):
         self.user_boosts = Boosts(atk=2, spa=2, spe=2, def_=-1, spd=-1)
 
 class shiftgear(Move):
-    def __init__(self):
-        super(shiftgear, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.STEEL
@@ -2987,8 +2761,7 @@ class shiftgear(Move):
         self.user_boosts = Boosts(atk=1, spe=2)
 
 class signalbeam(Move):
-    def __init__(self):
-        super(signalbeam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.BUG
@@ -2997,8 +2770,7 @@ class signalbeam(Move):
         self.secondary_effects = SecondaryEffect(10, volatile=Volatile.CONFUSE),
 
 class slackoff(Move):
-    def __init__(self):
-        super(slackoff, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3009,8 +2781,7 @@ class slackoff(Move):
         engine.heal(user, int(round(user.max_hp * 0.5)))
 
 class sleeppowder(Move):
-    def __init__(self):
-        super(sleeppowder, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.GRASS
@@ -3020,8 +2791,7 @@ class sleeppowder(Move):
         self.is_powder = True
 
 class sleeptalk(Move):
-    def __init__(self):
-        super(sleeptalk, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3049,8 +2819,7 @@ class sleeptalk(Move):
             return FAIL
 
 class sludgebomb(Move):
-    def __init__(self):
-        super(sludgebomb, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.POISON
@@ -3060,8 +2829,7 @@ class sludgebomb(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.PSN),
 
 class sludgewave(Move):
-    def __init__(self):
-        super(sludgewave, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.POISON
@@ -3070,8 +2838,7 @@ class sludgewave(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.PSN),
 
 class softboiled(Move):
-    def __init__(self):
-        super(softboiled, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3082,8 +2849,7 @@ class softboiled(Move):
         engine.heal(user, int(round(user.max_hp * 0.5)))
 
 class solarbeam(Move):
-    def __init__(self):
-        super(solarbeam, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.GRASS
@@ -3101,8 +2867,7 @@ class solarbeam(Move):
             return FAIL
 
 class spacialrend(Move):
-    def __init__(self):
-        super(spacialrend, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.DRAGON
@@ -3111,8 +2876,7 @@ class spacialrend(Move):
         self.crit_ratio = 1
 
 class spikes(Move):
-    def __init__(self):
-        super(spikes, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.GROUND
@@ -3134,8 +2898,7 @@ class spikes(Move):
             if __debug__: log.i("Set %s on %s's side", spikes_, foe_side.active_pokemon)
 
 class spikyshield(Move):
-    def __init__(self):
-        super(spikyshield, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.GRASS
@@ -3155,8 +2918,7 @@ class spikyshield(Move):
         user.set_effect(effects.StallCounter())
 
 class splash(Move):
-    def __init__(self):
-        super(splash, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[40]
         self.category = STATUS
         self.type = Type.WATER
@@ -3164,8 +2926,7 @@ class splash(Move):
         self.targets_user = True
 
 class spore(Move):
-    def __init__(self):
-        super(spore, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.GRASS
@@ -3175,8 +2936,7 @@ class spore(Move):
         self.is_bounceable = True
 
 class stealthrock(Move):
-    def __init__(self):
-        super(stealthrock, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.ROCK
@@ -3194,8 +2954,7 @@ class stealthrock(Move):
             return FAIL
 
 class steameruption(Move):
-    def __init__(self):
-        super(steameruption, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -3206,8 +2965,7 @@ class steameruption(Move):
         self.secondary_effects = SecondaryEffect(30, status=Status.BRN),
 
 class stickyweb(Move):
-    def __init__(self):
-        super(stickyweb, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.BUG
@@ -3225,8 +2983,7 @@ class stickyweb(Move):
             return FAIL
 
 class stoneedge(Move):
-    def __init__(self):
-        super(stoneedge, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.ROCK
@@ -3235,8 +2992,7 @@ class stoneedge(Move):
         self.crit_ratio = True
 
 class storedpower(Move):
-    def __init__(self):
-        super(storedpower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.PSYCHIC
@@ -3248,8 +3004,7 @@ class storedpower(Move):
         return 20 + 20 * sum(boost for boost in user.boosts.values() if boost > 0)
 
 class stormthrow(Move):
-    def __init__(self):
-        super(stormthrow, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -3259,8 +3014,7 @@ class stormthrow(Move):
         self.always_crit = True
 
 class struggle(Move):
-    def __init__(self):
-        super(struggle, self).__init__()
+    def init_move(self):
         self.max_pp = 0
         self.category = PHYSICAL
         self.type = Type.NOTYPE
@@ -3273,8 +3027,7 @@ class struggle(Move):
             engine.direct_damage(user, user.max_hp / 4.0)
 
 class stunspore(Move):
-    def __init__(self):
-        super(stunspore, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.GRASS
@@ -3284,8 +3037,7 @@ class stunspore(Move):
         self.target_status = Status.PAR
 
 class substitute(Move):
-    def __init__(self):
-        super(substitute, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3302,8 +3054,7 @@ class substitute(Move):
         user.remove_effect(Volatile.PARTIALTRAP)
 
 class suckerpunch(Move):
-    def __init__(self):
-        super(suckerpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.DARK
@@ -3324,8 +3075,7 @@ class suckerpunch(Move):
         return FAIL
 
 class sunnyday(Move):
-    def __init__(self):
-        super(sunnyday, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.FIRE
@@ -3341,8 +3091,7 @@ class sunnyday(Move):
         engine.battlefield.set_weather(Weather.SUNNYDAY, duration)
 
 class superfang(Move):
-    def __init__(self):
-        super(superfang, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -3354,8 +3103,7 @@ class superfang(Move):
         return (target.hp / 2) or 1
 
 class superpower(Move):
-    def __init__(self):
-        super(superpower, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.base_power = 120
@@ -3365,8 +3113,7 @@ class superpower(Move):
         self.user_boosts = Boosts(atk=-1, def_=-1)
 
 class surf(Move):
-    def __init__(self):
-        super(surf, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -3374,8 +3121,7 @@ class surf(Move):
         self.base_power = 90
 
 class sweetkiss(Move):
-    def __init__(self):
-        super(sweetkiss, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.FAIRY
@@ -3386,8 +3132,7 @@ class sweetkiss(Move):
         target.confuse(self.infiltrates)
 
 class switcheroo(Move):
-    def __init__(self):
-        super(switcheroo, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.DARK
@@ -3414,8 +3159,7 @@ class switcheroo(Move):
                             (user, target_item, target, user_item))
 
 class swordsdance(Move):
-    def __init__(self):
-        super(swordsdance, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3424,8 +3168,7 @@ class swordsdance(Move):
         self.user_boosts = Boosts(atk=2)
 
 class synthesis(Move):
-    def __init__(self):
-        super(synthesis, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.GRASS
@@ -3435,8 +3178,7 @@ class synthesis(Move):
     on_success = moonlight.on_success.__func__
 
 class tailglow(Move):
-    def __init__(self):
-        super(tailglow, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.BUG
@@ -3445,8 +3187,7 @@ class tailglow(Move):
         self.user_boosts = Boosts(spa=3)
 
 class tailslap(Move):
-    def __init__(self):
-        super(tailslap, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.NORMAL
@@ -3456,8 +3197,7 @@ class tailslap(Move):
         self.multihit = (2, 2, 3, 3, 4, 5)
 
 class tailwind(Move):
-    def __init__(self):
-        super(tailwind, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.FLYING
@@ -3472,8 +3212,7 @@ class tailwind(Move):
         user.side.set_effect(effects.Tailwind())
 
 class taunt(Move):
-    def __init__(self):
-        super(taunt, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.DARK
@@ -3490,8 +3229,7 @@ class taunt(Move):
         target.set_effect(effects.Taunt(duration))
 
 class technoblast(Move):
-    def __init__(self):
-        super(technoblast, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -3503,8 +3241,7 @@ class technoblast(Move):
             self.type = user.item.drive_type or Type.NORMAL
 
 class thunder(Move):
-    def __init__(self):
-        super(thunder, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.ELECTRIC
@@ -3514,8 +3251,7 @@ class thunder(Move):
     on_modify_move = hurricane.on_modify_move.__func__
 
 class thunderbolt(Move):
-    def __init__(self):
-        super(thunderbolt, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = SPECIAL
         self.type = Type.ELECTRIC
@@ -3524,8 +3260,7 @@ class thunderbolt(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.PAR),
 
 class thunderpunch(Move):
-    def __init__(self):
-        super(thunderpunch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.ELECTRIC
@@ -3536,8 +3271,7 @@ class thunderpunch(Move):
         self.secondary_effects = SecondaryEffect(10, status=Status.PAR),
 
 class thunderwave(Move):
-    def __init__(self):
-        super(thunderwave, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.ELECTRIC
@@ -3546,8 +3280,7 @@ class thunderwave(Move):
         self.target_status = Status.PAR
 
 class toxic(Move):
-    def __init__(self):
-        super(toxic, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.POISON
@@ -3561,8 +3294,7 @@ class toxic(Move):
             self.accuracy = 90
 
 class toxicspikes(Move):
-    def __init__(self):
-        super(toxicspikes, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.POISON
@@ -3584,8 +3316,7 @@ class toxicspikes(Move):
             toxicspikes_.layers = 2
 
 class transform(Move):
-    def __init__(self):
-        super(transform, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3598,8 +3329,7 @@ class transform(Move):
             user.set_effect(effects.Transformed())
 
 class triattack(Move):
-    def __init__(self):
-        super(triattack, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -3615,8 +3345,7 @@ class triattack(Move):
                                       user)
 
 class trick(Move):
-    def __init__(self):
-        super(trick, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -3626,8 +3355,7 @@ class trick(Move):
     on_success = switcheroo.on_success.__func__
 
 class trickroom(Move):
-    def __init__(self):
-        super(trickroom, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = STATUS
         self.type = Type.PSYCHIC
@@ -3643,8 +3371,7 @@ class trickroom(Move):
             battlefield.set_effect(effects.TrickRoom())
 
 class uturn(Move):
-    def __init__(self):
-        super(uturn, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = PHYSICAL
         self.type = Type.BUG
@@ -3654,8 +3381,7 @@ class uturn(Move):
         self.switch_user = True
 
 class vacuumwave(Move):
-    def __init__(self):
-        super(vacuumwave, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[30]
         self.category = SPECIAL
         self.type = Type.FIGHTING
@@ -3664,8 +3390,7 @@ class vacuumwave(Move):
         self.priority = 1
 
 class vcreate(Move):
-    def __init__(self):
-        super(vcreate, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = PHYSICAL
         self.type = Type.FIRE
@@ -3675,8 +3400,7 @@ class vcreate(Move):
         self.user_boosts = Boosts(def_=-1, spd=-1, spe=-1)
 
 class voltswitch(Move):
-    def __init__(self):
-        super(voltswitch, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.ELECTRIC
@@ -3685,8 +3409,7 @@ class voltswitch(Move):
         self.switch_user = True
 
 class wakeupslap(Move):
-    def __init__(self):
-        super(wakeupslap, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = PHYSICAL
         self.type = Type.FIGHTING
@@ -3703,8 +3426,7 @@ class wakeupslap(Move):
             target.cure_status()
 
 class waterfall(Move):
-    def __init__(self):
-        super(waterfall, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.WATER
@@ -3714,8 +3436,7 @@ class waterfall(Move):
         self.secondary_effects = SecondaryEffect(20, volatile=Volatile.FLINCH),
 
 class waterpulse(Move):
-    def __init__(self):
-        super(waterpulse, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -3725,8 +3446,7 @@ class waterpulse(Move):
         self.secondary_effects = SecondaryEffect(20, volatile=Volatile.CONFUSE),
 
 class waterspout(Move):
-    def __init__(self):
-        super(waterspout, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[5]
         self.category = SPECIAL
         self.type = Type.WATER
@@ -3736,8 +3456,7 @@ class waterspout(Move):
         return (150 * float(user.hp) / user.max_hp) or 1
 
 class weatherball(Move):
-    def __init__(self):
-        super(weatherball, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = SPECIAL
         self.type = Type.NORMAL
@@ -3761,8 +3480,7 @@ class weatherball(Move):
         self.type = self.WEATHER_TYPE[engine.battlefield.weather]
 
 class whirlwind(Move):
-    def __init__(self):
-        super(whirlwind, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[20]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3775,8 +3493,7 @@ class whirlwind(Move):
         return engine.force_random_switch(target, user)
 
 class wildcharge(Move):
-    def __init__(self):
-        super(wildcharge, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.ELECTRIC
@@ -3786,8 +3503,7 @@ class wildcharge(Move):
         self.recoil = 25
 
 class willowisp(Move):
-    def __init__(self):
-        super(willowisp, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = STATUS
         self.type = Type.FIRE
@@ -3796,8 +3512,7 @@ class willowisp(Move):
         self.target_status = Status.BRN
 
 class wish(Move):
-    def __init__(self):
-        super(wish, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3812,8 +3527,7 @@ class wish(Move):
         user.side.set_effect(effects.Wish(user.max_hp / 2))
 
 class woodhammer(Move):
-    def __init__(self):
-        super(woodhammer, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.GRASS
@@ -3823,8 +3537,7 @@ class woodhammer(Move):
         self.recoil = 33
 
 class xscissor(Move):
-    def __init__(self):
-        super(xscissor, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.BUG
@@ -3833,8 +3546,7 @@ class xscissor(Move):
         self.base_power = 80
 
 class yawn(Move):
-    def __init__(self):
-        super(yawn, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[10]
         self.category = STATUS
         self.type = Type.NORMAL
@@ -3849,8 +3561,7 @@ class yawn(Move):
         target.set_effect(effects.Yawn())
 
 class zenheadbutt(Move):
-    def __init__(self):
-        super(zenheadbutt, self).__init__()
+    def init_move(self):
         self.max_pp = _MAX_PP[15]
         self.category = PHYSICAL
         self.type = Type.PSYCHIC
