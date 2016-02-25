@@ -65,7 +65,7 @@ class BattleClient(object):
         e.g. |-unboost|p2a: Goodra|spa|2
         """
         side = self.my_side if int(msg[index][1]) - 1 == self.my_player else self.foe_side
-        assert side is not None
+        assert side is not None, side
         return side
 
     def get_pokemon_from_msg(self, msg, index=1):
@@ -97,7 +97,7 @@ class BattleClient(object):
         if pokemon.side.index == self.foe_player:
             # We do some estimation here, since information on the opponent's HP is always a
             # percentage.
-            assert max_hp == 100
+            assert max_hp == 100, max_hp
             if hp == 100:
                 pokemon.hp = pokemon.max_hp # probably
             elif hp == 1:
@@ -110,7 +110,7 @@ class BattleClient(object):
 
     def build_my_side(self, json):
         side = int(json['side']['id'][1]) - 1
-        assert self.my_player == side
+        assert self.my_player == side, (self.my_player, side)
         j_team = json['side']['pokemon']
         team = [self.my_pokemon_from_json(j_pokemon) for j_pokemon in j_team]
         self.my_side = BattleSide(team, side, self.name)
@@ -143,7 +143,7 @@ class BattleClient(object):
         """
         |turn|1
         """
-        assert self.battlefield.turns == int(msg[1]) - 1
+        assert self.battlefield.turns == int(msg[1]) - 1, (self.battlefield.turns, msg)
         self.battlefield.turns = int(msg[1])
 
     def handle_player(self, msg):
@@ -157,7 +157,8 @@ class BattleClient(object):
                     self.foe_player = int(not self.my_player)
                 else:
                     assert self.my_player == int(msg[1][1]) - 1, self.my_player
-                    assert self.foe_player == int(not self.my_player)
+                    assert self.foe_player == int(not self.my_player), (self.foe_player,
+                                                                        self.my_player)
             else:
                 if __debug__:
                     if self.foe_name is not None:
@@ -168,8 +169,9 @@ class BattleClient(object):
                         self.foe_player = int(msg[1][1]) - 1
                         self.my_player = int(not self.foe_player)
                     else:
-                        assert self.foe_player == int(msg[1][1]) - 1
-                        assert self.my_player == int(not self.foe_player)
+                        assert self.foe_player == int(msg[1][1]) - 1, (self.foe_player, msg)
+                        assert self.my_player == int(not self.foe_player), (self.my_player,
+                                                                            self.foe_player)
 
                     self.foe_name = msg[2]
                     self.foe_side = FoeBattleSide([UnrevealedPokemon() for _ in range(6)],
@@ -246,7 +248,7 @@ class BattleClient(object):
         Just subtract pp for MOVE from POKEMON
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        assert pokemon.is_active
+        assert pokemon.is_active, pokemon
 
         foe = (self.foe_side, self.my_side)[pokemon.side.index == self.my_player].active_pokemon
         pp_sub = 2 if not foe.is_fainted() and foe.ability is abilitydex['pressure'] else 1
@@ -278,7 +280,7 @@ class BattleClient(object):
         We only care about msg[0], [1], [2].
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        assert pokemon.is_active
+        assert pokemon.is_active, pokemon
 
         self.set_hp_status(pokemon, msg[2])
 
@@ -300,7 +302,7 @@ class BattleClient(object):
         |-status|p2a: Goodra|brn
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        assert pokemon.status is None
+        assert pokemon.status is None, (pokemon, pokemon.status)
 
         self.set_status(pokemon, msg[2])
         # TODO: handle rest -> is_resting
@@ -313,7 +315,7 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         if msg[2] == 'slp':
-            assert pokemon.status is Status.SLP
+            assert pokemon.status is Status.SLP, (pokemon, pokemon.status)
             if pokemon.sleep_turns > 0:
                 pokemon.sleep_turns -= 1
 
@@ -323,7 +325,7 @@ class BattleClient(object):
         |-curestatus|p1a: Regirock|slp
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        assert pokemon.status is not None
+        assert pokemon.status is not None, (pokemon, pokemon.status)
         pokemon.cure_status()
 
     def handle_cureteam(self, msg):
@@ -336,7 +338,7 @@ class BattleClient(object):
             pokemon.cure_status()
 
     def set_status(self, pokemon, status):
-        assert status in self.STATUS_MAP
+        assert status in self.STATUS_MAP, status
         pokemon.status = self.STATUS_MAP[status][0]
         pokemon.set_effect(self.STATUS_MAP[status][1](pokemon))
 
@@ -388,9 +390,9 @@ class BattleClient(object):
         side = self.get_side_from_msg(msg)
 
         if pokemon is None:     # we are revealing a foe's pokemon
-            assert side.index == self.foe_player
-            assert side.num_unrevealed > 0
-            assert msg[3] == '100/100'
+            assert side.index == self.foe_player, (side.index, self.foe_player)
+            assert side.num_unrevealed > 0, side.num_unrevealed
+            assert msg[3] == '100/100', msg[3]
             level = int(msg[2].split(', ')[1].lstrip('L'))
             assert 1 <= level <= 100, 'level=%r' % level
             pokemon = BattlePokemon(pokedex[normalize_name(msg[1])],
@@ -604,8 +606,8 @@ class BattleClient(object):
                 assert pokemon.is_active == reqmon['active']
                 # TODO: assert on item, ability, canMegaEvo
 
-                assert int(request['side']['id'][1]) - 1 == self.my_player
-                assert request['side']['name'] == self.name
+                assert int(request['side']['id'][1]) - 1 == self.my_player, self.my_player
+                assert request['side']['name'] == self.name, self.name
 
             except AssertionError:
                 # mocked in tests to raise exception instead
