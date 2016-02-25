@@ -2,6 +2,7 @@
 """
 Pokemon type chart
 """
+from pokedex.enums import Type
 
 _TYPE_MATRIX = (                                                                     # v Attack
 #   Nor Fig Fly Poi Gro Roc Bug Gho Ste Fir Wat Gra Ele Psy Ice Dra Dar Fai ??? None # < Defend
@@ -43,3 +44,23 @@ def effectiveness(move_type, pokemon):
 
 def type_effectiveness(move_type, pokemon_type):
     return _TYPE_MATRIX[_INDEXES[move_type]][_INDEXES[pokemon_type]]
+
+# hp, atk, def, spa, spd, spe
+HPivs = {
+    Type.BUG:      (31, 30, 30, 31, 30, 31),
+    Type.DARK:     (31, 31, 31, 31, 31, 31),
+    Type.DRAGON:   (31, 30, 31, 31, 31, 31),
+    Type.ELECTRIC: (31, 31, 31, 30, 31, 31),
+    Type.FIGHTING: (31, 31, 30, 30, 30, 30),
+    Type.FIRE:     (31, 30, 31, 30, 31, 30),
+    Type.FLYING:   (31, 30, 30, 30, 30, 31),
+    Type.GHOST:    (31, 31, 30, 31, 30, 31),
+    Type.GRASS:    (31, 30, 31, 30, 31, 31),
+    Type.GROUND:   (31, 31, 31, 30, 30, 31),
+    Type.ICE:      (31, 30, 30, 31, 31, 31),
+    Type.POISON:   (31, 31, 30, 30, 30, 31),
+    Type.PSYCHIC:  (31, 30, 31, 31, 31, 30),
+    Type.ROCK:     (31, 31, 30, 31, 30, 30),
+    Type.STEEL:    (31, 31, 31, 31, 30, 31),
+    Type.WATER:    (31, 30, 30, 30, 31, 31),
+}
