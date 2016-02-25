@@ -107,6 +107,7 @@ class MultiMoveTestCase(TestCase):
                    p0_level=100, p1_level=100,
                    p0_gender=None, p1_gender=None,
                    p0_evs=(0,)*6, p1_evs=(0,)*6,
+                   p0_ivs=(31,)*6, p1_ivs=(31,)*6,
                    tearDown=True, any_move=True):
         """
         `name` is the species name of a pokemon in the pokedex.
@@ -126,12 +127,14 @@ class MultiMoveTestCase(TestCase):
         PokemonClass = AnyMovePokemon if any_move else BattlePokemon
         setattr(self, p0_name, PokemonClass(pokedex[p0_name], side=None,
                                             ability=abilitydex[p0_ability],
-                                            evs=p0_evs, moveset=p0_moves,
+                                            evs=p0_evs, ivs=p0_ivs,
+                                            moveset=p0_moves,
                                             item=itemdex.get(p0_item),
                                             level=p0_level, gender=p0_gender))
         setattr(self, p1_name, PokemonClass(pokedex[p1_name], side=None,
                                             ability=abilitydex[p1_ability],
-                                            evs=p1_evs, moveset=p1_moves,
+                                            evs=p1_evs, ivs=p1_ivs,
+                                            moveset=p1_moves,
                                             item=itemdex.get(p1_item),
                                             level=p1_level, gender=p1_gender))
         self.engine = TestingEngine([getattr(self, p0_name)],
@@ -155,7 +158,7 @@ class MultiMoveTestCase(TestCase):
         """
         moves = [movedex[move] if isinstance(move, str) else move for move in moves]
         battle_side = self.engine.battlefield.sides[side]
-        pokemon = AnyMovePokemon(pokedex[name], side=battle_side, evs=(0,)*6,
+        pokemon = AnyMovePokemon(pokedex[name], side=battle_side, evs=(0,)*6, ivs=(31,)*6,
                                  moveset=moves, ability=abilitydex[ability],
                                  item=itemdex.get(item))
         setattr(self, name, pokemon)

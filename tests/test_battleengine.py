@@ -17,13 +17,13 @@ pokedex = create_pokedex()
 class BattleEngineMovesTestCase(TestCase):
     def setUp(self):
         _none_ = abilitydex['_none_']
-        self.vaporeon = BattlePokemon(pokedex['vaporeon'], evs=(0,)*6, ability=_none_)
-        self.flareon = BattlePokemon(pokedex['flareon'], evs=(0,)*6, ability=_none_)
-        self.espeon = BattlePokemon(pokedex['espeon'], evs=(0,)*6, ability=_none_)
-        self.golem = BattlePokemon(pokedex['golem'], evs=(0,)*6, ability=_none_)
-        self.leafeon = BattlePokemon(pokedex['leafeon'], evs=(0,)*6, ability=_none_)
-        self.palkia = BattlePokemon(pokedex['palkia'], evs=(0,)*6, ability=_none_)
-        self.sylveon = BattlePokemon(pokedex['sylveon'], evs=(0,)*6, ability=_none_)
+        self.vaporeon = BattlePokemon(pokedex['vaporeon'], evs=(0,)*6, ivs=(31,)*6, ability=_none_)
+        self.flareon = BattlePokemon(pokedex['flareon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
+        self.espeon = BattlePokemon(pokedex['espeon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
+        self.golem = BattlePokemon(pokedex['golem'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
+        self.leafeon = BattlePokemon(pokedex['leafeon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
+        self.palkia = BattlePokemon(pokedex['palkia'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
+        self.sylveon = BattlePokemon(pokedex['sylveon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
         self.engine = BattleEngine([self.vaporeon], [self.flareon, self.sylveon, self.leafeon,
                                                      self.golem, self.espeon, self.palkia])
         self.engine.init_battle()
@@ -129,8 +129,8 @@ class TestBattleEngineCalculateDamage(BattleEngineMovesTestCase):
             self.assertEqual(damage, 168)
 
     def test_damage_calculation_with_different_levels(self):
-        self.vaporeon = BattlePokemon(pokedex['vaporeon'], level=80, evs=(0,)*6)
-        self.flareon = BattlePokemon(pokedex['flareon'], level=70, evs=(0,)*6)
+        self.vaporeon = BattlePokemon(pokedex['vaporeon'], level=80, evs=(0,)*6, ivs=(31,)*6)
+        self.flareon = BattlePokemon(pokedex['flareon'], level=70, evs=(0,)*6, ivs=(31,)*6)
         self.engine = BattleEngine([self.vaporeon], [self.flareon])
         self.engine.init_battle()
         self.engine.get_critical_hit = lambda crit: False

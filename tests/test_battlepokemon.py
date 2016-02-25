@@ -25,7 +25,8 @@ class TestBattlePokemon(TestCase):
 
 class TestCalculateInitialStats(TestCase):
     def test_calculations(self):
-        vaporeon = BattlePokemon(pokedex['vaporeon'], level=77)
+        vaporeon = BattlePokemon(pokedex['vaporeon'], level=77, moveset=(movedex['return'],
+                                                                         movedex['surf']))
         self.assertDictEqual(vaporeon.stats, {'max_hp': 327, 'spa': 214, 'spd': 191,
                                               'atk': 145, 'def': 137, 'spe': 145})
 
@@ -43,17 +44,26 @@ class TestCalculateInitialStats(TestCase):
                                           movedex['earthquake']))
         self.assertDictEqual(bronzong.stats, {'max_hp': 235, 'atk': 203, 'def': 229,
                                               'spa': 170, 'spd': 229, 'spe': 57})
-        delphox = BattlePokemon(pokedex['delphox'], level=79)
+        delphox = BattlePokemon(pokedex['delphox'], level=79, moveset=(movedex['return'],
+                                                                       movedex['fireblast']))
         self.assertDictEqual(delphox.stats, {'max_hp': 247, 'atk': 155, 'def': 159,
                                              'spa': 226, 'spd': 204, 'spe': 210})
 
         beheeyem = BattlePokemon(pokedex['beheeyem'], level=83,
-                                 moveset=(movedex['thunderbolt'],
+                                 moveset=(movedex['return'],
                                           movedex['signalbeam'],
                                           movedex['psyshock'],
                                           movedex['trickroom']))
         self.assertDictEqual(beheeyem.stats, {'atk': 172, 'def': 172, 'max_hp': 278,
                                               'spa': 255, 'spd': 205, 'spe': 71})
+
+        # No physical attacks, so use min attack
+        abomasnow = BattlePokemon(pokedex['abomasnow'], level=100,
+                                  moveset=(movedex['leechseed'], movedex['gigadrain'],
+                                           movedex['blizzard'], movedex['earthpower']))
+        self.assertDictEqual(abomasnow.stats, {'atk': 189, 'def': 207, 'max_hp': 342,
+                                               'spa': 241, 'spd': 227, 'spe': 177})
+
 
 class TestAbilityChange(MultiMoveTestCase):
     def test_change_ability(self):

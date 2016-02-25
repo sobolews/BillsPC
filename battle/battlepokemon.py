@@ -248,6 +248,13 @@ class BattlePokemon(object, EffectHandlerMixin):
         HP, ATK, SPA = 0, 1, 3
         hp = self._calc_hp(evs[HP], ivs[HP])
 
+        physical = special = 0
+        for move in self.moveset:
+            if move.category is MoveCategory.PHYSICAL:
+                physical += 1
+            elif move.category is MoveCategory.SPECIAL:
+                special += 1
+
         if (movedex['bellydrum'] in self.moveset and
             self.item is itemdex['sitrusberry'] and
             hp % 2 == 1
@@ -258,14 +265,19 @@ class BattlePokemon(object, EffectHandlerMixin):
             eff = effectiveness(Type.ROCK, self)
             if ((eff == 2 and hp % 4 == 0) or
                 (eff == 4 and hp % 2 == 0)):
-                physical = special = 0
-                for move in self.moveset:
-                    if move.category is MoveCategory.PHYSICAL:
-                        physical += 1
-                    elif move.category is MoveCategory.SPECIAL:
-                        special += 1
                 evs[HP] -= 4
                 evs[ATK if physical > special else SPA] += 4
+
+        # Minimize confusion damage for non-physical pokemon
+        if (physical == 0 and
+            movedex['copycat'] not in self.moveset and
+            movedex['transform'] not in self.moveset
+        ):
+            evs[ATK] = 0
+            if any(move.name.startswith('hiddenpower') for move in self.moveset):
+                ivs[ATK] -= 30
+            else:
+                ivs[ATK] = 0
 
         return evs, ivs
 
