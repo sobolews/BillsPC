@@ -22,10 +22,15 @@ class LogBot(Bot):
         super(LogBot, self).send(msg)
         self.logfile.write('>>> ' + msg + '\n')
 
-    def received_message(self, msgs):
-        self.logfile.write(str(msgs) + '\n' + '-'*60)
-        print received(str(msgs) + '\n' + '-'*60)
-        super(LogBot, self).received_message(msgs)
+    def received_message(self, msg_block):
+        msg_block = str(msg_block)
+        msg_block = msg_block.splitlines()
+
+        for msg in msg_block:
+            self.process_message(msg)
+
+        self.logfile.write('-' * 60 + '\n')
+        print received('-' * 60)
 
     def process_message(self, msg):
         if msg.startswith('|request|'):
