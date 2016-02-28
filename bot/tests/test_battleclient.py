@@ -104,26 +104,25 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
         self.set_up_turn_0()
+        self.hitmonchan = self.my_side.active_pokemon
+        self.goodra = self.foe_side.active_pokemon
 
     def test_first_switch_in(self):
-        hitmonchan = self.my_side.active_pokemon
-        self.assertEqual(hitmonchan.name, 'hitmonchan')
-        self.assertEqual(hitmonchan.get_effect(ABILITY).name, 'ironfist')
-        self.assertIn(hitmonchan.get_effect(ABILITY).on_modify_base_power,
-                      hitmonchan.effect_handlers['on_modify_base_power'])
-        self.assertEqual(hitmonchan.get_effect(ITEM).name, 'assaultvest')
-        self.assertIn(hitmonchan.get_effect(ITEM).on_modify_spd,
-                      hitmonchan.effect_handlers['on_modify_spd'])
+        self.assertEqual(self.hitmonchan.name, 'hitmonchan')
+        self.assertEqual(self.hitmonchan.get_effect(ABILITY).name, 'ironfist')
+        self.assertIn(self.hitmonchan.get_effect(ABILITY).on_modify_base_power,
+                      self.hitmonchan.effect_handlers['on_modify_base_power'])
+        self.assertEqual(self.hitmonchan.get_effect(ITEM).name, 'assaultvest')
+        self.assertIn(self.hitmonchan.get_effect(ITEM).on_modify_spd,
+                      self.hitmonchan.effect_handlers['on_modify_spd'])
 
-        goodra = self.foe_side.active_pokemon
-        self.assertEqual(goodra.name, 'goodra')
-        self.assertEqual(goodra.hp, 265)
-        self.assertListEqual(goodra.moveset, [])
+        self.assertEqual(self.goodra.name, 'goodra')
+        self.assertEqual(self.goodra.hp, 265)
+        self.assertListEqual(self.goodra.moveset, [])
 
         self.assertEqual(self.foe_side.num_unrevealed, 5)
 
     def test_my_switch_in_on_active(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
 
         zekrom = self.my_side.active_pokemon
@@ -131,7 +130,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(zekrom.is_active)
         self.assertListEqual(zekrom.moveset, [movedex[move] for move in
                                               ['outrage', 'roost', 'voltswitch', 'boltstrike']])
-        self.assertFalse(hitmonchan.is_active)
+        self.assertFalse(self.hitmonchan.is_active)
         self.assertEqual(zekrom.hp, 266)
 
     def test_switch_in_ident_details_mismatch(self):
@@ -141,14 +140,12 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(giratina.is_active)
 
     def _foe_switch_in_flareon(self):
-        goodra = self.foe_side.active_pokemon
         self.handle('|switch|p2a: Flareon|Flareon, L83|100/100')
-        return goodra
 
     def test_opponent_switch_in_reveal_on_active(self):
-        goodra = self._foe_switch_in_flareon()
+        self._foe_switch_in_flareon()
 
-        self.assertFalse(goodra.is_active)
+        self.assertFalse(self.goodra.is_active)
         flareon = self.foe_side.active_pokemon
         self.assertEqual(flareon.name, 'flareon')
         self.assertTrue(flareon.is_active)
@@ -162,126 +159,109 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
 
         self.assertEqual(self.foe_side.num_unrevealed, 4)
-        goodra = self.foe_side.active_pokemon
-        self.assertTrue(goodra.is_active)
+        self.assertTrue(self.goodra.is_active)
         self.assertFalse(flareon.is_active)
 
     def test_opponent_switch_in_status(self):
-        hitmonchan = self.my_side.active_pokemon
-        self.bc.set_status(hitmonchan, 'psn')
+        self.bc.set_status(self.hitmonchan, 'psn')
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
-        self.assertListEqual(hitmonchan.effects, [])
-        self.assertListEqual(hitmonchan.effect_handlers['on_residual'], [])
-        self.assertFalse(hitmonchan.has_effect(Status.PSN))
+        self.assertListEqual(self.hitmonchan.effects, [])
+        self.assertListEqual(self.hitmonchan.effect_handlers['on_residual'], [])
+        self.assertFalse(self.hitmonchan.has_effect(Status.PSN))
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
-        self.assertTrue(hitmonchan.has_effect(Status.PSN))
+        self.assertTrue(self.hitmonchan.has_effect(Status.PSN))
 
     def test_opponent_switch_in_sleep_turns(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-status|p1a: Hitmonchan|slp')
         self.handle('|cant|p1a: Hitmonchan|slp')
-        self.assertEqual(hitmonchan.sleep_turns, 1)
+        self.assertEqual(self.hitmonchan.sleep_turns, 1)
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
-        self.assertEqual(hitmonchan.sleep_turns, 1)
-        self.assertEqual(hitmonchan.status, Status.SLP)
-        self.assertTrue(hitmonchan.has_effect(Status.SLP))
+        self.assertEqual(self.hitmonchan.sleep_turns, 1)
+        self.assertEqual(self.hitmonchan.status, Status.SLP)
+        self.assertTrue(self.hitmonchan.has_effect(Status.SLP))
         self.handle('|cant|p1a: Hitmonchan|slp')
         self.handle('|cant|p1a: Hitmonchan|slp')
         self.handle('|cant|p1a: Hitmonchan|slp')
-        self.assertEqual(hitmonchan.sleep_turns, 0)
+        self.assertEqual(self.hitmonchan.sleep_turns, 0)
 
     def test_handle_my_move(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
-        self.assertEqual(hitmonchan.pp[movedex['machpunch']], 48 - 1)
-        self.assertTrue(hitmonchan.last_move_used == movedex['machpunch'])
+        self.assertEqual(self.hitmonchan.pp[movedex['machpunch']], 48 - 1)
+        self.assertTrue(self.hitmonchan.last_move_used == movedex['machpunch'])
 
         for _ in range(10):
             self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
-        self.assertEqual(hitmonchan.pp[movedex['rapidspin']], 64 - 10)
+        self.assertEqual(self.hitmonchan.pp[movedex['rapidspin']], 64 - 10)
 
     def test_handle_my_move_hiddenpower(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|move|p1a: Hitmonchan|Hidden Power|p2a: Goodra')
-        self.assertEqual(hitmonchan.pp[movedex['hiddenpowerice']], 24 - 1)
+        self.assertEqual(self.hitmonchan.pp[movedex['hiddenpowerice']], 24 - 1)
 
     def test_handle_foe_move(self):
-        goodra = self.foe_side.active_pokemon
-        self.assertListEqual(goodra.moveset, [])
+        self.assertListEqual(self.goodra.moveset, [])
         self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
-        self.assertListEqual(goodra.moveset, [movedex['dracometeor']])
-        self.assertEqual(goodra.pp[movedex['dracometeor']], 8 - 1)
+        self.assertListEqual(self.goodra.moveset, [movedex['dracometeor']])
+        self.assertEqual(self.goodra.pp[movedex['dracometeor']], 8 - 1)
 
         self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
-        self.assertEqual(goodra.pp[movedex['dracometeor']], 8 - 2)
+        self.assertEqual(self.goodra.pp[movedex['dracometeor']], 8 - 2)
 
     def test_handle_foe_move_hiddenpower(self):
-        goodra = self.foe_side.active_pokemon
         self.handle('|move|p2a: Goodra|Hidden Power|p1a: Hitmonchan')
-        self.assertTrue(goodra.moveset[0].is_hiddenpower)
-        self.assertEqual(goodra.pp[goodra.moveset[0]], 24 - 1)
+        self.assertTrue(self.goodra.moveset[0].is_hiddenpower)
+        self.assertEqual(self.goodra.pp[self.goodra.moveset[0]], 24 - 1)
 
     def test_handle_my_damage(self):
         self.handle('|-damage|p1a: Hitmonchan|175/209')
-        hitmonchan = self.my_side.active_pokemon
-        self.assertEqual(hitmonchan.hp, 175)
+        self.assertEqual(self.hitmonchan.hp, 175)
 
     def test_handle_foe_damage(self):
         self.handle('|-damage|p2a: Goodra|55/100')
-        goodra = self.foe_side.active_pokemon
-        self.assertEqual(goodra.hp, 146) # round(0.55 * 265)
+        self.assertEqual(self.goodra.hp, 146) # round(0.55 * 265)
 
     def test_handle_damage_faint(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-damage|p1a: Hitmonchan|0 fnt')
-        self.assertEqual(hitmonchan.hp, 0)
-        self.assertEqual(hitmonchan.status, Status.FNT)
+        self.assertEqual(self.hitmonchan.hp, 0)
+        self.assertEqual(self.hitmonchan.status, Status.FNT)
 
     def test_handle_faint(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-damage|p1a: Hitmonchan|0 fnt')
         self.assertIsNotNone(self.my_side.active_pokemon)
-        self.assertEqual(hitmonchan.hp, 0)
-        self.assertEqual(hitmonchan.status, Status.FNT)
+        self.assertEqual(self.hitmonchan.hp, 0)
+        self.assertEqual(self.hitmonchan.status, Status.FNT)
 
         self.handle('|faint|p1a: Hitmonchan')
 
     def test_handle_status(self):
-        goodra = self.foe_side.active_pokemon
         self.handle('|-status|p2a: Goodra|brn')
-        self.assertEqual(goodra.status, Status.BRN)
-        self.assertTrue(goodra.has_effect(Status.BRN))
+        self.assertEqual(self.goodra.status, Status.BRN)
+        self.assertTrue(self.goodra.has_effect(Status.BRN))
 
     def test_handle_status_sleep_always_2_turns(self):
-        goodra = self.foe_side.active_pokemon
         self.handle('|-status|p2a: Goodra|slp')
-        self.assertEqual(goodra.status, Status.SLP)
-        self.assertEqual(goodra.get_effect(Status.SLP).turns_left, 2)
-        self.assertEqual(goodra.sleep_turns, 2)
+        self.assertEqual(self.goodra.status, Status.SLP)
+        self.assertEqual(self.goodra.get_effect(Status.SLP).turns_left, 2)
+        self.assertEqual(self.goodra.sleep_turns, 2)
 
     def test_handle_boost(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-boost|p1a: Hitmonchan|atk|2')
-        self.assertEqual(hitmonchan.boosts['atk'], 2)
+        self.assertEqual(self.hitmonchan.boosts['atk'], 2)
         self.handle('|-boost|p1a: Hitmonchan|atk|2')
-        self.assertEqual(hitmonchan.boosts['atk'], 4)
+        self.assertEqual(self.hitmonchan.boosts['atk'], 4)
 
     def test_handle_unboost(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-unboost|p1a: Hitmonchan|spe|1')
-        self.assertEqual(hitmonchan.boosts['spe'], -1)
+        self.assertEqual(self.hitmonchan.boosts['spe'], -1)
 
     def test_handle_curestatus(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-status|p1a: Hitmonchan|slp|[from] move: Rest')
-        self.assertEqual(hitmonchan.status, Status.SLP)
+        self.assertEqual(self.hitmonchan.status, Status.SLP)
         self.handle('|-curestatus|p1a: Hitmonchan|slp')
-        self.assertIsNone(hitmonchan.status)
+        self.assertIsNone(self.hitmonchan.status)
 
     def test_handle_cureteam(self):
-        hitmonchan = self.my_side.active_pokemon
-        self.bc.set_status(hitmonchan, 'psn')
+        self.bc.set_status(self.hitmonchan, 'psn')
         zekrom = self.my_side.team[1]
         altaria = self.my_side.team[2]
         zekrom.status = Status.SLP
@@ -289,7 +269,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         altaria.hp = 0
         altaria.status = Status.FNT
         self.handle('|-cureteam|p1a: Hitmonchan|[from] move: HealBell')
-        self.assertIsNone(hitmonchan.status)
+        self.assertIsNone(self.hitmonchan.status)
         self.assertIsNone(zekrom.status)
         self.assertIsNone(zekrom.sleep_turns)
         self.assertEqual(altaria.status, Status.FNT)
@@ -319,71 +299,64 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertFalse(self.battlefield.has_effect(Weather.HAIL))
 
     def test_handle_sethp(self):
-        hitmonchan = self.my_side.active_pokemon
-        goodra = self.foe_side.active_pokemon
+        self.goodra = self.foe_side.active_pokemon
         self.handle('|-sethp|p2a: Goodra|55/100|p1a: Hitmonchan|175/209|[from] move: Pain Split')
-        self.assertEqual(hitmonchan.hp, 175)
-        self.assertEqual(goodra.hp, 146)
+        self.assertEqual(self.hitmonchan.hp, 175)
+        self.assertEqual(self.goodra.hp, 146)
 
     def test_handle_setboost(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-setboost|p1a: Hitmonchan|atk|6|[from] move: Belly Drum')
-        self.assertEqual(hitmonchan.boosts['atk'], 6)
+        self.assertEqual(self.hitmonchan.boosts['atk'], 6)
 
     def test_handle_restoreboost(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-boost|p1a: Hitmonchan|atk|2')
         self.handle('|-boost|p1a: Hitmonchan|spa|2')
         self.handle('|-boost|p1a: Hitmonchan|spe|2')
         self.handle('|-unboost|p1a: Hitmonchan|def|1')
         self.handle('|-unboost|p1a: Hitmonchan|spd|1')
         for stat in ('atk', 'spa', 'spe'):
-            self.assertEqual(hitmonchan.boosts[stat], 2)
+            self.assertEqual(self.hitmonchan.boosts[stat], 2)
         for stat in ('def', 'spd'):
-            self.assertEqual(hitmonchan.boosts[stat], -1)
+            self.assertEqual(self.hitmonchan.boosts[stat], -1)
 
         self.handle('|-restoreboost|p1a: Hitmonchan|[silent]')
 
         for stat in ('atk', 'spa', 'spe'):
-            self.assertEqual(hitmonchan.boosts[stat], 2)
+            self.assertEqual(self.hitmonchan.boosts[stat], 2)
 
         for stat in ('def', 'spd'):
-            self.assertEqual(hitmonchan.boosts[stat], 0)
+            self.assertEqual(self.hitmonchan.boosts[stat], 0)
 
     def test_handle_clearboost(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-boost|p1a: Hitmonchan|spa|2')
         self.handle('|-boost|p1a: Hitmonchan|spe|2')
         self.handle('|-unboost|p1a: Hitmonchan|def|1')
         self.handle('|-clearboost|p1a: Hitmonchan')
         for stat in ('def', 'spa', 'spe'):
-            self.assertEqual(hitmonchan.boosts[stat], 0)
+            self.assertEqual(self.hitmonchan.boosts[stat], 0)
 
     def test_handle_clearallboost(self):
-        hitmonchan = self.my_side.active_pokemon
-        goodra = self.foe_side.active_pokemon
-        hitmonchan.boosts['atk'] += 3
-        hitmonchan.boosts['def'] -= 1
-        goodra.boosts['spe'] += 1
-        goodra.boosts['spa'] -= 2
+        self.goodra = self.foe_side.active_pokemon
+        self.hitmonchan.boosts['atk'] += 3
+        self.hitmonchan.boosts['def'] -= 1
+        self.goodra.boosts['spe'] += 1
+        self.goodra.boosts['spa'] -= 2
         self.handle('|-clearallboost')
 
-        for pokemon in (hitmonchan, goodra):
+        for pokemon in (self.hitmonchan, self.goodra):
             for stat in ('atk', 'def', 'spe', 'spa'):
                 self.assertEqual(pokemon.boosts[stat], 0)
 
     def test_handle_prepare(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-prepare|p1a: Hitmonchan|Solar Beam|p2a: Goodra')
-        self.assertTrue(hitmonchan.has_effect(Volatile.TWOTURNMOVE))
-        self.assertEqual(hitmonchan.get_effect(Volatile.TWOTURNMOVE).move.name, 'solarbeam')
+        self.assertTrue(self.hitmonchan.has_effect(Volatile.TWOTURNMOVE))
+        self.assertEqual(self.hitmonchan.get_effect(Volatile.TWOTURNMOVE).move.name, 'solarbeam')
 
         self.handle('|move|p1a: Hitmonchan|Solar Beam|p2a: Goodra')
-        self.assertFalse(hitmonchan.has_effect(Volatile.TWOTURNMOVE))
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.TWOTURNMOVE))
 
     def test_handle_anim(self):
-        hitmonchan = self.my_side.active_pokemon
         self.handle('|-prepare|p1a: Hitmonchan|Solar Beam|p2a: Goodra')
         self.handle('|-anim|p1a: Hitmonchan|Solar Beam|p2a: Goodra')
 
-        self.assertFalse(hitmonchan.has_effect(Volatile.TWOTURNMOVE))
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.TWOTURNMOVE))
