@@ -577,6 +577,9 @@ class BattleClient(object):
                             '%s has effects but is benched' % pokemon
 
                 if pokemon.is_active and request.get('active') is not None:
+                    can_mega_evo = request['active'][0].get('canMegaEvo', False)
+                    assert can_mega_evo == pokemon.can_mega_evolve, \
+                        "%s's mega-evolution state is incorrect" % pokemon
                     if len(request['active'][0]['moves']) == 1:
                         assert (pokemon.has_effect(Volatile.TWOTURNMOVE) or
                                 request['active'][0]['moves'][0]['id'] == 'struggle'), \
@@ -618,8 +621,13 @@ class BattleClient(object):
                          (pokemon, pokemon.moveset[i].name, move))
                 assert pokemon.level == int(reqmon['details'].split(', ')[1][1:])
                 assert pokemon.is_active == reqmon['active']
-                # TODO: assert on item, ability, canMegaEvo
-
+                if not pokemon.ability.name.startswith('_'):
+                    assert pokemon.ability.name == reqmon['baseAbility'], (pokemon.ability.name,
+                                                                           reqmon['baseAbility'])
+                if pokemon.item is None:
+                    assert reqmon['item'] == ''
+                else:
+                    assert reqmon['item'] == pokemon.item.name
                 assert int(request['side']['id'][1]) - 1 == self.my_player, self.my_player
                 assert request['side']['name'] == self.name, self.name
 
