@@ -1007,7 +1007,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
     def test_enormous_damage(self):
         self.new_battle('darmanitan', 'paras',
                         p0_item='choiceband', p0_ability='flashfire', p0_evs=(0, 252, 0, 0, 0, 0),
-                        p1_level=1, p1_ability='dryskin')
+                        p1_level=1, p1_ability='dryskin', p1_evs=(0,)*6)
         self.battlefield.set_weather(Weather.SUNNYDAY)
         self.darmanitan.apply_boosts(Boosts(atk=6))
         self.paras.apply_boosts(Boosts(def_=-6))

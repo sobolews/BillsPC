@@ -209,9 +209,10 @@ class BattlePokemon(object, EffectHandlerMixin):
         trickroom: ivs.spe=0, evs.spe=0, evs.hp+=85
         shedinja: evs.atk=252 evs.hp,def,spd=0
         """
-        evs_, ivs_ = self.calculate_evs_ivs()
-        self.evs = evs = evs or evs_
-        self.ivs = ivs = ivs or ivs_
+        if evs is None or ivs is None:
+            evs_, ivs_ = self.calculate_evs_ivs()
+            self.evs = evs = evs or evs_
+            self.ivs = ivs = ivs or ivs_
 
         max_hp = self._calc_hp(evs[0], ivs[0])
 
@@ -247,18 +248,25 @@ class BattlePokemon(object, EffectHandlerMixin):
         hp = self._calc_hp(evs[HP], ivs[HP])
 
         # Adjust HP stat for substitute/bellydrum/stealthrock
+        mod = None
         if self.item is itemdex['sitrusberry']:
-            if ((movedex['substitute'] in self.moveset and hp % 4 > 0) or
-                (movedex['bellydrum'] in self.moveset and hp % 2 > 0)):
-                evs[HP] -= 4
-        else:
+            if movedex['substitute'] in self.moveset and hp % 4 > 0:
+                mod = 4
+            elif movedex['bellydrum'] in self.moveset and hp % 2 > 0:
+                mod = 2
+        if mod is None:
             if self.item is not None and self.item.is_mega_stone:
                 forme = POKEDEX[self.item.forme]
             else:
                 forme = self
             eff = effectiveness(Type.ROCK, forme)
-            if ((eff == 2 and hp % 4 == 0) or
-                (eff == 4 and hp % 2 == 0)):
+            if eff == 2 and hp % 4 == 0:
+                mod = 4
+            elif eff == 4 and hp % 2 == 0:
+                mod = 2
+        if mod is not None:
+            evs[HP] -= 4
+            while self._calc_hp(evs[HP], ivs[HP]) % mod == 0:
                 evs[HP] -= 4
 
         # Minimize confusion damage for non-physical pokemon

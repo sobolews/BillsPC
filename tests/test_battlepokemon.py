@@ -71,6 +71,13 @@ class TestCalculateInitialStats(TestCase):
         self.assertDictEqual(volcarona.stats, {'atk': 96, 'def': 143, 'max_hp': 253,
                                                'spa': 249, 'spd': 204, 'spe': 196})
 
+        # need to lower HP evs twice for SR weakness
+        regice = BattlePokemon(pokedex['regice'], level=83,
+                                  moveset=(movedex['icebeam'], movedex['focusblast'],
+                                           movedex['rockpolish'], movedex['thunderbolt']))
+        self.assertDictEqual(regice.stats, {'atk': 88, 'def': 214, 'max_hp': 267,
+                                            'spa': 214, 'spd': 380, 'spe': 131})
+
 
 class TestAbilityChange(MultiMoveTestCase):
     def test_change_ability(self):
