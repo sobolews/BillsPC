@@ -597,21 +597,23 @@ class BattleClient(object):
                     can_mega_evo = request['active'][0].get('canMegaEvo', False)
                     assert can_mega_evo == pokemon.can_mega_evolve, \
                         "%s's mega-evolution state is incorrect" % pokemon
-                    if len(request['active'][0]['moves']) == 1:
+
+                    active_moves = request['active'][0]['moves']
+                    if len(active_moves) == 1:
                         assert (pokemon.has_effect(Volatile.TWOTURNMOVE) or
-                                request['active'][0]['moves'][0]['id'] == 'struggle'), \
-                            '%s has one move available but it appears invalid?'
+                                active_moves[0]['id'] in ('struggle', 'transform')), \
+                            '%s has one move available but it appears invalid?' % pokemon
                     else:
                         for i, move in enumerate(pokemon.moveset):
-                            assert (request['active'][0]['moves'][i]['id'] == move.name or
-                                    (request['active'][0]['moves'][i]['id'] == 'hiddenpower' and
+                            assert (active_moves[i]['id'] == move.name or
+                                    (active_moves[i]['id'] == 'hiddenpower' and
                                      move.name.startswith('hiddenpower'))), \
                                 ("%s: request %s doesn't match %s" %
-                                 (pokemon, request['active'][0]['moves'][i]['id'], move))
-                            assert request['active'][0]['moves'][i]['pp'] == pokemon.pp[move], \
+                                 (pokemon, active_moves[i]['id'], move))
+                            assert active_moves[i]['pp'] == pokemon.pp[move], \
                                 '%s: %s has %d pp' % (pokemon, move, pokemon.pp[move])
                             choices = pokemon.get_move_choices()
-                            if not request['active'][0]['moves'][i]['disabled']:
+                            if not active_moves[i]['disabled']:
                                 assert move in choices, \
                                     "%s's %s should be disabled, but it isn't" % (pokemon, move)
 
