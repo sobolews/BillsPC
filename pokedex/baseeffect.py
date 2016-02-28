@@ -48,6 +48,8 @@ class BaseEffect(object):
             while True:
                 cls.handler_names += tuple(hname for hname in search_cls.__dict__
                                            if hname.startswith('on_') and
+                                           not (hname == 'on_start' and
+                                                search_cls.__name__ == 'BaseAbility') and
                                            hname not in cls.handler_names)
                 if search_cls is object:
                     break
