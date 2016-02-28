@@ -78,7 +78,7 @@ class BattleClient(object):
         `|-sethp|p2a: Emboar|55/100|p1a: Weezing|166/238|[from] move: Pain Split`
         """
         for pokemon in self.get_side_from_msg(msg, index).team:
-            if pokemon.name == normalize_name(msg[index]):
+            if pokemon.name.startswith(normalize_name(msg[index])):
                 return pokemon
 
     def set_hp_status(self, pokemon, hp_msg):
