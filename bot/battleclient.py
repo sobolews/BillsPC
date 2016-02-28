@@ -196,7 +196,7 @@ class BattleClient(object):
             "id": "p1"
             "pokemon": [{
               "ident": "p1: Vaporeon"
-              "details": "Vaporeon, L77, M"
+              "details": "Vaporeon, L77, M[, shiny]"
               "condition": "401/401"
               "active": true
               "stats": {"atk", "def", "spa", "spd", "spe"}
