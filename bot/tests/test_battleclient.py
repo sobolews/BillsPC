@@ -4,7 +4,7 @@ from unittest import TestCase
 from mock import patch
 
 from bot.battleclient import BattleClient
-from pokedex.enums import Status, Weather, Volatile
+from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM
 from pokedex.moves import movedex
 
 class TestBattleClientBase(TestCase):
@@ -67,7 +67,9 @@ class TestBattleClient(TestBattleClientBase):
                                                          'earthquake', 'roost']])
         self.assertDictEqual(dict(side.team[3].stats),
                              {'atk':183,'def':173,'spa':223,'spd':184,'spe':209,'max_hp':259})
-        self.assertEqual(side.team[4].hp, 311)
+        self.assertEqual(side.team[4].hp, 339)
+        self.assertEqual(side.team[5].ability.name, 'serenegrace')
+        self.assertEqual(side.team[5].item.name, 'leftovers')
         self.assertEqual(len(side.team), 6)
 
     def test_handle_player(self):
@@ -104,7 +106,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.set_up_turn_0()
 
     def test_first_switch_in(self):
-        self.assertEqual(self.my_side.active_pokemon.name, 'hitmonchan')
+        hitmonchan = self.my_side.active_pokemon
+        self.assertEqual(hitmonchan.name, 'hitmonchan')
+        self.assertEqual(hitmonchan.get_effect(ABILITY).name, 'ironfist')
+        self.assertIn(hitmonchan.get_effect(ABILITY).on_modify_base_power,
+                      hitmonchan.effect_handlers['on_modify_base_power'])
+        self.assertEqual(hitmonchan.get_effect(ITEM).name, 'assaultvest')
+        self.assertIn(hitmonchan.get_effect(ITEM).on_modify_spd,
+                      hitmonchan.effect_handlers['on_modify_spd'])
+
         goodra = self.foe_side.active_pokemon
         self.assertEqual(goodra.name, 'goodra')
         self.assertEqual(goodra.hp, 265)

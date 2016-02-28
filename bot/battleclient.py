@@ -13,6 +13,7 @@ from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Weather, Volatile
+from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
 
@@ -123,8 +124,10 @@ class BattleClient(object):
         stats = j_pokemon['stats']
         stats['max_hp'] = max_hp
         moveset = [movedex[move.rstrip(string.digits)] for move in j_pokemon['moves']]
+        ability = abilitydex[j_pokemon['baseAbility']]
+        item = itemdex[j_pokemon['item']]
 
-        pokemon = BattlePokemon(pokedex[species], level, moveset)
+        pokemon = BattlePokemon(pokedex[species], level, moveset, ability, item)
         pokemon.hp, pokemon.max_hp = hp, max_hp
         if __debug__: self._warn_if_stats_discrepancy(pokemon, stats)
         pokemon.stats = PokemonStats.from_dict(stats)
@@ -416,8 +419,18 @@ class BattleClient(object):
         if pokemon.status is not None:
             self.set_status(pokemon, pokemon.status)
 
+        pokemon.set_effect(pokemon.ability())
+
+        if pokemon.item is not None:
+            self.set_item(pokemon, pokemon.item)
+
     handle_drag = handle_switch
     handle_replace = handle_switch
+
+    def set_item(self, pokemon, item):
+        pokemon.item = item
+        pokemon.set_effect(item())
+        pokemon.remove_effect(Volatile.UNBURDEN)
 
     def handle_boost(self, msg):
         """
