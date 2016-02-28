@@ -155,6 +155,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.bc.set_status(hitmonchan, 'psn')
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
         self.assertListEqual(hitmonchan.effects, [])
+        self.assertListEqual(hitmonchan.effect_handlers['on_residual'], [])
         self.assertFalse(hitmonchan.has_effect(Status.PSN))
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
         self.assertTrue(hitmonchan.has_effect(Status.PSN))

@@ -403,6 +403,7 @@ class BattleClient(object):
         if outgoing is not None:
             outgoing.is_active = False
             outgoing._effect_index.clear()
+            outgoing.effect_handlers = {key: list() for key in outgoing.effect_handlers}
             outgoing.boosts = Boosts()
 
         # TODO: do any of the other flags from BattleEngine.switch_in need to be set here?
