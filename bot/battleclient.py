@@ -233,7 +233,7 @@ class BattleClient(object):
             if request.get('forceSwitch') or random.randrange(10) == 0:
                 choice = int(raw_input(
                     '\n'.join(['choose switch:',
-                               '\n'.join(normalize_name(p['ident']) for i, p in
+                               '\n'.join(normalize_name(p['ident'].split(None, 1)[-1]) for i, p in
                                          enumerate(request['side']['pokemon'], 1)),
                                '> '])))
                 choices = [i for i, p in enumerate(request['side']['pokemon'], 1)
@@ -601,7 +601,11 @@ class BattleClient(object):
                 # TODO: test/validate request['active'][0].get('trapped')
 
                 reqmon = [p for p in self.request['side']['pokemon']
-                          if pokemon.name.startswith(normalize_name(p['ident'].split()[-1]))][0]
+                          if pokemon.name.startswith(normalize_name(p['ident'].split(None, 1)[-1]))]
+                assert reqmon, ("%s didn't match with any: %s" % (
+                    pokemon, [normalize_name(p['ident'].split(None, 1)[-1])
+                              for p in self.request['side']['pokemon']]))
+                reqmon = reqmon[0]
                 condition = reqmon['condition'].split()
                 if condition[-1] == 'fnt':
                     assert pokemon.status is Status.FNT, '%s should be fainted' % pokemon
