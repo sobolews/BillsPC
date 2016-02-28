@@ -64,6 +64,7 @@ class TestRandbatsCounter(TestCase):
                    'level': 74,
                    'moves': ['recover', 'psyshock', 'thunderbolt', 'scald'],
                    'name': 'Starmie',
+                   'species': 'Starmie',
                    'shiny': False}
         counter = statistics.RandbatsStatistics()
         for _ in range(3):

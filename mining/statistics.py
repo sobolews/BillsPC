@@ -152,7 +152,7 @@ class RandbatsStatistics(object):
         Add the data from this pokemon to self.counter.
         `pokemon` is one of the 6 JSON dict members of Scripts.randomTeam()
         """
-        name = self.pokedex[pokemon['name']].name
+        name = self.pokedex[pokemon['species']].name
         item = pokemon['item']
         if (((item.endswith('ite') and item != 'Eviolite')
              or item.endswith('ite X') or item.endswith('ite Y'))):
