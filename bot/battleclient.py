@@ -245,32 +245,49 @@ class BattleClient(object):
                 move = random.randint(1, 4)
                 self.send('%s|/choose move %d|%d' % (self.room, move, self.request['rqid']))
 
-    def handle_move(self, msg): # TODO unit test (test_battleclient)
+    # TODO: handle zoroark/illusion
+    def handle_move(self, msg):
         """
-        `|move|POKEMON|MOVE|TARGET`
+        `|move|POKEMON|MOVE|TARGET[|FROM]`
+
+        |move|p1a: Groudon|Aerial Ace|p2a: Fraxure|[from]Copycat
+
         Just subtract pp for MOVE from POKEMON
         """
+        if len(msg) > 4:
+            if msg[4].startswith('[from]'):
+                return # this move is called by another (copycat, sleeptalk, lockedmove)
+
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
-
         foe = (self.foe_side, self.my_side)[pokemon.side.index == self.my_player].active_pokemon
         pp_sub = 2 if not foe.is_fainted() and foe.ability is abilitydex['pressure'] else 1
-        move = movedex[normalize_name(msg[2])]
+
+        if msg[2] == 'Hidden Power':
+            hp_moves = [move for move in pokemon.moveset if move.is_hiddenpower]
+            if hp_moves:
+                assert len(hp_moves) == 1, hp_moves
+                move = hp_moves[0]
+            else:
+                # TODO: deal with guessing foe's hiddenpower type properly
+                move = movedex['hiddenpowernotype']
+        else:
+            move = movedex[normalize_name(msg[2])]
 
         if move in pokemon.pp:
             pokemon.pp[move] -= pp_sub
-        elif pokemon.side.index == self.foe_player:
+        elif pokemon.side.index == self.foe_player: # Add move to foe's moveset
             assert (len(pokemon.moveset) < 4 or  # TODO: test raises assertion
-                    pokemon.last_move_used == movedex['copycat'] or
                     move == movedex['struggle']), \
                 '%s used %s but already has a full moveset:\n %r' % (pokemon, move, pokemon)
-            if move != movedex['struggle'] and pokemon.last_move_used is not movedex['copycat']:
+            if move != movedex['struggle']:
                 pokemon.moveset.append(move)
                 pokemon.pp[move] = move.max_pp - pp_sub
 
         elif __debug__:
             log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
+        pokemon.last_move_used = move
         pokemon.remove_effect(Volatile.TWOTURNMOVE, None)
 
     def handle_damage(self, msg):

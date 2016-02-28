@@ -11,7 +11,7 @@ class TestBattleClientBase(TestCase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
 
-    REQUEST = '|request|{"side":{"name":"1BillsPC","id":"p1","pokemon":[{"ident":"p1: Hitmonchan","details":"Hitmonchan, L79, M","condition":"209/209","active":true,"stats":{"atk":211,"def":170,"spa":101,"spd":219,"spe":166},"moves":["solarbeam","machpunch","drainpunch","rapidspin"],"baseAbility":"ironfist","item":"assaultvest","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Zekrom","details":"Zekrom, L73","condition":"266/266","active":false,"stats":{"atk":261,"def":218,"spa":218,"spd":188,"spe":174},"moves":["outrage","roost","voltswitch","boltstrike"],"baseAbility":"teravolt","item":"leftovers","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Altaria","details":"Altaria, L75, M","condition":"236/236","active":false,"stats":{"atk":149,"def":179,"spa":149,"spd":201,"spe":164},"moves":["return","dragondance","earthquake","roost"],"baseAbility":"naturalcure","item":"altarianite","pokeball":"pokeball","canMegaEvo":true},{"ident":"p1: Charizard","details":"Charizard, L81, M","condition":"259/259","active":false,"stats":{"atk":183,"def":173,"spa":223,"spd":184,"spe":209},"moves":["earthquake","focusblast","fireblast","acrobatics"],"baseAbility":"blaze","item":"flyinggem","pokeball":"pokeball","canMegaEvo":false},{"ident":"p2: Giratina","details":"Giratina-Origin, L73","condition":"339/339","active":false,"stats":{"atk":218,"def":188,"spa":218,"spd":188,"spe":174},"moves":["defog","dragontail","willowisp","shadowsneak"],"baseAbility":"levitate","item":"griseousorb","pokeball":"pokeball"},{"ident":"p1: Dunsparce","details":"Dunsparce, L83, M","condition":"302/302","active":false,"stats":{"atk":164,"def":164,"spa":156,"spd":156,"spe":122},"moves":["roost","coil","rockslide","headbutt"],"baseAbility":"serenegrace","item":"leftovers","pokeball":"pokeball","canMegaEvo":false}]}}'
+    REQUEST = '|request|{"side":{"name":"1BillsPC","id":"p1","pokemon":[{"ident":"p1: Hitmonchan","details":"Hitmonchan, L79, M","condition":"209/209","active":true,"stats":{"atk":211,"def":170,"spa":101,"spd":219,"spe":166},"moves":["solarbeam","machpunch","rapidspin","hiddenpowerice"],"baseAbility":"ironfist","item":"assaultvest","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Zekrom","details":"Zekrom, L73","condition":"266/266","active":false,"stats":{"atk":261,"def":218,"spa":218,"spd":188,"spe":174},"moves":["outrage","roost","voltswitch","boltstrike"],"baseAbility":"teravolt","item":"leftovers","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Altaria","details":"Altaria, L75, M","condition":"236/236","active":false,"stats":{"atk":149,"def":179,"spa":149,"spd":201,"spe":164},"moves":["return","dragondance","earthquake","roost"],"baseAbility":"naturalcure","item":"altarianite","pokeball":"pokeball","canMegaEvo":true},{"ident":"p1: Charizard","details":"Charizard, L81, M","condition":"259/259","active":false,"stats":{"atk":183,"def":173,"spa":223,"spd":184,"spe":209},"moves":["earthquake","focusblast","fireblast","acrobatics"],"baseAbility":"blaze","item":"flyinggem","pokeball":"pokeball","canMegaEvo":false},{"ident":"p2: Giratina","details":"Giratina-Origin, L73","condition":"339/339","active":false,"stats":{"atk":218,"def":188,"spa":218,"spd":188,"spe":174},"moves":["defog","dragontail","willowisp","shadowsneak"],"baseAbility":"levitate","item":"griseousorb","pokeball":"pokeball"},{"ident":"p1: Dunsparce","details":"Dunsparce, L83, M","condition":"302/302","active":false,"stats":{"atk":164,"def":164,"spa":156,"spd":156,"spe":122},"moves":["roost","coil","rockslide","headbutt"],"baseAbility":"serenegrace","item":"leftovers","pokeball":"pokeball","canMegaEvo":false}]}}'
     REQUEST = json.loads(REQUEST.split('|')[2])
 
     my_side = property(lambda self: self.bc.my_side)
@@ -190,6 +190,37 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|cant|p1a: Hitmonchan|slp')
         self.handle('|cant|p1a: Hitmonchan|slp')
         self.assertEqual(hitmonchan.sleep_turns, 0)
+
+    def test_handle_my_move(self):
+        hitmonchan = self.my_side.active_pokemon
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
+        self.assertEqual(hitmonchan.pp[movedex['machpunch']], 48 - 1)
+        self.assertTrue(hitmonchan.last_move_used == movedex['machpunch'])
+
+        for _ in range(10):
+            self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
+        self.assertEqual(hitmonchan.pp[movedex['rapidspin']], 64 - 10)
+
+    def test_handle_my_move_hiddenpower(self):
+        hitmonchan = self.my_side.active_pokemon
+        self.handle('|move|p1a: Hitmonchan|Hidden Power|p2a: Goodra')
+        self.assertEqual(hitmonchan.pp[movedex['hiddenpowerice']], 24 - 1)
+
+    def test_handle_foe_move(self):
+        goodra = self.foe_side.active_pokemon
+        self.assertListEqual(goodra.moveset, [])
+        self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
+        self.assertListEqual(goodra.moveset, [movedex['dracometeor']])
+        self.assertEqual(goodra.pp[movedex['dracometeor']], 8 - 1)
+
+        self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
+        self.assertEqual(goodra.pp[movedex['dracometeor']], 8 - 2)
+
+    def test_handle_foe_move_hiddenpower(self):
+        goodra = self.foe_side.active_pokemon
+        self.handle('|move|p2a: Goodra|Hidden Power|p1a: Hitmonchan')
+        self.assertTrue(goodra.moveset[0].is_hiddenpower)
+        self.assertEqual(goodra.pp[goodra.moveset[0]], 24 - 1)
 
     def test_handle_my_damage(self):
         self.handle('|-damage|p1a: Hitmonchan|175/209')

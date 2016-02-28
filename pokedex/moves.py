@@ -1545,6 +1545,11 @@ class hiddenpowerdark(hiddenpower):
     def init_hp_type(self):
         self.type = Type.DARK
 
+# not a real move, used in battleclient to represent foe's hiddenpower of unknown type
+class hiddenpowernotype(hiddenpower):
+    def init_hp_type(self):
+        self.type = Type.NOTYPE
+
 class highjumpkick(Move):
     def init_move(self):
         self.max_pp = _MAX_PP[10]
