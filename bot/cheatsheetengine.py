@@ -20,9 +20,12 @@ class CheatSheetEngine(BattleEngine):
     def describe_my_moves(self, my_active, foe):
         """ :type my_active BattlePokemon """
         if __debug__:
-            for move in my_active.moveset:
-                if move.name not in rbstats.probability[my_active.name]['moves']:
-                    log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
+            if not my_active.is_transformed:
+                for move in my_active.moveset:
+                    my_name = (my_active.item.forme if my_active.can_mega_evolve else
+                               my_active.base_species)
+                    if move.name not in rbstats.probability[my_name]['moves']:
+                        log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
 
         return [(move.name, self.calculate_damage_range(my_active, move, foe))
                 for move in my_active.moveset]
