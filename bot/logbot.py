@@ -24,6 +24,8 @@ class LogBot(Bot):
 
     def received_message(self, msg_block):
         msg_block = str(msg_block)
+        if '|inactive|' in msg_block:
+            return
         msg_block = msg_block.splitlines()
 
         for msg in msg_block:
