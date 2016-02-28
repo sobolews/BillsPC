@@ -252,7 +252,11 @@ class BattlePokemon(object, EffectHandlerMixin):
                 (movedex['bellydrum'] in self.moveset and hp % 2 > 0)):
                 evs[HP] -= 4
         else:
-            eff = effectiveness(Type.ROCK, self)
+            if self.item is not None and self.item.is_mega_stone:
+                forme = POKEDEX[self.item.forme]
+            else:
+                forme = self
+            eff = effectiveness(Type.ROCK, forme)
             if ((eff == 2 and hp % 4 == 0) or
                 (eff == 4 and hp % 2 == 0)):
                 evs[HP] -= 4
