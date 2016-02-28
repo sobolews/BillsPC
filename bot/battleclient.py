@@ -318,15 +318,16 @@ class BattleClient(object):
 
     def handle_status(self, msg):
         """
-        `|-status|POKEMON|STATUS`
+        `|-status|POKEMON|STATUS[|FROM]`
         |-status|p2a: Goodra|brn
+        |-status|p2a: Stunfisk|slp|[from] move: Rest
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        assert pokemon.status is None, (pokemon, pokemon.status)
 
+        pokemon.cure_status()
         self.set_status(pokemon, msg[2])
-        # TODO: handle rest -> is_resting
-        # TODO: test when opponent rests to cure status
+        if len(msg) > 3 and msg[3] == '[from] move: Rest':
+            pokemon.is_resting = True
 
     def handle_cant(self, msg):
         """

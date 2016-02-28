@@ -244,6 +244,20 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.goodra.get_effect(Status.SLP).turns_left, 2)
         self.assertEqual(self.goodra.sleep_turns, 2)
 
+    def test_handle_status_rest(self):
+        self.goodra = self.foe_side.active_pokemon
+        self.bc.set_status(self.goodra, 'brn')
+        self.goodra.hp -= 100
+        self.handle('|-status|p2a: Goodra|slp')
+        self.handle('|-heal|p2a: Goodra|100/100 slp|[silent]')
+        self.handle('|-status|p2a: Goodra|slp|[from] move: Rest')
+
+        self.assertEqual(self.goodra.hp, self.goodra.max_hp)
+        self.assertEqual(self.goodra.status, Status.SLP)
+        self.assertTrue(self.goodra.has_effect(Status.SLP))
+        self.assertTrue(self.goodra.is_resting)
+        self.assertEqual(self.goodra.sleep_turns, 2)
+
     def test_handle_boost(self):
         self.handle('|-boost|p1a: Hitmonchan|atk|2')
         self.assertEqual(self.hitmonchan.boosts['atk'], 2)
