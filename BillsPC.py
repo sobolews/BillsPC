@@ -60,6 +60,8 @@ def get_parser():
 def rbstats_(_):
     from mining.statistics import RandbatsStatistics
     rbstats = r = RandbatsStatistics.from_pickle()
+    from mining import create_pokedex
+    pokedex = create_pokedex()
     import IPython
     IPython.embed()
 
