@@ -982,8 +982,17 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
 
     def test_imposter_fail_to_transform_illusion(self):
-        self.new_battle('ditto', p0_ability='imposter', p1_ability='illusion')
+        self.new_battle('ditto', 'zoroark', p0_ability='imposter', p1_ability='illusion')
+        self.add_pokemon('vaporeon', 0)
         self.assertFalse(self.ditto.is_transformed)
+        self.choose_switch(self.ditto, self.vaporeon)
+        self.run_turn()
+        self.choose_move(self.vaporeon, 'surf')
+        self.run_turn()
+        self.assertFalse(self.zoroark.illusion)
+        self.choose_switch(self.vaporeon, self.ditto)
+        self.run_turn()
+        self.assertTrue(self.ditto.is_transformed)
 
     def test_imposter_moves(self):
         self.new_battle('ditto', p0_ability='imposter',

@@ -407,11 +407,12 @@ class BattlePokemon(object, EffectHandlerMixin):
         return weight
 
     def transform_into(self, other, engine):
-        if ((other.is_fainted() or
-             other.has_effect(Volatile.SUBSTITUTE) or
-             self.is_transformed or
-             other.is_transformed or
-             other.ability == abilitydex['illusion'])):
+        if (other.is_fainted() or
+            other.has_effect(Volatile.SUBSTITUTE) or
+            self.is_transformed or
+            other.is_transformed or
+            other.illusion
+        ):
             return FAIL
         if __debug__: log.i('%s transformed into %s!', self, other)
 
