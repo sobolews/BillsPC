@@ -157,10 +157,7 @@ class InteractiveBot(Bot):
     bot = InteractiveBot(url='ws://localhost:8000/showdown/websocket',
                          protocols=['http-only', 'chat'],
                          username='user', password='password')
+    For smogon, use 'ws://sim.smogon.com:8000/showdown/websocket'
     """
     def start(self, interactive=True):
         super(InteractiveBot, self).start(interactive=True)
-
-    def process_message(self, msg):
-        print received(msg)
-        super(InteractiveBot, self).process_message(msg)
