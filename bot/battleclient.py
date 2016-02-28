@@ -415,7 +415,7 @@ class BattleClient(object):
             assert msg[3] == '100/100', msg[3]
             level = int(msg[2].split(', ')[1].lstrip('L'))
             assert 1 <= level <= 100, 'level=%r' % level
-            pokemon = BattlePokemon(pokedex[normalize_name(msg[1])],
+            pokemon = BattlePokemon(pokedex[normalize_name(msg[2].split(', ')[0])],
                                     level, moveset=[], side=side)
             self.foe_side.reveal(pokemon)
 
