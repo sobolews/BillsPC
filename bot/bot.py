@@ -126,6 +126,7 @@ class Bot(WebSocketClient):
         'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
         'error', 'warning', 'gen', 'callback', 'debug', 'unlink', 'updatechallenges', '-fail',
+        'users', ':', 'c:', 'expire', 'seed', 'choice',
     }
 
     # TODO: implement (they get ignored for now)
