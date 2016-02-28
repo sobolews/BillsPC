@@ -91,18 +91,18 @@ class CheatSheetEngine(BattleEngine):
                                                    *dmg_range).replace('%', '', 1)
         return pct_range
 
-    def calculate_damage_range(self, foe, move, my_active):
+    def calculate_damage_range(self, attacker, move, defender):
         """ Return a tuple (mindamage, maxdamage) or None """
         if move in (movedex['mirrorcoat'], movedex['counter'], movedex['metalburst']):
             return None
         self.get_critical_hit = lambda crit: False
         self.damage_randomizer = lambda: 85 # min damage
-        mindamage = self.calculate_damage(foe, move, my_active)
+        mindamage = self.calculate_damage(attacker, move, defender)
         if mindamage is None:
             return None
 
         self.damage_randomizer = lambda: 100 # max damage
-        maxdamage = self.calculate_damage(foe, move, my_active)
+        maxdamage = self.calculate_damage(attacker, move, defender)
 
         self.get_critical_hit = BattleEngine.get_critical_hit
         self.damage_randomizer = BattleEngine.damage_randomizer
