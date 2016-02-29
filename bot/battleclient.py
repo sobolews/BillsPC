@@ -675,5 +675,5 @@ class BattleClient(object):
         """
         for stat, val in stats.items():
             if not val == pokemon.stats[stat]:
-                log.i("%s lvl %d's %s: Showdown=%d, calculated=%d",
+                log.w("%s lvl %d's %s: Showdown=%d, calculated=%d",
                       pokemon, pokemon.level, stat, val, pokemon.stats[stat])
