@@ -267,10 +267,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.boosts['atk'], 2)
         self.handle('|-boost|p1a: Hitmonchan|atk|2')
         self.assertEqual(self.hitmonchan.boosts['atk'], 4)
+        self.handle('|-boost|p1a: Hitmonchan|accuracy|1')
+        self.assertEqual(self.hitmonchan.boosts['acc'], 1)
 
     def test_handle_unboost(self):
         self.handle('|-unboost|p1a: Hitmonchan|spe|1')
         self.assertEqual(self.hitmonchan.boosts['spe'], -1)
+        self.handle('|-unboost|p1a: Hitmonchan|evasion|1')
+        self.assertEqual(self.hitmonchan.boosts['evn'], -1)
 
     def test_handle_curestatus(self):
         self.handle('|-status|p1a: Hitmonchan|slp|[from] move: Rest')

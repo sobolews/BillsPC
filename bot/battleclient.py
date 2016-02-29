@@ -456,11 +456,15 @@ class BattleClient(object):
         e.g. |-boost|p2a: Hawlucha|atk|2
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        pokemon.boosts[msg[2]] += int(msg[3])
+        boost = self.BOOST_MAP.get(msg[2], msg[2])
+        pokemon.boosts[boost] += int(msg[3])
 
     def handle_unboost(self, msg):
         pokemon = self.get_pokemon_from_msg(msg)
-        pokemon.boosts[msg[2]] -= int(msg[3])
+        boost = self.BOOST_MAP.get(msg[2], msg[2])
+        pokemon.boosts[boost] -= int(msg[3])
+
+    BOOST_MAP = {'evasion': 'evn', 'accuracy': 'acc'}
 
     def handle_setboost(self, msg):
         """
