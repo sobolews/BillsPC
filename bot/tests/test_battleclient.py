@@ -212,6 +212,10 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(self.goodra.moveset[0].is_hiddenpower)
         self.assertEqual(self.goodra.pp[self.goodra.moveset[0]], 24 - 1)
 
+    def test_handle_move_not_in_moveset(self):
+        with self.assertRaises(AssertionError):
+            self.handle('|move|p1a: Hitmonchan|Dragon Pulse|p2a: Goodra')
+
     def test_handle_my_damage(self):
         self.handle('|-damage|p1a: Hitmonchan|175/209')
         self.assertEqual(self.hitmonchan.hp, 175)
