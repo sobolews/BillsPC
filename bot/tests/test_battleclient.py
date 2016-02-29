@@ -5,6 +5,7 @@ from mock import patch
 
 from bot.battleclient import BattleClient
 from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM
+from pokedex.items import itemdex
 from pokedex.moves import movedex
 
 class TestBattleClientBase(TestCase):
@@ -382,3 +383,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-anim|p1a: Hitmonchan|Solar Beam|p2a: Goodra')
 
         self.assertFalse(self.hitmonchan.has_effect(Volatile.TWOTURNMOVE))
+
+    def test_handle_item(self):
+        self.handle('|-item|p1a: Hitmonchan|Air Balloon')
+        self.assertEqual(self.hitmonchan.item, itemdex['airballoon'])
+        self.handle(
+            '|-item|p2a: Goodra|Leftovers|[from] ability: Frisk|[of] p1a: Hitmonchan|[identify]')
+        self.assertEqual(self.goodra.item, itemdex['leftovers'])
+        self.assertIn(self.goodra.get_effect(ITEM).on_residual,
+                      self.goodra.effect_handlers['on_residual'])
+        self.handle('|-item|p2a: Goodra|Choice Scarf|[from] move: Trick')
+        self.assertEqual(self.goodra.item, itemdex['choicescarf'])
+        self.assertNotIn(self.goodra.get_effect(ITEM).on_residual,
+                         self.goodra.effect_handlers['on_residual'])
+        self.assertIn(self.goodra.get_effect(ITEM).on_modify_spe,
+                      self.goodra.effect_handlers['on_modify_spe'])

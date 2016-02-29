@@ -115,7 +115,7 @@ class Bot(WebSocketClient):
 
     BATTLE_MSGS = {
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
-        'cant'
+        'cant', '-item',
     }
 
     IGNORE_MSGS = {
@@ -131,7 +131,7 @@ class Bot(WebSocketClient):
 
     # TODO: implement (they get ignored for now)
     TODO_MSGS = {
-        '-item', '-enditem', '-ability', '-endability', '-transform', '-start', '-end',
+        '-enditem', '-ability', '-endability', '-transform', '-start', '-end',
         '-singleturn', '-singlemove', '-activate', '-sidestart', '-sideend', '-fieldstart',
         '-fieldend', '-fieldactivate', '-formechange', '-mega', 'win', 'tie', 'prematureend',
         'detailschange', 'deinit'

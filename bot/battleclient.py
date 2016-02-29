@@ -12,7 +12,7 @@ from mining import create_pokedex
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile
+from pokedex.enums import Status, Weather, Volatile, ITEM
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
@@ -445,7 +445,22 @@ class BattleClient(object):
     handle_drag = handle_switch
     handle_replace = handle_switch
 
+    def handle_item(self, msg):
+        """
+        `|-item|POKEMON|ITEM`
+
+        |-item|p1a: Magnezone|Air Balloon
+        |-item|p2a: Butterfree|Choice Scarf|[from] move: Trick
+        |-item|p1a: Exeggutor|Sitrus Berry|[from] ability: Harvest
+        |-item|p2a: Suicune|Leftovers|[from] ability: Frisk|[of] p1a: Dusknoir|[identify]
+
+        Identifies a currently held item
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        self.set_item(pokemon, itemdex[normalize_name(msg[2])])
+
     def set_item(self, pokemon, item):
+        pokemon.remove_effect(ITEM)
         pokemon.item = item
         pokemon.set_effect(item())
         pokemon.remove_effect(Volatile.UNBURDEN)
