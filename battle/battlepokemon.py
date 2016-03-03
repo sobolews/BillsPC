@@ -103,7 +103,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             if __debug__: log.d('Tried to set effect %s but %s already has it', effect, self)
             return FAIL
 
-        if self.is_immune_to(effect.source) and not override_immunity:
+        if not override_immunity and self.is_immune_to(effect.source):
             if __debug__: log.i('%s is immune to %s!', self, effect.source)
             return FAIL
 
