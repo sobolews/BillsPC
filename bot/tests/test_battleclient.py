@@ -4,6 +4,7 @@ from unittest import TestCase
 from mock import patch
 
 from bot.battleclient import BattleClient
+from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM
 from pokedex.items import itemdex
 from pokedex.moves import movedex
@@ -427,3 +428,25 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.goodra.last_berry_used, itemdex['sitrusberry'])
         self.assertIsNone(self.hitmonchan.last_berry_used)
         self.assertIsNone(self.hitmonchan.item)
+
+    def test_handle_ability(self):
+        self.handle('|-ability|p1a: Hitmonchan|Moxie|boost')
+        self.handle('|-ability|p2a: Goodra|Unnerve|p1: test-BillsPC')
+
+        self.assertEqual(self.hitmonchan.ability, abilitydex['moxie'])
+        self.assertEqual(self.goodra.ability, abilitydex['unnerve'])
+        self.assertIn(self.hitmonchan.get_effect(ABILITY).on_foe_faint,
+                      self.hitmonchan.effect_handlers['on_foe_faint'])
+
+    def test_handle_move_with_foe_pressure(self):
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
+        self.handle('|-ability|p2a: Goodra|Pressure')
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
+
+        self.assertEqual(self.hitmonchan.pp[movedex['machpunch']], 48 - 3)
+
+    def test_handle_move_with_my_pressure(self):
+        self.handle('|-ability|p1a: Hitmonchan|Pressure')
+        self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
+
+        self.assertEqual(self.goodra.pp[movedex['dracometeor']], 8 - 2)

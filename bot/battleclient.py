@@ -12,7 +12,7 @@ from mining import create_pokedex
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ITEM
+from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
@@ -262,7 +262,8 @@ class BattleClient(object):
 
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
-        foe = (self.foe_side, self.my_side)[pokemon.side.index == self.my_player].active_pokemon
+        foe = (self.foe_side.active_pokemon if pokemon.side.index == self.my_player
+               else self.my_side.active_pokemon)
         pp_sub = 2 if not foe.is_fainted() and foe.ability is abilitydex['pressure'] else 1
 
         if msg[2] == 'Hidden Power':
@@ -494,6 +495,17 @@ class BattleClient(object):
         pokemon.item = item
         pokemon.set_effect(item())
         pokemon.remove_effect(Volatile.UNBURDEN, force=True)
+
+    def handle_ability(self, msg):
+        """
+        |-ability|p1a: Granbull|Intimidate|boost
+        |-ability|p1a: Kyurem|Teravolt
+        |-ability|p1a: Pyroar|Unnerve|p2: 1-BillsPC
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        pokemon.remove_effect(ABILITY, force=True)
+        pokemon.ability = ability = abilitydex[normalize_name(msg[2])]
+        pokemon.set_effect(ability())
 
     def handle_boost(self, msg):
         """
