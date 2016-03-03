@@ -51,6 +51,7 @@ class TestBattleClientBase(TestCase):
         self.handle('|start')
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
         self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|turn|1')
 
 
 class TestBattleClient(TestBattleClientBase):
@@ -398,3 +399,31 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
                          self.goodra.effect_handlers['on_residual'])
         self.assertIn(self.goodra.get_effect(ITEM).on_modify_spe,
                       self.goodra.effect_handlers['on_modify_spe'])
+
+    def test_handle_enditem(self):
+        self.handle(
+            '|-enditem|p1a: Hitmonchan|Assault Vest|[from] move: Knock Off|[of] p2a: Goodra')
+        self.assertIsNone(self.hitmonchan.item)
+        self.assertFalse(self.hitmonchan.has_effect(ITEM))
+        self.assertEqual(self.hitmonchan.effect_handlers['on_modify_spd'], [])
+        self.assertIsNone(self.hitmonchan.item_used_this_turn)
+
+        self.handle('|-enditem|p2a: Goodra|Chesto Berry|[eat]')
+        self.assertIsNone(self.goodra.item)
+        self.assertEqual(self.goodra.last_berry_used, itemdex['chestoberry'])
+        self.assertEqual(self.goodra.item_used_this_turn, itemdex['chestoberry'])
+
+        self.handle('|-enditem|p2a: Goodra|Focus Sash')
+        self.assertIsNone(self.goodra.item)
+        self.assertIsNone(self.goodra.last_berry_used)
+        self.assertEqual(self.goodra.item_used_this_turn, itemdex['focussash'])
+
+        self.handle('|turn|2')
+        self.assertIsNone(self.goodra.item_used_this_turn)
+
+    def test_handle_enditem_from_stealeat(self):
+        self.handle('|-enditem|p1a: Hitmonchan|Sitrus Berry'
+                    '|[from] stealeat|[move] Bug Bite|[of] p2a: Goodra')
+        self.assertEqual(self.goodra.last_berry_used, itemdex['sitrusberry'])
+        self.assertIsNone(self.hitmonchan.last_berry_used)
+        self.assertIsNone(self.hitmonchan.item)

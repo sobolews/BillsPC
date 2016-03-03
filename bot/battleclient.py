@@ -148,6 +148,8 @@ class BattleClient(object):
         """
         assert self.battlefield.turns == int(msg[1]) - 1, (self.battlefield.turns, msg)
         self.battlefield.turns = int(msg[1])
+        self.my_side.active_pokemon.item_used_this_turn = None
+        self.foe_side.active_pokemon.item_used_this_turn = None
 
     def handle_player(self, msg):
         """
@@ -458,6 +460,34 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         self.set_item(pokemon, itemdex[normalize_name(msg[2])])
+
+    def handle_enditem(self, msg):
+        """
+        `|-enditem|POKEMON|ITEM`
+
+        |-enditem|p2a: Pachirisu|Air Balloon
+        |-enditem|p1a: Regirock|Chesto Berry|[eat]
+        |-enditem|p2a: Jumpluff|Flying Gem|[from] gem|[move] Acrobatics
+        |-enditem|p1a: Gothitelle|Leftovers|[from] move: Knock Off|[of] p2a: Venusaur
+        |-enditem|p1a: Leafeon|Sitrus Berry|[from] stealeat|[move] Bug Bite|[of] p2a: Aerodactyl
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        pokemon.remove_effect(ITEM)
+        pokemon.item = None
+        pokemon.last_berry_used = None
+        item = itemdex[normalize_name(msg[2])]
+
+        if len(msg) > 3:
+            if msg[3] == '[eat]':
+                pokemon.last_berry_used = item
+                pokemon.item_used_this_turn = item
+            elif msg[3] == '[from] stealeat':
+                attacker = self.get_pokemon_from_msg([msg[5][5:]], 0)
+                attacker.last_berry_used = item
+                return
+            elif msg[3] == '[from] move: Knock Off':
+                return
+        pokemon.item_used_this_turn = item
 
     def set_item(self, pokemon, item):
         pokemon.remove_effect(ITEM)
