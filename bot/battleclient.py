@@ -363,7 +363,7 @@ class BattleClient(object):
     def set_status(self, pokemon, status):
         assert status in self.STATUS_MAP, status
         pokemon.status = self.STATUS_MAP[status][0]
-        pokemon.set_effect(self.STATUS_MAP[status][1](pokemon))
+        pokemon.set_effect(self.STATUS_MAP[status][1](pokemon), override_immunity=True)
 
     STATUS_MAP = {
         'brn': (Status.BRN, statuses.Burn),
