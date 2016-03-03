@@ -290,7 +290,7 @@ class BattleClient(object):
             log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
         pokemon.last_move_used = move
-        pokemon.remove_effect(Volatile.TWOTURNMOVE, None)
+        pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
     def handle_damage(self, msg):
         """
@@ -472,7 +472,7 @@ class BattleClient(object):
         |-enditem|p1a: Leafeon|Sitrus Berry|[from] stealeat|[move] Bug Bite|[of] p2a: Aerodactyl
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        pokemon.remove_effect(ITEM)
+        pokemon.remove_effect(ITEM, force=True)
         pokemon.item = None
         pokemon.last_berry_used = None
         item = itemdex[normalize_name(msg[2])]
@@ -490,10 +490,10 @@ class BattleClient(object):
         pokemon.item_used_this_turn = item
 
     def set_item(self, pokemon, item):
-        pokemon.remove_effect(ITEM)
+        pokemon.remove_effect(ITEM, force=True)
         pokemon.item = item
         pokemon.set_effect(item())
-        pokemon.remove_effect(Volatile.UNBURDEN)
+        pokemon.remove_effect(Volatile.UNBURDEN, force=True)
 
     def handle_boost(self, msg):
         """
@@ -617,7 +617,7 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         if pokemon.has_effect(Volatile.TWOTURNMOVE):
-            pokemon.remove_effect(Volatile.TWOTURNMOVE, None)
+            pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
     def _validate_my_team(self):
         """

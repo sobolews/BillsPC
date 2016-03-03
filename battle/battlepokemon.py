@@ -124,7 +124,7 @@ class BattlePokemon(object, EffectHandlerMixin):
     def get_effect(self, source):
         return self._effect_index.get(source)
 
-    def remove_effect(self, source, engine=None, batonpassed=False):
+    def remove_effect(self, source, engine=None, force=False):
         """
         `engine` must be passed if there is a possibility that `source`'s effect has an on_end
         method that uses engine.
@@ -141,7 +141,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self._remove_handlers(effect)
 
         if __debug__: log.i('Removed %s from %s', effect, self)
-        if not batonpassed and 'on_end' in effect.handler_names:
+        if not force and 'on_end' in effect.handler_names:
             effect.on_end(self, engine)
         if source is self.status:
             self.status = None
