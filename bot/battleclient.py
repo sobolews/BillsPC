@@ -429,6 +429,8 @@ class BattleClient(object):
             outgoing._effect_index.clear()
             outgoing.effect_handlers = {key: list() for key in outgoing.effect_handlers}
             outgoing.boosts = Boosts()
+            if outgoing.is_transformed:
+                outgoing.revert_transform()
 
         # TODO: do any of the other flags from BattleEngine.switch_in need to be set here?
         side.active_pokemon = pokemon
@@ -631,6 +633,21 @@ class BattleClient(object):
         if pokemon.has_effect(Volatile.TWOTURNMOVE):
             pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
+    def handle_transform(self, msg):
+        """
+        |-transform|p2a: Ditto|p1a: Dedenne
+        |-transform|p2a: Ditto|p1a: Zoroark|[from] ability: Imposter
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        foe = self.get_pokemon_from_msg(msg, 2)
+
+        for move in self.request['active'][0]['moves']:
+            id = move['id']
+            if movedex[id] not in foe.moveset:
+                foe.moveset.append(movedex[id])
+
+        pokemon.transform_into(foe, engine=None, force=True)
+
     def _validate_my_team(self):
         """
         Validate that the current team state matching what is being sent from the server.
@@ -698,15 +715,16 @@ class BattleClient(object):
                     hp, max_hp = map(int, condition[0].split('/'))
                     assert pokemon.hp == hp, '%s has the wrong hp' % pokemon
                     assert pokemon.max_hp == max_hp, '%s has the wrong max_hp' % pokemon
-                for stat, val in reqmon['stats'].items():
-                    assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
+                if not pokemon.is_transformed:
+                    for stat, val in reqmon['stats'].items():
+                        assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
                 for i, move in enumerate(reqmon['moves']):
                     assert pokemon.moveset[i].name == move, \
                         ("%s's move %s doesn't match the request's %s" %
                          (pokemon, pokemon.moveset[i].name, move))
                 assert pokemon.level == int(reqmon['details'].split(', ')[1][1:])
                 assert pokemon.is_active == reqmon['active']
-                if not pokemon.ability.name.startswith('_'):
+                if not pokemon.ability.name.startswith('_') and not pokemon.is_transformed:
                     assert pokemon.ability.name == reqmon['baseAbility'], (pokemon.ability.name,
                                                                            reqmon['baseAbility'])
                 if pokemon.item is None:

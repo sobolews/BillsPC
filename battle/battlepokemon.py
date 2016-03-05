@@ -414,12 +414,16 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         return weight
 
-    def transform_into(self, other, engine):
-        if (other.is_fainted() or
-            other.has_effect(Volatile.SUBSTITUTE) or
-            self.is_transformed or
-            other.is_transformed or
-            other.illusion
+    def transform_into(self, other, engine, force=False):
+        """
+        force=True is only to be used by the battle client.
+        """
+        if (not force and
+            (other.is_fainted() or
+             other.has_effect(Volatile.SUBSTITUTE) or
+             self.is_transformed or
+             other.is_transformed or
+             other.illusion)
         ):
             return FAIL
         if __debug__: log.i('%s transformed into %s!', self, other)
@@ -450,11 +454,12 @@ class BattlePokemon(object, EffectHandlerMixin):
             if self.boosts: log.i('%s copied %r', self, self.boosts)
 
         if other.ability.name not in ('stancechange', 'multitype', 'illusion'):
-            self.remove_effect(ABILITY, engine)
+            self.remove_effect(ABILITY, engine, force=force)
             self.ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
-            ability_effect.start(self, engine)
+            if not force:
+                ability_effect.start(self, engine)
 
     def revert_transform(self):
         """ This should only be done on switch out or on faint """
