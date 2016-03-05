@@ -49,7 +49,6 @@ class TestBattleClientBase(TestCase):
         p1 starts with Hitmonchan, p2 with Goodra. No moves have been made; it is turn 0.
         """
         self.set_up_players()
-        self.handle('|start')
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
         self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
         self.handle('|turn|1')

@@ -596,12 +596,43 @@ class BattleClient(object):
 
     def handle_start(self, msg):
         """
-        -start usually marks the start of an effect
-
-        TODO: WIP
+        |-start|p2a: Suicune|move: Taunt
+        |-start|p1a: Kyurem|confusion|[fatigue]
+        |-start|p2a: Goodra|confusion
+        |-start|p1a: Aggron|Autotomize (no end)
+        |-start|p2a: Kyurem|Substitute
+        |-start|p2a: Ho-Oh|move: Yawn|[of] p1a: Uxie
+        |-start|p1a: Throh|move: Leech Seed
+        |-start|p2a: Zekrom|Encore
+        |-start|p1a: Politoed|perish3|[silent] (then) |-start|p1a: Politoed|perish3 (no end)
+        |-start|p2a: Latios|perish2
+        |-start|p2a: Latios|perish1
+        |-start|p2a: Latios|perish0 (then) |faint|p2a: Latios
+        |-start|p1a: Greninja|typechange|Dark|[from] Protean (no end)
+        |-start|p2a: Regigigas|ability: Slow Start
+        |-start|p1a: Heatmor|ability: Flash Fire (no end)
+        |-start|p2a: Ditto|Disable|Bug Bite
+        |-start|p2a: Leafeon|Attract|[from] ability: Cute Charm|[of] p1a: Fraxure
+        |-start|p1a: Fraxure|Magnet Rise
         """
-        assert None not in (self.battlefield, self.my_side, self.foe_side), \
-            (self.battlefield, self.my_side, self.foe_side)
+
+
+    def handle_end(self, msg):
+        """
+        |-end|p1a: Cacturne|move: Taunt
+        |-end|p2a: Goodra|confusion
+        |-end|p1a: Jirachi|Substitute
+        |-end|p2a: Ho-Oh|move: Yawn|[silent]
+        |-end|p1a: Fraxure|Leech Seed|[from] move: Rapid Spin|[of] p1a: Fraxure
+        |-end|p2a: Quagsire|Encore
+        |-end|p2a: Regigigas|Slow Start|[silent]
+        |-end|p1a: Zoroark|Illusion
+        |-end|p2a: Ditto|Disable
+        |-end|p2a: Leafeon|Attract|[silent]
+        |-end|p2a: Ditto|Magnet Rise
+        |-end|p2a: Chansey|Infestation|[partiallytrapped]
+        """
+
 
     def handle_prepare(self, msg):
         """
