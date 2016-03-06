@@ -219,6 +219,19 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         with self.assertRaises(AssertionError):
             self.handle('|move|p1a: Hitmonchan|Dragon Pulse|p2a: Goodra')
 
+    def test_set_will_move_this_turn(self):
+        self.assertTrue(self.hitmonchan.will_move_this_turn)
+        self.assertTrue(self.goodra.will_move_this_turn)
+        self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
+        self.assertFalse(self.hitmonchan.will_move_this_turn)
+        self.assertTrue(self.goodra.will_move_this_turn)
+        self.handle('|move|p2a: Goodra|Dragon Pulse|p1a: Hitmonchan')
+        self.assertFalse(self.hitmonchan.will_move_this_turn)
+        self.assertFalse(self.goodra.will_move_this_turn)
+        self.handle('|turn|2')
+        self.assertTrue(self.hitmonchan.will_move_this_turn)
+        self.assertTrue(self.goodra.will_move_this_turn)
+
     def test_handle_my_damage(self):
         self.handle('|-damage|p1a: Hitmonchan|175/209')
         self.assertEqual(self.hitmonchan.hp, 175)

@@ -148,8 +148,13 @@ class BattleClient(object):
         """
         assert self.battlefield.turns == int(msg[1]) - 1, (self.battlefield.turns, msg)
         self.battlefield.turns = int(msg[1])
-        self.my_side.active_pokemon.item_used_this_turn = None
-        self.foe_side.active_pokemon.item_used_this_turn = None
+        my_active = self.my_side.active_pokemon
+        foe_active = self.foe_side.active_pokemon
+
+        my_active.item_used_this_turn = None
+        my_active.will_move_this_turn = True
+        foe_active.item_used_this_turn = None
+        foe_active.will_move_this_turn = True
 
     def handle_player(self, msg):
         """
@@ -291,6 +296,7 @@ class BattleClient(object):
             log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
         pokemon.last_move_used = move
+        pokemon.will_move_this_turn = False
         pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
     def handle_damage(self, msg):
@@ -437,6 +443,7 @@ class BattleClient(object):
         pokemon.is_active = True
         pokemon.last_move_used = None
         pokemon.turns_out = 0
+        pokemon.will_move_this_turn = False
 
         self.set_hp_status(pokemon, msg[3])
         if pokemon.status is not None:
