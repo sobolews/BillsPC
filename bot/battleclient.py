@@ -622,6 +622,11 @@ class BattleClient(object):
         |-start|p2a: Leafeon|Attract|[from] ability: Cute Charm|[of] p1a: Fraxure
         |-start|p1a: Fraxure|Magnet Rise
         """
+        pokemon = self.get_pokemon_from_msg(msg)
+        effect = normalize_name(msg[2])
+        if effect == 'taunt':
+            duration = 3 if pokemon.will_move_this_turn else 4
+            pokemon.set_effect(effects.Taunt(duration))
 
 
     def handle_end(self, msg):
@@ -639,6 +644,10 @@ class BattleClient(object):
         |-end|p2a: Ditto|Magnet Rise
         |-end|p2a: Chansey|Infestation|[partiallytrapped]
         """
+        pokemon = self.get_pokemon_from_msg(msg)
+        effect = normalize_name(msg[2])
+        if effect == 'taunt':
+            pokemon.remove_effect(Volatile.TAUNT)
 
 
     def handle_prepare(self, msg):

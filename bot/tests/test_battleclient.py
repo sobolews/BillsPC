@@ -489,3 +489,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(ditto.name, 'ditto')
         self.assertListEqual(ditto.moveset, [movedex['transform']])
         self.assertEqual(ditto.ability, abilitydex['imposter'])
+
+    def test_handle_start_end_taunt(self):
+        self.handle('|switch|p1a: Dunsparce|Dunsparce, L83, M|302/302')
+        self.handle('|-start|p1a: Dunsparce|move: Taunt')
+        dunsparce = self.my_side.active_pokemon
+        self.assertTrue(dunsparce.has_effect(Volatile.TAUNT))
+        self.assertEqual(set(dunsparce.get_move_choices()),
+                         {movedex['rockslide'], movedex['headbutt']})
+
+        self.handle('|-end|p1a: Dunsparce|move: Taunt')
+        self.assertFalse(dunsparce.has_effect(Volatile.TAUNT))
+        self.assertEqual(set(dunsparce.get_move_choices()),
+                         {movedex['rockslide'], movedex['headbutt'],
+                          movedex['roost'], movedex['coil']})
