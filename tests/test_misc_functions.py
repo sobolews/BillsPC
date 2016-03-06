@@ -27,3 +27,5 @@ class TestMisc(TestCase):
         self.assertEqual(normalize_name('Bug Buzz'), 'bugbuzz')
         self.assertEqual(normalize_name("Farfetch'd"), 'farfetchd')
         self.assertEqual(normalize_name("Mr. Mime"), 'mrmime')
+        self.assertEqual(normalize_name('ability: Slow Start'), 'slowstart')
+        self.assertEqual(normalize_name('move: Taunt'), 'taunt')
