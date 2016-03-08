@@ -260,6 +260,7 @@ class BattleClient(object):
         |move|p1a: Groudon|Aerial Ace|p2a: Fraxure|[from]Copycat
 
         Just subtract pp for MOVE from POKEMON
+        Start autotomize from here, since there's no -start message when incrementing the multiplier
         """
         if len(msg) > 4:
             if msg[4].startswith('[from]'):
@@ -298,6 +299,13 @@ class BattleClient(object):
         pokemon.last_move_used = move
         pokemon.will_move_this_turn = False
         pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
+
+        if move == movedex['autotomize']:
+            effect = pokemon.get_effect(Volatile.AUTOTOMIZE)
+            if effect is None:
+                pokemon.set_effect(effects.Autotomize())
+            else:
+                effect.multiplier += 1
 
     def handle_damage(self, msg):
         """
@@ -611,7 +619,7 @@ class BattleClient(object):
         |-start|p2a: Suicune|move: Taunt
         |-start|p1a: Kyurem|confusion|[fatigue]
         |-start|p2a: Goodra|confusion
-        |-start|p1a: Aggron|Autotomize (no end)
+        |-start|p1a: Aggron|Autotomize (no end, handled in |move|)
         |-start|p2a: Kyurem|Substitute
         |-start|p2a: Ho-Oh|move: Yawn|[of] p1a: Uxie
         |-start|p1a: Throh|move: Leech Seed

@@ -514,3 +514,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-end|p2a: Goodra|confusion')
         self.assertFalse(self.goodra.has_effect(Volatile.CONFUSE))
+
+    def test_handle_move_autotomize(self):
+        self.handle('|move|p2a: Goodra|Autotomize|p2a: Goodra')
+        self.assertTrue(self.goodra.has_effect(Volatile.AUTOTOMIZE))
+        self.assertEqual(self.goodra.weight,
+                         self.goodra.pokedex_entry.weight - 100)
+
+        self.handle('|move|p2a: Goodra|Autotomize|p2a: Goodra')
+        self.assertTrue(self.goodra.has_effect(Volatile.AUTOTOMIZE))
+        self.assertEqual(self.goodra.weight, 0.1)
