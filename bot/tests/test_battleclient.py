@@ -503,3 +503,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(set(dunsparce.get_move_choices()),
                          {movedex['rockslide'], movedex['headbutt'],
                           movedex['roost'], movedex['coil']})
+
+    def test_handle_start_activate_end_confusion(self):
+        self.handle('|-start|p2a: Goodra|confusion|[fatigue]')
+        self.assertTrue(self.goodra.has_effect(Volatile.CONFUSE))
+        self.assertEqual(self.goodra.get_effect(Volatile.CONFUSE).turns_left, 4)
+
+        self.handle('|-activate|p2a: Goodra|confusion')
+        self.assertEqual(self.goodra.get_effect(Volatile.CONFUSE).turns_left, 3)
+
+        self.handle('|-end|p2a: Goodra|confusion')
+        self.assertFalse(self.goodra.has_effect(Volatile.CONFUSE))

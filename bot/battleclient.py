@@ -578,12 +578,17 @@ class BattleClient(object):
         """
         Activate is used for misc effects:
 
+        |-activate|p2a: Goodra|confusion
         |-activate|p1a: Banette|Destiny Bond -- destinybond took the foe down with it
         |-activate|p2a: Rotom-Fan|move: Trick|[of] p1a: Chimecho
         |-activate|p2a: Chesnaught|Protect -- ignore (existing effect stopped attack)
-
-        TODO: WIP
         """
+        pokemon = self.get_pokemon_from_msg(msg)
+        effect = normalize_name(msg[2])
+        if effect == 'confusion':
+            assert pokemon.has_effect(Volatile.CONFUSE), pokemon
+            pokemon.get_effect(Volatile.CONFUSE).turns_left -= 1
+
 
     def handle_singleturn(self, msg):
         """
@@ -627,7 +632,8 @@ class BattleClient(object):
         if effect == 'taunt':
             duration = 3 if pokemon.will_move_this_turn else 4
             pokemon.set_effect(effects.Taunt(duration))
-
+        elif effect == 'confusion':
+            pokemon.set_effect(effects.Confuse())
 
     def handle_end(self, msg):
         """
@@ -648,6 +654,8 @@ class BattleClient(object):
         effect = normalize_name(msg[2])
         if effect == 'taunt':
             pokemon.remove_effect(Volatile.TAUNT)
+        elif effect == 'confusion':
+            pokemon.remove_effect(Volatile.CONFUSE)
 
 
     def handle_prepare(self, msg):
