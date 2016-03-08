@@ -316,6 +316,7 @@ class BaseEffect(object):
                                       for attr in dir(self) if
                                       not self.source is ABILITY and
                                       not attr.startswith('__') and
+                                      not attr == 'PROB' and
                                       not (attr == 'suppressed' and not getattr(self, attr)) and
                                       not isinstance(getattr(self, attr), type(self.__repr__)) and
                                       ((attr == 'duration' and self.duration is not None)

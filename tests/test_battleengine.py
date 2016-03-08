@@ -1241,3 +1241,29 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         # no warning: tried to damage fainted pokemon
         self.assertFainted(self.blaziken)
+
+    def test_confuse(self):
+        self.new_battle('vaporeon', 'leafeon')
+        self.vaporeon.confuse()
+
+        self.choose_move(self.vaporeon, 'scald')
+        with patch('random.random', lambda: 0.6):
+            self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 0)
+        self.assertDamageTaken(self.vaporeon, 37) # confusion damage
+
+        self.assertEqual(self.vaporeon.get_effect(Volatile.CONFUSE).turns_left, 3)
+
+        self.choose_move(self.vaporeon, 'recover')
+        with patch('random.random', lambda: 0.36):
+            self.run_turn()
+
+        self.assertDamageTaken(self.vaporeon, 0)
+
+        self.choose_move(self.vaporeon, 'return')
+        with patch('random.random', lambda: 0.90):
+            self.run_turn()
+
+        self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
+        self.assertDamageTaken(self.leafeon, 50)

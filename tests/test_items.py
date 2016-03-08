@@ -61,7 +61,8 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertStatus(self.umbreon, None)
         self.assertItem(self.umbreon, 'airballoon')
 
-    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_airballoon_behind_substitute_and_confusion_damage(self):
         self.reset_items('airballoon', 'airballoon')
         self.choose_move(self.leafeon, 'substitute')
@@ -399,7 +400,8 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 199)
         self.assertDamageTaken(self.leafeon, 50)
 
-    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_focussash(self):
         self.new_battle('vaporeon', 'shedinja',
                         p0_item='focussash', p1_item='focussash')
@@ -533,7 +535,8 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.flareon, (self.flareon.max_hp / 4) - (self.flareon.max_hp / 16))
 
-    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_lifeorb(self):
         self.reset_items('lifeorb', 'lifeorb')
         self.add_pokemon('sylveon', 0, item='lifeorb')
@@ -737,7 +740,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
         self.assertItem(self.vaporeon, 'redcard')
 
-    @patch('random.randrange', lambda _: 0) # confusion hit
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_redcard_confusion_hit_doesnt_activate(self):
         self.reset_items('redcard', None)
         self.add_pokemon('espeon', 1)

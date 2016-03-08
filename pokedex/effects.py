@@ -135,26 +135,44 @@ class ChoiceLock(BaseEffect):
         if __debug__: log.d('%s is choicelocked into %s', pokemon, self.move)
         return [self.move] if self.move in moves else []
 
+CONFUSE_PROB = [(0.5, 0.5, 0),
+                (0.375, 0.375, 0.25),
+                (1/3.0, 1/3.0, 1/3.0),
+                (0.25, 0.25, 0.5),
+                (0, 0, 1)]
+
 class Confuse(BaseEffect):
+    """
+    Turn  p(hit) p(fail) p(end)
+    0     0.5    0.5     0
+    1     0.375  0.375   0.25
+    2     0.333  0.333   0.333
+    3     0.25   0.25    0.5
+    4     0      0       1
+    """
     source = Volatile.CONFUSE
 
     def __init__(self):
-        self.turns_left = random.randint(1, 4) # not duration, since it's not checked between turns
+        self.turns_left = 4
 
     @priority(3)
     def on_before_move(self, user, move, engine):
-        if self.turns_left == 0:
-            user.remove_effect(Volatile.CONFUSE)
-            if __debug__: log.i("%s's confused no more!", user)
-            return
-
+        turn = 4 - self.turns_left
         if __debug__: log.i("%s's confusion: %d turns left", user, self.turns_left)
         self.turns_left -= 1
 
-        if random.randrange(2) == 0:
+        prob = CONFUSE_PROB[turn]
+        roll = random.random()
+        if roll <= prob[0]:
+            return
+        elif roll <= prob[0] + prob[1]:
             if __debug__: log.i('%s hurt itself in its confusion', user)
             engine.confusion_hit(user)
             return FAIL
+        else:
+            user.remove_effect(Volatile.CONFUSE)
+            if __debug__: log.i("%s's confused no more!", user)
+            return
 
 class Flinch(BaseEffect):
     source = Volatile.FLINCH

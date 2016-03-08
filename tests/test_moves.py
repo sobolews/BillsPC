@@ -174,7 +174,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertFalse(self.flareon.has_effect(Volatile.BATONPASS))
         self.assertNotIn(Volatile.BATONPASS, self.flareon._effect_index)
 
-    @patch('random.randrange', lambda _: 1) # no confusion damage
+    @patch('random.random', lambda: 0.1) # no confusion damage
     def test_batonpass_effect(self):
         self.add_pokemon('flareon', 0)
         self.vaporeon.confuse()
@@ -1962,7 +1962,8 @@ class TestMoves(MultiMoveTestCase):
         damage = self.engine.use_move(self.leafeon, movedex['earthquake'], self.vaporeon)
         self.assertEqual(damage, 69)
 
-    @patch('random.randrange', lambda _: 0) # no miss; confusion damage
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_reflect_with_confusion_damage(self):
         self.choose_move(self.leafeon, 'reflect')
         self.choose_move(self.vaporeon, 'confuseray')
@@ -2997,7 +2998,7 @@ class TestSubstitute(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp/4 + 118)
 
-    @patch('random.randrange', lambda _: 0) # confusion damage
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_confusion_damage_doesnt_hit_subsitute(self):
         self.choose_move(self.leafeon, 'substitute')
         self.choose_move(self.vaporeon, 'splash')

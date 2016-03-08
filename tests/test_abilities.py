@@ -1431,7 +1431,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertFainted(self.leafeon)
         self.assertFainted(self.vaporeon)
 
-    @patch('random.randrange', lambda _: 0) # no miss; confusion roll fails
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_magicguard_vs_confusiondamage_perishsong_and_bellydrum(self):
         self.new_battle(p0_ability='magicguard', p1_ability='magicguard')
         self.choose_move(self.leafeon, 'perishsong')
@@ -1636,7 +1637,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertBoosts(self.vaporeon, {'atk': 1})
 
-    @patch('random.randrange', lambda _: 0) # no miss; confusion damage
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_multiscale(self):
         self.new_battle(p0_ability='multiscale', p1_ability='multiscale')
         self.choose_move(self.leafeon, 'leafblade')
@@ -3771,7 +3773,8 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertStatus(self.vaporeon, None)
 
-    @patch('random.randrange', lambda _: 0) # no miss, confusion hit
+    @patch('random.randrange', lambda _: 0) # no miss
+    @patch('random.random', lambda: 0.51) # confusion damage
     def test_wonderguard(self):
         self.new_battle('vaporeon', p0_ability='wonderguard')
         self.add_pokemon('shedinja', 0, ability='wonderguard')
