@@ -114,3 +114,20 @@ class CheatSheetEngine(BattleEngine):
         if mindamage is None:
             return None
         return mindamage, maxdamage
+
+    def calculate_expected_damage(self, attacker, move, defender):
+        if move in (movedex['mirrorcoat'], movedex['counter'], movedex['metalburst']):
+            return (defender.max_hp - defender.hp) * 2 # upper bound
+
+        if attacker.ability == abilitydex['sheerforce'] and move.secondary_effects:
+            attacker.set_effect(effects.SheerForceVolatile())
+        self.get_critical_hit = lambda crit: False
+
+        self.damage_randomizer = lambda: 93 # average damage
+        damage = self.calculate_damage(attacker, move, defender)
+
+        self.get_critical_hit = BattleEngine.get_critical_hit
+        self.damage_randomizer = BattleEngine.damage_randomizer
+        attacker.remove_effect(Volatile.SHEERFORCE)
+
+        return damage
