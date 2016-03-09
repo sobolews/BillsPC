@@ -665,6 +665,8 @@ class BattleClient(object):
             yawn = effects.Yawn()
             yawn.duration = 1
             pokemon.set_effect(yawn)
+        elif effect == 'leechseed':
+            pokemon.set_effect(effects.LeechSeed())
 
 
     def handle_end(self, msg):
@@ -692,6 +694,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.SUBSTITUTE)
         elif effect == 'yawn':
             pokemon.remove_effect(Volatile.YAWN)
+        elif effect == 'leechseed':
+            pokemon.remove_effect(Volatile.LEECHSEED)
 
 
     def handle_prepare(self, msg):

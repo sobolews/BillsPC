@@ -576,3 +576,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertEqual(self.hitmonchan.status, Status.SLP)
         self.assertFalse(self.hitmonchan.has_effect(Volatile.YAWN))
+
+    def test_handle_start_end_leechseed(self):
+        self.handle('|-start|p2a: Goodra|move: Leech Seed')
+        self.assertTrue(self.goodra.has_effect(Volatile.LEECHSEED))
+        self.assertIn(self.goodra.get_effect(Volatile.LEECHSEED).on_residual,
+                      self.goodra.effect_handlers['on_residual'])
+
+        self.handle('|-end|p2a: Goodra|Leech Seed|[from] move: Rapid Spin|[of] p2a: Goodra')
+        self.assertFalse(self.goodra.has_effect(Volatile.LEECHSEED))
+        self.assertListEqual(self.goodra.effect_handlers['on_residual'], [])
