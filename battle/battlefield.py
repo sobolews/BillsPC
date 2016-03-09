@@ -30,6 +30,9 @@ class BattleField(object, EffectHandlerMixin):
         self.turns = 0
         self.effect_handlers = {key: list() for key in BaseEffect.handler_names}
 
+    def get_foe(self, pokemon):
+        return self.sides[not pokemon.side.index].active_pokemon
+
     @property
     def effects(self):
         return self._effect_index.values()
