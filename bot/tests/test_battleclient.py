@@ -3,6 +3,7 @@ import json
 from unittest import TestCase
 from mock import patch
 
+from battle.decisionmakers import AutoDecisionMaker
 from bot.battleclient import BattleClient
 from pokedex.abilities import abilitydex
 from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM, Type
@@ -106,6 +107,7 @@ class TestBattleClient(TestBattleClientBase):
 class TestBattleClientPostTurn0(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
+        self.bc.cheatsheetengine.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
         self.set_up_turn_0()
         self.hitmonchan = self.my_side.active_pokemon
         self.goodra = self.foe_side.active_pokemon
@@ -560,3 +562,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertTrue(self.goodra.has_effect(Volatile.SUBSTITUTE))
         self.assertEqual(sub.hp, 1)
+
+    def test_handle_start_end_yawn(self):
+        self.handle('|-start|p1a: Hitmonchan|move: Yawn|[of] p2a: Goodra')
+        self.assertTrue(self.hitmonchan.has_effect(Volatile.YAWN))
+        self.assertEqual(self.hitmonchan.get_effect(Volatile.YAWN).duration, 1)
+
+        self.handle('|-end|p1a: Hitmonchan|move: Yawn|[silent]')
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.YAWN))
+
+        self.handle('|-start|p1a: Hitmonchan|move: Yawn|[of] p2a: Goodra')
+        self.bc.cheatsheetengine.run_turn()
+
+        self.assertEqual(self.hitmonchan.status, Status.SLP)
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.YAWN))

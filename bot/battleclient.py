@@ -661,6 +661,11 @@ class BattleClient(object):
         elif effect == 'substitute':
             pokemon.set_effect(effects.Substitute(pokemon.max_hp / 4))
             pokemon.remove_effect(Volatile.PARTIALTRAP)
+        elif effect == 'yawn':
+            yawn = effects.Yawn()
+            yawn.duration = 1
+            pokemon.set_effect(yawn)
+
 
     def handle_end(self, msg):
         """
@@ -685,6 +690,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.CONFUSE)
         elif effect == 'substitute':
             pokemon.remove_effect(Volatile.SUBSTITUTE)
+        elif effect == 'yawn':
+            pokemon.remove_effect(Volatile.YAWN)
 
 
     def handle_prepare(self, msg):
