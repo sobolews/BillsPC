@@ -590,12 +590,28 @@ class BattleClient(object):
         |-activate|p1a: Banette|Destiny Bond -- destinybond took the foe down with it
         |-activate|p2a: Rotom-Fan|move: Trick|[of] p1a: Chimecho
         |-activate|p2a: Chesnaught|Protect -- ignore (existing effect stopped attack)
+        |-activate|p1a: Dusknoir|Substitute|[damage]
         """
         pokemon = self.get_pokemon_from_msg(msg)
         effect = normalize_name(msg[2])
         if effect == 'confusion':
             assert pokemon.has_effect(Volatile.CONFUSE), pokemon
             pokemon.get_effect(Volatile.CONFUSE).turns_left -= 1
+        elif effect == 'substitute':
+            # The substitute took damage, but did not break
+            sub = pokemon.get_effect(Volatile.SUBSTITUTE)
+            assert sub is not None, pokemon
+            foe = self.battlefield.get_foe(pokemon)
+            assert foe is not None, pokemon
+            move = foe.last_move_used
+            assert move is not None, foe
+            expected_damage = self.cheatsheetengine.calculate_expected_damage(foe, move, pokemon)
+            if expected_damage is None or expected_damage > sub.hp:
+                sub.hp = 1      # this normally shouldn't happen
+                if __debug__: log.i("Expected damage for %r attacking %r with %s was %s, but did "
+                                    "not break its substitute", foe, pokemon, move, expected_damage)
+            else:
+                sub.hp -= expected_damage
 
 
     def handle_singleturn(self, msg):
@@ -642,6 +658,9 @@ class BattleClient(object):
             pokemon.set_effect(effects.Taunt(duration))
         elif effect == 'confusion':
             pokemon.set_effect(effects.Confuse())
+        elif effect == 'substitute':
+            pokemon.set_effect(effects.Substitute(pokemon.max_hp / 4))
+            pokemon.remove_effect(Volatile.PARTIALTRAP)
 
     def handle_end(self, msg):
         """
@@ -664,6 +683,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.TAUNT)
         elif effect == 'confusion':
             pokemon.remove_effect(Volatile.CONFUSE)
+        elif effect == 'substitute':
+            pokemon.remove_effect(Volatile.SUBSTITUTE)
 
 
     def handle_prepare(self, msg):

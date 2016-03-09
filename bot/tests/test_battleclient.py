@@ -524,3 +524,39 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|move|p2a: Goodra|Autotomize|p2a: Goodra')
         self.assertTrue(self.goodra.has_effect(Volatile.AUTOTOMIZE))
         self.assertEqual(self.goodra.weight, 0.1)
+
+    def test_handle_start_end_substitute(self):
+        self.handle('|-damage|p2a: Goodra|75/100')
+        self.handle('|-start|p2a: Goodra|Substitute')
+
+        sub = self.goodra.get_effect(Volatile.SUBSTITUTE)
+        self.assertIsNotNone(sub)
+        self.assertEqual(sub.hp, self.goodra.max_hp / 4)
+
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
+        self.handle('|-end|p2a: Goodra|Substitute')
+
+        self.assertFalse(self.goodra.has_effect(Volatile.SUBSTITUTE))
+        self.assertEqual(self.goodra.hp, self.goodra.max_hp - self.goodra.max_hp / 4)
+
+        self.handle('|-damage|p2a: Goodra|50/100')
+        self.handle('|-start|p2a: Goodra|Substitute')
+
+        sub = self.goodra.get_effect(Volatile.SUBSTITUTE)
+        self.assertIsNotNone(sub)
+        self.assertEqual(sub.hp, self.goodra.max_hp / 4)
+
+        self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
+        self.handle('|-activate|p2a: Goodra|Substitute|[damage]')
+
+        self.assertTrue(self.goodra.has_effect(Volatile.SUBSTITUTE))
+        # hitmonchan rapidspin vs goodra: best guess calc = 18
+        self.assertEqual(sub.hp, (self.goodra.max_hp / 4) - 18)
+
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|move|p1a: Zekrom|Outrage|p2a: Goodra')
+        self.handle('|-activate|p2a: Goodra|Substitute|[damage]')
+        # somehow it didn't break goodra's sub
+
+        self.assertTrue(self.goodra.has_effect(Volatile.SUBSTITUTE))
+        self.assertEqual(sub.hp, 1)
