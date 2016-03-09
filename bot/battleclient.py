@@ -191,6 +191,7 @@ class BattleClient(object):
         if self.battlefield is None and self.my_side and self.foe_side:
             self.battlefield = BattleField(*sorted([self.my_side, self.foe_side],
                                                    key=lambda side: side.index))
+            self.cheatsheetengine.battlefield = self.battlefield
 
     def handle_request(self, request):
         """
@@ -230,7 +231,6 @@ class BattleClient(object):
 
         if not any([self.my_side.active_pokemon.is_fainted(),
                     self.foe_side.active_pokemon.is_fainted()]):
-            self.cheatsheetengine.battlefield = self.battlefield
             self.cheatsheetengine.show_my_moves(self.my_side.active_pokemon,
                                                 self.foe_side.active_pokemon)
             self.cheatsheetengine.show_foe_moves(self.my_side.active_pokemon,
