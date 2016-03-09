@@ -799,9 +799,9 @@ class BattleClient(object):
 
             except AssertionError:
                 # mocked in tests to raise exception instead
+                log.exception('Assertion failed: ')
                 log.e('My team is invalid/out of sync with the server.\n'
                       'My team: %r\n Latest request msg: %r', self.my_side, self.request)
-                log.exception('Assertion failed: ')
             except Exception:
                 log.exception('Exception during team validation: ')
                 log.e('%r\n%r' % (self.my_side, self.request))
