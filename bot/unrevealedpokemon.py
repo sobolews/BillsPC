@@ -8,6 +8,7 @@ class UnrevealedPokemon(BattlePokemon):
     """
     def __init__(self):
         self.name = UNREVEALED
+        self.is_active = False
 
     def not_implemented(self, *args, **kwargs):
         raise AssertionError('This pokemon has not been revealed yet')

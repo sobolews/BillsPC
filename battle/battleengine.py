@@ -946,6 +946,8 @@ class BattleEngine(object):
             for side in self.battlefield.sides:
                 assert not side.active_pokemon.is_fainted()
                 for pokemon in side.team:
+                    if pokemon.name == '<unrevealed>':
+                        continue
                     if pokemon.hp == 0 or pokemon.status == Status.FNT:
                         assert pokemon.hp == 0
                         assert pokemon.status == Status.FNT
