@@ -471,7 +471,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
             self.assertEqual(self.engine.battlefield.sides[1].active_pokemon, self.umbreon)
             self.assertEqual(self.vaporeon.hp, self.vaporeon.max_hp)
 
-    @patch('random.randint', lambda *_: 2) # two-turn outrage
+    @patch('random.randrange', lambda *_: 0) # two-turn outrage
     def test_locked_move(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p0_moves=(movedex['return'], movedex['splash'],
@@ -500,7 +500,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
         self.assertMoveChoices(self.vaporeon, {movedex['outrage']})
 
-    @patch('random.randint', lambda *_: 3) # three-turn outrage
+    @patch('random.randrange', lambda *_: 1) # three-turn outrage
     def test_locked_move_unlocks_after_protect_without_confusion(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p0_moves=(movedex['return'], movedex['splash'],
@@ -518,7 +518,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
 
-    @patch('random.randint', lambda *_: 2) # two-turn outrage
+    @patch('random.randrange', lambda *_: 0) # two-turn outrage
     def test_locked_move_unlocks_after_immunity_with_confusion(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p0_moves=(movedex['return'], movedex['splash'],
@@ -538,7 +538,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
         self.assertTrue(self.vaporeon.has_effect(Volatile.CONFUSE))
 
-    @patch('random.randint', lambda *_: 3) # three-turn outrage
+    @patch('random.randrange', lambda *_: 1) # three-turn outrage
     def test_locked_move_unlocks_without_confusion_after_user_falls_asleep(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p0_moves=(movedex['return'], movedex['splash'],

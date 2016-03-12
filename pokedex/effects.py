@@ -270,7 +270,8 @@ class PartialTrap(BaseEffect):
     def __init__(self, trapper):
         self.trapper = trapper
         # 4 or 5 turns of residual effects, plus one turn of trap then release
-        self.duration = random.randint(5, 6)
+        # 4 turns case is handled in on_residual
+        self.duration = 6
 
     def on_trap_check(self, pokemon):
         return Type.GHOST not in pokemon.types
@@ -282,6 +283,8 @@ class PartialTrap(BaseEffect):
             return
         if __debug__: log.i("%s was hurt by PartialTrap", pokemon)
         engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
+        if self.duration == 2 and random.randrange(2) == 0:
+            self.duration = 1   # 4 turns
 
     def on_end(self, pokemon, _):  # could end by e.g. uturn or roar
         self.trapper.remove_effect(Volatile.TRAPPER)
@@ -425,7 +428,7 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
 
     def __init__(self, move):
         self.move = move
-        self.duration = random.randint(2, 3) # 2 or 3 turns
+        self.duration = 3 # 2 or 3 turns: handled in on_residual
 
     @priority(-1) # must run last so that disable can't prevent prevent selection
     def on_get_move_choices(self, pokemon, moves):
@@ -438,6 +441,8 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
     def on_residual(self, pokemon, foe, engine):
         if pokemon.status is Status.SLP:
             pokemon.remove_effect(Volatile.LOCKEDMOVE)
+        if self.duration == 2 and random.randrange(2) == 0:
+            self.duration = 1   # 2 turns
 
     def on_end(self, pokemon, _):
         if (self.duration <= 1 and

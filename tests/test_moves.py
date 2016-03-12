@@ -736,7 +736,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertFalse(self.leafeon.has_effect(Volatile.DISABLE))
         self.assertFalse(self.flareon.has_effect(Volatile.DISABLE))
 
-    @patch('random.randint', lambda *_: 2) # two outrage turns
+    @patch('random.randrange', lambda *_: 0) # two outrage turns
     def test_disable_vs_locking_moves(self):
         """
         If outrage is disabled during rampage, outrage is still selectable (LOCKEDMOVE overrides
@@ -1186,7 +1186,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 154)
 
-    @patch('random.randint', lambda *_: 5) # 4 turns + 1 non-damaging trap turn
+    @patch('random.randrange', lambda *_: 0) # 4 turns + 1 non-damaging trap turn
     def test_infestation(self):
         self.add_pokemon('flareon', 0)
         self.add_pokemon('umbreon', 0)
@@ -2232,7 +2232,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertTrue(self.leafeon.has_effect(Volatile.CONFUSE))
 
-    @patch('random.randint', lambda *_: 2) # two outrage turns
+    @patch('random.randrange', lambda *_: 0) # two outrage turns
     def test_safeguard_doesnt_block_outrage_confusion(self):
         self.choose_move(self.leafeon, 'safeguard')
         self.choose_move(self.vaporeon, 'wish')
