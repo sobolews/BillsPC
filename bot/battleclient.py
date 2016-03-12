@@ -145,6 +145,9 @@ class BattleClient(object):
     def handle_turn(self, msg):
         """
         |turn|1
+
+        This is the last message that will be received before a move must be chosen. Will be sent
+        after a fainted pokemon is replaced.
         """
         assert self.battlefield.turns == int(msg[1]) - 1, (self.battlefield.turns, msg)
         self.battlefield.turns = int(msg[1])
