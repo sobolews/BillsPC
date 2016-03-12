@@ -724,8 +724,8 @@ class BattleClient(object):
             pokemon.set_effect(effects.Attract(foe))
         elif effect == 'magnetrise':
             pokemon.set_effect(effects.MagnetRise())
-
-
+        else:
+            log.e('Unhandled -start msg: %s', msg)
 
     def handle_end(self, msg):
         """
@@ -764,7 +764,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.ATTRACT)
         elif effect == 'magnetrise':
             pokemon.remove_effect(Volatile.MAGNETRISE)
-
+        else:
+            log.e('Unhandled -end msg: %s', msg)
 
     def handle_prepare(self, msg):
         """
