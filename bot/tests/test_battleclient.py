@@ -615,3 +615,34 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-end|p1a: Hitmonchan|Encore')
         self.assertFalse(self.hitmonchan.has_effect(Volatile.ENCORE))
+
+    def test_handle_start_perish(self):
+        self.handle('|move|p2a: Goodra|Perish Song|p2a: Goodra')
+        self.handle('|-start|p1a: Hitmonchan|perish3|[silent]')
+        self.handle('|-start|p2a: Goodra|perish3|[silent]')
+        self.handle('|-fieldactivate|move: Perish Song')
+        self.handle('|-start|p1a: Hitmonchan|perish3')
+        self.handle('|-start|p2a: Goodra|perish3')
+        self.handle('|turn|2')
+
+        hperish = self.hitmonchan.get_effect(Volatile.PERISHSONG)
+        gperish = self.goodra.get_effect(Volatile.PERISHSONG)
+        self.assertIsNotNone(hperish)
+        self.assertIsNotNone(gperish)
+        self.assertEqual(hperish.duration, 3)
+        self.assertEqual(gperish.duration, 3)
+
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|-start|p2a: Goodra|perish2')
+        self.handle('|turn|3')
+
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.PERISHSONG))
+        self.assertFalse(self.my_side.active_pokemon.has_effect(Volatile.PERISHSONG))
+        self.assertTrue(self.goodra.has_effect(Volatile.PERISHSONG))
+        self.assertEqual(gperish.duration, 2)
+
+        self.handle('|-start|p2a: Goodra|perish0')
+        self.handle('|faint|p2a: Goodra')
+        self.handle('|turn|4')
+
+        self.assertEqual(self.goodra.status, Status.FNT)

@@ -625,6 +625,8 @@ class BattleClient(object):
             else:
                 sub.hp -= expected_damage
 
+    def handle_fieldactivate(self, msg):
+        pass
 
     def handle_singleturn(self, msg):
         """
@@ -684,6 +686,17 @@ class BattleClient(object):
                 if __debug__: log.w('%s got encored, but its last move was None!', pokemon)
                 return
             pokemon.set_effect(effects.Encore(move, duration))
+        elif effect.startswith('perish'):
+            stage = int(effect[-1])
+            if stage == 3 and not pokemon.has_effect(Volatile.PERISHSONG):
+                pokemon.set_effect(effects.PerishSong())
+            else:
+                perishsong = pokemon.get_effect(Volatile.PERISHSONG)
+                if perishsong is None:
+                    log.w("%s: %s has no PerishSong effect!", msg, pokemon)
+                    perishsong = effects.PerishSong()
+                    pokemon.set_effect(perishsong)
+                perishsong.duration = stage + 1 # it will get decremented at the next |turn|
 
 
     def handle_end(self, msg):
