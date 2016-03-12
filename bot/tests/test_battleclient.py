@@ -494,17 +494,28 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
     def test_handle_start_end_taunt(self):
         self.handle('|switch|p1a: Dunsparce|Dunsparce, L83, M|302/302')
+        self.handle('|turn|2')
         self.handle('|-start|p1a: Dunsparce|move: Taunt')
+        self.handle('|turn|3')
         dunsparce = self.my_side.active_pokemon
         self.assertTrue(dunsparce.has_effect(Volatile.TAUNT))
         self.assertEqual(set(dunsparce.get_move_choices()),
                          {movedex['rockslide'], movedex['headbutt']})
+        # duration == 2, because dunsparce hadn't moved yet and next turn is started
+        self.assertEqual(dunsparce.get_effect(Volatile.TAUNT).duration, 2)
 
         self.handle('|-end|p1a: Dunsparce|move: Taunt')
+        self.handle('|turn|4')
         self.assertFalse(dunsparce.has_effect(Volatile.TAUNT))
         self.assertEqual(set(dunsparce.get_move_choices()),
                          {movedex['rockslide'], movedex['headbutt'],
                           movedex['roost'], movedex['coil']})
+
+        self.handle('|move|p1a: Dunsparce|Headbutt|p2a: Goodra')
+        self.handle('|-start|p1a: Dunsparce|move: Taunt')
+        self.handle('|turn|5')
+        # since dunsparce had moved, duration == 3
+        self.assertEqual(dunsparce.get_effect(Volatile.TAUNT).duration, 3)
 
     def test_handle_start_activate_end_confusion(self):
         self.handle('|-start|p2a: Goodra|confusion|[fatigue]')
