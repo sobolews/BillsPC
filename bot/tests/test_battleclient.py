@@ -646,3 +646,25 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|4')
 
         self.assertEqual(self.goodra.status, Status.FNT)
+
+    def test_handle_start_typechange(self):
+        self.handle('|switch|p2a: Greninja|Greninja, L74, F|100/100')
+        self.handle('|move|p2a: Greninja|Dark Pulse|p1a: Hitmonchan')
+        self.handle('|-start|p2a: Greninja|typechange|Dark|[from] Protean')
+        self.handle('|turn|2')
+
+        greninja = self.foe_side.active_pokemon
+        self.assertListEqual(greninja.types, [Type.DARK, None])
+
+        self.handle('|move|p2a: Greninja|Ice Beam|p1a: Hitmonchan')
+        self.handle('|-start|p2a: Greninja|typechange|Ice|[from] Protean')
+        self.handle('|turn|3')
+
+        self.assertListEqual(greninja.types, [Type.ICE, None])
+
+        self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|turn|4')
+        self.handle('|switch|p2a: Greninja|Greninja, L74, F|100/100')
+        self.handle('|turn|5')
+
+        self.assertListEqual(greninja.types, [Type.WATER, Type.DARK])

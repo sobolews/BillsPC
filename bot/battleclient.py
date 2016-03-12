@@ -12,7 +12,7 @@ from mining import create_pokedex
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY
+from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY, Type
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
@@ -455,6 +455,7 @@ class BattleClient(object):
             outgoing._effect_index.clear()
             outgoing.effect_handlers = {key: list() for key in outgoing.effect_handlers}
             outgoing.boosts = Boosts()
+            outgoing.types = list(outgoing.pokedex_entry.types) # protean etc. may have changed type
             if outgoing.is_transformed:
                 outgoing.revert_transform()
 
@@ -697,6 +698,10 @@ class BattleClient(object):
                     perishsong = effects.PerishSong()
                     pokemon.set_effect(perishsong)
                 perishsong.duration = stage + 1 # it will get decremented at the next |turn|
+        elif effect == 'typechange':
+            type = Type.values[msg[3].upper()]
+            pokemon.types = [type, None]
+
 
 
     def handle_end(self, msg):
