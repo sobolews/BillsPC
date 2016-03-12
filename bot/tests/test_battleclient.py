@@ -684,3 +684,20 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-end|p2a: Regigigas|Slow Start|[silent]')
         self.assertFalse(regigigas.has_effect(Volatile.SLOWSTART))
+
+    def test_handle_start_flashfire(self):
+        self.handle('|switch|p2a: Heatmor|Heatmor, L83, F|100/100')
+        self.handle('|-start|p2a: Heatmor|ability: Flash Fire')
+        self.handle('|turn|2')
+
+        heatmor = self.foe_side.active_pokemon
+        self.assertTrue(heatmor.has_effect(Volatile.FLASHFIRE))
+        self.assertEqual(heatmor.ability, abilitydex['flashfire'])
+
+        self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|turn|3')
+        self.handle('|switch|p2a: Heatmor|Heatmor, L83, F|100/100')
+        self.handle('|turn|4')
+
+        self.assertFalse(heatmor.has_effect(Volatile.FLASHFIRE))
+        self.assertEqual(heatmor.ability, abilitydex['flashfire'])

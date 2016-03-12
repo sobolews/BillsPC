@@ -708,6 +708,9 @@ class BattleClient(object):
             pokemon.types = [type, None]
         elif effect == 'slowstart':
             pokemon.set_effect(effects.SlowStartVolatile())
+        elif effect == 'flashfire':
+            self.set_ability(pokemon, 'flashfire')
+            pokemon.set_effect(effects.FlashFireVolatile())
 
 
     def handle_end(self, msg):
