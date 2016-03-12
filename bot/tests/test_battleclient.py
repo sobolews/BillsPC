@@ -721,3 +721,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|4')
 
         self.assertEqual(self.hitmonchan.get_effect(Volatile.DISABLE).duration, 3)
+
+    def test_handle_start_end_attract(self):
+        self.handle('|-start|p1a: Hitmonchan|Attract|[from] ability: Cute Charm|[of] p2a: Goodra')
+
+        attract = self.hitmonchan.get_effect(Volatile.ATTRACT)
+        self.assertIsNotNone(attract)
+        self.assertEqual(attract.mate, self.goodra)
+
+        self.handle('|-end|p1a: Hitmonchan|Attract|[silent]')
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.ATTRACT))
