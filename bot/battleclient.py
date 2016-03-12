@@ -159,6 +159,15 @@ class BattleClient(object):
         foe_active.item_used_this_turn = None
         foe_active.will_move_this_turn = True
 
+        for thing in filter(None, (my_active, foe_active, my_active.side, foe_active.side,
+                                   self.battlefield)):
+            for effect in thing.effects:
+                if effect.duration is not None:
+                    if effect.duration == 0:
+                        if __debug__: log.w("%s's effect %s has a duration of 0, cannot decrement")
+                        continue
+                    effect.duration -= 1
+
     def handle_player(self, msg):
         """
         `|player|PLAYER|USERNAME|AVATAR`   e.g. `|player|p1|1BillsPC|294`
@@ -670,6 +679,13 @@ class BattleClient(object):
             pokemon.set_effect(yawn)
         elif effect == 'leechseed':
             pokemon.set_effect(effects.LeechSeed())
+        elif effect == 'encore':
+            duration = 3 if pokemon.will_move_this_turn else 4
+            move = pokemon.last_move_used
+            if move is None:
+                if __debug__: log.w('%s got encored, but its last move was None!', pokemon)
+                return
+            pokemon.set_effect(effects.Encore(move, duration))
 
 
     def handle_end(self, msg):
@@ -699,6 +715,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.YAWN)
         elif effect == 'leechseed':
             pokemon.remove_effect(Volatile.LEECHSEED)
+        elif effect == 'encore':
+            pokemon.remove_effect(Volatile.ENCORE)
 
 
     def handle_prepare(self, msg):

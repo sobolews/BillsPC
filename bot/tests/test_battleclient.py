@@ -586,3 +586,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-end|p2a: Goodra|Leech Seed|[from] move: Rapid Spin|[of] p2a: Goodra')
         self.assertFalse(self.goodra.has_effect(Volatile.LEECHSEED))
         self.assertListEqual(self.goodra.effect_handlers['on_residual'], [])
+
+    def test_handle_start_end_encore(self):
+        self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
+        self.handle('|move|p2a: Goodra|Encore|p1a: Hitmonchan')
+        self.handle('|-start|p1a: Hitmonchan|Encore')
+        self.assertTrue(self.hitmonchan.has_effect(Volatile.ENCORE))
+        encore = self.hitmonchan.get_effect(Volatile.ENCORE)
+        self.assertEqual(encore.move, movedex['rapidspin'])
+        self.assertEqual(encore.duration, 4)
+
+        self.handle('|turn|2')
+        self.assertEqual(encore.duration, 3)
+
+        self.handle('|-end|p1a: Hitmonchan|Encore')
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.ENCORE))
