@@ -668,3 +668,19 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|5')
 
         self.assertListEqual(greninja.types, [Type.WATER, Type.DARK])
+
+    def test_handle_start_end_slowstart(self):
+        self.handle('|switch|p2a: Regigigas|Regigigas, L83|100/100')
+        self.handle('|-start|p2a: Regigigas|ability: Slow Start')
+        self.handle('|turn|2')
+
+        regigigas = self.foe_side.active_pokemon
+        slowstart = regigigas.get_effect(Volatile.SLOWSTART)
+        self.assertIsNotNone(slowstart)
+        self.assertEqual(slowstart.duration, 4)
+
+        self.handle('|turn|3')
+        self.assertEqual(slowstart.duration, 3)
+
+        self.handle('|-end|p2a: Regigigas|Slow Start|[silent]')
+        self.assertFalse(regigigas.has_effect(Volatile.SLOWSTART))

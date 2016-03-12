@@ -706,7 +706,8 @@ class BattleClient(object):
         elif effect == 'typechange':
             type = Type.values[msg[3].upper()]
             pokemon.types = [type, None]
-
+        elif effect == 'slowstart':
+            pokemon.set_effect(effects.SlowStartVolatile())
 
 
     def handle_end(self, msg):
@@ -738,6 +739,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.LEECHSEED)
         elif effect == 'encore':
             pokemon.remove_effect(Volatile.ENCORE)
+        elif effect == 'slowstart':
+            pokemon.remove_effect(Volatile.SLOWSTART)
 
 
     def handle_prepare(self, msg):
