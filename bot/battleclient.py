@@ -533,9 +533,14 @@ class BattleClient(object):
         |-ability|p1a: Pyroar|Unnerve|p2: 1-BillsPC
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        pokemon.remove_effect(ABILITY, force=True)
-        pokemon.ability = ability = abilitydex[normalize_name(msg[2])]
-        pokemon.set_effect(ability())
+        self.set_ability(pokemon, msg[2])
+
+    def set_ability(self, pokemon, name):
+        ability = abilitydex[normalize_name(name)]
+        if pokemon.ability != ability:
+            pokemon.remove_effect(ABILITY, force=True)
+            pokemon.ability = ability = ability
+            pokemon.set_effect(ability())
 
     def handle_boost(self, msg):
         """
