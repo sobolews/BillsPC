@@ -674,9 +674,7 @@ class BattleClient(object):
             pokemon.set_effect(effects.Substitute(pokemon.max_hp / 4))
             pokemon.remove_effect(Volatile.PARTIALTRAP)
         elif effect == 'yawn':
-            yawn = effects.Yawn()
-            yawn.duration = 1
-            pokemon.set_effect(yawn)
+            pokemon.set_effect(effects.Yawn())
         elif effect == 'leechseed':
             pokemon.set_effect(effects.LeechSeed())
         elif effect == 'encore':

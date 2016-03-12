@@ -565,13 +565,16 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
     def test_handle_start_end_yawn(self):
         self.handle('|-start|p1a: Hitmonchan|move: Yawn|[of] p2a: Goodra')
+        self.handle('|turn|2')
         self.assertTrue(self.hitmonchan.has_effect(Volatile.YAWN))
         self.assertEqual(self.hitmonchan.get_effect(Volatile.YAWN).duration, 1)
 
         self.handle('|-end|p1a: Hitmonchan|move: Yawn|[silent]')
+        self.handle('|turn|3')
         self.assertFalse(self.hitmonchan.has_effect(Volatile.YAWN))
 
         self.handle('|-start|p1a: Hitmonchan|move: Yawn|[of] p2a: Goodra')
+        self.handle('|turn|4')
         self.bc.cheatsheetengine.run_turn()
 
         self.assertEqual(self.hitmonchan.status, Status.SLP)
