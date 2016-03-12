@@ -711,6 +711,13 @@ class BattleClient(object):
         elif effect == 'flashfire':
             self.set_ability(pokemon, 'flashfire')
             pokemon.set_effect(effects.FlashFireVolatile())
+        elif effect == 'disable':
+            duration = 4 if pokemon.will_move_this_turn else 5
+            move = movedex[normalize_name(msg[3])]
+            if move not in pokemon.moveset:
+                if __debug__: log.w("%s: %s isn't in %s's moveset: %s",
+                                    msg, move, pokemon, pokemon.moveset)
+            pokemon.set_effect(effects.Disable(move, duration))
 
 
     def handle_end(self, msg):
@@ -744,6 +751,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.ENCORE)
         elif effect == 'slowstart':
             pokemon.remove_effect(Volatile.SLOWSTART)
+        elif effect == 'disable':
+            pokemon.remove_effect(Volatile.DISABLE)
 
 
     def handle_prepare(self, msg):

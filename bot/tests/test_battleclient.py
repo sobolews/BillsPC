@@ -701,3 +701,23 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertFalse(heatmor.has_effect(Volatile.FLASHFIRE))
         self.assertEqual(heatmor.ability, abilitydex['flashfire'])
+
+    def test_handle_start_end_disable(self):
+        self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
+        self.handle('|-start|p1a: Hitmonchan|Disable|Rapid Spin')
+        self.handle('|turn|2')
+
+        disable = self.hitmonchan.get_effect(Volatile.DISABLE)
+        self.assertIsNotNone(disable)
+        self.assertEqual(disable.duration, 4)
+        self.assertEqual(disable.move, movedex['rapidspin'])
+
+        self.handle('|-end|p1a: Hitmonchan|Disable')
+        self.handle('|turn|3')
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.DISABLE))
+
+        self.handle('|-start|p1a: Hitmonchan|Disable|Rapid Spin')
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
+        self.handle('|turn|4')
+
+        self.assertEqual(self.hitmonchan.get_effect(Volatile.DISABLE).duration, 3)
