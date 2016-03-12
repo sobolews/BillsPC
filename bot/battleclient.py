@@ -722,6 +722,8 @@ class BattleClient(object):
             foe = self.battlefield.get_foe(pokemon)
             self.set_ability(foe, 'cutecharm')
             pokemon.set_effect(effects.Attract(foe))
+        elif effect == 'magnetrise':
+            pokemon.set_effect(effects.MagnetRise())
 
 
 
@@ -760,6 +762,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.DISABLE)
         elif effect == 'attract':
             pokemon.remove_effect(Volatile.ATTRACT)
+        elif effect == 'magnetrise':
+            pokemon.remove_effect(Volatile.MAGNETRISE)
 
 
     def handle_prepare(self, msg):

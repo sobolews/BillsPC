@@ -731,3 +731,10 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-end|p1a: Hitmonchan|Attract|[silent]')
         self.assertFalse(self.hitmonchan.has_effect(Volatile.ATTRACT))
+
+    def test_handle_start_end_magnetrise(self):
+        self.handle('|-start|p1a: Hitmonchan|Magnet Rise')
+        self.assertTrue(self.hitmonchan.is_immune_to(Type.GROUND))
+
+        self.handle('|-end|p1a: Hitmonchan|Magnet Rise')
+        self.assertFalse(self.hitmonchan.is_immune_to(Type.GROUND))
