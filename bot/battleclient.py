@@ -609,6 +609,7 @@ class BattleClient(object):
         |-activate|p2a: Rotom-Fan|move: Trick|[of] p1a: Chimecho
         |-activate|p2a: Chesnaught|Protect -- ignore (existing effect stopped attack)
         |-activate|p1a: Dusknoir|Substitute|[damage]
+        |-activate|p1a: Chansey|move: Infestation|[of] p2a: Fraxure
         """
         pokemon = self.get_pokemon_from_msg(msg)
         effect = normalize_name(msg[2])
@@ -630,6 +631,13 @@ class BattleClient(object):
                                     "not break its substitute", foe, pokemon, move, expected_damage)
             else:
                 sub.hp -= expected_damage
+        elif effect == 'infestation':
+            # The infestation effect is starting
+            foe = self.battlefield.get_foe(pokemon)
+            assert foe is not None, pokemon
+            pokemon.set_effect(effects.PartialTrap(foe))
+            foe.set_effect(effects.Trapper(6, pokemon))
+
 
     def handle_fieldactivate(self, msg):
         pass
@@ -764,6 +772,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.ATTRACT)
         elif effect == 'magnetrise':
             pokemon.remove_effect(Volatile.MAGNETRISE)
+        elif effect == 'infestation':
+            pokemon.remove_effect(Volatile.PARTIALTRAP)
         else:
             log.e('Unhandled -end msg: %s', msg)
 

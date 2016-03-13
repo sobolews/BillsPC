@@ -738,3 +738,21 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-end|p1a: Hitmonchan|Magnet Rise')
         self.assertFalse(self.hitmonchan.is_immune_to(Type.GROUND))
+
+    def test_handle_activate_end_infestation(self):
+        self.handle('|-activate|p1a: Hitmonchan|move: Infestation|[of] p2a: Goodra')
+        self.handle('|turn|2')
+
+        ptrap = self.hitmonchan.get_effect(Volatile.PARTIALTRAP)
+        self.assertIsNotNone(ptrap)
+        self.assertEqual(ptrap.duration, 5)
+        self.assertEqual(ptrap.trapper, self.goodra)
+
+        trapper = self.goodra.get_effect(Volatile.TRAPPER)
+        self.assertIsNotNone(trapper)
+        self.assertEqual(trapper.trappee, self.hitmonchan)
+
+        self.handle('|-end|p1a: Hitmonchan|Infestation|[partiallytrapped]')
+
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.PARTIALTRAP))
+        self.assertFalse(self.goodra.has_effect(Volatile.TRAPPER))
