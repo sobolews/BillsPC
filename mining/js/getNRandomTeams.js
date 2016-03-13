@@ -16,7 +16,7 @@ global.string = function (str) {
 };
 
 try {
-        global.Config = require('./config/config.js');
+        global.Config = require(path.resolve(__dirname, 'config/config.js'));
 } catch (err) {
         if (err.code !== 'MODULE_NOT_FOUND') throw err;
 
@@ -24,7 +24,7 @@ try {
         fs.writeFileSync(path.resolve(__dirname, 'config/config.js'),
                 fs.readFileSync(path.resolve(__dirname, 'config/config-example.js'))
         );
-        global.Config = require('./config/config.js');
+        global.Config = require(path.resolve(__dirname, 'config/config.js'));
 }
 
 global.Tools = require('./tools.js');
