@@ -87,7 +87,7 @@ class Move(object):
         self.name = self.__class__.__name__.rstrip('_')
         self.init_move()
 
-    def init_move():
+    def init_move(self):
         raise NotImplementedError
 
     def __eq__(self, other):
