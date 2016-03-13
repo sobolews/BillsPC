@@ -653,11 +653,30 @@ class BattleClient(object):
         Activate is used for misc effects:
 
         |-activate|p2a: Goodra|confusion
-        |-activate|p1a: Banette|Destiny Bond -- destinybond took the foe down with it
-        |-activate|p2a: Rotom-Fan|move: Trick|[of] p1a: Chimecho
-        |-activate|p2a: Chesnaught|Protect -- ignore (existing effect stopped attack)
         |-activate|p1a: Dusknoir|Substitute|[damage]
         |-activate|p1a: Chansey|move: Infestation|[of] p2a: Fraxure
+        |-activate|p2a: Aerodactyl|ability: Mummy|Snow Warning|[of] p1a: Chansey
+
+        Reveal only:
+        |-activate|p2a: Seviper|ability: Shed Skin
+        |-activate|p1a: Machoke|ability: Aroma Veil|[of] p1a: Machoke
+        |-activate|p2a: Aerodactyl|ability: Hydration
+        |-activate|p1a: Fraxure|ability: {Immunity, Limber, Insomnia, Sweet Veil,
+          Vital Spirit, Water Veil} (only when statused via Mold Breaker or ability Traced, etc.)
+        |-activate|p1a: Shedinja|ability: Wonder Guard
+        |-activate|p2a: Groudon|ability: Sticky Hold
+        |-activate|p2a: Charizard|ability: Suction Cups
+
+        Ignored:
+        |-activate|p1a: Banette|Destiny Bond (destinybond's on_faint activated)
+        |-activate|p2a: Rotom-Fan|move: Trick|[of] p1a: Chimecho (trick was successful)
+        |-activate|p2a: Chesnaught|Protect (protect blocked an attack)
+        |-activate|p1a: Exeggutor|move: Sticky Web (stickyweb lowered spe on switch in)
+        |-activate|p2a: Leafeon|Attract|[of] p1a: Fraxure (attract roll)
+        |-activate|p1a: Machoke|Custap Berry
+        |-activate|p1a: Bastiodon|move: Pursuit (Bastiodon is switching out and gets caught)
+        |-activate|p2a: Aerodactyl|move: Struggle (about to use struggle)
+        |-activate||deltastream (deltastream reduced the effectiveness of a move)
         """
         pokemon = self.get_pokemon_from_msg(msg)
         effect = normalize_name(msg[2])
