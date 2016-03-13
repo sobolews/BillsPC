@@ -756,3 +756,36 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertFalse(self.hitmonchan.has_effect(Volatile.PARTIALTRAP))
         self.assertFalse(self.goodra.has_effect(Volatile.TRAPPER))
+
+    def test_handle_move_lockedmove(self):
+        self.handle('|switch|p2a: Lilligant|Lilligant, L81, F|100/100')
+        self.handle('|move|p2a: Lilligant|Petal Dance|p1a: Hitmonchan')
+        self.handle('|turn|2')
+
+        lilligant = self.foe_side.active_pokemon
+        lockedmove = lilligant.get_effect(Volatile.LOCKEDMOVE)
+        self.assertIsNotNone(lockedmove)
+        self.assertEqual(lockedmove.move, movedex['petaldance'])
+        self.assertTrue(lockedmove.duration, 2)
+
+        self.handle('|move|p2a: Lilligant|Petal Dance|p1a: Hitmonchan|[from]lockedmove')
+        self.handle('|turn|3')
+        self.assertTrue(lockedmove.duration, 1)
+        self.assertEqual(lilligant.pp[movedex['petaldance']], 16 - 1)
+
+        self.handle('|move|p2a: Lilligant|Petal Dance|p1a: Hitmonchan|[from]lockedmove')
+        self.handle('|-immune|p2a: Lilligant|confusion')
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|turn|4')
+
+        self.assertFalse(lilligant.has_effect(Volatile.LOCKEDMOVE))
+
+        zekrom = self.my_side.active_pokemon
+        self.handle('|move|p1a: Zekrom|Outrage|p2a: Lilligant')
+        self.assertTrue(zekrom.has_effect(Volatile.LOCKEDMOVE))
+        self.handle('|turn|5')
+        self.handle('|move|p1a: Zekrom|Outrage|p2a: Lilligant')
+        self.handle('|-start|p1a: Zekrom|confusion|[fatigue]')
+        self.handle('|turn|6')
+
+        self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))

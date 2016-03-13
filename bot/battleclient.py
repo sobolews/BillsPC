@@ -312,7 +312,9 @@ class BattleClient(object):
         pokemon.will_move_this_turn = False
         pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
-        if move == movedex['autotomize']:
+        if move in (movedex['outrage'], movedex['petaldance']):
+            pokemon.set_effect(effects.LockedMove(move))
+        elif move == movedex['autotomize']:
             effect = pokemon.get_effect(Volatile.AUTOTOMIZE)
             if effect is None:
                 pokemon.set_effect(effects.Autotomize())
@@ -368,6 +370,18 @@ class BattleClient(object):
             assert pokemon.status is Status.SLP, (pokemon, pokemon.status)
             if pokemon.sleep_turns > 0:
                 pokemon.sleep_turns -= 1
+
+    def handle_immune(self, msg):
+        """
+        |-immune|p1a: Lilligant|confusion
+
+        Reveals owntempo, (probably) ends LockedMove
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        if msg[2] == 'confusion':
+            self.set_ability(pokemon, 'owntempo')
+            if pokemon.has_effect(Volatile.LOCKEDMOVE):
+                pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
     def handle_curestatus(self, msg):
         """
@@ -686,6 +700,8 @@ class BattleClient(object):
             pokemon.set_effect(effects.Taunt(duration))
         elif effect == 'confusion':
             pokemon.set_effect(effects.Confuse())
+            if len(msg) > 3 and msg[3] == '[fatigue]':
+                pokemon.remove_effect(Volatile.LOCKEDMOVE)
         elif effect == 'substitute':
             pokemon.set_effect(effects.Substitute(pokemon.max_hp / 4))
             pokemon.remove_effect(Volatile.PARTIALTRAP)
