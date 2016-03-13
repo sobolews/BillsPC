@@ -445,18 +445,21 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertIsNone(self.hitmonchan.item)
 
     def test_handle_ability(self):
+        self.handle('|switch|p2a: Mewtwo|Mewtwo, L73|100/100')
         self.handle('|-ability|p1a: Hitmonchan|Moxie|boost')
-        self.handle('|-ability|p2a: Goodra|Unnerve|p1: test-BillsPC')
+        self.handle('|-ability|p2a: Mewtwo|Unnerve|p1: test-BillsPC')
 
+        mewtwo = self.foe_side.active_pokemon
         self.assertEqual(self.hitmonchan.ability, abilitydex['moxie'])
-        self.assertEqual(self.goodra.ability, abilitydex['unnerve'])
+        self.assertEqual(mewtwo.ability, abilitydex['unnerve'])
         self.assertIn(self.hitmonchan.get_effect(ABILITY).on_foe_faint,
                       self.hitmonchan.effect_handlers['on_foe_faint'])
 
     def test_handle_move_with_foe_pressure(self):
-        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
-        self.handle('|-ability|p2a: Goodra|Pressure')
-        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
+        self.handle('|switch|p2a: Deoxys|Deoxys-Speed, L73|100/100')
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Deoxys')
+        self.handle('|-ability|p2a: Deoxys|Pressure')
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Deoxys')
 
         self.assertEqual(self.hitmonchan.pp[movedex['machpunch']], 48 - 3)
 
@@ -723,11 +726,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.get_effect(Volatile.DISABLE).duration, 3)
 
     def test_handle_start_end_attract(self):
-        self.handle('|-start|p1a: Hitmonchan|Attract|[from] ability: Cute Charm|[of] p2a: Goodra')
+        self.handle('|switch|p2a: Lopunny|Lopunny, L75, F|100/100')
+        self.handle('|-start|p1a: Hitmonchan|Attract|[from] ability: Cute Charm|[of] p2a: Lopunny')
 
+        lopunny = self.foe_side.active_pokemon
         attract = self.hitmonchan.get_effect(Volatile.ATTRACT)
         self.assertIsNotNone(attract)
-        self.assertEqual(attract.mate, self.goodra)
+        self.assertEqual(attract.mate, lopunny)
 
         self.handle('|-end|p1a: Hitmonchan|Attract|[silent]')
         self.assertFalse(self.hitmonchan.has_effect(Volatile.ATTRACT))

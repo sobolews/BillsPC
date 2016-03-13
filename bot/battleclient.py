@@ -379,7 +379,7 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         if msg[2] == 'confusion':
-            self.set_ability(pokemon, 'owntempo')
+            self.set_ability(pokemon, abilitydex['owntempo'])
             if pokemon.has_effect(Volatile.LOCKEDMOVE):
                 pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
@@ -552,14 +552,43 @@ class BattleClient(object):
         |-ability|p1a: Pyroar|Unnerve|p2: 1-BillsPC
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        self.set_ability(pokemon, msg[2])
+        self.set_ability(pokemon, abilitydex[normalize_name(msg[2])])
 
-    def set_ability(self, pokemon, name):
-        ability = abilitydex[normalize_name(name)]
-        if pokemon.ability != ability:
-            pokemon.remove_effect(ABILITY, force=True)
-            pokemon.ability = ability = ability
-            pokemon.set_effect(ability())
+    def set_ability(self, pokemon, ability):
+        """
+        Changes the current ability, e.g. from mummy or trace, or a revealing message like -activate
+
+        If the base ability was unrevealed, set it.
+        """
+        if pokemon.ability == ability:
+            if __debug__: log.d("%s's ability is already %s", pokemon, ability)
+            return
+        else:
+            if __debug__: log.d("%s's ability was changed from %s", pokemon, pokemon.ability)
+
+        pokemon.remove_effect(ABILITY, force=True)
+        pokemon.ability = ability
+        pokemon.set_effect(ability())
+
+        if pokemon.base_ability == abilitydex['_unrevealed_']:
+            self.set_base_ability(pokemon, ability)
+
+    def set_base_ability(self, pokemon, ability):
+        """
+        Used when a foe's base_ability is discovered/revealed.
+        Sets only the base_ability, not current ability.
+        """
+        if pokemon.base_ability == ability:
+            log.w("%s's base_ability is already %s", pokemon, ability)
+        else:
+            if pokemon.base_ability != abilitydex['_unrevealed_']:
+                if __debug__: log.w("Overwriting %s's base_ability %s with %s!:\n%r",
+                                    pokemon, pokemon.base_ability, ability, pokemon)
+            if ability.name not in pokemon.pokedex_entry.abilities:
+                if __debug__: log.w("Giving %s a base_ability %s that it shouldn't get:\n%r",
+                                    pokemon, ability, pokemon)
+
+            pokemon.base_ability = ability
 
     def handle_boost(self, msg):
         """
@@ -738,7 +767,7 @@ class BattleClient(object):
         elif effect == 'slowstart':
             pokemon.set_effect(effects.SlowStartVolatile())
         elif effect == 'flashfire':
-            self.set_ability(pokemon, 'flashfire')
+            self.set_ability(pokemon, abilitydex['flashfire'])
             pokemon.set_effect(effects.FlashFireVolatile())
         elif effect == 'disable':
             duration = 4 if pokemon.will_move_this_turn else 5
@@ -749,7 +778,7 @@ class BattleClient(object):
             pokemon.set_effect(effects.Disable(move, duration))
         elif effect == 'attract':
             foe = self.battlefield.get_foe(pokemon)
-            self.set_ability(foe, 'cutecharm')
+            self.set_ability(foe, abilitydex['cutecharm'])
             pokemon.set_effect(effects.Attract(foe))
         elif effect == 'magnetrise':
             pokemon.set_effect(effects.MagnetRise())
