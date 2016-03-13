@@ -454,14 +454,7 @@ class BattleClient(object):
         side = self.get_side_from_msg(msg)
 
         if pokemon is None:     # we are revealing a foe's pokemon
-            assert side.index == self.foe_player, (side.index, self.foe_player)
-            assert side.num_unrevealed > 0, side.num_unrevealed
-            assert msg[3] == '100/100', msg[3]
-            level = int(msg[2].split(', ')[1].lstrip('L'))
-            assert 1 <= level <= 100, 'level=%r' % level
-            pokemon = BattlePokemon(pokedex[normalize_name(msg[2].split(', ')[0])],
-                                    level, moveset=[], side=side)
-            self.foe_side.reveal(pokemon)
+            pokemon = self.reveal_foe_pokemon(side, msg)
 
         outgoing = side.active_pokemon
         if outgoing is not None:
@@ -491,6 +484,18 @@ class BattleClient(object):
 
     handle_drag = handle_switch
     handle_replace = handle_switch
+
+    def reveal_foe_pokemon(self, side, msg):
+        assert side.index == self.foe_player, (side.index, self.foe_player)
+        assert side.num_unrevealed > 0, side.num_unrevealed
+        assert msg[3] == '100/100', msg[3]
+        level = int(msg[2].split(', ')[1].lstrip('L'))
+        assert 1 <= level <= 100, 'level=%r' % level
+        pokemon = BattlePokemon(pokedex[normalize_name(msg[2].split(', ')[0])],
+                                level, moveset=[], side=side, ability=abilitydex['_unrevealed_'])
+        # TODO: attempt to deduce more information right away, like ability, moves, etc.
+        self.foe_side.reveal(pokemon)
+        return pokemon
 
     def handle_item(self, msg):
         """

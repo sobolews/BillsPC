@@ -1304,6 +1304,9 @@ class _suppressed_(AbilityEffect):
 class _none_(AbilityEffect):
     pass
 
+class _unrevealed_(AbilityEffect):
+    pass
+
 abilitydex = {obj.__name__.lower(): obj for obj in vars().values() if
               inspect.isclass(obj) and
               issubclass(obj, BaseAbility) and
