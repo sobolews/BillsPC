@@ -868,7 +868,7 @@ class BattleClient(object):
                             choices = pokemon.get_move_choices()
                             if not active_moves[i]['disabled']:
                                 assert move in choices, \
-                                    "%s's %s should be disabled, but it isn't" % (pokemon, move)
+                                    "%s's %s should be selectable, but it isn't" % (pokemon, move)
 
                 # TODO: test/validate request['active'][0].get('trapped')
 
