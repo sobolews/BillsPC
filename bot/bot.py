@@ -116,6 +116,7 @@ class Bot(WebSocketClient):
     BATTLE_MSGS = {
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
         'cant', '-item', '-enditem', '-ability', '-transform', '-start', '-end', '-activate',
+        'callback',
     }
 
     IGNORE_MSGS = {
@@ -125,8 +126,8 @@ class Bot(WebSocketClient):
         '-notarget', '-hitcount', '-nothing', '-waiting', '-combine', 'chat', 'c', 'chatmsg',
         'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
-        'error', 'warning', 'gen', 'callback', 'debug', 'unlink', 'updatechallenges', '-fail',
-        'users', ':', 'c:', 'expire', 'seed', 'choice', '-endability',
+        'error', 'warning', 'gen', 'debug', 'unlink', 'updatechallenges', '-fail', 'users', ':',
+        'c:', 'expire', 'seed', 'choice', '-endability',
     }
 
     # TODO: implement (they get ignored for now)

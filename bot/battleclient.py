@@ -872,6 +872,14 @@ class BattleClient(object):
 
         pokemon.transform_into(foe, engine=None, force=True)
 
+    def handle_callback(self, msg):
+        """
+        |callback|trapped|0
+        """
+        if msg[1] == 'trapped':
+            log.w("Tried to switch out while trapped: switch choice was rejected")
+            # TODO: handle this?
+
     def _validate_my_team(self):
         """
         Validate that the current team state matching what is being sent from the server.
