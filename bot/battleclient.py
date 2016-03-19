@@ -678,8 +678,12 @@ class BattleClient(object):
         |-activate|p2a: Aerodactyl|move: Struggle (about to use struggle)
         |-activate||deltastream (deltastream reduced the effectiveness of a move)
         """
-        pokemon = self.get_pokemon_from_msg(msg)
         effect = normalize_name(msg[2])
+        if effect in ('destinybond', 'trick', 'protect', 'stickyweb', 'attract', 'custapberry',
+                      'pursuit', 'struggle', 'trapped', 'deltastream'):
+            return
+        pokemon = self.get_pokemon_from_msg(msg)
+
         if effect == 'confusion':
             assert pokemon.has_effect(Volatile.CONFUSE), pokemon
             pokemon.get_effect(Volatile.CONFUSE).turns_left -= 1
