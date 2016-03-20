@@ -550,9 +550,17 @@ class BattleClient(object):
         |-ability|p1a: Granbull|Intimidate|boost
         |-ability|p1a: Kyurem|Teravolt
         |-ability|p1a: Pyroar|Unnerve|p2: 1-BillsPC
+        |-ability|p1a: Alakazam|Levitate|[from] ability: Trace|[of] p2a: Eelektross
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        self.set_ability(pokemon, abilitydex[normalize_name(msg[2])])
+        ability = abilitydex[normalize_name(msg[2])]
+
+        if len(msg) > 3 and msg[3].split()[-1] == 'Trace':
+            self.set_ability(pokemon, abilitydex['trace'])
+            foe = self.battlefield.get_foe(pokemon)
+            self.set_ability(foe, ability)
+
+        self.set_ability(pokemon, ability)
 
     def set_ability(self, pokemon, ability):
         """

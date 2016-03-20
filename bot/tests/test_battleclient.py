@@ -14,7 +14,7 @@ class TestBattleClientBase(TestCase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
 
-    REQUEST = '|request|{"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Hitmonchan","details":"Hitmonchan, L79, M","condition":"209/209","active":true,"stats":{"atk":211,"def":170,"spa":101,"spd":219,"spe":166},"moves":["solarbeam","machpunch","rapidspin","hiddenpowerice"],"baseAbility":"ironfist","item":"assaultvest","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Zekrom","details":"Zekrom, L73","condition":"266/266","active":false,"stats":{"atk":261,"def":218,"spa":218,"spd":188,"spe":174},"moves":["outrage","roost","voltswitch","boltstrike"],"baseAbility":"teravolt","item":"leftovers","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Altaria","details":"Altaria, L75, M","condition":"236/236","active":false,"stats":{"atk":149,"def":179,"spa":149,"spd":201,"spe":164},"moves":["return","dragondance","earthquake","roost"],"baseAbility":"naturalcure","item":"altarianite","pokeball":"pokeball","canMegaEvo":true},{"ident":"p2: Ditto","details":"Ditto, L83","condition":"215/215","active":true,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["transform"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"},{"ident":"p2: Giratina","details":"Giratina-Origin, L73","condition":"339/339","active":false,"stats":{"atk":218,"def":188,"spa":218,"spd":188,"spe":174},"moves":["defog","dragontail","willowisp","shadowsneak"],"baseAbility":"mummy","item":"griseousorb","pokeball":"pokeball"},{"ident":"p1: Dunsparce","details":"Dunsparce, L83, M","condition":"302/302","active":false,"stats":{"atk":164,"def":164,"spa":156,"spd":156,"spe":122},"moves":["roost","coil","rockslide","headbutt"],"baseAbility":"serenegrace","item":"leftovers","pokeball":"pokeball","canMegaEvo":false}]}}'
+    REQUEST = '|request|{"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Hitmonchan","details":"Hitmonchan, L79, M","condition":"209/209","active":true,"stats":{"atk":211,"def":170,"spa":101,"spd":219,"spe":166},"moves":["solarbeam","machpunch","rapidspin","hiddenpowerice"],"baseAbility":"ironfist","item":"assaultvest","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Zekrom","details":"Zekrom, L73","condition":"266/266","active":false,"stats":{"atk":261,"def":218,"spa":218,"spd":188,"spe":174},"moves":["outrage","roost","voltswitch","boltstrike"],"baseAbility":"teravolt","item":"leftovers","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Altaria","details":"Altaria, L75, M","condition":"236/236","active":false,"stats":{"atk":149,"def":179,"spa":149,"spd":201,"spe":164},"moves":["return","dragondance","earthquake","roost"],"baseAbility":"naturalcure","item":"altarianite","pokeball":"pokeball","canMegaEvo":true},{"ident":"p2: Ditto","details":"Ditto, L83","condition":"215/215","active":true,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["transform"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"},{"ident":"p2: Giratina","details":"Giratina-Origin, L73","condition":"339/339","active":false,"stats":{"atk":218,"def":188,"spa":218,"spd":188,"spe":174},"moves":["defog","dragontail","willowisp","shadowsneak"],"baseAbility":"mummy","item":"griseousorb","pokeball":"pokeball"},{"ident":"p1: Dunsparce","details":"Dunsparce, L83, M","condition":"302/302","active":false,"stats":{"atk":164,"def":164,"spa":156,"spd":156,"spe":122},"moves":["roost","coil","rockslide","headbutt"],"baseAbility":"trace","item":"leftovers","pokeball":"pokeball","canMegaEvo":false}]}}'
     REQUEST = json.loads(REQUEST.split('|')[2])
 
     my_side = property(lambda self: self.bc.my_side)
@@ -72,7 +72,7 @@ class TestBattleClient(TestBattleClientBase):
                              {'atk': 127, 'def': 127, 'spa': 127,
                               'spd': 127, 'spe': 127, 'max_hp': 215})
         self.assertEqual(side.team[4].hp, 339)
-        self.assertEqual(side.team[5].ability.name, 'serenegrace')
+        self.assertEqual(side.team[5].ability.name, 'trace')
         self.assertEqual(side.team[5].item.name, 'leftovers')
         self.assertEqual(len(side.team), 6)
 
@@ -454,6 +454,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(mewtwo.ability, abilitydex['unnerve'])
         self.assertIn(self.hitmonchan.get_effect(ABILITY).on_foe_faint,
                       self.hitmonchan.effect_handlers['on_foe_faint'])
+
+    def test_handle_ability_trace(self):
+        self.handle('|switch|p2a: Arbok|Arbok, L83, M|100/100')
+        self.handle('|switch|p1a: Dunsparce|Dunsparce, L83, M|302/302')
+        arbok = self.foe_side.active_pokemon
+        dunsparce = self.my_side.active_pokemon
+        self.handle('|-ability|p1a: Dunsparce|Shed Skin|[from] ability: Trace|[of] p2a: Arbok')
+
+        self.assertEqual(dunsparce.base_ability, abilitydex['trace'])
+        self.assertEqual(dunsparce.ability, abilitydex['shedskin'])
+        self.assertEqual(arbok.base_ability, abilitydex['shedskin'])
+        self.assertEqual(arbok.ability, abilitydex['shedskin'])
 
     def test_handle_move_with_foe_pressure(self):
         self.handle('|switch|p2a: Deoxys|Deoxys-Speed, L73|100/100')
