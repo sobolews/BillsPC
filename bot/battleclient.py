@@ -893,6 +893,29 @@ class BattleClient(object):
         else:
             log.e('Unhandled -end msg: %s', msg)
 
+    def handle_sidestart(self, msg):
+        """
+        |-sidestart|p2: 1-BillsPC|Reflect
+        |-sidestart|p2: 1-BillsPC|move: Light Screen
+        |-sidestart|p1: 1-BillsPC|move: Stealth Rock
+        |-sidestart|p1: 1-BillsPC|move: Toxic Spikes
+        |-sidestart|p1: 1-BillsPC|Spikes
+        |-sidestart|p1: 1-BillsPC|move: Sticky Web
+        |-sidestart|p2: 1-BillsPC|move: Tailwind
+        |-sidestart|p1: 1-BillsPC|Safeguard
+        """
+        side = self.get_side_from_msg(msg)
+        effect = normalize_name(msg[2])
+
+    def handle_sideend(self, msg):
+        """
+        |-sideend|p1: Oafkiedawg|Reflect
+        |-sideend|p1: 1-BillsPC|Stealth Rock|[from] move: Defog|[of] p1a: Togekiss
+        ... (same as sidestart)
+        """
+        side = self.get_side_from_msg(msg)
+        effect = normalize_name(msg[2])
+
     def handle_prepare(self, msg):
         """
         Marks the initial usage of a two-turn move.
