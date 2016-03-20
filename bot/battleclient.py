@@ -708,6 +708,11 @@ class BattleClient(object):
             assert foe is not None, pokemon
             pokemon.set_effect(effects.PartialTrap(foe))
             foe.set_effect(effects.Trapper(6, pokemon))
+        elif effect == 'mummy':
+            self.set_ability(pokemon, abilitydex['mummy'])
+            foe = self.battlefield.get_foe(pokemon)
+            self.set_ability(foe, abilitydex[normalize_name(msg[3])]) # old ability was revealed
+            self.set_ability(foe, abilitydex['mummy'])
 
 
     def handle_fieldactivate(self, msg):
