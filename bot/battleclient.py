@@ -684,7 +684,11 @@ class BattleClient(object):
             return
         pokemon = self.get_pokemon_from_msg(msg)
 
-        if effect == 'confusion':
+        if effect in ('shedskin', 'aromaveil', 'hydration', 'immunity', 'limber', 'insomnia',
+                      'sweetveil', 'vitalspirit', 'waterveil', 'wonderguard', 'stickyhold',
+                      'suctioncups'):
+            self.set_ability(pokemon, abilitydex[effect])
+        elif effect == 'confusion':
             assert pokemon.has_effect(Volatile.CONFUSE), pokemon
             pokemon.get_effect(Volatile.CONFUSE).turns_left -= 1
         elif effect == 'substitute':
@@ -713,7 +717,8 @@ class BattleClient(object):
             foe = self.battlefield.get_foe(pokemon)
             self.set_ability(foe, abilitydex[normalize_name(msg[3])]) # old ability was revealed
             self.set_ability(foe, abilitydex['mummy'])
-
+        else:
+            if __debug__: log.e('Unhandled -activate msg: %s', msg)
 
     def handle_fieldactivate(self, msg):
         pass

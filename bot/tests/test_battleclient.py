@@ -804,3 +804,12 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertEqual(lilligant.base_ability, abilitydex['chlorophyll']) # revealed chlorophyll
         self.assertEqual(lilligant.get_effect(ABILITY).name, 'mummy')       # then changed to mummy
+
+    def test_handle_activate_revealed_ability(self):
+        self.handle('|switch|p2a: Arbok|Arbok, L83, M|100/100')
+        arbok = self.foe_side.active_pokemon
+
+        self.handle('|-activate|p2a: Arbok|ability: Shed Skin')
+
+        self.assertEqual(arbok.ability, abilitydex['shedskin'])
+        self.assertEqual(arbok.base_ability, abilitydex['shedskin'])
