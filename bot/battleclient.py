@@ -762,11 +762,15 @@ class BattleClient(object):
 
     def handle_singlemove(self, msg):
         """
-        |-singlemove|p1a: Banette|Destiny Bond -- sets the destiny bond effect
-        ...
-
-        TODO: WIP
+        |-singlemove|p1a: Banette|Destiny Bond
         """
+        pokemon = self.get_pokemon_from_msg(msg)
+        move = normalize_name(msg[2])
+
+        if move == 'destinybond':
+            pokemon.set_effect(effects.DestinyBond())
+        else:
+            if __debug__: log.e('Unhandled -singlemove msg: %s', msg)
 
     def handle_start(self, msg):
         """

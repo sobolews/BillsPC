@@ -855,3 +855,9 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         focuspunch = movedex['focuspunch']
         self.assertTrue(focuspunch in self.goodra.moveset)
         self.assertEqual(self.goodra.pp[focuspunch], focuspunch.max_pp)
+
+    def test_handle_singlemove_destinybond(self):
+        self.handle('|-singlemove|p2a: Goodra|Destiny Bond')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.goodra.has_effect(Volatile.DESTINYBOND))
