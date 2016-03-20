@@ -740,11 +740,25 @@ class BattleClient(object):
 
     def handle_singleturn(self, msg):
         """
-        |-singleturn|p1a: Florges|Protect -- successfully applied a Protect-like effect
-        ...
-
-        TODO: WIP
+        |-singleturn|p1a: Florges|Protect
+        |-singleturn|p2a: Deoxys|move: Magic Coat
+        |-singleturn|p2a: Aerodactyl|move: Focus Punch
         """
+        pokemon = self.get_pokemon_from_msg(msg)
+        move = normalize_name(msg[2])
+
+        if move == 'protect':
+            stall = pokemon.get_effect(Volatile.STALL)
+            if stall is None:
+                pokemon.set_effect(effects.StallCounter())
+            else:
+                stall.duration = 2       # reset expiry
+                stall.denominator *= 3   # 3x less likely to succeed consecutively
+        elif move == 'focuspunch':
+            # this is safe because focuspunch is exempt from copycat, sleeptalk, etc.
+            self.reveal_move(pokemon, movedex['focuspunch'])
+        elif move != 'magiccoat': # ignore magiccoat
+            if __debug__: log.e('Unhandled -singleturn msg: %s', msg)
 
     def handle_singlemove(self, msg):
         """

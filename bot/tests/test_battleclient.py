@@ -825,3 +825,33 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertEqual(arbok.ability, abilitydex['shedskin'])
         self.assertEqual(arbok.base_ability, abilitydex['shedskin'])
+
+    def test_handle_singleturn_protect(self):
+        self.handle('|move|p2a: Goodra|Protect|p2a: Goodra')
+        self.handle('|-singleturn|p2a: Goodra|Protect')
+        self.handle('|turn|2')
+
+        stall = self.goodra.get_effect(Volatile.STALL)
+        self.assertIsNotNone(stall)
+        self.assertEqual(stall.duration, 1)
+        self.assertEqual(stall.denominator, 3)
+
+        self.handle('|move|p2a: Goodra|Protect|p2a: Goodra')
+        self.handle('|-singleturn|p2a: Goodra|Protect')
+        self.handle('|turn|3')
+
+        self.assertEqual(stall.duration, 1)
+        self.assertEqual(stall.denominator, 9)
+
+        self.goodra.moveset = [] # clear its moveset so that it doesn't try use protect again
+        self.bc.cheatsheetengine.run_turn()
+
+        self.assertFalse(self.goodra.has_effect(Volatile.STALL))
+
+    def test_handle_singleturn_focuspunch(self):
+        self.handle('|-singleturn|p2a: Goodra|move: Focus Punch')
+        self.handle('|cant|p2a: Goodra|Focus Punch|Focus Punch')
+
+        focuspunch = movedex['focuspunch']
+        self.assertTrue(focuspunch in self.goodra.moveset)
+        self.assertEqual(self.goodra.pp[focuspunch], focuspunch.max_pp)
