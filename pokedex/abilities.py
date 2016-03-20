@@ -791,7 +791,7 @@ class Prankster(AbilityEffect):
         return priority
 
 class Pressure(AbilityEffect):
-    pass # implemented in BattleEngine.deduct_pp
+    pass # implemented in BattlePokemon.deduct_pp
 
 class PrimordialSea(AbilityEffect):
     def on_start(self, pokemon, engine):
