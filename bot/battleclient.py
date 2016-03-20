@@ -295,18 +295,14 @@ class BattleClient(object):
         else:
             move = movedex[normalize_name(msg[2])]
 
-        if move in pokemon.pp:
-            pokemon.pp[move] -= pp_sub
-        elif pokemon.side.index == self.foe_player: # Add move to foe's moveset
-            assert (len(pokemon.moveset) < 4 or  # TODO: test raises assertion
-                    move == movedex['struggle']), \
-                '%s used %s but already has a full moveset:\n %r' % (pokemon, move, pokemon)
-            if move != movedex['struggle']:
-                pokemon.moveset.append(move)
+        if move != movedex['struggle']:
+            if move in pokemon.pp:
+                pokemon.pp[move] -= pp_sub
+            elif pokemon.side.index == self.foe_player: # Add move to foe's moveset
+                self.reveal_move(pokemon, move)
                 pokemon.pp[move] = move.max_pp - pp_sub
-
-        elif __debug__:
-            log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
+            elif __debug__:
+                log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
         pokemon.last_move_used = move
         pokemon.will_move_this_turn = False
@@ -320,6 +316,17 @@ class BattleClient(object):
                 pokemon.set_effect(effects.Autotomize())
             else:
                 effect.multiplier += 1
+
+    def reveal_move(self, pokemon, move):
+        """
+        Reveal a move that a foe pokemon definitely has (i.e. was not called via copycat, etc.)
+        """
+        if move in pokemon.moveset or move == movedex['struggle']:
+            return
+        assert len(pokemon.moveset) < 4, ('%s used %s but already has a full moveset:\n %r' %
+                                          (pokemon, move, pokemon))
+        pokemon.moveset.append(move)
+        pokemon.pp[move] = move.max_pp
 
     def handle_damage(self, msg):
         """
