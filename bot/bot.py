@@ -30,7 +30,8 @@ class Bot(WebSocketClient):
     """
     def __init__(self, username=None, password=None, *args, **kwargs):
         super(Bot, self).__init__(*args, **kwargs)
-        self.username = (username or raw_input('Showdown username: ')).decode('utf-8')
+        self.username = ((username or raw_input('Showdown username: '))
+                         .decode('unicode_escape').encode('ascii', 'ignore'))
         self.password = password or getpass.getpass()
         self.latest_request = None
         self.battleclient = None
@@ -57,7 +58,7 @@ class Bot(WebSocketClient):
         Showdown sometimes sends multiple newline-separated messages in a single websocket message,
         so split them and process each one. 0-1 character messages can be ignored.
         """
-        msg_block = str(msg_block)
+        msg_block = unicode(msg_block).decode('unicode_escape').encode('ascii', 'ignore')
         print received('\n'.join((msg_block, '-' * 60)))
         msg_block = msg_block.splitlines()
 
