@@ -78,7 +78,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.side.has_mega_evolved = True
         self.is_mega = True
 
-    def forme_change(self, forme, engine=None):
+    def forme_change(self, forme, engine=None, client=False):
         assert not self.is_transformed
 
         self.pokedex_entry = new_forme = POKEDEX[forme]
@@ -87,7 +87,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.stats = self.calculate_initial_stats(self.evs, self.ivs)
         self.types = list(new_forme.types)
         new_ability = abilitydex[new_forme.abilities[0]]
-        if new_ability != self.ability:
+        if new_ability != self.ability and not client:
             self.change_ability(new_ability, engine)
             self.base_ability = new_ability
         if __debug__: log.i('%s changed forme to %s!', self.base_species, self.name)
@@ -273,7 +273,8 @@ class BattlePokemon(object, EffectHandlerMixin):
         if (not any(move != movedex['seismictoss'] and
                     move.category == MoveCategory.PHYSICAL for move in self.moveset) and
             movedex['copycat'] not in self.moveset and
-            movedex['transform'] not in self.moveset
+            movedex['transform'] not in self.moveset and
+            len(self.moveset) == 4 # for remote pokemon with unknown moves.
         ):
             evs[ATK] = 0
             if has_hiddenpower:

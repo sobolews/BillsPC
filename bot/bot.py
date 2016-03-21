@@ -117,7 +117,7 @@ class Bot(WebSocketClient):
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
         'cant', '-item', '-enditem', '-ability', '-transform', '-start', '-end', '-activate',
         'callback', '-singleturn', '-singlemove', '-sidestart', '-sideend', '-fieldstart',
-        '-fieldend',
+        '-fieldend', '-formechange', 'detailschange', '-mega',
     }
 
     IGNORE_MSGS = {
@@ -128,13 +128,13 @@ class Bot(WebSocketClient):
         'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
         'error', 'warning', 'gen', 'debug', 'unlink', 'updatechallenges', '-fail', 'users', ':',
-        'c:', 'expire', 'seed', 'choice', '-endability', '-fieldactivate',
+        'c:', 'expire', 'seed', 'choice', '-endability', '-fieldactivate', '-primal',
     }
 
     # TODO: implement (they get ignored for now)
     TODO_MSGS = {
-        '-formechange', '-mega', 'win', 'tie', 'prematureend',
-        'detailschange', 'deinit'
+        'win', 'tie', 'prematureend',
+        'deinit'
     }
 
     def handle_challstr(self, msg):

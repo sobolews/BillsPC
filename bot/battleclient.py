@@ -1055,6 +1055,57 @@ class BattleClient(object):
 
         pokemon.transform_into(foe, engine=None, force=True)
 
+    def handle_formechange(self, msg):
+        """
+        |-formechange|p1a: Castform|Castform-Rainy|[msg]
+        |-formechange|p2a: Meloetta|Meloetta|[msg]
+        |-formechange|p2a: Meloetta|Meloetta-Pirouette|[msg]
+        |-formechange|p2a: Aegislash|Aegislash-Blade|[from] ability: Stance Change
+        |-formechange|p1a: Aegislash|Aegislash|[from] ability: Stance Change
+        |-formechange|p1a: Cherrim|Cherrim-Sunshine|[msg]
+        |-formechange|p1a: Shaymin|Shaymin|[msg]
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        forme = normalize_name(msg[2])
+
+        self.forme_change(pokemon, forme)
+
+    def handle_detailschange(self, msg):
+        """
+        |detailschange|p1a: Mewtwo|Mewtwo-Mega-X, L73
+        |detailschange|p2a: Medicham|Medicham-Mega, L75, M
+        |detailschange|p2a: Kyogre|Kyogre-Primal, L73
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        forme = normalize_name(msg[2].split(',')[0])
+
+        self.forme_change(pokemon, forme)
+        if forme == 'kyogreprimal' and pokemon.item != itemdex['blueorb']:
+            self.set_item(pokemon, itemdex['blueorb'])
+        if forme == 'groudonprimal' and pokemon.item != itemdex['redorb']:
+            self.set_item(pokemon, itemdex['redorb'])
+
+    def forme_change(self, pokemon, forme):
+        pokemon.forme_change(forme, client=True)
+        new_ability = abilitydex[pokemon.pokedex_entry.abilities[0]]
+        self.set_ability(pokemon, new_ability)
+        if pokemon.base_ability != new_ability:
+            self.set_base_ability(pokemon, new_ability)
+
+    def handle_mega(self, msg):
+        """
+        |-mega|p1a: Mewtwo|Mewtwo|Mewtwonite X
+
+        The actual tranformation is handled by -detailschange
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        megastone = itemdex[normalize_name(msg[3])]
+
+        pokemon.side.has_mega_evolved = True
+        pokemon.is_mega = True
+        if pokemon.item != megastone:
+            self.set_item(pokemon, megastone)
+
     def handle_callback(self, msg):
         """
         |callback|trapped|0

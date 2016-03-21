@@ -950,3 +950,48 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
 
         self.assertFalse(self.battlefield.has_effect(PseudoWeather.TRICKROOM))
+
+    def test_handle_formechange(self):
+        self.handle('|switch|p2a: Aegislash|Aegislash, L74, F|100/100')
+        self.handle('|turn|2')
+        self.handle('|-formechange|p2a: Aegislash|Aegislash-Blade|[from] ability: Stance Change')
+        self.handle('|move|p2a: Aegislash|Shadow Sneak|p1a: Chimecho')
+        self.handle('|turn|3')
+
+        aegislash = self.foe_side.active_pokemon
+        self.assertEqual(aegislash.stats['atk'], 265)
+        self.assertEqual(aegislash.name, 'aegislashblade')
+
+        self.handle('|-formechange|p2a: Aegislash|Aegislash|[from] ability: Stance Change')
+        self.handle('|move|p2a: Aegislash|King\'s Shield|p1a: Chimecho')
+        self.handle('|turn|4')
+
+        self.assertEqual(aegislash.stats['atk'], 117)
+        self.assertEqual(aegislash.name, 'aegislash')
+
+    def test_handle_detailschange_mega(self):
+        self.handle('|drag|p2a: Venusaur|Venusaur, L75, M|100/100')
+        self.handle('|turn|2')
+        self.handle('|detailschange|p2a: Venusaur|Venusaur-Mega, L75, M')
+        self.handle('|-mega|p2a: Venusaur|Venusaur|Venusaurite')
+        self.handle('|turn|3')
+
+        venusaur = self.foe_side.active_pokemon
+        self.assertEqual(venusaur.name, 'venusaurmega')
+        self.assertEqual(venusaur.ability, abilitydex['thickfat'])
+        self.assertEqual(venusaur.stats['spa'], 227)
+        self.assertEqual(venusaur.item, itemdex['venusaurite'])
+        self.assertTrue(venusaur.is_mega)
+        self.assertTrue(self.foe_side.has_mega_evolved)
+
+    def test_handle_detailschange_primal(self):
+        self.handle('|switch|p2a: Kyogre|Kyogre, L73|100/100')
+        self.handle('|detailschange|p2a: Kyogre|Kyogre-Primal, L73')
+
+        kyogre = self.foe_side.active_pokemon
+        self.assertEqual(kyogre.name, 'kyogreprimal')
+        self.assertEqual(kyogre.ability, abilitydex['primordialsea'])
+        self.assertEqual(kyogre.stats['spa'], 305)
+        self.assertEqual(kyogre.item, itemdex['blueorb'])
+        self.assertFalse(kyogre.is_mega)
+        self.assertFalse(self.foe_side.has_mega_evolved)
