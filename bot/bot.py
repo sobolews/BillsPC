@@ -30,7 +30,7 @@ class Bot(WebSocketClient):
     """
     def __init__(self, username=None, password=None, *args, **kwargs):
         super(Bot, self).__init__(*args, **kwargs)
-        self.username = username or raw_input('Showdown username: ')
+        self.username = (username or raw_input('Showdown username: ')).decode('utf-8')
         self.password = password or getpass.getpass()
         self.latest_request = None
         self.battleclient = None

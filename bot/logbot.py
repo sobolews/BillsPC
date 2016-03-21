@@ -11,7 +11,7 @@ class LogBot(Bot):
         self.logfile = None
 
     def __enter__(self):
-        self.logfile = open(self.logfile_path, 'a')
+        self.logfile = open(self.logfile_path, 'ab')
         return self
 
     def __exit__(self, *exc_info):
@@ -20,7 +20,7 @@ class LogBot(Bot):
 
     def send(self, msg, _=False):
         super(LogBot, self).send(msg)
-        self.logfile.write('>>> ' + msg + '\n')
+        self.logfile.write(msg.join(('>>> ', '\n')).encode('utf-8'))
 
     def received_message(self, msg_block):
         msg_block = str(msg_block)
