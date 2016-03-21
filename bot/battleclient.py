@@ -596,8 +596,11 @@ class BattleClient(object):
         """
         if pokemon.base_ability == ability:
             log.w("%s's base_ability is already %s", pokemon, ability)
+            return
         else:
-            if pokemon.base_ability != abilitydex['_unrevealed_']:
+            if (pokemon.base_ability != abilitydex['_unrevealed_'] and
+                len(pokemon.pokedex_entry.abilities) == 1 and
+                ability != pokemon.pokedex_entry.abilities[0]):
                 if __debug__: log.w("Overwriting %s's base_ability %s with %s!:\n%r",
                                     pokemon, pokemon.base_ability, ability, pokemon)
             if ability.name not in pokemon.pokedex_entry.abilities:
