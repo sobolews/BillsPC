@@ -6,7 +6,7 @@ from mock import patch
 from battle.decisionmakers import AutoDecisionMaker
 from bot.battleclient import BattleClient
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM, Type
+from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 
@@ -861,3 +861,20 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|2')
 
         self.assertTrue(self.goodra.has_effect(Volatile.DESTINYBOND))
+
+    def test_handle_sidestart_sideend_screens(self):
+        self.handle('|-item|p2a: Goodra|Light Clay')
+        self.handle('|-sidestart|p1: test-BillsPC|Reflect')
+        self.handle('|-sidestart|p2: other-player|move: Light Screen')
+        self.handle('|turn|2')
+
+        reflect = self.my_side.get_effect(SideCondition.REFLECT)
+        self.assertIsNotNone(reflect)
+        self.assertEqual(reflect.duration, 4)
+
+        self.assertEqual(self.foe_side.get_effect(SideCondition.LIGHTSCREEN).duration, 7)
+
+        self.handle('|-sideend|p1: test-BillsPC|Reflect')
+        self.handle('|turn|3')
+
+        self.assertFalse(self.my_side.has_effect(SideCondition.REFLECT))

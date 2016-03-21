@@ -12,7 +12,7 @@ from mining import create_pokedex
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY, Type
+from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
@@ -907,6 +907,16 @@ class BattleClient(object):
         side = self.get_side_from_msg(msg)
         effect = normalize_name(msg[2])
 
+        if effect in ('reflect', 'lightscreen'):
+            user = side.active_pokemon
+            assert user is not None, user
+            duration = 8 if user.item == itemdex['lightclay'] else 5
+            if effect == 'reflect':
+                side.set_effect(effects.Reflect(duration))
+            else:
+                side.set_effect(effects.LightScreen(duration))
+
+
     def handle_sideend(self, msg):
         """
         |-sideend|p1: Oafkiedawg|Reflect
@@ -915,6 +925,12 @@ class BattleClient(object):
         """
         side = self.get_side_from_msg(msg)
         effect = normalize_name(msg[2])
+
+        if effect == 'reflect':
+            side.remove_effect(SideCondition.REFLECT)
+        elif effect == 'lightscreen':
+            side.remove_effect(SideCondition.LIGHTSCREEN)
+
 
     def handle_prepare(self, msg):
         """
