@@ -947,7 +947,12 @@ class BattleClient(object):
             if side.has_effect(SideCondition.TAILWIND):
                 if __debug__: log.w('%s already has tailwind: %s', side, msg)
             side.set_effect(effects.Tailwind())
-
+        elif effect == 'safeguard':
+            if side.has_effect(SideCondition.SAFEGUARD):
+                if __debug__: log.w('%s already has tailwind: %s', side, msg)
+            side.set_effect(effects.Safeguard())
+        elif __debug__:
+            log.e('Unhandled -sidestart msg: %s', msg)
 
     def handle_sideend(self, msg):
         """
@@ -972,7 +977,10 @@ class BattleClient(object):
             side.remove_effect(Hazard.STICKYWEB)
         elif effect == 'tailwind':
             side.remove_effect(SideCondition.TAILWIND)
-
+        elif effect == 'safeguard':
+            side.remove_effect(SideCondition.SAFEGUARD)
+        elif __debug__:
+            log.e('Unhandled -sideend msg: %s', msg)
 
     def handle_prepare(self, msg):
         """

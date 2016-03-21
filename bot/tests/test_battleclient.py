@@ -925,3 +925,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
 
         self.assertFalse(self.my_side.has_effect(SideCondition.TAILWIND))
+
+    def test_handle_sidestart_sideend_safeguard(self):
+        self.handle('|-sidestart|p1: test-BillsPC|move: Safeguard')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.my_side.has_effect(SideCondition.SAFEGUARD))
+        self.assertEqual(self.my_side.get_effect(SideCondition.SAFEGUARD).duration, 4)
+
+        self.handle('|-sideend|p1: test-BillsPC|move: Safeguard')
+        self.handle('|turn|3')
+
+        self.assertFalse(self.my_side.has_effect(SideCondition.SAFEGUARD))
