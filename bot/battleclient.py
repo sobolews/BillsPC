@@ -12,7 +12,8 @@ from mining import create_pokedex
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard
+from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
+                           PseudoWeather)
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
@@ -981,6 +982,30 @@ class BattleClient(object):
             side.remove_effect(SideCondition.SAFEGUARD)
         elif __debug__:
             log.e('Unhandled -sideend msg: %s', msg)
+
+    def handle_fieldstart(self, msg):
+        """
+        |-fieldstart|move: Trick Room|[of] p1a: Spinda
+        """
+        effect = normalize_name(msg[1])
+
+        if effect == 'trickroom':
+            if self.battlefield.has_effect(PseudoWeather.TRICKROOM):
+                log.w('Battlefield already has trickroom: %s', msg)
+            self.battlefield.set_effect(effects.TrickRoom())
+        elif __debug__:
+            log.e('Unhandled -fieldstart msg: %s', msg)
+
+    def handle_fieldend(self, msg):
+        """
+        |-fieldend|move: Trick Room
+        """
+        effect = normalize_name(msg[1])
+
+        if effect == 'trickroom':
+            self.battlefield.remove_effect(PseudoWeather.TRICKROOM)
+        elif __debug__:
+            log.e('Unhandled -fieldstart msg: %s', msg)
 
     def handle_prepare(self, msg):
         """

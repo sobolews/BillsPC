@@ -6,7 +6,8 @@ from mock import patch
 from battle.decisionmakers import AutoDecisionMaker
 from bot.battleclient import BattleClient
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard
+from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard,
+                           PseudoWeather)
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 
@@ -937,3 +938,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
 
         self.assertFalse(self.my_side.has_effect(SideCondition.SAFEGUARD))
+
+    def test_handle_fieldstart_fieldend_trickroom(self):
+        self.handle('|-fieldstart|move: Trick Room|[of] p2a: Goodra')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.battlefield.has_effect(PseudoWeather.TRICKROOM))
+        self.assertEqual(self.battlefield.get_effect(PseudoWeather.TRICKROOM).duration, 4)
+
+        self.handle('|-fieldend|move: Trick Room|[of] p2a: Goodra')
+        self.handle('|turn|3')
+
+        self.assertFalse(self.battlefield.has_effect(PseudoWeather.TRICKROOM))
