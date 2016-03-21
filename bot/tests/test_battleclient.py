@@ -913,3 +913,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertFalse(self.my_side.has_effect(Hazard.TOXICSPIKES))
         self.assertFalse(self.my_side.has_effect(Hazard.STEALTHROCK))
         self.assertTrue(self.foe_side.has_effect(Hazard.STICKYWEB))
+
+    def test_handle_sidestart_sideend_tailwind(self):
+        self.handle('|-sidestart|p1: test-BillsPC|move: Tailwind')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.my_side.has_effect(SideCondition.TAILWIND))
+        self.assertEqual(self.my_side.get_effect(SideCondition.TAILWIND).duration, 3)
+
+        self.handle('|-sideend|p1: test-BillsPC|move: Tailwind')
+        self.handle('|turn|3')
+
+        self.assertFalse(self.my_side.has_effect(SideCondition.TAILWIND))

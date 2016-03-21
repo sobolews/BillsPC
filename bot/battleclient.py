@@ -943,6 +943,10 @@ class BattleClient(object):
             if side.has_effect(Hazard.STICKYWEB):
                 if __debug__: log.w('%s already has stickyweb: %s', side, msg)
             side.set_effect(effects.StickyWeb())
+        elif effect == 'tailwind':
+            if side.has_effect(SideCondition.TAILWIND):
+                if __debug__: log.w('%s already has tailwind: %s', side, msg)
+            side.set_effect(effects.Tailwind())
 
 
     def handle_sideend(self, msg):
@@ -966,6 +970,8 @@ class BattleClient(object):
             side.remove_effect(Hazard.SPIKES)
         elif effect == 'stickyweb':
             side.remove_effect(Hazard.STICKYWEB)
+        elif effect == 'tailwind':
+            side.remove_effect(SideCondition.TAILWIND)
 
 
     def handle_prepare(self, msg):
