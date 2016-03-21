@@ -98,7 +98,7 @@ class Bot(WebSocketClient):
 
         msg = msg.split('|')
         msg_type = msg[0]
-        while msg_type == '':
+        if msg_type == '':
             msg.remove('')
             msg_type = msg[0]
 
