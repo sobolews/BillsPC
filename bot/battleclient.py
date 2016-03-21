@@ -12,7 +12,7 @@ from mining import create_pokedex
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition
+from pokedex.enums import Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
@@ -915,6 +915,34 @@ class BattleClient(object):
                 side.set_effect(effects.Reflect(duration))
             else:
                 side.set_effect(effects.LightScreen(duration))
+        elif effect == 'stealthrock':
+            if side.has_effect(Hazard.STEALTHROCK):
+                if __debug__: log.w('%s already has stealthrock: %s', side, msg)
+            side.set_effect(effects.StealthRock())
+        elif effect == 'toxicspikes':
+            toxicspikes = side.get_effect(Hazard.TOXICSPIKES)
+            if toxicspikes is None:
+                side.set_effect(effects.ToxicSpikes())
+            else:
+                if toxicspikes.layers >= 2:
+                    if __debug__: log.w('%s already has 2 layers of toxicspikes (%s): %s',
+                                        side, toxicspikes, msg)
+                    return
+                toxicspikes.layers += 1
+        elif effect == 'spikes':
+            spikes = side.get_effect(Hazard.SPIKES)
+            if spikes is None:
+                side.set_effect(effects.Spikes())
+            else:
+                if spikes.layers >= 3:
+                    if __debug__: log.w('%s already has 3 layers of spikes (%s): %s',
+                                        side, spikes, msg)
+                    return
+                spikes.layers += 1
+        elif effect == 'stickyweb':
+            if side.has_effect(Hazard.STICKYWEB):
+                if __debug__: log.w('%s already has stickyweb: %s', side, msg)
+            side.set_effect(effects.StickyWeb())
 
 
     def handle_sideend(self, msg):
@@ -930,6 +958,14 @@ class BattleClient(object):
             side.remove_effect(SideCondition.REFLECT)
         elif effect == 'lightscreen':
             side.remove_effect(SideCondition.LIGHTSCREEN)
+        elif effect == 'stealthrock':
+            side.remove_effect(Hazard.STEALTHROCK)
+        elif effect == 'toxicspikes':
+            side.remove_effect(Hazard.TOXICSPIKES)
+        elif effect == 'spikes':
+            side.remove_effect(Hazard.SPIKES)
+        elif effect == 'stickyweb':
+            side.remove_effect(Hazard.STICKYWEB)
 
 
     def handle_prepare(self, msg):

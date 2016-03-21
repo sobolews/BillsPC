@@ -6,7 +6,7 @@ from mock import patch
 from battle.decisionmakers import AutoDecisionMaker
 from bot.battleclient import BattleClient
 from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition
+from pokedex.enums import Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 
@@ -878,3 +878,38 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
 
         self.assertFalse(self.my_side.has_effect(SideCondition.REFLECT))
+
+    def test_handle_sidestart_sideend_hazards(self):
+        self.handle('|-sidestart|p1: test-BillsPC|move: Stealth Rock')
+        self.handle('|-sidestart|p2: other-player|Spikes')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.my_side.has_effect(Hazard.STEALTHROCK))
+        spikes = self.foe_side.get_effect(Hazard.SPIKES)
+        self.assertIsNotNone(spikes)
+        self.assertEqual(spikes.layers, 1)
+
+        self.handle('|-sidestart|p1: test-BillsPC|move: Toxic Spikes')
+        self.handle('|-sidestart|p2: other-player|Spikes')
+        self.handle('|turn|3')
+
+        toxicspikes = self.my_side.get_effect(Hazard.TOXICSPIKES)
+        self.assertIsNotNone(toxicspikes)
+        self.assertEqual(toxicspikes.layers, 1)
+        self.assertEqual(spikes.layers, 2)
+
+        self.handle('|-sidestart|p1: test-BillsPC|move: Toxic Spikes')
+        self.handle('|-sidestart|p2: other-player|Spikes')
+        self.handle('|turn|4')
+
+        self.assertEqual(toxicspikes.layers, 2)
+        self.assertEqual(spikes.layers, 3)
+
+        self.handle('|-sideend|p1: test-BillsPC|move: Toxic Spikes')
+        self.handle('|-sideend|p1: test-BillsPC|move: Stealth Rock')
+        self.handle('|-sidestart|p2: other-player|Sticky Web')
+        self.handle('|turn|5')
+
+        self.assertFalse(self.my_side.has_effect(Hazard.TOXICSPIKES))
+        self.assertFalse(self.my_side.has_effect(Hazard.STEALTHROCK))
+        self.assertTrue(self.foe_side.has_effect(Hazard.STICKYWEB))
