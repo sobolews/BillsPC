@@ -128,12 +128,12 @@ class Bot(WebSocketClient):
         'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
         'error', 'warning', 'gen', 'debug', 'unlink', 'updatechallenges', '-fail', 'users', ':',
-        'c:', 'expire', 'seed', 'choice', '-endability',
+        'c:', 'expire', 'seed', 'choice', '-endability', '-fieldactivate',
     }
 
     # TODO: implement (they get ignored for now)
     TODO_MSGS = {
-        '-fieldactivate', '-formechange', '-mega', 'win', 'tie', 'prematureend',
+        '-formechange', '-mega', 'win', 'tie', 'prematureend',
         'detailschange', 'deinit'
     }
 
