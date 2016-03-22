@@ -9,6 +9,7 @@ from bot.foeside import FoeBattleSide
 from bot.unrevealedpokemon import UnrevealedPokemon
 from bot.cheatsheetengine import CheatSheetEngine
 from mining import create_pokedex
+from mining.statistics import RandbatsStatistics
 from misc.functions import normalize_name
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
@@ -19,6 +20,7 @@ from pokedex.moves import movedex
 from pokedex.stats import Boosts, PokemonStats
 
 pokedex = create_pokedex()
+rbstats = RandbatsStatistics.from_pickle()
 
 if __debug__: from _logging import log
 
@@ -291,8 +293,12 @@ class BattleClient(object):
                 assert len(hp_moves) == 1, hp_moves
                 move = hp_moves[0]
             else:
-                # TODO: deal with guessing foe's hiddenpower type properly
-                move = movedex['hiddenpowernotype']
+                possible = [move for move in rbstats[pokemon.name]['moves']
+                            if move.startswith('hiddenpower')]
+                if len(possible) == 1:
+                    move = movedex[possible[0]]
+                else:
+                    move = movedex['hiddenpowernotype']
         else:
             move = movedex[normalize_name(msg[2])]
 

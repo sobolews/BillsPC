@@ -1000,3 +1000,11 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(kyogre.item, itemdex['blueorb'])
         self.assertFalse(kyogre.is_mega)
         self.assertFalse(self.foe_side.has_mega_evolved)
+
+    def test_deduce_foe_hiddenpower_when_one_possibility(self):
+        self.handle('|drag|p2a: Virizion|Virizion, L79|100/100')
+        self.handle('|move|p2a: Virizion|Hidden Power|p1a: Hitmonchan')
+        self.handle('|turn|2')
+
+        virizion = self.foe_side.active_pokemon
+        self.assertIn(movedex['hiddenpowerice'], virizion.moveset)
