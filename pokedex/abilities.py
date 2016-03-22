@@ -690,7 +690,7 @@ class NoGuard(AbilityEffect):
 
 class Overcoat(AbilityEffect):
     def on_get_immunity(self, thing):
-        if any(thing is source for source in (Weather.HAIL, Weather.SANDSTORM, POWDER)):
+        if thing in (Weather.HAIL, Weather.SANDSTORM, POWDER):
             if __debug__: log.d('%s damage prevented by Overcoat', thing)
             return True
 
