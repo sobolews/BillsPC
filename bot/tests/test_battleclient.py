@@ -701,7 +701,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-end|p2a: Regigigas|Slow Start|[silent]')
         self.assertFalse(regigigas.has_effect(Volatile.SLOWSTART))
 
-    def test_handle_start_flashfire(self):
+    def test_handle_start_end_flashfire(self):
         self.handle('|switch|p2a: Heatmor|Heatmor, L83, F|100/100')
         self.handle('|-start|p2a: Heatmor|ability: Flash Fire')
         self.handle('|turn|2')
@@ -717,6 +717,11 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertFalse(heatmor.has_effect(Volatile.FLASHFIRE))
         self.assertEqual(heatmor.ability, abilitydex['flashfire'])
+
+        self.handle('|-start|p2a: Heatmor|ability: Flash Fire')
+        self.handle('|-end|p2a: Heatmor|ability: Flash Fire|[silent]')
+
+        self.assertFalse(heatmor.has_effect(Volatile.FLASHFIRE))
 
     def test_handle_start_end_disable(self):
         self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')

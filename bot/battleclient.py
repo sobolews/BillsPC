@@ -792,7 +792,7 @@ class BattleClient(object):
         |-start|p2a: Latios|perish0 (then) |faint|p2a: Latios
         |-start|p1a: Greninja|typechange|Dark|[from] Protean (no end)
         |-start|p2a: Regigigas|ability: Slow Start
-        |-start|p1a: Heatmor|ability: Flash Fire (no end)
+        |-start|p1a: Heatmor|ability: Flash Fire
         |-start|p2a: Ditto|Disable|Bug Bite
         |-start|p2a: Leafeon|Attract|[from] ability: Cute Charm|[of] p1a: Fraxure
         |-start|p1a: Fraxure|Magnet Rise
@@ -864,6 +864,7 @@ class BattleClient(object):
         |-end|p1a: Fraxure|Leech Seed|[from] move: Rapid Spin|[of] p1a: Fraxure
         |-end|p2a: Quagsire|Encore
         |-end|p2a: Regigigas|Slow Start|[silent]
+        |-end|p2a: Heatran|ability: Flash Fire|[silent]
         |-end|p1a: Zoroark|Illusion
         |-end|p2a: Ditto|Disable
         |-end|p2a: Leafeon|Attract|[silent]
@@ -886,6 +887,8 @@ class BattleClient(object):
             pokemon.remove_effect(Volatile.ENCORE)
         elif effect == 'slowstart':
             pokemon.remove_effect(Volatile.SLOWSTART)
+        elif effect == 'flashfire':
+            pokemon.remove_effect(Volatile.FLASHFIRE)
         elif effect == 'disable':
             pokemon.remove_effect(Volatile.DISABLE)
         elif effect == 'attract':
