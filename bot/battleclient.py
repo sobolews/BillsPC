@@ -56,7 +56,7 @@ class BattleClient(object):
 
         self.make_moves = False # set to True to have the bot make random choices (TODO: use an AI
                                 # module for choices)
-        self.cheatsheetengine = CheatSheetEngine.from_battlefield(None)
+        self.engine = CheatSheetEngine.from_battlefield(None)
 
         def _send(msg):
             self.last_sent = msg
@@ -206,7 +206,7 @@ class BattleClient(object):
         if self.battlefield is None and self.my_side and self.foe_side:
             self.battlefield = BattleField(*sorted([self.my_side, self.foe_side],
                                                    key=lambda side: side.index))
-            self.cheatsheetengine.battlefield = self.battlefield
+            self.engine.battlefield = self.battlefield
 
     def handle_request(self, request):
         """
@@ -246,10 +246,10 @@ class BattleClient(object):
 
         if not any([self.my_side.active_pokemon.is_fainted(),
                     self.foe_side.active_pokemon.is_fainted()]):
-            self.cheatsheetengine.show_my_moves(self.my_side.active_pokemon,
-                                                self.foe_side.active_pokemon)
-            self.cheatsheetengine.show_foe_moves(self.my_side.active_pokemon,
-                                                 self.foe_side.active_pokemon)
+            self.engine.show_my_moves(self.my_side.active_pokemon,
+                                      self.foe_side.active_pokemon)
+            self.engine.show_foe_moves(self.my_side.active_pokemon,
+                                       self.foe_side.active_pokemon)
 
         if self.make_moves:     # naive implementation for testing interaction with server:
             if request.get('forceSwitch') or random.randrange(10) == 0:
@@ -724,7 +724,7 @@ class BattleClient(object):
             assert foe is not None, pokemon
             move = foe.last_move_used
             assert move is not None, foe
-            expected_damage = self.cheatsheetengine.calculate_expected_damage(foe, move, pokemon)
+            expected_damage = self.engine.calculate_expected_damage(foe, move, pokemon)
             if expected_damage is None or expected_damage > sub.hp:
                 sub.hp = 1      # this normally shouldn't happen
                 if __debug__: log.i("Expected damage for %r attacking %r with %s was %s, but did "

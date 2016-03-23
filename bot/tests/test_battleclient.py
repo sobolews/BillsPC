@@ -108,7 +108,7 @@ class TestBattleClient(TestBattleClientBase):
 class TestBattleClientPostTurn0(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
-        self.bc.cheatsheetengine.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
+        self.bc.engine.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
         self.set_up_turn_0()
         self.hitmonchan = self.my_side.active_pokemon
         self.goodra = self.foe_side.active_pokemon
@@ -602,7 +602,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-start|p1a: Hitmonchan|move: Yawn|[of] p2a: Goodra')
         self.handle('|turn|4')
-        self.bc.cheatsheetengine.run_turn()
+        self.bc.engine.run_turn()
 
         self.assertEqual(self.hitmonchan.status, Status.SLP)
         self.assertFalse(self.hitmonchan.has_effect(Volatile.YAWN))
@@ -850,7 +850,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(stall.denominator, 9)
 
         self.goodra.moveset = [] # clear its moveset so that it doesn't try use protect again
-        self.bc.cheatsheetengine.run_turn()
+        self.bc.engine.run_turn()
 
         self.assertFalse(self.goodra.has_effect(Volatile.STALL))
 
