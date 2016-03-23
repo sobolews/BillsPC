@@ -1545,6 +1545,10 @@ class hiddenpowerdark(hiddenpower):
     def init_hp_type(self):
         self.type = Type.DARK
 
+class hiddenpowerwater(hiddenpower):
+    def init_hp_type(self):
+        self.type = Type.WATER
+
 # not a real move, used in battleclient to represent foe's hiddenpower of unknown type
 class hiddenpowernotype(hiddenpower):
     def init_hp_type(self):
