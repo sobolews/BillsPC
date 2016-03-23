@@ -141,6 +141,9 @@ class BattleClient(object):
         handle_method = 'handle_%s' % msg_type.lstrip('-')
         getattr(self, handle_method)(msg)
 
+    handle_supereffective = handle_resisted = handle_immune = handle_miss = handle_fail = \
+        lambda self, msg: None
+
     def handle_inactive(self, msg):
         if self.last_sent is not None:
             self.send(self.last_sent)

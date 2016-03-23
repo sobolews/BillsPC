@@ -118,18 +118,19 @@ class Bot(WebSocketClient):
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
         'cant', '-item', '-enditem', '-ability', '-transform', '-start', '-end', '-activate',
         'callback', '-singleturn', '-singlemove', '-sidestart', '-sideend', '-fieldstart',
-        '-fieldend', '-formechange', 'detailschange', '-mega',
+        '-fieldend', '-formechange', 'detailschange', '-mega', '-supereffective', '-resisted',
+        '-miss', '-immune', '-fail',
     }
 
     IGNORE_MSGS = {
         'updateuser', 'queryresponse', 'formats', 'updatesearch', 'title', 'join', 'gen', 'tier',
         'rated', 'rule', 'start', 'init', 'gametype', '-ability', 'variation', '-crit',
-        '-supereffective', '-resisted', '-miss', '-immune', '-hint', '-center', '-message',
-        '-notarget', '-hitcount', '-nothing', '-waiting', '-combine', 'chat', 'c', 'chatmsg',
-        'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
-        'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
-        'error', 'warning', 'gen', 'debug', 'unlink', 'updatechallenges', '-fail', 'users', ':',
-        'c:', 'expire', 'seed', 'choice', '-endability', '-fieldactivate', '-primal', 'n'
+        '-hint', '-center', '-message', '-notarget', '-hitcount', '-nothing', '-waiting',
+        '-combine', 'chat', 'c', 'chatmsg', 'chatmsg-raw', 'raw', 'html', 'pm', 'askreg',
+        'inactiveoff', 'join', 'j', 'leave', 'l', 'L', 'spectator', 'spectatorleave', 'clearpoke',
+        'poke', 'teampreview', 'swap', 'done', '', 'error', 'warning', 'gen', 'debug', 'unlink',
+        'updatechallenges', 'users', ':', 'c:', 'expire', 'seed', 'choice', '-endability',
+        '-fieldactivate', '-primal', 'n'
     }
 
     # TODO: implement (they get ignored for now)
