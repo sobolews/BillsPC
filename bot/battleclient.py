@@ -17,6 +17,7 @@ from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideC
                            PseudoWeather)
 from pokedex.items import itemdex
 from pokedex.moves import movedex
+from pokedex.types import type_effectiveness
 from pokedex.stats import Boosts, PokemonStats
 
 pokedex = create_pokedex()
@@ -53,6 +54,7 @@ class BattleClient(object):
         self.last_sent = None
         self.request = None
         self.rqid = None
+        self.hiddenpower_trigger = None
 
         self.make_moves = False # set to True to have the bot make random choices (TODO: use an AI
                                 # module for choices)
@@ -139,10 +141,133 @@ class BattleClient(object):
 
     def handle(self, msg_type, msg):
         handle_method = 'handle_%s' % msg_type.lstrip('-')
+
+        if self.hiddenpower_trigger is not None:
+            self.deduce_hiddenpower(self.hiddenpower_trigger, msg)
+
         getattr(self, handle_method)(msg)
 
     handle_supereffective = handle_resisted = handle_immune = handle_miss = handle_fail = \
         lambda self, msg: None
+
+    def deduce_hiddenpower(self, trigger, msg):
+        """
+        Try to deduce, from the message following a move, what type of hiddenpower `pokemon` has.
+        e.g.:
+        |move|p2a: Gothitelle|Hidden Power|p1a: Ambipom
+        |-supereffective|p1a: Ambipom                       <-- called for this message
+
+        Since Gothitelle gets either fire-type or fighting-type hiddenpower, we can deduce that this
+        gothitelle has hiddenpowerfighting, and so we adjust its moveset and IVs.
+
+        The possible messages following a |move||Hidden Power| are:
+
+        Typical:
+            |-supereffective|p2a: Graveler
+            |-resisted|p2a: Azumarill
+            |-immune|p2a: Haunter|[msg]
+            |-damage|p2a: Grovyle|161/241
+            |-miss|p2a: Durant|p1a: Yveltal
+
+        Ability-based: flashfire,voltabsorb/waterabsorb/dryskin,lightningrod/motordrive/stormdrain,
+                       levitate,primordialsea,desolateland,wonderguard,protean,deltastream
+            |-start|p2a: Caterpie|ability: Flash Fire
+            |-immune|p2a: Caterpie|[msg]|[from] ability: Flash Fire
+            |-heal|p2a: Azumarill|341/341|[from] ability: Volt Absorb|[of] p1a: Clefable
+            |-immune|p2a: Azumarill|[msg]|[from] ability: Volt Absorb
+            |-ability|p2a: Plusle|Lightning Rod|boost
+            |-ability|p2a: Leafeon|Storm Drain|boost
+            |-ability|p2a: Electivire|Motor Drive|boost
+            |-immune|p2a: Eelektross|[msg]|[from] ability: Levitate
+            |-fail|p2a: Caterpie|Hidden Power|[from] Primordial Sea
+            |-activate|p1a: Shedinja|ability: Wonder Guard
+            |-start|p1a: Kecleon|typechange|Rock|[from] Protean
+            |-activate||deltastream
+        """
+        self.hiddenpower_trigger = None
+        if msg[0] == '-miss':   # no information
+            return
+
+        pokemon, possible = trigger
+        moveset = pokemon.moveset
+        pos = moveset.index(movedex['hiddenpowernotype'])
+
+        if msg[0] == '-start' and msg[2] == 'typechange': # reveals type in msg[3]
+            moveset[pos] = movedex['hiddenpower' + normalize_name(msg[3])]
+            return
+
+        defender = self.get_pokemon_from_msg(msg, 1) if msg[1] else None
+
+        msg_to_eff = {'-supereffective': (2, 4),
+                      '-resisted': (0.5, 0.25),
+                      '-immune': (0,),
+                      '-damage': (1,)}
+        if msg[0] in msg_to_eff and len(msg) <= 3:
+            reduced = [move for move in possible if
+                       (self.engine.get_effectiveness(pokemon, move, defender) *
+                        (not defender.is_immune_to_move(pokemon, move))) in msg_to_eff[msg[0]]]
+            if len(reduced) == 1:
+                moveset[pos] = reduced[0]
+            else:
+                if len(reduced) == 0:
+                    if __debug__: log.w('Error deducing hiddenpower type (no candidates): '
+                                        '%s, %s: %s', pokemon, possible, msg)
+
+        # handle all the abilities and other effects that could reveal the hiddenpower type
+        elif msg[0] == '-start' and normalize_name(msg[2]) == 'flashfire':
+            moveset[pos] = movedex['hiddenpowerfire']
+        elif msg[0] == '-immune':
+            effect = normalize_name(msg[3].replace('[from] ', ''))
+            if effect == 'flashfire':
+                moveset[pos] = movedex['hiddenpowerfire']
+            elif effect == 'voltabsorb':
+                moveset[pos] = movedex['hiddenpowerelectric']
+            elif effect in ('waterabsorb', 'dryskin'):
+                moveset[pos] = movedex['hiddenpowerwater']
+            elif effect == 'levitate':
+                moveset[pos] = movedex['hiddenpowerground']
+        elif msg[0] == '-heal':
+            effect = normalize_name(msg[3].replace('[from] ', ''))
+            if effect == 'voltabsorb':
+                moveset[pos] = movedex['hiddenpowerelectric']
+            elif effect in ('waterabsorb', 'dryskin'):
+                moveset[pos] = movedex['hiddenpowerwater']
+        elif msg[0] == '-ability':
+            effect = normalize_name(msg[3])
+            if effect in ('lightningrod', 'motordrive'):
+                moveset[pos] = movedex['hiddenpowerelectric']
+            elif effect == 'stormdrain':
+                moveset[pos] = movedex['hiddenpowerwater']
+        elif msg[0] == '-fail':
+            effect = normalize_name(msg[3].replace('[from] ', ''))
+            if effect == 'primordialsea':
+                moveset[pos] = movedex['hiddenpowerfire']
+            if effect == 'desolateland':
+                moveset[pos] = movedex['hiddenpowerwater']
+        elif msg[0] == '-activate':
+            effect = normalize_name(msg[2])
+            if effect == 'wonderguard':
+                reduced = [move for move in possible if
+                           self.engine.get_effectiveness(pokemon, move, defender) < 2]
+                if len(reduced) == 1:
+                    moveset[pos] = reduced[0]
+            elif effect == 'deltastream':
+                reduced = [move for move in possible if
+                           type_effectiveness(move.type, Type.FLYING) > 1]
+                if len(reduced) == 1:
+                    moveset[pos] = reduced[0]
+        else:
+            if __debug__: log.e('Unhandled deduce_hiddenpower message for %s: %s', pokemon, msg)
+
+        if __debug__:
+            if moveset[pos] == movedex['hiddenpowernotype']:
+                log.i("Unable to deduce %s's hiddenpower type vs %s from %s",
+                      pokemon, defender, msg)
+            elif moveset[pos] in possible:
+                log.i("Deduced %s's hiddenpower type to be %s", pokemon, moveset[pos])
+            else:
+                log.w("Setting %s's hiddenpower type to %s: "
+                      "but possible choices were %s", pokemon, moveset[pos], possible)
 
     def handle_inactive(self, msg):
         if self.last_sent is not None:
@@ -291,17 +416,21 @@ class BattleClient(object):
         pp_sub = 2 if not foe.is_fainted() and foe.ability is abilitydex['pressure'] else 1
 
         if msg[2] == 'Hidden Power':
-            hp_moves = [move for move in pokemon.moveset if move.is_hiddenpower]
+            hp_moves = [move for move in pokemon.moveset if
+                        move.is_hiddenpower and move != movedex['hiddenpowernotype']]
             if hp_moves:
                 assert len(hp_moves) == 1, hp_moves
                 move = hp_moves[0]
             else:
-                possible = [move for move in rbstats[pokemon.name]['moves']
+                assert pokemon is self.foe_side.active_pokemon, \
+                    (pokemon, self.foe_side.active_pokemon)
+                possible = [movedex[move] for move in rbstats[pokemon.name]['moves']
                             if move.startswith('hiddenpower')]
                 if len(possible) == 1:
-                    move = movedex[possible[0]]
+                    move = possible[0]
                 else:
                     move = movedex['hiddenpowernotype']
+                    self.hiddenpower_trigger = (pokemon, possible)
         else:
             move = movedex[normalize_name(msg[2])]
 
