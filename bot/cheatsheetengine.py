@@ -47,7 +47,8 @@ class CheatSheetEngine(BattleEngine):
     def describe_possible_foe_moves(self, my_active, foe):
         if __debug__:
             for move in foe.moveset:
-                if move.name not in rbstats.probability[foe.name]['moves']:
+                if (move.name not in rbstats.probability[foe.name]['moves'] and
+                    move != movedex['hiddenpowernotype']):
                     log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
 
         if len(foe.moveset) >= 4:
