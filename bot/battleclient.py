@@ -509,14 +509,24 @@ class BattleClient(object):
 
     def handle_cant(self, msg):
         """
-        Decrement pokemon.sleep_turns if its sleeping
+        `|cant|POKEMON|REASON` or `|cant|POKEMON|REASON|MOVE`
+
+        Decrement pokemon.sleep_turns if its sleeping:
         |cant|p2a: Alomomola|slp
+
+        Reveal a move if shown:
+        |cant|p2a: Corsola|move: Taunt|Recover
+        |cant|p2a: Ditto|Disable|Bug Bite
+        |cant|p2a: Aerodactyl|Focus Punch|Focus Punch
         """
         pokemon = self.get_pokemon_from_msg(msg)
         if msg[2] == 'slp':
             assert pokemon.status is Status.SLP, (pokemon, pokemon.status)
             if pokemon.sleep_turns > 0:
                 pokemon.sleep_turns -= 1
+
+        elif len(msg) > 3:
+            self.reveal_move(pokemon, movedex[normalize_name(msg[3])])
 
     def handle_immune(self, msg):
         """
