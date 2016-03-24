@@ -52,7 +52,7 @@ class TestBattleClientBase(TestCase):
         """
         self.set_up_players()
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
-        self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, F|100/100')
         self.handle('|turn|1')
 
 
@@ -121,10 +121,12 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.get_effect(ITEM).name, 'assaultvest')
         self.assertIn(self.hitmonchan.get_effect(ITEM).on_modify_spd,
                       self.hitmonchan.effect_handlers['on_modify_spd'])
+        self.assertEqual(self.hitmonchan.gender, 'M')
 
         self.assertEqual(self.goodra.name, 'goodra')
         self.assertEqual(self.goodra.hp, 265)
         self.assertListEqual(self.goodra.moveset, [])
+        self.assertEqual(self.goodra.gender, 'F')
 
         self.assertEqual(self.foe_side.num_unrevealed, 5)
 
@@ -138,6 +140,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
                                               ['outrage', 'roost', 'voltswitch', 'boltstrike']])
         self.assertFalse(self.hitmonchan.is_active)
         self.assertEqual(zekrom.hp, 266)
+        self.assertEqual(zekrom.gender, None)
 
     def test_switch_in_ident_details_mismatch(self):
         """ details: "Giratina-Origin, L73" is referred to as ident: "p1: Giratina" """

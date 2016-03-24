@@ -125,6 +125,7 @@ class BattleClient(object):
         details = j_pokemon['details'].split(', ')
         species = normalize_name(details[0])
         level = int(details[1].lstrip('L'))
+        gender = details[2] if len(details) > 2 else None
         hp, max_hp = map(int, j_pokemon['condition'].split('/'))
         stats = j_pokemon['stats']
         stats['max_hp'] = max_hp
@@ -132,7 +133,7 @@ class BattleClient(object):
         ability = abilitydex[j_pokemon['baseAbility']]
         item = itemdex[j_pokemon['item']]
 
-        pokemon = BattlePokemon(pokedex[species], level, moveset, ability, item)
+        pokemon = BattlePokemon(pokedex[species], level, moveset, ability, item, gender)
         pokemon.hp, pokemon.max_hp = hp, max_hp
         if __debug__: self._warn_if_stats_discrepancy(pokemon, stats)
         pokemon.stats = PokemonStats.from_dict(stats)
@@ -635,10 +636,13 @@ class BattleClient(object):
         assert side.index == self.foe_player, (side.index, self.foe_player)
         assert side.num_unrevealed > 0, side.num_unrevealed
         assert msg[3] == '100/100', msg[3]
-        level = int(msg[2].split(', ')[1].lstrip('L'))
+        details = msg[2].split(', ')
+        level = int(details[1].lstrip('L'))
         assert 1 <= level <= 100, 'level=%r' % level
-        pokemon = BattlePokemon(pokedex[normalize_name(msg[2].split(', ')[0])],
-                                level, moveset=[], side=side, ability=abilitydex['_unrevealed_'])
+        gender = details[2] if len(details) > 2 else None
+        assert gender in ('M', 'F', None), gender
+        pokemon = BattlePokemon(pokedex[normalize_name(details[0])], level, moveset=[],
+                                side=side, ability=abilitydex['_unrevealed_'], gender=gender)
         # TODO: attempt to deduce more information right away, like ability, moves, etc.
         self.foe_side.reveal(pokemon)
         return pokemon
