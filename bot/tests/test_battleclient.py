@@ -1167,3 +1167,16 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         throh = self.foe_side.active_pokemon
         self.assertEqual(throh.item, itemdex['toxicorb'])
+
+    def test_damage_reveals_item_ability(self):
+        self.handle('|switch|p2a: Electrode|Electrode, L83|100/100')
+        self.handle('|-damage|p2a: Electrode|90/100|[from] item: Life Orb')
+        self.handle('|-damage|p1a: Hitmonchan|100/209|[from] item: Black Sludge')
+        self.handle('|-damage|p1a: Hitmonchan|35/209|[from] ability: Aftermath|[of] p2a: Electrode')
+        self.handle('|turn|2')
+
+        electrode = self.foe_side.active_pokemon
+        self.assertEqual(electrode.ability, abilitydex['aftermath'])
+        self.assertEqual(electrode.item, itemdex['lifeorb'])
+        self.assertEqual(self.hitmonchan.item, itemdex['blacksludge'])
+        self.assertEqual(self.hitmonchan.hp, 35)

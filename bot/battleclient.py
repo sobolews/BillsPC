@@ -475,10 +475,30 @@ class BattleClient(object):
 
         |-damage|p2a: Goodra|62/100 brn|[from] brn
 
-        We only care about msg[0], [1], [2].
+        |-damage|p1a: Garchomp|35/286|[from] ability: Iron Barbs|[of] p2a: Ferrothorn
+        |-damage|p2a: Gengar|50/208 slp|[from] ability: Bad Dreams|[of] p1a: Darkrai
+        |-damage|p2a: Mightyena|136/252|[from] ability: Aftermath|[of] p1a: Electrode
+        |-damage|p2a: Cresselia|311/381|[from] ability: Dry Skin|[of] p2a: Cresselia
+        |-damage|p1a: Arceus|350/381|[from] ability: Liquid Ooze|[of] p2a: Graveler
+        |-damage|p2a: Porygon-Z|30/100|[from] item: Life Orb
+        |-damage|p2a: Cresselia|264/381|[from] item: Black Sludge
+        |-damage|p1a: Throh|169/331|[from] Leech Seed|[of] p2a: Venusaur (log.e)
         """
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
+
+        if len(msg) > 3:
+            msg3 = msg[3].replace('[from] ', '')
+            if msg3.startswith('item'):
+                self.set_item(pokemon, itemdex[normalize_name(msg3)])
+            elif msg3.startswith('ability'):
+                msg[4] = msg[4].replace('[of] ', '')
+                who = self.get_pokemon_from_msg(msg, 4)
+                self.set_ability(who, abilitydex[normalize_name(msg3)])
+            elif msg3 == 'Leech Seed':
+                if not pokemon.has_effect(Volatile.LEECHSEED):
+                    if __debug__: log.e("%s damaged by leechseed; no Volatile.LEECHSEED present",
+                                        pokemon, msg)
 
         self.set_hp_status(pokemon, msg[2])
 
@@ -502,7 +522,7 @@ class BattleClient(object):
             elif msg3.startswith('ability'):
                 self.set_ability(pokemon, abilitydex[normalize_name(msg3)])
 
-        self.handle_damage(msg)
+        self.set_hp_status(pokemon, msg[2])
 
     def handle_faint(self, msg):
         """
