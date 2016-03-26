@@ -1152,3 +1152,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         blastoise = self.foe_side.active_pokemon
         self.assertEqual(blastoise.ability, abilitydex['raindish'])
         self.assertEqual(blastoise.item, itemdex['leftovers'])
+
+    def test_status_reveals_item_ability(self):
+        self.handle('|switch|p2a: Electrode|Electrode, L83|100/100')
+        self.handle('|-status|p1a: Hitmonchan|par|[from] ability: Static|[of] p2a: Electrode')
+        self.handle('|turn|2')
+
+        electrode = self.foe_side.active_pokemon
+        self.assertEqual(electrode.ability, abilitydex['static'])
+        self.assertEqual(self.hitmonchan.status, Status.PAR)
+
+        self.handle('|drag|p2a: Throh|Throh, L82, M|100/100')
+        self.handle('|-status|p2a: Throh|tox|[from] item: Toxic Orb')
+
+        throh = self.foe_side.active_pokemon
+        self.assertEqual(throh.item, itemdex['toxicorb'])

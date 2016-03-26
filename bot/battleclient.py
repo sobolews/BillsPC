@@ -519,13 +519,25 @@ class BattleClient(object):
         `|-status|POKEMON|STATUS[|FROM]`
         |-status|p2a: Goodra|brn
         |-status|p2a: Stunfisk|slp|[from] move: Rest
+
+        |-status|p1a: Raticate|tox|[from] item: Toxic Orb
+        |-status|p2a: Blissey|tox|[from] ability: Synchronize|[of] p1a: Musharna
         """
         pokemon = self.get_pokemon_from_msg(msg)
 
         pokemon.cure_status()
         self.set_status(pokemon, msg[2])
-        if len(msg) > 3 and msg[3] == '[from] move: Rest':
-            pokemon.is_resting = True
+
+        if len(msg) > 3:
+            msg3 = msg[3].replace('[from] ', '')
+            if msg3 == 'move: Rest':
+                pokemon.is_resting = True
+            elif msg3.startswith('item'):
+                self.set_item(pokemon, itemdex[normalize_name(msg3)])
+            elif msg3.startswith('ability'):
+                msg[4] = msg[4].replace('[of] ', '')
+                other = self.get_pokemon_from_msg(msg, 4)
+                self.set_ability(other, abilitydex[normalize_name(msg3)])
 
     def handle_cant(self, msg):
         """
