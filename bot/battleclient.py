@@ -482,7 +482,27 @@ class BattleClient(object):
 
         self.set_hp_status(pokemon, msg[2])
 
-    handle_heal = handle_damage
+    def handle_heal(self, msg):
+        """
+        Same as damage; check for revealed abilities/items first
+
+        |-heal|p2a: Tyranitar|330/341|[from] ability: Rain Dish
+        |-heal|p2a: Moltres|253/267|[from] item: Leftovers
+
+        |-enditem|p1a: Exeggutor|Sitrus Berry|[eat]
+        |-heal|p1a: Exeggutor|205/288|[from] item: Sitrus Berry
+        """
+        pokemon = self.get_pokemon_from_msg(msg)
+        assert pokemon.is_active, pokemon
+
+        if len(msg) > 3:
+            msg3 = msg[3].replace('[from] ', '')
+            if msg3.startswith('item') and 'Berry' not in msg3:
+                self.set_item(pokemon, itemdex[normalize_name(msg3)])
+            elif msg3.startswith('ability'):
+                self.set_ability(pokemon, abilitydex[normalize_name(msg3)])
+
+        self.handle_damage(msg)
 
     def handle_faint(self, msg):
         """

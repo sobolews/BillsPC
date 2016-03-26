@@ -1142,3 +1142,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
 
         self.assertIn(movedex['recover'], self.goodra.moveset)
+
+    def test_heal_reveals_item_ability(self):
+        self.handle('|switch|p2a: Blastoise|Blastoise, L79, M|100/100')
+        self.handle('|-heal|p2a: Blastoise|100/100|[from] ability: Rain Dish')
+        self.handle('|-heal|p2a: Blastoise|100/100|[from] item: Leftovers')
+        self.handle('|turn|2')
+
+        blastoise = self.foe_side.active_pokemon
+        self.assertEqual(blastoise.ability, abilitydex['raindish'])
+        self.assertEqual(blastoise.item, itemdex['leftovers'])
