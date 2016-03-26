@@ -285,11 +285,14 @@ class BattleClient(object):
         self.battlefield.turns = int(msg[1])
         my_active = self.my_side.active_pokemon
         foe_active = self.foe_side.active_pokemon
+        assert (my_active and foe_active), (my_active, foe_active)
 
         my_active.item_used_this_turn = None
         my_active.will_move_this_turn = True
+        my_active.turns_out += 1
         foe_active.item_used_this_turn = None
         foe_active.will_move_this_turn = True
+        foe_active.turns_out += 1
 
         for thing in filter(None, (my_active, foe_active, my_active.side, foe_active.side,
                                    self.battlefield)):

@@ -1180,3 +1180,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(electrode.item, itemdex['lifeorb'])
         self.assertEqual(self.hitmonchan.item, itemdex['blacksludge'])
         self.assertEqual(self.hitmonchan.hp, 35)
+
+    def test_client_turns_out(self):
+        self.assertEqual(self.hitmonchan.turns_out, 1)
+        self.assertEqual(self.goodra.turns_out, 1)
+        self.handle('|turn|2')
+        self.assertEqual(self.hitmonchan.turns_out, 2)
+        self.assertEqual(self.goodra.turns_out, 2)
+
+        self.handle('|switch|p2a: Electrode|Electrode, L83|100/100')
+        self.handle('|turn|3')
+
+        electrode = self.foe_side.active_pokemon
+        self.assertEqual(self.hitmonchan.turns_out, 3)
+        self.assertEqual(electrode.turns_out, 1)
