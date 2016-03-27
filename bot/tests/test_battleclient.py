@@ -271,7 +271,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.goodra.sleep_turns, 2)
 
     def test_handle_status_rest(self):
-        self.goodra = self.foe_side.active_pokemon
         self.bc.set_status(self.goodra, 'brn')
         self.goodra.hp -= 100
         self.handle('|-status|p2a: Goodra|slp')
@@ -343,7 +342,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertFalse(self.battlefield.has_effect(Weather.HAIL))
 
     def test_handle_sethp(self):
-        self.goodra = self.foe_side.active_pokemon
         self.handle('|-sethp|p2a: Goodra|55/100|p1a: Hitmonchan|175/209|[from] move: Pain Split')
         self.assertEqual(self.hitmonchan.hp, 175)
         self.assertEqual(self.goodra.hp, 146)
@@ -380,7 +378,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
             self.assertEqual(self.hitmonchan.boosts[stat], 0)
 
     def test_handle_clearallboost(self):
-        self.goodra = self.foe_side.active_pokemon
         self.hitmonchan.boosts['atk'] += 3
         self.hitmonchan.boosts['def'] -= 1
         self.goodra.boosts['spe'] += 1
