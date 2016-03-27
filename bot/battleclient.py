@@ -67,10 +67,11 @@ class BattleClient(object):
 
     def get_side_from_msg(self, msg, index=1):
         """
-        All `POKEMON` in messages are formatted 'p2a: Goodra'
+        All `POKEMON` in messages are formatted 'p2a: Goodra' or '[of] p2a: Goodra'
         e.g. |-unboost|p2a: Goodra|spa|2
         """
-        side = self.my_side if int(msg[index][1]) - 1 == self.my_player else self.foe_side
+        identifier = msg[index].replace('[of] ', '')
+        side = self.my_side if int(identifier[1]) - 1 == self.my_player else self.foe_side
         assert side is not None, side
         return side
 
@@ -217,7 +218,7 @@ class BattleClient(object):
         elif msg[0] == '-start' and normalize_name(msg[2]) == 'flashfire':
             moveset[pos] = movedex['hiddenpowerfire']
         elif msg[0] == '-immune':
-            effect = normalize_name(msg[3].replace('[from] ', ''))
+            effect = normalize_name(msg[3])
             if effect == 'flashfire':
                 moveset[pos] = movedex['hiddenpowerfire']
             elif effect == 'voltabsorb':
@@ -227,7 +228,7 @@ class BattleClient(object):
             elif effect == 'levitate':
                 moveset[pos] = movedex['hiddenpowerground']
         elif msg[0] == '-heal':
-            effect = normalize_name(msg[3].replace('[from] ', ''))
+            effect = normalize_name(msg[3])
             if effect == 'voltabsorb':
                 moveset[pos] = movedex['hiddenpowerelectric']
             elif effect in ('waterabsorb', 'dryskin'):
@@ -239,7 +240,7 @@ class BattleClient(object):
             elif effect == 'stormdrain':
                 moveset[pos] = movedex['hiddenpowerwater']
         elif msg[0] == '-fail':
-            effect = normalize_name(msg[3].replace('[from] ', ''))
+            effect = normalize_name(msg[3])
             if effect == 'primordialsea':
                 moveset[pos] = movedex['hiddenpowerfire']
             if effect == 'desolateland':
@@ -485,9 +486,8 @@ class BattleClient(object):
         """
         for i in range(3, len(msg)):
             if msg[i].startswith('[from] ability:'):
-                msg[i+1] = msg[i+1].replace('[of] ', '')
                 pokemon = self.get_pokemon_from_msg(msg, i+1)
-                ability = abilitydex[normalize_name(msg[i].replace('[from] ', ''))]
+                ability = abilitydex[normalize_name(msg[i])]
                 self.set_ability(pokemon, ability)
 
     def handle_immune(self, msg):
@@ -502,11 +502,9 @@ class BattleClient(object):
         |-immune|p2a: Muk|[msg]|[from] ability: Synchronize|[of] p1a: Umbreon
         """
         if len(msg) > 3:
-            msg3 = msg[3].replace('[from] ', '')
             pokemon = self.get_pokemon_from_msg(msg)
-            ability = normalize_name(msg3)
+            ability = normalize_name(msg[3])
             if ability == 'synchronize':
-                msg[4] = msg[4].replace('[of] ', '')
                 pokemon = self.get_pokemon_from_msg(msg, 4)
             self.set_ability(pokemon, abilitydex[ability])
         elif msg[2] == 'confusion':
@@ -535,14 +533,12 @@ class BattleClient(object):
         assert pokemon.is_active, pokemon
 
         if len(msg) > 3:
-            msg3 = msg[3].replace('[from] ', '')
-            if msg3.startswith('item'):
-                self.set_item(pokemon, itemdex[normalize_name(msg3)])
-            elif msg3.startswith('ability'):
-                msg[4] = msg[4].replace('[of] ', '')
+            if msg[3].startswith('[from] item'):
+                self.set_item(pokemon, itemdex[normalize_name(msg[3])])
+            elif msg[3].startswith('[from] ability'):
                 who = self.get_pokemon_from_msg(msg, 4)
-                self.set_ability(who, abilitydex[normalize_name(msg3)])
-            elif msg3 == 'Leech Seed':
+                self.set_ability(who, abilitydex[normalize_name(msg[3])])
+            elif normalize_name(msg[3]) == 'leechseed':
                 if not pokemon.has_effect(Volatile.LEECHSEED):
                     if __debug__: log.e("%s damaged by leechseed; no Volatile.LEECHSEED present",
                                         pokemon, msg)
@@ -563,11 +559,10 @@ class BattleClient(object):
         assert pokemon.is_active, pokemon
 
         if len(msg) > 3:
-            msg3 = msg[3].replace('[from] ', '')
-            if msg3.startswith('item') and 'Berry' not in msg3:
-                self.set_item(pokemon, itemdex[normalize_name(msg3)])
-            elif msg3.startswith('ability'):
-                self.set_ability(pokemon, abilitydex[normalize_name(msg3)])
+            if msg[3].startswith('[from] item') and 'Berry' not in msg[3]:
+                self.set_item(pokemon, itemdex[normalize_name(msg[3])])
+            elif msg[3].startswith('[from] ability'):
+                self.set_ability(pokemon, abilitydex[normalize_name(msg[3])])
 
         self.set_hp_status(pokemon, msg[2])
 
@@ -596,15 +591,15 @@ class BattleClient(object):
         self.set_status(pokemon, msg[2])
 
         if len(msg) > 3:
-            msg3 = msg[3].replace('[from] ', '')
-            if msg3 == 'move: Rest':
-                pokemon.is_resting = True
-            elif msg3.startswith('item'):
-                self.set_item(pokemon, itemdex[normalize_name(msg3)])
-            elif msg3.startswith('ability'):
-                msg[4] = msg[4].replace('[of] ', '')
+            if msg[3].startswith('[from] item'):
+                self.set_item(pokemon, itemdex[normalize_name(msg[3])])
+            elif msg[3].startswith('[from] ability'):
                 other = self.get_pokemon_from_msg(msg, 4)
-                self.set_ability(other, abilitydex[normalize_name(msg3)])
+                self.set_ability(other, abilitydex[normalize_name(msg[3])])
+            elif msg[3] == '[from] move: Rest':
+                pokemon.is_resting = True
+            elif __debug__:
+                log.w('Unhandled part of -status msg: %s', msg)
 
     def handle_cant(self, msg):
         """

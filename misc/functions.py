@@ -31,6 +31,8 @@ def normalize_name(name):
              ('Bug Buzz' --> 'bugbuzz')
              ("Farfetch'd" --> 'farfetchd')
              ('ability: Slow Start' --> 'slowstart')
+             ('[from] item: Life Orb' --> 'lifeorb')
+             ('[from] Protean' --> 'protean')
     etc.
     """
-    return str(name).split(':')[-1].strip().lower().translate(None, " -'.")
+    return str(name).split(']')[-1].split(':')[-1].strip().lower().translate(None, " -'.")
