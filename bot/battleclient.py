@@ -631,9 +631,17 @@ class BattleClient(object):
         """
         `|-curestatus|POKEMON|STATUS`
         |-curestatus|p1a: Regirock|slp
+        |-curestatus|p1a: Chansey|tox|[from] ability: Natural Cure
         """
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.status is not None, (pokemon, pokemon.status)
+
+        if len(msg) > 3 and msg[3].startswith('[from] ability:'):
+            if msg[3] == '[from] ability: Natural Cure':
+                self.set_ability(pokemon, abilitydex['naturalcure'])
+            elif __debug__:
+                log.e('Unhandled -curestatus msg: %s', msg)
+
         pokemon.cure_status()
 
     def handle_cureteam(self, msg):

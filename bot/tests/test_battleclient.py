@@ -1247,3 +1247,11 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertEqual(self.hitmonchan.pp[movedex['rapidspin']],
                          movedex['rapidspin'].max_pp - 1)
+
+    def test_handle_curestatus_reveals_ability(self):
+        self.handle('|switch|p2a: Corsola|Corsola, L83, M|100/100')
+        self.handle('|-status|p2a: Corsola|tox')
+        self.handle('|-curestatus|p2a: Corsola|tox|[from] ability: Natural Cure')
+
+        corsola = self.foe_side.active_pokemon
+        self.assertEqual(corsola.ability, abilitydex['naturalcure'])
