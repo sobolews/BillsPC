@@ -1233,3 +1233,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         beheeyem = self.foe_side.active_pokemon
         self.assertEqual(beheeyem.ability, abilitydex['synchronize'])
+
+    def test_handle_move_notarget(self):
+        self.handle('|switch|p2a: Talonflame|Talonflame, L75, F|100/100')
+        self.handle('|move|p2a: Talonflame|Brave Bird|p1a: Samurott')
+        self.handle('|-damage|p1a: Hitmonchan|100/209')
+        self.handle('|-damage|p2a: Talonflame|0 fnt|[from] recoil|[of] p1a: Hitmonchan')
+        self.handle('|faint|p2a: Talonflame')
+        self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2: Talonflame|[notarget]')
+        # |notarget
+        self.handle('|switch|p2a: Trevenant|Trevenant, L79, M|100/100')
+        self.handle('|turn|2')
+
+        self.assertEqual(self.hitmonchan.pp[movedex['rapidspin']],
+                         movedex['rapidspin'].max_pp - 1)
