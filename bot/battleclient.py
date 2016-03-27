@@ -148,7 +148,7 @@ class BattleClient(object):
 
         getattr(self, handle_method)(msg)
 
-    handle_supereffective = handle_resisted = handle_immune = handle_miss = lambda self, msg: None
+    handle_supereffective = handle_resisted = handle_miss = lambda self, msg: None
 
     def deduce_hiddenpower(self, trigger, msg):
         """
@@ -490,6 +490,31 @@ class BattleClient(object):
                 ability = abilitydex[normalize_name(msg[i].replace('[from] ', ''))]
                 self.set_ability(pokemon, ability)
 
+    def handle_immune(self, msg):
+        """
+        |-immune|p2a: Drifblim|[msg]
+        |-immune|p1a: Lilligant|confusion -- Reveals owntempo, (probably) ends LockedMove
+
+        |-immune|p2a: Quagsire|[msg]|[from] ability: Water Absorb
+        |-immune|p1a: Uxie|[msg]|[from] ability: Levitate
+        etc.
+
+        |-immune|p2a: Muk|[msg]|[from] ability: Synchronize|[of] p1a: Umbreon
+        """
+        if len(msg) > 3:
+            msg3 = msg[3].replace('[from] ', '')
+            pokemon = self.get_pokemon_from_msg(msg)
+            ability = normalize_name(msg3)
+            if ability == 'synchronize':
+                msg[4] = msg[4].replace('[of] ', '')
+                pokemon = self.get_pokemon_from_msg(msg, 4)
+            self.set_ability(pokemon, abilitydex[ability])
+        elif msg[2] == 'confusion':
+            pokemon = self.get_pokemon_from_msg(msg)
+            self.set_ability(pokemon, abilitydex['owntempo'])
+            if pokemon.has_effect(Volatile.LOCKEDMOVE):
+                pokemon.remove_effect(Volatile.LOCKEDMOVE)
+
     def handle_damage(self, msg):
         """
         `|-damage|POKEMON|HP STATUS`, with optionally `|[from] EFFECT|[of] SOURCE`,
@@ -601,18 +626,6 @@ class BattleClient(object):
 
         elif len(msg) > 3:
             self.reveal_move(pokemon, movedex[normalize_name(msg[3])])
-
-    def handle_immune(self, msg):
-        """
-        |-immune|p1a: Lilligant|confusion
-
-        Reveals owntempo, (probably) ends LockedMove
-        """
-        pokemon = self.get_pokemon_from_msg(msg)
-        if msg[2] == 'confusion':
-            self.set_ability(pokemon, abilitydex['owntempo'])
-            if pokemon.has_effect(Volatile.LOCKEDMOVE):
-                pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
     def handle_curestatus(self, msg):
         """

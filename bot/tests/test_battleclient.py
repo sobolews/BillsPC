@@ -1218,3 +1218,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-fail|p2a: Kingler|unboost|[from] ability: Clear Body|[of] p2a: Kingler')
         self.assertEqual(kingler.ability, abilitydex['clearbody'])
+
+    def test_immune_reveals_ability(self):
+        self.handle('|switch|p2a: Lanturn|Lanturn, L81, M|100/100')
+        self.handle('|-immune|p2a: Lanturn|[msg]|[from] ability: Water Absorb')
+        self.handle('|turn|2')
+
+        lanturn = self.foe_side.active_pokemon
+        self.assertEqual(lanturn.ability, abilitydex['waterabsorb'])
+
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|drag|p2a: Beheeyem|Beheeyem, L75|100/100')
+        self.handle('|-immune|p1a: Zekrom|[msg]|[from] ability: Synchronize|[of] p2a: Beheeyem')
+
+        beheeyem = self.foe_side.active_pokemon
+        self.assertEqual(beheeyem.ability, abilitydex['synchronize'])
