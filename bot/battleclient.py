@@ -738,6 +738,8 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         pokemon.remove_effect(ITEM, force=True)
+        if pokemon.ability == abilitydex['unburden']:
+            pokemon.set_effect(effects.UnburdenVolatile())
         pokemon.item = None
         pokemon.last_berry_used = None
         item = itemdex[normalize_name(msg[2])]

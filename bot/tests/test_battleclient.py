@@ -1194,3 +1194,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         electrode = self.foe_side.active_pokemon
         self.assertEqual(self.hitmonchan.turns_out, 3)
         self.assertEqual(electrode.turns_out, 1)
+
+    def test_enditem_sets_unburden(self):
+        self.handle('|switch|p2a: Hawlucha|Hawlucha, L76, M|100/100')
+        self.handle('|-ability|p2a: Hawlucha|Unburden')
+        self.handle('|turn|2')
+        self.handle('|-enditem|p2a: Hawlucha|Flying Gem|[from] gem|[move] Acrobatics')
+        self.handle('|turn|3')
+
+        hawlucha = self.foe_side.active_pokemon
+        self.assertTrue(hawlucha.has_effect(Volatile.UNBURDEN))
