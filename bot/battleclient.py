@@ -148,8 +148,7 @@ class BattleClient(object):
 
         getattr(self, handle_method)(msg)
 
-    handle_supereffective = handle_resisted = handle_immune = handle_miss = handle_fail = \
-        lambda self, msg: None
+    handle_supereffective = handle_resisted = handle_immune = handle_miss = lambda self, msg: None
 
     def deduce_hiddenpower(self, trigger, msg):
         """
@@ -470,6 +469,26 @@ class BattleClient(object):
                                           (pokemon, move, pokemon))
         pokemon.moveset.append(move)
         pokemon.pp[move] = move.max_pp
+
+    def handle_fail(self, msg):
+        """
+        Ignore:
+        |-fail|p1a: Hitmontop
+        |-fail|p2a: Accelgor|tox
+        |-fail|p2a: Kyogre|Flare Blitz|[from] Primordial Sea
+        |-fail|p1a: Kyurem|move: Substitute|[weak]
+
+        Reveal ability:
+        |-fail|p2a: Registeel|unboost|[from] ability: Clear Body|[of] p2a: Registeel
+        |-fail|p2a: Graveler|unboost|Attack|[from] ability: Hyper Cutter|[of] p2a: Graveler
+        |-fail|p2a: Haunter|unboost|accuracy|[from] ability: Keen Eye|[of] p2a: Haunter
+        """
+        for i in range(3, len(msg)):
+            if msg[i].startswith('[from] ability:'):
+                msg[i+1] = msg[i+1].replace('[of] ', '')
+                pokemon = self.get_pokemon_from_msg(msg, i+1)
+                ability = abilitydex[normalize_name(msg[i].replace('[from] ', ''))]
+                self.set_ability(pokemon, ability)
 
     def handle_damage(self, msg):
         """

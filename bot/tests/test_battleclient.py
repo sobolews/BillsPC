@@ -1204,3 +1204,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         hawlucha = self.foe_side.active_pokemon
         self.assertTrue(hawlucha.has_effect(Volatile.UNBURDEN))
+
+    def test_fail_reveals_ability(self):
+        self.handle('|-fail|p1a: Hitmonchan')
+        self.handle('|-fail|p2a: Goodra|move: Substitute|[weak]')
+        self.handle('|turn|2')
+        self.handle('|switch|p2a: Kingler|Kingler, L83, F|100/100')
+        self.handle('|-fail|p2a: Kingler|unboost|Attack|[from] ability: Hyper Cutter|[of] p2a: Kingler')
+        self.handle('|turn|3')
+
+        kingler = self.foe_side.active_pokemon
+        self.assertEqual(kingler.ability, abilitydex['hypercutter'])
+
+        self.handle('|-fail|p2a: Kingler|unboost|[from] ability: Clear Body|[of] p2a: Kingler')
+        self.assertEqual(kingler.ability, abilitydex['clearbody'])
