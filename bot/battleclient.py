@@ -672,6 +672,8 @@ class BattleClient(object):
         """
         `|-weather|WEATHER`
         |-weather|RainDance or |-weather|RainDance|[upkeep] or |-weather|none
+
+        |-weather|Sandstorm|[from] ability: Sand Stream|[of] p2a: Tyranitar
         """
         if msg[1] == 'none':
             self.battlefield.clear_weather()
@@ -685,6 +687,10 @@ class BattleClient(object):
                     'Handling upkeep (%s) but weather is None' % msg[1]
                 self.battlefield.get_effect(weather).duration -= 1
         else:
+            if len(msg) > 2 and msg[2].startswith('[from] ability'):
+                pokemon = self.get_pokemon_from_msg(msg, 3)
+                self.set_ability(pokemon, abilitydex[normalize_name(msg[2])])
+
             self.battlefield.set_weather(weather)
             if msg[1].lower() in ('sunnyday', 'raindance'): # usually has heatrock/damprock boost
                                                             # TODO: use rbstats to determine

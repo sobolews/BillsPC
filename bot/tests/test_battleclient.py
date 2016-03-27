@@ -341,6 +341,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertIsNone(self.battlefield.weather)
         self.assertFalse(self.battlefield.has_effect(Weather.HAIL))
 
+    def test_handle_weather_from_ability(self):
+        self.handle('|switch|p2a: Aurorus|Aurorus, L81, F|100/100')
+        self.handle('|-weather|Hail|[from] ability: Snow Warning|[of] p2a: Aurorus')
+        self.handle('|turn|2')
+
+        aurorus = self.foe_side.active_pokemon
+        self.assertEqual(aurorus.ability, abilitydex['snowwarning'])
+        self.assertTrue(self.battlefield.has_effect(Weather.HAIL))
+
     def test_handle_sethp(self):
         self.handle('|-sethp|p2a: Goodra|55/100|p1a: Hitmonchan|175/209|[from] move: Pain Split')
         self.assertEqual(self.hitmonchan.hp, 175)
