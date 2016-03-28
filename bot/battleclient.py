@@ -1011,9 +1011,6 @@ class BattleClient(object):
         else:
             if __debug__: log.e('Unhandled -activate msg: %s', msg)
 
-    def handle_fieldactivate(self, msg):
-        pass
-
     def handle_singleturn(self, msg):
         """
         |-singleturn|p1a: Florges|Protect

@@ -652,7 +652,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|move|p2a: Goodra|Perish Song|p2a: Goodra')
         self.handle('|-start|p1a: Hitmonchan|perish3|[silent]')
         self.handle('|-start|p2a: Goodra|perish3|[silent]')
-        self.handle('|-fieldactivate|move: Perish Song')
+        # self.handle('|-fieldactivate|move: Perish Song')
         self.handle('|-start|p1a: Hitmonchan|perish3')
         self.handle('|-start|p2a: Goodra|perish3')
         self.handle('|turn|2')
