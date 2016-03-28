@@ -357,7 +357,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
     def test_handle_setboost(self):
         self.handle('|-setboost|p1a: Hitmonchan|atk|6|[from] move: Belly Drum')
+        self.handle('|switch|p2a: Primeape|Primeape, L81, M|100/100')
+        self.handle('|-setboost|p2a: Primeape|atk|12|[from] ability: Anger Point')
+        self.handle('|turn|2')
+
+        primeape = self.foe_side.active_pokemon
         self.assertEqual(self.hitmonchan.boosts['atk'], 6)
+        self.assertEqual(primeape.boosts['atk'], 6)
+        self.assertEqual(primeape.ability, abilitydex['angerpoint'])
 
     def test_handle_restoreboost(self):
         self.handle('|-boost|p1a: Hitmonchan|atk|2')

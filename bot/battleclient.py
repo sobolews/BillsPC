@@ -10,7 +10,7 @@ from bot.unrevealedpokemon import UnrevealedPokemon
 from bot.cheatsheetengine import CheatSheetEngine
 from mining import create_pokedex
 from mining.statistics import RandbatsStatistics
-from misc.functions import normalize_name
+from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
@@ -897,9 +897,13 @@ class BattleClient(object):
         """
         Only used by bellydrum, angerpoint
         |-setboost|p2a: Azumarill|atk|6|[from] move: Belly Drum
+        |-setboost|p2a: Primeape|atk|12|[from] ability: Anger Point
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        pokemon.boosts[msg[2]] = int(msg[3])
+        pokemon.boosts[msg[2]] = clamp_int(int(msg[3]), -6, 6)
+
+        if len(msg) > 4 and msg[4].startswith('[from] ability'):
+            self.set_ability(pokemon, abilitydex[normalize_name(msg[4])])
 
     def handle_restoreboost(self, msg):
         """
