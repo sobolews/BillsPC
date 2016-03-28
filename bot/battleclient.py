@@ -760,12 +760,30 @@ class BattleClient(object):
         |-item|p1a: Magnezone|Air Balloon
         |-item|p2a: Butterfree|Choice Scarf|[from] move: Trick
         |-item|p1a: Exeggutor|Sitrus Berry|[from] ability: Harvest
+        |-item|p2a: Ambipom|Sitrus Berry|[from] ability: Pickup
+
+        |-item|p1a: Weavile|Leftovers|[from] ability: Pickpocket|[of] p2a: Malamar
+        |-item|p2a: Delphox|Sitrus Berry|[from] ability: Magician|[of] p1a: Azumarill
+          (need to enditem on the victim, this isn't shown as a separate message)
+
         |-item|p2a: Suicune|Leftovers|[from] ability: Frisk|[of] p1a: Dusknoir|[identify]
 
         Identifies a currently held item
         """
         pokemon = self.get_pokemon_from_msg(msg)
         self.set_item(pokemon, itemdex[normalize_name(msg[2])])
+
+        if len(msg) > 3 and msg[3].startswith('[from] ability:'):
+            ability = normalize_name(msg[3])
+            if ability == 'frisk':
+                frisker = self.get_pokemon_from_msg(msg, 4)
+                self.set_ability(frisker, abilitydex['frisk'])
+            else:
+                self.set_ability(pokemon, abilitydex[ability])
+                if ability in ('pickpocket', 'magician'):
+                    victim = self.get_pokemon_from_msg(msg, 4)
+                    victim.remove_effect(ITEM, force=True)
+                    victim.item = None
 
     def handle_enditem(self, msg):
         """

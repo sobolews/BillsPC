@@ -1261,3 +1261,23 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         corsola = self.foe_side.active_pokemon
         self.assertEqual(corsola.ability, abilitydex['naturalcure'])
+
+    def test_handle_item_reveals_ability(self):
+        self.handle('|switch|p2a: Weavile|Weavile, L75, F|100/100')
+        self.handle('|-item|p2a: Weavile|Assault Vest|[from] ability: Pickpocket|[of] p1a: Hitmonchan')
+        self.handle('|turn|2')
+
+        weavile = self.foe_side.active_pokemon
+        self.assertEqual(weavile.item, itemdex['assaultvest'])
+        self.assertIsNone(self.hitmonchan.item)
+        self.assertFalse(self.hitmonchan.has_effect(ITEM))
+
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|switch|p2a: Dusknoir|Dusknoir, L83, F|100/100')
+        self.handle('|-item|p1a: Zekrom|Choice Scarf|[from] ability: Frisk|[of] p2a: Dusknoir|[identify]')
+        self.handle('|turn|3')
+
+        zekrom = self.my_side.active_pokemon
+        dusknoir = self.foe_side.active_pokemon
+        self.assertEqual(dusknoir.ability, abilitydex['frisk'])
+        self.assertEqual(zekrom.item, itemdex['choicescarf'])
