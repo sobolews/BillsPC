@@ -546,6 +546,9 @@ class Audinite(BaseMegaStone):
 class Diancite(BaseMegaStone):
     forme = 'dianciemega'
 
+class _unrevealed_(ItemEffect):
+    pass
+
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
            inspect.isclass(obj) and

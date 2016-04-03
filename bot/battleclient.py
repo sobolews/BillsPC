@@ -749,7 +749,8 @@ class BattleClient(object):
         gender = details[2] if len(details) > 2 else None
         assert gender in ('M', 'F', None), gender
         pokemon = BattlePokemon(pokedex[name], level, moveset=[],
-                                side=side, ability=abilitydex['_unrevealed_'], gender=gender)
+                                side=side, ability=abilitydex['_unrevealed_'],
+                                item=itemdex['_unrevealed_'], gender=gender)
 
         # reveal item/ability/moves that are known from statistics
         stats = rbstats[name]
