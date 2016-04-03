@@ -58,7 +58,8 @@ class BaseEffect(object):
                     break
 
         def __repr__(cls):
-            return cls.__name__
+            return ("(%s)" % cls.__name__.strip('_') if cls.__name__.startswith('_')
+                    else cls.__name__)
 
     source = None   # must be overriden
     duration = None # default: effect does not expire
@@ -311,13 +312,15 @@ class BaseEffect(object):
         """
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__,
-                           ', '.join(['%s=%s' % (attr, getattr(self, attr))
-                                      for attr in dir(self) if
-                                      not self.source is ABILITY and
-                                      not attr.startswith('__') and
-                                      not attr == 'PROB' and
-                                      not (attr == 'suppressed' and not getattr(self, attr)) and
-                                      not isinstance(getattr(self, attr), type(self.__repr__)) and
-                                      ((attr == 'duration' and self.duration is not None)
-                                       or attr not in dir(BaseEffect))]))
+        return ("%s()" % self.__class__.__name__.strip('_') if
+                self.__class__.__name__.startswith('_') else
+                "%s(%s)" % (self.__class__.__name__,
+                            ', '.join(['%s=%s' % (attr, getattr(self, attr))
+                                       for attr in dir(self) if
+                                       not self.source is ABILITY and
+                                       not attr.startswith('__') and
+                                       not attr == 'PROB' and
+                                       not (attr == 'suppressed' and not getattr(self, attr)) and
+                                       not isinstance(getattr(self, attr), type(self.__repr__)) and
+                                       ((attr == 'duration' and self.duration is not None)
+                                        or attr not in dir(BaseEffect))])))
