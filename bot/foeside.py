@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 from battle.battlefield import BattleSide
+from battle.battlepokemon import BattlePokemon
 from bot.unrevealedpokemon import UNREVEALED
+from pokedex.items import itemdex
 
 class FoeBattleSide(BattleSide):
     """
@@ -23,3 +25,8 @@ class FoeBattleSide(BattleSide):
                 return
         assert False, ("Tried to reveal a 7th pokemon on a fully revealed foe's team?!"
                        "\nTeam=\n%r\n\npokemon=\n%r") % (self, pokemon)
+
+class FoePokemon(BattlePokemon):
+    def __init__(self, *args, **kwargs):
+        super(FoePokemon, self).__init__(*args, **kwargs)
+        self.original_item = itemdex['_unrevealed_']

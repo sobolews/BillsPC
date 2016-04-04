@@ -893,7 +893,8 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(self.goodra.has_effect(Volatile.DESTINYBOND))
 
     def test_handle_sidestart_sideend_screens(self):
-        self.handle('|-item|p2a: Goodra|Light Clay')
+        self.handle('|switch|p2a: Bronzong|Bronzong, L79|100/100')
+        self.handle('|-item|p2a: Bronzong|Light Clay|[from] ability: Frisk|[of] p1a: Hitmonchan|[identify]')
         self.handle('|-sidestart|p1: test-BillsPC|Reflect')
         self.handle('|-sidestart|p2: other-player|move: Light Screen')
         self.handle('|turn|2')
@@ -1320,3 +1321,54 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         chansey = self.foe_side.active_pokemon
         self.assertEqual(chansey.item, itemdex['eviolite'])
+
+    def test_original_item_set(self):
+        self.handle('|drag|p2a: Zapdos|Zapdos, L77|100/100')
+        self.handle('|turn|2')
+        zapdos = self.foe_side.active_pokemon
+        self.assertEqual(zapdos.original_item, itemdex['_unrevealed_'])
+        self.handle('|-heal|p2a: Zapdos|66/100|[from] item: Leftovers')
+        self.handle('|turn|3')
+        self.assertEqual(zapdos.original_item, itemdex['leftovers'])
+
+        self.handle('|switch|p2a: Ampharos|Ampharos, L83, M|100/100')
+        self.handle('|-item|p1a: Hitmonchan|Light Clay|[from] move: Trick')
+        self.handle('|-item|p2a: Ampharos|Assault Vest|[from] move: Trick')
+        self.handle('|turn|4')
+
+        ampharos = self.foe_side.active_pokemon
+        self.assertEqual(ampharos.original_item, itemdex['lightclay'])
+        self.assertEqual(ampharos.item, itemdex['assaultvest'])
+
+        self.handle('|switch|p2a: Ambipom|Ambipom, L79, M|100/100')
+        self.handle('|-enditem|p2a: Ambipom|Choice Band|[from] move: Knock Off|[of] p1a: Hitmonchan')
+        self.handle('|-item|p2a: Ambipom|Sitrus Berry|[from] ability: Pickup')
+        self.handle('|turn|5')
+
+        ambipom = self.foe_side.active_pokemon
+        self.assertEqual(ambipom.original_item, itemdex['choiceband'])
+        self.assertEqual(ambipom.item, itemdex['sitrusberry'])
+
+        self.handle('|switch|p2a: Ferrothorn|Ferrothorn, L75, F|100/100')
+        self.handle('|-item|p1a: Hitmonchan|Rocky Helmet|[from] ability: Pickpocket|[of] p2a: Ferrothorn')
+        self.handle('|turn|6')
+
+        ferrothorn = self.foe_side.active_pokemon
+        self.assertEqual(ferrothorn.original_item, itemdex['rockyhelmet'])
+        self.assertEqual(ferrothorn.item, None)
+
+    def test_original_item_set_mega_primal(self):
+        self.handle('|switch|p2a: Beedrill|Beedrill, L77, F|100/100')
+        self.handle('|detailschange|p2a: Beedrill|Beedrill-Mega, L77, F')
+        self.handle('|-mega|p2a: Beedrill|Beedrill|Beedrillite')
+        self.handle('|turn|2')
+
+        beedrill = self.foe_side.active_pokemon
+        self.assertEqual(beedrill.original_item, itemdex['beedrillite'])
+
+        self.handle('|switch|p2a: Kyogre|Kyogre, L73|100/100')
+        self.handle('|detailschange|p2a: Kyogre|Kyogre-Primal, L73')
+        self.handle('|turn|3')
+
+        kyogre = self.foe_side.active_pokemon
+        self.assertEqual(kyogre.original_item, itemdex['blueorb'])
