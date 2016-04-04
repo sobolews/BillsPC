@@ -29,10 +29,14 @@ class TestRandbatsCounter(TestCase):
         self.assertEqual(counter['starmie']['moves']['thunderbolt'], 3)
 
         self.assertIn(74, counter['starmie']['level'])
-        self.assertEqual(counter['starmie']['level'][74], 3)
+        self.assertEqual(counter['starmie']['level'][74], 2)
+        self.assertEqual(counter['starmie']['level'][71], 1)
+        self.assertEqual(counter['starmieL74']['number'], 2)
+        self.assertEqual(counter['starmieL71']['number'], 1)
 
         self.assertTrue(counter['steelixmega'])
         self.assertTrue(counter['steelix'])
+        self.assertTrue(counter['steelixL82'])
 
     def test_update(self):
         counter = self.get_counter()
@@ -55,6 +59,7 @@ class TestRandbatsCounter(TestCase):
         self.assertIn('heatran', counter.moves_index['stealthrock'])
         self.assertIn('steelixmega', counter.moves_index['stealthrock'])
         self.assertIn('steelix', counter.moves_index['stealthrock'])
+        self.assertIn('steelixL82', counter.moves_index['stealthrock'])
         self.assertEqual(counter.moves_index['thunderbolt']['starmie'], 1)
         self.assertEqual(counter.moves_index['rapidspin']['starmie'], 0.5)
 

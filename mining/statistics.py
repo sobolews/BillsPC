@@ -147,20 +147,25 @@ class RandbatsStatistics(object):
                         self._item_index[item][pokemon] = prob
         return self._item_index
 
-    def sample(self, pokemon, mega=False):
+    def sample(self, pokemon, mega=False, level=False):
         """
         Add the data from this pokemon to self.counter.
         `pokemon` is one of the 6 JSON dict members of Scripts.randomTeam()
 
         Megas are counted twice: once towards the statistics of the base forme, and once towards a
         separate entry for the mega forme.
+
+        The pokemon are also indexed by level, such that stats for slurpuffL77 are separate from
+        stats for slurpuffL79. The stats for "slurpuff" are the union of these.
         """
         name = self.pokedex[pokemon['species']].name
+        if level:
+            name = "%sL%d" % (name, pokemon['level'])
         item = pokemon['item']
 
         if (((item.endswith('ite') and item != 'Eviolite')
              or item.endswith('ite X') or item.endswith('ite Y'))
-            and not mega
+            and not mega and not level
         ):
             forme = 0 if not item.endswith('Y') else 1
             megapokemon = deepcopy(pokemon)
@@ -184,6 +189,9 @@ class RandbatsStatistics(object):
         self.counter[name]['sets'][tuple(sorted(pokemon['moves']) +
                                                     [pokemon['ability'],
                                                      pokemon['item']])] += 1
+
+        if not level:
+            self.sample(pokemon, level=True)
 
     def new_entry(self):
         return {'number': 0, 'moves': Counter(), 'ability': Counter(), 'item': Counter(),
