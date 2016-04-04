@@ -449,18 +449,21 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.effect_handlers['on_modify_spd'], [])
         self.assertIsNone(self.hitmonchan.item_used_this_turn)
 
-        self.handle('|-enditem|p2a: Goodra|Chesto Berry|[eat]')
-        self.assertIsNone(self.goodra.item)
-        self.assertEqual(self.goodra.last_berry_used, itemdex['chestoberry'])
-        self.assertEqual(self.goodra.item_used_this_turn, itemdex['chestoberry'])
+        self.handle('|switch|p2a: Arbok|Arbok, L83, F|100/100')
+        self.handle('|-enditem|p2a: Arbok|Chesto Berry|[eat]')
 
-        self.handle('|-enditem|p2a: Goodra|Focus Sash')
-        self.assertIsNone(self.goodra.item)
-        self.assertIsNone(self.goodra.last_berry_used)
-        self.assertEqual(self.goodra.item_used_this_turn, itemdex['focussash'])
+        arbok = self.foe_side.active_pokemon
+        self.assertIsNone(arbok.item)
+        self.assertEqual(arbok.last_berry_used, itemdex['chestoberry'])
+        self.assertEqual(arbok.item_used_this_turn, itemdex['chestoberry'])
+
+        self.handle('|-enditem|p2a: Arbok|Focus Sash')
+        self.assertIsNone(arbok.item)
+        self.assertIsNone(arbok.last_berry_used)
+        self.assertEqual(arbok.item_used_this_turn, itemdex['focussash'])
 
         self.handle('|turn|2')
-        self.assertIsNone(self.goodra.item_used_this_turn)
+        self.assertIsNone(arbok.item_used_this_turn)
 
     def test_handle_enditem_from_stealeat(self):
         self.handle('|-enditem|p1a: Hitmonchan|Sitrus Berry'
@@ -642,8 +645,9 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertListEqual(self.goodra.effect_handlers['on_residual'], [])
 
     def test_handle_start_end_encore(self):
+        self.handle('|switch|p2a: Accelgor|Accelgor, L79, M|100/100')
         self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
-        self.handle('|move|p2a: Goodra|Encore|p1a: Hitmonchan')
+        self.handle('|move|p2a: Accelgor|Encore|p1a: Hitmonchan')
         self.handle('|-start|p1a: Hitmonchan|Encore')
         self.assertTrue(self.hitmonchan.has_effect(Volatile.ENCORE))
         encore = self.hitmonchan.get_effect(Volatile.ENCORE)
@@ -657,35 +661,37 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertFalse(self.hitmonchan.has_effect(Volatile.ENCORE))
 
     def test_handle_start_perish(self):
-        self.handle('|move|p2a: Goodra|Perish Song|p2a: Goodra')
+        self.handle('|switch|p2a: Dewgong|Dewgong, L83, M|100/100')
+        self.handle('|move|p2a: Dewgong|Perish Song|p2a: Dewgong')
         self.handle('|-start|p1a: Hitmonchan|perish3|[silent]')
-        self.handle('|-start|p2a: Goodra|perish3|[silent]')
+        self.handle('|-start|p2a: Dewgong|perish3|[silent]')
         # self.handle('|-fieldactivate|move: Perish Song')
         self.handle('|-start|p1a: Hitmonchan|perish3')
-        self.handle('|-start|p2a: Goodra|perish3')
+        self.handle('|-start|p2a: Dewgong|perish3')
         self.handle('|turn|2')
 
+        dewgong = self.foe_side.active_pokemon
         hperish = self.hitmonchan.get_effect(Volatile.PERISHSONG)
-        gperish = self.goodra.get_effect(Volatile.PERISHSONG)
+        gperish = dewgong.get_effect(Volatile.PERISHSONG)
         self.assertIsNotNone(hperish)
         self.assertIsNotNone(gperish)
         self.assertEqual(hperish.duration, 3)
         self.assertEqual(gperish.duration, 3)
 
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
-        self.handle('|-start|p2a: Goodra|perish2')
+        self.handle('|-start|p2a: Dewgong|perish2')
         self.handle('|turn|3')
 
         self.assertFalse(self.hitmonchan.has_effect(Volatile.PERISHSONG))
         self.assertFalse(self.my_side.active_pokemon.has_effect(Volatile.PERISHSONG))
-        self.assertTrue(self.goodra.has_effect(Volatile.PERISHSONG))
+        self.assertTrue(dewgong.has_effect(Volatile.PERISHSONG))
         self.assertEqual(gperish.duration, 2)
 
-        self.handle('|-start|p2a: Goodra|perish0')
-        self.handle('|faint|p2a: Goodra')
+        self.handle('|-start|p2a: Dewgong|perish0')
+        self.handle('|faint|p2a: Dewgong')
         self.handle('|turn|4')
 
-        self.assertEqual(self.goodra.status, Status.FNT)
+        self.assertEqual(dewgong.status, Status.FNT)
 
     def test_handle_start_typechange(self):
         self.handle('|switch|p2a: Greninja|Greninja, L74, F|100/100')
@@ -857,26 +863,28 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(arbok.base_ability, abilitydex['shedskin'])
 
     def test_handle_singleturn_protect(self):
-        self.handle('|move|p2a: Goodra|Protect|p2a: Goodra')
-        self.handle('|-singleturn|p2a: Goodra|Protect')
+        self.handle('|switch|p2a: Alomomola|Alomomola, L79, M|100/100')
+        self.handle('|move|p2a: Alomomola|Protect|p2a: Alomomola')
+        self.handle('|-singleturn|p2a: Alomomola|Protect')
         self.handle('|turn|2')
 
-        stall = self.goodra.get_effect(Volatile.STALL)
+        alomomola = self.foe_side.active_pokemon
+        stall = alomomola.get_effect(Volatile.STALL)
         self.assertIsNotNone(stall)
         self.assertEqual(stall.duration, 1)
         self.assertEqual(stall.denominator, 3)
 
-        self.handle('|move|p2a: Goodra|Protect|p2a: Goodra')
-        self.handle('|-singleturn|p2a: Goodra|Protect')
+        self.handle('|move|p2a: Alomomola|Protect|p2a: Alomomola')
+        self.handle('|-singleturn|p2a: Alomomola|Protect')
         self.handle('|turn|3')
 
         self.assertEqual(stall.duration, 1)
         self.assertEqual(stall.denominator, 9)
 
-        self.goodra.moveset = [] # clear its moveset so that it doesn't try use protect again
+        alomomola.moveset = [] # clear its moveset so that it doesn't try use protect again
         self.bc.engine.run_turn()
 
-        self.assertFalse(self.goodra.has_effect(Volatile.STALL))
+        self.assertFalse(alomomola.has_effect(Volatile.STALL))
 
     def test_handle_singleturn_focuspunch(self):
         self.handle('|-singleturn|p2a: Goodra|move: Focus Punch')
@@ -1154,14 +1162,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertHiddenPowerType(thundurus, Type.ICE)
 
     def test_cant_reveals_move(self):
+        self.handle('|switch|p2a: Azelf|Azelf, L77|100/100')
         self.handle('|switch|p1a: Giratina|Giratina-Origin, L73|339/339')
         self.handle('|turn|2')
-        self.handle('|move|p1a: Giratina|Taunt|p2a: Goodra')
-        self.handle('|-start|p2a: Goodra|move: Taunt')
-        self.handle('|cant|p2a: Goodra|move: Taunt|Recover')
+        self.handle('|move|p1a: Giratina|Taunt|p2a: Azelf')
+        self.handle('|-start|p2a: Azelf|move: Taunt')
+        self.handle('|cant|p2a: Azelf|move: Taunt|Taunt')
         self.handle('|turn|3')
 
-        self.assertIn(movedex['recover'], self.goodra.moveset)
+        self.assertIn(movedex['taunt'], self.foe_side.active_pokemon.moveset)
 
     def test_heal_reveals_item_ability(self):
         self.handle('|switch|p2a: Blastoise|Blastoise, L79, M|100/100')
