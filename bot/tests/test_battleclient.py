@@ -1381,3 +1381,26 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         kyogre = self.foe_side.active_pokemon
         self.assertEqual(kyogre.original_item, itemdex['blueorb'])
+
+    def test_update_foe_inferences(self):
+        self.handle('|switch|p2a: Conkeldurr|Conkeldurr, L75, F|100/100')
+        self.handle('|-status|p2a: Conkeldurr|brn|[from] item: Flame Orb')
+        self.handle('|turn|2')
+
+        conkeldurr = self.foe_side.active_pokemon
+        self.assertEqual(conkeldurr.ability, abilitydex['guts']) # inferred from flameorb
+
+        self.handle('|switch|p2a: Politoed|Politoed, L77, F|100/100')
+        self.handle('|-item|p2a: Politoed|Chesto Berry|[from] ability: Frisk|[of] p1a: Hitmonchan|[identify]')
+        self.handle('|turn|3')
+
+        politoed = self.foe_side.active_pokemon
+        self.assertIn(movedex['rest'], politoed.moveset) # inferred from chestoberry
+
+        self.handle('|switch|p2a: Barbaracle|Barbaracle, L81, F|100/100')
+        self.handle('|cant|p2a: Barbaracle|move: Taunt|Shell Smash')
+        self.handle('|turn|4')
+
+        barbaracle = self.foe_side.active_pokemon
+        self.assertEqual(barbaracle.original_item, itemdex['whiteherb'])
+        self.assertEqual(barbaracle.item, itemdex['whiteherb'])

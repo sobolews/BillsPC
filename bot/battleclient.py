@@ -5,8 +5,8 @@ from functools import partial
 
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
-from bot.foeside import FoeBattleSide
-from bot.unrevealedpokemon import UnrevealedPokemon
+from bot.foeside import FoeBattleSide, FoePokemon
+from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
 from bot.cheatsheetengine import CheatSheetEngine
 from mining import create_pokedex
 from mining.statistics import RandbatsStatistics
@@ -303,6 +303,52 @@ class BattleClient(object):
                         continue
                     effect.duration -= 1
 
+        self.update_foe_inferences()
+
+    def update_foe_inferences(self):
+        for pokemon in self.foe_side.team:
+            if pokemon.is_fainted() or pokemon.name == UNREVEALED or pokemon.is_transformed:
+                continue
+
+            if __debug__: log.d("Updating foe: %s" % pokemon)
+
+            known_info = [move.name for move in pokemon.moveset
+                          if move.type != Type.NOTYPE]
+            if pokemon.original_item != itemdex['_unrevealed_']:
+                known_info.append(pokemon.original_item.name)
+            if (pokemon.base_ability != abilitydex['_unrevealed_'] and not
+                (pokemon.is_mega or pokemon.name.endswith('primal'))):
+                known_info.append(pokemon.base_ability.name)
+
+            if __debug__: log.d("known_info: %s", known_info)
+            if len(known_info) == 6 or (pokemon.is_mega and len(known_info) == 5):
+                continue        # all info is known
+
+            if pokemon.item == itemdex['_unrevealed_']:
+                for item in rbstats[pokemon.base_species]['item']:
+                    if rbstats.attr_probability(pokemon.base_species, item, known_info) == 1:
+                        if __debug__: log.i("%s must have %s, given %s",
+                                            pokemon.name, item, known_info)
+                        self.reveal_original_item(pokemon, itemdex[item])
+                        self.set_item(pokemon, itemdex[item])
+
+            if pokemon.ability == abilitydex['_unrevealed_']:
+                for ability in rbstats[pokemon.base_species]['ability']:
+                    if rbstats.attr_probability(pokemon.base_species, ability, known_info) == 1:
+                        if __debug__: log.i("%s must have %s, given %s",
+                                            pokemon.name, ability, known_info)
+                        self.set_ability(pokemon, abilitydex[ability])
+
+            if len(pokemon.moveset) < 4:
+                for move in rbstats[pokemon.base_species]['moves']:
+                    if (move not in known_info and
+                        rbstats.attr_probability(pokemon.base_species, move, known_info) == 1
+                    ):
+                        pokemon.moveset.append(movedex[move])
+                        if __debug__: log.i("%s must have %s, given %s",
+                                            pokemon.item, move, known_info)
+                        assert len(pokemon.moveset) <= 4, (pokemon, pokemon.moveset)
+
     def handle_player(self, msg):
         """
         `|player|PLAYER|USERNAME|AVATAR`   e.g. `|player|p1|1BillsPC|294`
@@ -428,7 +474,7 @@ class BattleClient(object):
             else:
                 assert pokemon is self.foe_side.active_pokemon, \
                     (pokemon, self.foe_side.active_pokemon)
-                possible = [movedex[move] for move in rbstats[pokemon.name]['moves']
+                possible = [movedex[move] for move in rbstats[pokemon.base_species]['moves']
                             if move.startswith('hiddenpower')]
                 if len(possible) == 1:
                     move = possible[0]
