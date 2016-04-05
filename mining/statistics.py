@@ -61,7 +61,14 @@ class RandbatsStatistics(object):
          'sets' Counter({(<tuple of four sorted moves, ability, item>): 10, (...)})
          'number': 18}
         """
-        return self.counter[index]
+        if index in self.counter:
+            return self.counter[index]
+        elif index[-3:].startswith('L') and index[:-3] in self.counter:
+            # strip off level if pokemon at that level is not found
+            if __debug__: log.i('%s not found: stripping "%s"', index, index[-3:])
+            return self.counter[index[:-3]]
+        else:
+            return self.counter[index] # raise KeyError
 
     def __contains__(self, index):
         return index in self.counter
@@ -87,6 +94,17 @@ class RandbatsStatistics(object):
     def total_counted(self):
         return sum(val['number'] for val in self.counter.values())
 
+    class LevelStrippingDict(dict):
+        def __getitem__(self, index):
+            if index in self:
+                return dict.__getitem__(self, index)
+            elif index[-3:].startswith('L') and index[:-3] in self:
+                # strip off level if pokemon at that level is not found
+                if __debug__: log.i('%s not found: stripping "%s"', index, index[-3:])
+                return dict.__getitem__(self, index[:-3])
+            else:
+                dict.__getitem__(self, index) # raise KeyError
+
     @property
     def probability(self):
         """
@@ -94,7 +112,7 @@ class RandbatsStatistics(object):
         Integer counts are float probabilities instead (except pokemon['number'])
         """
         if not self._probability:
-            self._probability = deepcopy(self.counter)
+            self._probability = self.LevelStrippingDict(deepcopy(self.counter))
             for pokemon in self._probability:
                 stats = self._probability[pokemon]
                 for ability in stats['ability']:
@@ -216,7 +234,7 @@ class RandbatsStatistics(object):
         Return the probability [0.0, 1.0] that pokemon has attr, given that it has [known_attrs].
         pokemon: str, attr: str, known_attrs: list<str>
         """
-        attrs_counter = self.counter[pokemon]['sets']
+        attrs_counter = self[pokemon]['sets']
         possible_attrs = [attrset for attrset in attrs_counter if
                           all(attr_ in attrset for attr_ in known_attrs)]
 
