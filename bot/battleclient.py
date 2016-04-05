@@ -324,25 +324,26 @@ class BattleClient(object):
             if len(known_info) == 6 or (pokemon.is_mega and len(known_info) == 5):
                 continue        # all info is known
 
+            rb_index = '%sL%d' % (pokemon.base_species, pokemon.level)
             if pokemon.item == itemdex['_unrevealed_']:
-                for item in rbstats[pokemon.base_species]['item']:
-                    if rbstats.attr_probability(pokemon.base_species, item, known_info) == 1:
+                for item in rbstats[rb_index]['item']:
+                    if rbstats.attr_probability(rb_index, item, known_info) == 1:
                         if __debug__: log.i("%s must have %s, given %s",
                                             pokemon.name, item, known_info)
                         self.reveal_original_item(pokemon, itemdex[item])
                         self.set_item(pokemon, itemdex[item])
 
             if pokemon.ability == abilitydex['_unrevealed_']:
-                for ability in rbstats[pokemon.base_species]['ability']:
-                    if rbstats.attr_probability(pokemon.base_species, ability, known_info) == 1:
+                for ability in rbstats[rb_index]['ability']:
+                    if rbstats.attr_probability(rb_index, ability, known_info) == 1:
                         if __debug__: log.i("%s must have %s, given %s",
                                             pokemon.name, ability, known_info)
                         self.set_ability(pokemon, abilitydex[ability])
 
             if len(pokemon.moveset) < 4:
-                for move in rbstats[pokemon.base_species]['moves']:
+                for move in rbstats[rb_index]['moves']:
                     if (move not in known_info and
-                        rbstats.attr_probability(pokemon.base_species, move, known_info) == 1
+                        rbstats.attr_probability(rb_index, move, known_info) == 1
                     ):
                         pokemon.moveset.append(movedex[move])
                         if __debug__: log.i("%s must have %s, given %s",
@@ -805,13 +806,14 @@ class BattleClient(object):
                              item=itemdex['_unrevealed_'], gender=gender)
 
         # reveal item/ability/moves that are known from statistics
-        stats = rbstats[name]
+        rb_index = '%sL%d' % (name, level) # using level-based rbstats index
+        stats = rbstats[rb_index]
         if len(stats['item']) == 1:
             pokemon.item = pokemon.original_item = itemdex[tuple(stats['item'])[0]]
         if len(stats['ability']) == 1:
             pokemon.ability = abilitydex[tuple(stats['ability'])[0]]
             self.set_base_ability(pokemon, pokemon.ability)
-        for move, pmove in rbstats.probability[name]['moves'].items():
+        for move, pmove in rbstats.probability[rb_index]['moves'].items():
             if pmove == 1.0:
                 self.reveal_move(pokemon, movedex[move])
 

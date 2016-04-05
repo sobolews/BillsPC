@@ -1404,3 +1404,24 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         barbaracle = self.foe_side.active_pokemon
         self.assertEqual(barbaracle.original_item, itemdex['whiteherb'])
         self.assertEqual(barbaracle.item, itemdex['whiteherb'])
+
+    def test_infer_info_from_level(self):
+        self.handle('|switch|p2a: Xerneas|Xerneas, L71|100/100')
+        self.handle('|turn|2')
+
+        xerneas = self.foe_side.active_pokemon
+        self.assertIn(movedex['geomancy'], xerneas.moveset)
+        self.assertEqual(xerneas.item, itemdex['powerherb'])
+
+    def test_infer_megastone_from_level(self):
+        self.handle('|switch|p2a: Ampharos|Ampharos, L77, F|100/100')
+        self.handle('|turn|2')
+
+        ampharos = self.foe_side.active_pokemon
+        self.assertEqual(ampharos.item, itemdex['ampharosite'])
+
+        self.handle('|switch|p2a: Blaziken|Blaziken, L77, F|100/100')
+        self.handle('|turn|3')
+
+        blaziken = self.foe_side.active_pokemon
+        self.assertEqual(blaziken.item, itemdex['_unrevealed_'])
