@@ -496,7 +496,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(arbok.ability, abilitydex['shedskin'])
 
     def test_handle_move_with_foe_pressure(self):
-        self.handle('|switch|p2a: Moltres|Moltres, L73|100/100')
+        self.handle('|switch|p2a: Moltres|Moltres, L78|100/100')
         self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Moltres')
         self.handle('|-ability|p2a: Moltres|Pressure')
         self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Moltres')
@@ -1257,7 +1257,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(lanturn.ability, abilitydex['waterabsorb'])
 
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
-        self.handle('|drag|p2a: Beheeyem|Beheeyem, L75|100/100')
+        self.handle('|drag|p2a: Beheeyem|Beheeyem, L83|100/100')
         self.handle('|-immune|p1a: Zekrom|[msg]|[from] ability: Synchronize|[of] p2a: Beheeyem')
 
         beheeyem = self.foe_side.active_pokemon
@@ -1313,7 +1313,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
                             {movedex['shadowclaw'], movedex['bellydrum'],
                              movedex['extremespeed'], movedex['seedbomb']})
 
-        self.handle('|switch|p2a: Sunflora|Sunflora, L82, F|100/100')
+        self.handle('|switch|p2a: Sunflora|Sunflora, L83, F|100/100')
         sunflora = self.foe_side.active_pokemon
         self.assertSetEqual(set(sunflora.moveset),
                             {movedex['sunnyday'], movedex['hiddenpowerfire'],
