@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 import string
 import random
-from functools import partial
 
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
@@ -649,6 +648,13 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
 
         pokemon.cure_status()
+
+        if len(msg) > 3 and msg[3] == '[from] move: Rest':
+            pokemon.is_resting = True
+            pokemon.status = Status.SLP
+            pokemon.set_effect(statuses.Sleep(pokemon, rest=True))
+            return
+
         self.set_status(pokemon, msg[2])
 
         if len(msg) > 3:
@@ -659,8 +665,6 @@ class BattleClient(object):
             elif msg[3].startswith('[from] ability'):
                 other = self.get_pokemon_from_msg(msg, 4)
                 self.set_ability(other, abilitydex[normalize_name(msg[3])])
-            elif msg[3] == '[from] move: Rest':
-                pokemon.is_resting = True
             elif __debug__:
                 log.w('Unhandled part of -status msg: %s', msg)
 
@@ -668,7 +672,7 @@ class BattleClient(object):
         """
         `|cant|POKEMON|REASON` or `|cant|POKEMON|REASON|MOVE`
 
-        Decrement pokemon.sleep_turns if its sleeping:
+        Increment pokemon.turns_slept if its sleeping:
         |cant|p2a: Alomomola|slp
 
         Reveal a move if shown:
@@ -679,8 +683,8 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         if msg[2] == 'slp':
             assert pokemon.status is Status.SLP, (pokemon, pokemon.status)
-            if pokemon.sleep_turns > 0:
-                pokemon.sleep_turns -= 1
+            if pokemon.turns_slept < 3:
+                pokemon.turns_slept += 1
 
         elif len(msg) > 3:
             self.reveal_move(pokemon, movedex[normalize_name(msg[3])])
@@ -718,13 +722,13 @@ class BattleClient(object):
 
     STATUS_MAP = {
         'brn': (Status.BRN, statuses.Burn),
-        'slp': (Status.SLP, partial(statuses.Sleep, turns=2)), # best guess; sleep is randint(1, 3)
+        'slp': (Status.SLP, statuses.Sleep),
         'frz': (Status.FRZ, statuses.Freeze),
         'psn': (Status.PSN, statuses.Poison),
         'tox': (Status.TOX, statuses.Toxic),
         'par': (Status.PAR, statuses.Paralyze),
         Status.BRN: (Status.BRN, statuses.Burn),
-        Status.SLP: (Status.SLP, partial(statuses.Sleep, turns=2)),
+        Status.SLP: (Status.SLP, statuses.Sleep),
         Status.FRZ: (Status.FRZ, statuses.Freeze),
         Status.PSN: (Status.PSN, statuses.Poison),
         Status.TOX: (Status.TOX, statuses.Toxic),

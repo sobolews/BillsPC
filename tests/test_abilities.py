@@ -270,7 +270,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.zygarde, 240)
         self.assertDamageTaken(self.xerneas, 29)
 
-    @patch('random.randint', lambda *_: 1)
+    @patch('random.randrange', lambda *_: 0)
     def test_baddreams(self):
         self.new_battle(p1_ability='baddreams')
         self.choose_move(self.leafeon, 'spore')
@@ -598,23 +598,23 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.vaporeon, 52 - 50 + 50)
 
-    @patch('random.randint', lambda *_: 3)
+    @patch('random.randrange', lambda _: 1) # 3 turn sleep
     def test_earlybird(self):
         self.new_battle(p0_ability='earlybird')
         self.choose_move(self.leafeon, 'spore')
         self.choose_move(self.vaporeon, 'explosion')
         self.run_turn()
 
-        self.assertEqual(self.vaporeon.get_effect(Status.SLP).turns_left, 1)
-        self.assertEqual(self.vaporeon.sleep_turns, 1)
+        self.assertEqual(self.vaporeon.turns_slept, 2)
 
+        self.run_turn()
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, 50)
 
-    @patch('random.randint', lambda *_: 1)
+    @patch('random.randrange', lambda *_: 0)
     def test_earlybird_immediate_wake_up(self):
         self.new_battle(p0_ability='earlybird')
         self.choose_move(self.leafeon, 'spore')
@@ -3521,7 +3521,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertAbility(self.jolteon, 'aurabreak')
 
-    @patch('random.randint', lambda *_: 1) # 1 sleep turn
+    @patch('random.randrange', lambda *_: 0) # 1 sleep turn
     def test_truant(self):
         self.new_battle(p0_ability='truant')
         self.add_pokemon('flareon', 0)
@@ -3561,11 +3561,11 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.choose_switch(self.flareon, self.vaporeon)
         self.choose_move(self.leafeon, 'spore')
         self.run_turn()
-        self.assertEqual(self.vaporeon.sleep_turns, 1)
+        self.assertEqual(self.vaporeon.turns_slept, 0)
         self.choose_move(self.vaporeon, 'explosion')
         self.choose_move(self.leafeon, 'bulkup')
         self.run_turn()
-        self.assertEqual(self.vaporeon.sleep_turns, 0)
+        self.assertEqual(self.vaporeon.turns_slept, 1)
         self.choose_move(self.vaporeon, 'bulkup')
         self.choose_move(self.leafeon, 'bulkup')
         self.run_turn()

@@ -201,7 +201,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.vaporeon.take_item()
         self.assertMoveChoices(self.vaporeon, ('xscissor', 'protect', 'taunt', 'dragonclaw'))
 
-    @patch('random.randint', lambda *_: 1) # sleep 1 turn
+    @patch('random.randrange', lambda *_: 0) # sleep 1 turn
     def test_choiceband_sleeptalk(self):
         self.new_battle(p0_item='choiceband',
                         p0_moves=('ironhead', 'extremespeed', 'sleeptalk', 'dragonclaw'))

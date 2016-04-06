@@ -49,25 +49,30 @@ class Freeze(BaseStatusEffect):
 
 class Sleep(BaseStatusEffect):
     source = Status.SLP
-    # no duration; uses turns_left (because pokemon wakes up before move, not between turns)
+    # no duration; uses turns_slept (because pokemon wakes up before move, not between turns)
 
-    def __init__(self, pokemon, turns=None):
-        if pokemon.sleep_turns is None:
-            pokemon.sleep_turns = turns or random.randint(1, 3) # 1-3 turns
-        self.turns_left = pokemon.sleep_turns
+    def __init__(self, pokemon, rest=False):
+        if pokemon.turns_slept is None:
+            pokemon.turns_slept = 0
+        self.rest = rest
 
     @priority(10)
     def on_before_move(self, user, move, engine):
         assert user.status is Status.SLP
-        assert user.sleep_turns == self.turns_left
-        if self.turns_left <= 0:
+
+        turns_slept = user.turns_slept
+        if ((self.rest and turns_slept >= 2) or
+            (not self.rest and (turns_slept >= 3 or
+                                (turns_slept == 2 and random.randrange(2) == 0) or
+                                (turns_slept == 1 and random.randrange(3) == 0)))):
             user.cure_status()
-            user.sleep_turns = None
             if __debug__: log.i('%s woke up!', user)
             return
-        if __debug__: log.i("%s is sleeping: %d turns left", user, self.turns_left)
-        self.turns_left -= 1
-        user.sleep_turns -= 1
+
+        user.turns_slept += 1
+        if __debug__: log.i("%s is sleeping: max %d turns left",
+                            user, (2 if self.rest else 3) - turns_slept)
+
         return None if move.name == 'sleeptalk' else FAIL
 
 class Burn(BaseStatusEffect):

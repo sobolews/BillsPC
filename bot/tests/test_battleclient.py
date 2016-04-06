@@ -188,19 +188,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
         self.assertTrue(self.hitmonchan.has_effect(Status.PSN))
 
-    def test_opponent_switch_in_sleep_turns(self):
+    def test_opponent_switch_in_turns_slept(self):
         self.handle('|-status|p1a: Hitmonchan|slp')
         self.handle('|cant|p1a: Hitmonchan|slp')
-        self.assertEqual(self.hitmonchan.sleep_turns, 1)
+        self.assertEqual(self.hitmonchan.turns_slept, 1)
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
-        self.assertEqual(self.hitmonchan.sleep_turns, 1)
+        self.assertEqual(self.hitmonchan.turns_slept, 1)
         self.assertEqual(self.hitmonchan.status, Status.SLP)
         self.assertTrue(self.hitmonchan.has_effect(Status.SLP))
         self.handle('|cant|p1a: Hitmonchan|slp')
         self.handle('|cant|p1a: Hitmonchan|slp')
-        self.handle('|cant|p1a: Hitmonchan|slp')
-        self.assertEqual(self.hitmonchan.sleep_turns, 0)
+        self.assertEqual(self.hitmonchan.turns_slept, 3)
 
     def test_handle_my_move(self):
         self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Goodra')
@@ -272,12 +271,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.goodra.status, Status.BRN)
         self.assertTrue(self.goodra.has_effect(Status.BRN))
 
-    def test_handle_status_sleep_always_2_turns(self):
-        self.handle('|-status|p2a: Goodra|slp')
-        self.assertEqual(self.goodra.status, Status.SLP)
-        self.assertEqual(self.goodra.get_effect(Status.SLP).turns_left, 2)
-        self.assertEqual(self.goodra.sleep_turns, 2)
-
     def test_handle_status_rest(self):
         self.bc.set_status(self.goodra, 'brn')
         self.goodra.hp -= 100
@@ -288,8 +281,9 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.goodra.hp, self.goodra.max_hp)
         self.assertEqual(self.goodra.status, Status.SLP)
         self.assertTrue(self.goodra.has_effect(Status.SLP))
+        self.assertTrue(self.goodra.get_effect(Status.SLP).rest)
         self.assertTrue(self.goodra.is_resting)
-        self.assertEqual(self.goodra.sleep_turns, 2)
+        self.assertEqual(self.goodra.turns_slept, 0)
 
     def test_handle_boost(self):
         self.handle('|-boost|p1a: Hitmonchan|atk|2')
@@ -316,13 +310,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         zekrom = self.my_side.team[1]
         altaria = self.my_side.team[2]
         zekrom.status = Status.SLP
-        zekrom.sleep_turns = 1
+        zekrom.turns_slept = 1
         altaria.hp = 0
         altaria.status = Status.FNT
         self.handle('|-cureteam|p1a: Hitmonchan|[from] move: HealBell')
         self.assertIsNone(self.hitmonchan.status)
         self.assertIsNone(zekrom.status)
-        self.assertIsNone(zekrom.sleep_turns)
+        self.assertIsNone(zekrom.turns_slept)
         self.assertEqual(altaria.status, Status.FNT)
 
     def test_handle_weather_start(self):

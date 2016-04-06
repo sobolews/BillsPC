@@ -53,7 +53,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.is_active = False
         self.must_switch = None
         self.is_resting = False
-        self.sleep_turns = None
+        self.turns_slept = None
         self.is_transformed = False
         self.illusion = False
         self.item_used_this_turn = None
@@ -177,7 +177,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             self.remove_effect(self.status)
             self.status = None
             self.is_resting = False
-            self.sleep_turns = None
+            self.turns_slept = None
 
     def calculate_stat(self, which_stat, override_boost=None):
         stat = self.stats[which_stat]

@@ -297,10 +297,8 @@ class DrySkin(AbilityEffect):
 class EarlyBird(AbilityEffect):
     @priority(11)
     def on_before_move(self, user, move, engine):
-        sleep_effect = user.get_effect(Status.SLP)
-        if sleep_effect is not None:
-            sleep_effect.turns_left -= 1
-            user.sleep_turns -= 1
+        if user.status == Status.SLP:
+            user.turns_slept += 1
 
 class EffectSpore(AbilityEffect):
     def on_after_move_damage(self, engine, pokemon, damage, move, foe):

@@ -2258,7 +2258,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 0)
         self.assertTrue(self.leafeon.is_resting)
-        self.assertEqual(self.leafeon.sleep_turns, 2)
+        self.assertEqual(self.leafeon.turns_slept, 0)
 
     def test_safeguard_blocks_toxicspikes(self):
         self.add_pokemon('flareon', 0)
@@ -2285,7 +2285,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertStatus(self.sylveon, Status.BRN)
 
-    @patch('random.randint', lambda *_: 1) # one turn sleep
+    @patch('random.randrange', lambda *_: 0) # one turn sleep
     def test_sleeptalk(self):
         self.new_battle(p0_name='vaporeon', p1_name='jolteon',
                         p0_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
@@ -2324,7 +2324,7 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 378)
 
-    @patch('random.randint', lambda *_: 3) # three turns sleep
+    @patch('random.randrange', lambda *_: 1) # three turns sleep
     def test_faster_sleeptalk_roar_opponent_doesnt_get_to_move(self):
         self.new_battle('vaporeon', 'giratina',
                         p1_moves=(movedex['sleeptalk'], movedex['roar']))

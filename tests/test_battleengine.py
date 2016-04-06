@@ -581,7 +581,8 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.engine.init_turn()
         self.assertActive(self.jolteon)
 
-    @patch('random.randint', lambda *_: 3) # three turns of confusion and sleep
+    @patch('random.randint', lambda *_: 3) # three turns of confusion
+    @patch('random.randrange', lambda *_: 1) # three turns of sleep
     def test_confusion_counter_doesnt_decrement_while_pokemon_is_asleep(self):
         self.choose_move(self.leafeon, 'confuseray')
         self.choose_move(self.vaporeon, 'return')
@@ -786,13 +787,12 @@ class TestMiscMultiTurn(MultiMoveTestCase):
 
         self.assertFalse(self.vaporeon.has_effect(Volatile.ENCORE))
 
+    @patch('random.randrange', lambda _: 1) # 3 turn sleep
     def test_encore_vs_sleeptalk(self):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                   movedex['extremespeed'], movedex['xscissor']))
         self.engine.set_status(self.leafeon, Status.SLP, None)
-        self.leafeon.get_effect(Status.SLP).turns_left = 3
-        self.leafeon.sleep_turns = 3
         self.choose_move(self.leafeon, 'sleeptalk')
         self.choose_move(self.vaporeon, 'encore')
         self.run_turn()

@@ -91,7 +91,6 @@ class TestStatuses(MultiMoveTestCase):
         self.assertEqual(self.shayminsky.stats, {'max_hp': 341, 'atk': 236, 'def': 236,
                                                  'spa': 236, 'spd': 236, 'spe': 236})
 
-    @patch('random.randint', lambda *_: 1) # sleep for 1 turn
     def test_sleep_block_move(self):
         self.new_battle('vaporeon', 'jolteon')
         self.vaporeon.apply_boosts(Boosts(spa=2))
@@ -102,8 +101,7 @@ class TestStatuses(MultiMoveTestCase):
         self.assertDamageTaken(self.jolteon, 0)
         self.assertEqual(self.vaporeon.status, Status.SLP)
 
-    @patch('random.randint', lambda *_: 3) # sleep for 3 turns
-    @patch('random.randrange', lambda *_: 1) # no miss
+    @patch('random.randrange', lambda *_: 1) # no miss, sleep for 3 turns
     def test_sleep_pokemon_wakes_up(self):
         self.new_battle('vaporeon', 'jolteon')
         self.choose_move(self.jolteon, 'splash')
@@ -123,7 +121,7 @@ class TestStatuses(MultiMoveTestCase):
 
         self.assertDamageTaken(self.vaporeon, 318)
 
-    @patch('random.randint', lambda *_: 3) # sleep for 3 turns
+    @patch('random.randrange', lambda *_: 1) # sleep for 3 turns
     def test_sleep_does_not_reset_upon_switch(self):
         self.add_pokemon('flareon', 0)
         self.choose_move(self.leafeon, 'spore')
