@@ -1469,3 +1469,29 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         blaziken = self.foe_side.active_pokemon
         self.assertEqual(blaziken.item, itemdex['_unrevealed_'])
+
+    def test_foe_transform(self):
+        self.handle('|switch|p2a: Ditto|Ditto, L83|100/100')
+        self.handle('|-damage|p2a: Ditto|87/100|[from] Stealth Rock')
+        self.handle('|-transform|p2a: Ditto|p1a: Hitmonchan|[from] ability: Imposter')
+        self.handle('|turn|2')
+
+        ditto = self.foe_side.active_pokemon
+        self.assertEqual(ditto.ability, abilitydex['ironfist'])
+        self.assertEqual(ditto.base_ability, abilitydex['imposter'])
+        self.assertEqual(ditto.item, itemdex['choicescarf'])
+        self.assertIn(movedex['machpunch'], ditto.moveset)
+        self.assertIn(movedex['hiddenpowerdark'], ditto.moveset)
+
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|turn|3')
+        self.assertFalse(ditto.is_transformed)
+        self.assertListEqual(ditto.moveset, [movedex['transform']])
+        self.handle('|switch|p2a: Ditto|Ditto, L83|87/100')
+        self.handle('|-transform|p2a: Ditto|p1a: Zekrom|[from] ability: Imposter')
+        self.handle('|turn|4')
+
+        self.assertTrue(ditto.is_transformed)
+        self.assertSetEqual(set(ditto.moveset), set(self.my_side.active_pokemon.moveset))
+        self.assertEqual(ditto.name, 'zekrom')

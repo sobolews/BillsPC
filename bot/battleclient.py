@@ -1425,10 +1425,11 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         foe = self.get_pokemon_from_msg(msg, 2)
 
-        for move in self.request['active'][0]['moves']:
-            id = move['id']
-            if movedex[id] not in foe.moveset:
-                foe.moveset.append(movedex[id])
+        if pokemon == self.my_side.active_pokemon:
+            for move in self.request['active'][0]['moves']:
+                id = move['id']
+                if movedex[id] not in foe.moveset:
+                    foe.moveset.append(movedex[id])
 
         pokemon.transform_into(foe, engine=None, force=True)
 
