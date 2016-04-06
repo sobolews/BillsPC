@@ -950,7 +950,7 @@ class BattleClient(object):
         if pokemon.base_ability == abilitydex['_unrevealed_']:
             self.set_base_ability(pokemon, ability)
 
-    def set_base_ability(self, pokemon, ability):
+    def set_base_ability(self, pokemon, ability, formechange=False):
         """
         Used when a foe's base_ability is discovered/revealed.
         Sets only the base_ability, not current ability.
@@ -959,9 +959,11 @@ class BattleClient(object):
             log.w("%s's base_ability is already %s", pokemon, ability)
             return
         else:
-            if (pokemon.base_ability != abilitydex['_unrevealed_'] and
+            if (not formechange and
+                pokemon.base_ability != abilitydex['_unrevealed_'] and
                 len(pokemon.pokedex_entry.abilities) == 1 and
-                ability != pokemon.pokedex_entry.abilities[0]):
+                ability != pokemon.pokedex_entry.abilities[0]
+            ):
                 if __debug__: log.w("Overwriting %s's base_ability %s with %s!:\n%r",
                                     pokemon, pokemon.base_ability, ability, pokemon)
             if ability.name not in pokemon.pokedex_entry.abilities:
@@ -1457,7 +1459,7 @@ class BattleClient(object):
         new_ability = abilitydex[pokemon.pokedex_entry.abilities[0]]
         self.set_ability(pokemon, new_ability)
         if pokemon.base_ability != new_ability:
-            self.set_base_ability(pokemon, new_ability)
+            self.set_base_ability(pokemon, new_ability, formechange=True)
 
     def handle_mega(self, msg):
         """
