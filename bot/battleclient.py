@@ -350,6 +350,16 @@ class BattleClient(object):
                                             pokemon.item, move, known_info)
                         assert len(pokemon.moveset) <= 4, (pokemon, pokemon.moveset)
 
+        active = self.my_side.active_pokemon
+        foe = self.foe_side.active_pokemon
+        if active.is_transformed and active.name == foe.name:
+            if (foe.ability != abilitydex['_unrevealed_'] and
+                active.ability == abilitydex['_unrevealed_']):
+                self.set_ability(active, foe.ability)
+            elif (active.ability != abilitydex['_unrevealed_'] and
+                  foe.ability == abilitydex['_unrevealed_']):
+                self.set_ability(foe, active.ability)
+
     def handle_player(self, msg):
         """
         `|player|PLAYER|USERNAME|AVATAR`   e.g. `|player|p1|1BillsPC|294`
@@ -947,7 +957,7 @@ class BattleClient(object):
         pokemon.ability = ability
         pokemon.set_effect(ability())
 
-        if pokemon.base_ability == abilitydex['_unrevealed_']:
+        if pokemon.base_ability == abilitydex['_unrevealed_'] and not pokemon.is_transformed:
             self.set_base_ability(pokemon, ability)
 
     def set_base_ability(self, pokemon, ability, formechange=False):

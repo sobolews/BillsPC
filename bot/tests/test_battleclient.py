@@ -514,6 +514,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         ditto = self.my_side.active_pokemon
         self.bc.request = {"active":[{"moves": [{"move":"Dragon Tail","id":"dragontail","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"Thunderbolt","id":"thunderbolt","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"Fire Blast","id":"fireblast","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"Earthquake","id":"earthquake","pp":5,"maxpp":5,"target":"normal","disabled":False}]}],"side":{"name":"test-BillsPC", "id":"p1","pokemon":[{"ident":"p2: Ditto","details":"Ditto, L83","condition":"215/215","active":True,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["dragontail", "thunderbolt", "fireblast", "earthquake"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"}]},"rqid":2}
         self.handle('|-transform|p1a: Ditto|p2a: Goodra|[from] ability: Imposter')
+        self.handle('|turn|2')
 
         self.assertTrue(ditto.is_transformed)
         self.assertIn(movedex['dragontail'], ditto.moveset)
@@ -521,6 +522,8 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(ditto.pp.get(movedex['thunderbolt']), 5)
         self.assertEqual(ditto.name, 'goodra')
         self.assertListEqual(ditto.types, [Type.DRAGON, None])
+        self.assertEqual(ditto.base_ability, abilitydex['imposter'])
+        self.assertEqual(ditto.ability, abilitydex['sapsipper']) # goodra only gets sapsipper
 
         ditto_stats = ditto.stats.copy()
         del ditto_stats['max_hp']
@@ -529,11 +532,52 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(ditto.hp, 215)
 
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
+        self.handle('|turn|3')
+
         self.assertFalse(ditto.is_transformed)
         self.assertEqual(ditto.stats['atk'], 127)
         self.assertEqual(ditto.name, 'ditto')
         self.assertListEqual(ditto.moveset, [movedex['transform']])
         self.assertEqual(ditto.ability, abilitydex['imposter'])
+
+    def base_ditto_scrafty(self):
+        """ Starting point for the following 2 tests """
+        self.handle('|switch|p1a: Ditto|Ditto, L83|215/215')
+        self.handle('|switch|p2a: Scrafty|Scrafty, L79, F|100/100')
+        self.bc.request = {"active":[{"moves": [{"move":"Dragon Dance","id":"dragondance","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"High Jump Kick","id":"highjumpkick","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"Knock Off","id":"knockoff","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"Rest","id":"rest","pp":5,"maxpp":5,"target":"normal","disabled":False}]}],"side":{"name":"test-BillsPC", "id":"p1","pokemon":[{"ident":"p2: Ditto","details":"Ditto, L83","condition":"215/215","active":True,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["dragondance", "highjumpkick", "knockoff", "rest"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"}]},"rqid":3}
+        self.handle('|-transform|p1a: Ditto|p2a: Scrafty|[from] ability: Imposter')
+        self.handle('|turn|2')
+
+        ditto = self.my_side.active_pokemon
+        scrafty = self.foe_side.active_pokemon
+        self.assertEqual(ditto.ability, abilitydex['_unrevealed_'])
+        self.assertEqual(scrafty.ability, abilitydex['_unrevealed_'])
+
+    def test_handle_transformed_copy_inferred_foe_ability(self):
+        self.base_ditto_scrafty()
+        ditto = self.my_side.active_pokemon
+        scrafty = self.foe_side.active_pokemon
+
+        self.handle('|-heal|p2a: Scrafty|100/100|[from] item: Leftovers')
+        self.handle('|turn|3')
+
+        # given (leftovers, rest), scrafty's ability must be shedskin
+        self.assertEqual(scrafty.item, itemdex['leftovers'])
+        self.assertEqual(scrafty.ability, abilitydex['shedskin'])
+        self.assertEqual(ditto.ability, abilitydex['shedskin']) # update ditto as well
+        self.assertEqual(ditto.base_ability, abilitydex['imposter'])
+
+    def test_handle_infer_foe_ability_when_revealed_by_ditto(self):
+        self.base_ditto_scrafty()
+        ditto = self.my_side.active_pokemon
+        scrafty = self.foe_side.active_pokemon
+
+        self.handle('|-activate|p1a: Ditto|ability: Shed Skin')
+        self.handle('|turn|3')
+
+        self.assertEqual(scrafty.ability, abilitydex['shedskin']) # foe was updated
+        self.assertEqual(ditto.ability, abilitydex['shedskin'])
+        self.assertEqual(ditto.base_ability, abilitydex['imposter'])
 
     def test_handle_start_end_taunt(self):
         self.handle('|switch|p1a: Dunsparce|Dunsparce, L83, M|302/302')
