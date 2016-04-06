@@ -7,7 +7,7 @@ class UnrevealedPokemon(BattlePokemon):
     A placeholder Pokemon object representing an unknown pokemon on the foe's bench.
     """
     def __init__(self):
-        self.name = UNREVEALED
+        self.name = self.base_species = UNREVEALED
         self.is_active = False
 
     def not_implemented(self, *args, **kwargs):

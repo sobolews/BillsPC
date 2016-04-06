@@ -84,7 +84,7 @@ class BattleClient(object):
         `|-sethp|p2a: Emboar|55/100|p1a: Weezing|166/238|[from] move: Pain Split`
         """
         for pokemon in self.get_side_from_msg(msg, index).team:
-            if pokemon.name.startswith(normalize_name(msg[index])):
+            if pokemon.base_species.startswith(normalize_name(msg[index])):
                 return pokemon
 
     def set_hp_status(self, pokemon, hp_msg):
@@ -1534,7 +1534,8 @@ class BattleClient(object):
                 # TODO: test/validate request['active'][0].get('trapped')
 
                 reqmon = [p for p in self.request['side']['pokemon']
-                          if pokemon.name.startswith(normalize_name(p['ident'].split(None, 1)[-1]))]
+                          if pokemon.base_species.startswith(
+                                  normalize_name(p['ident'].split(None, 1)[-1]))]
                 assert reqmon, ("%s didn't match with any: %s" % (
                     pokemon, [normalize_name(p['ident'].split(None, 1)[-1])
                               for p in self.request['side']['pokemon']]))
