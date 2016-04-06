@@ -441,7 +441,7 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         self.name = other.name
         self.moveset = [movedex['hiddenpowerdark'] if move.is_hiddenpower else move
-                        for move in other.moveset] # TODO: do iv calc?
+                        for move in other.moveset]
         self.pp = {move: 5 for move in self.moveset}
         self.types = list(other.types)
         self.gender = other.gender
