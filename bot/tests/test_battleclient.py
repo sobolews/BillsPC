@@ -113,6 +113,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.hitmonchan = self.my_side.active_pokemon
         self.goodra = self.foe_side.active_pokemon
 
+    def assertHiddenPowerType(self, pokemon, type):
+        hps = [move for move in pokemon.moveset if move.is_hiddenpower]
+        if len(hps) == 0:
+            raise AssertionError("%s doesn't have a hiddenpower: %s" % (pokemon, pokemon.moveset))
+        elif len(hps) > 1:
+            raise AssertionError("%s has multiple hiddenpowers: %s" % (pokemon, pokemon.moveset))
+        self.assertEqual(hps[0].type, type)
+
     def test_first_switch_in(self):
         self.assertEqual(self.hitmonchan.name, 'hitmonchan')
         self.assertEqual(self.hitmonchan.get_effect(ABILITY).name, 'ironfist')
@@ -218,8 +226,8 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
     def test_handle_foe_move_hiddenpower(self):
         self.handle('|move|p2a: Goodra|Hidden Power|p1a: Hitmonchan')
-        self.assertTrue(self.goodra.moveset[0].is_hiddenpower)
-        self.assertEqual(self.goodra.pp[self.goodra.moveset[0]], 24 - 1)
+        hp = [move for move in self.goodra.moveset if move.is_hiddenpower][0]
+        self.assertEqual(self.goodra.pp[hp], 24 - 1)
 
     def test_handle_move_not_in_moveset(self):
         with self.assertRaises(AssertionError):
@@ -485,10 +493,10 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(arbok.ability, abilitydex['shedskin'])
 
     def test_handle_move_with_foe_pressure(self):
-        self.handle('|switch|p2a: Deoxys|Deoxys-Speed, L73|100/100')
-        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Deoxys')
-        self.handle('|-ability|p2a: Deoxys|Pressure')
-        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Deoxys')
+        self.handle('|switch|p2a: Moltres|Moltres, L73|100/100')
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Moltres')
+        self.handle('|-ability|p2a: Moltres|Pressure')
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Moltres')
 
         self.assertEqual(self.hitmonchan.pp[movedex['machpunch']], 48 - 3)
 
@@ -1034,8 +1042,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-resisted|p1a: Zekrom')
         self.handle('|turn|3')
         cherrim = self.foe_side.active_pokemon
-        self.assertTrue(cherrim.moveset[0].name.startswith('hiddenpower'))
-        self.assertEqual(cherrim.moveset[0].type, Type.FIRE)
+        self.assertHiddenPowerType(cherrim, Type.FIRE)
 
         # deduce from supereffective
         self.handle('|switch|p2a: Floette|Floette-Eternal, L75, F|100/100')
@@ -1043,7 +1050,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-supereffective|p1a: Zekrom')
         self.handle('|turn|4')
         floette = self.foe_side.active_pokemon
-        self.assertEqual(floette.moveset[0].type, Type.GROUND)
+        self.assertHiddenPowerType(floette, Type.GROUND)
 
         # deduce from immunity
         self.handle('|switch|p2a: Gothitelle|Gothitelle, L74, M|100/100')
@@ -1052,7 +1059,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-immune|p1a: Giratina|[msg]')
         self.handle('|turn|5')
         gothitelle = self.foe_side.active_pokemon
-        self.assertEqual(gothitelle.moveset[0].type, Type.FIGHTING)
+        self.assertHiddenPowerType(gothitelle, Type.FIGHTING)
 
         # deduce from normal damage
         self.handle('|switch|p2a: Thundurus|Thundurus-Therian, L76, M|100/100')
@@ -1060,7 +1067,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-damage|p1a: Giratina|300/339')
         self.handle('|turn|6')
         thundurus = self.foe_side.active_pokemon
-        self.assertEqual(thundurus.moveset[0].type, Type.FLYING)
+        self.assertHiddenPowerType(thundurus, Type.FLYING)
 
         # deduce ground from airballoon immunity
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
@@ -1069,7 +1076,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|move|p2a: Volcarona|Hidden Power|p1a: Hitmonchan')
         self.handle('|-immune|p1a: Hitmonchan|[msg]')
         volcarona = self.foe_side.active_pokemon
-        self.assertEqual(volcarona.moveset[0].type, Type.GROUND)
+        self.assertHiddenPowerType(volcarona, Type.GROUND)
 
     def test_foe_hiddenpower_multiple_possibilities_nondeduction(self):
         # undecidable
@@ -1078,15 +1085,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-damage|p1a: Hitmonchan|150/209')
         self.handle('|turn|2')
         cherrim = self.foe_side.active_pokemon
-        self.assertTrue(cherrim.moveset[0].name.startswith('hiddenpower'))
-        self.assertEqual(cherrim.moveset[0], movedex['hiddenpowernotype'])
+        self.assertHiddenPowerType(cherrim, Type.NOTYPE)
 
         # can still decide it later
         self.handle('|switch|p1a: Giratina|Giratina-Origin, L73|339/339')
         self.handle('|move|p2a: Cherrim|Hidden Power|p1a: Giratina')
         self.handle('|-supereffective|p1a: Giratina')
         self.handle('|turn|3')
-        self.assertEqual(cherrim.moveset[0], movedex['hiddenpowerice'])
+        self.assertHiddenPowerType(cherrim, Type.ICE)
 
         # a miss is undecidable
         self.handle('|switch|p2a: Thundurus|Thundurus-Therian, L76, M|100/100')
@@ -1094,7 +1100,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-miss|p2a: Thundurus|p1a: Giratina')
         self.handle('|turn|4')
         thundurus = self.foe_side.active_pokemon
-        self.assertEqual(thundurus.moveset[0].type, Type.NOTYPE)
+        self.assertHiddenPowerType(thundurus, Type.NOTYPE)
 
     def test_foe_hiddenpower_multiple_possibilities_other_effects(self):
         # primordial sea
@@ -1103,7 +1109,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-fail|p1a: Hitmonchan|Hidden Power|[from] Primordial Sea')
         self.handle('|turn|2')
         gothitelle = self.foe_side.active_pokemon
-        self.assertEqual(gothitelle.moveset[0].type, Type.FIRE)
+        self.assertHiddenPowerType(gothitelle, Type.FIRE)
 
         # flash fire
         self.handle('|switch|p2a: Cherrim|Cherrim, L83, M|100/100')
@@ -1112,7 +1118,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-immune|p1a: Hitmonchan|[msg]|[from] ability: Flash Fire')
         self.handle('|turn|3')
         cherrim = self.foe_side.active_pokemon
-        self.assertEqual(cherrim.moveset[0].type, Type.FIRE)
+        self.assertHiddenPowerType(cherrim, Type.FIRE)
 
         # volt absorb
         self.handle('|switch|p2a: Keldeo|Keldeo, L75|100/100')
@@ -1121,7 +1127,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-heal|p1a: Hitmonchan|209/209|[from] ability: Volt Absorb|[of] p2a: Keldeo')
         self.handle('|turn|4')
         keldeo = self.foe_side.active_pokemon
-        self.assertEqual(keldeo.moveset[0].type, Type.ELECTRIC)
+        self.assertHiddenPowerType(keldeo, Type.ELECTRIC)
 
         # hack in a shedinja for this test:
         shedinja = self.bc.my_pokemon_from_json(json.loads('{"ident":"p2: Shedinja","details":"Shedinja, L83","condition":"1/1","active":false,"stats":{"atk":197,"def":122,"spa":97,"spd":97,"spe":114},"moves":["swordsdance","batonpass","willowisp","xscissor"],"baseAbility":"wonderguard","item":"focussash","pokeball":"pokeball"}'))
@@ -1136,7 +1142,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-activate|p1a: Shedinja|ability: Wonder Guard')
         self.handle('|turn|5')
         floette = self.foe_side.active_pokemon
-        self.assertEqual(floette.moveset[0].type, Type.GROUND)
+        self.assertHiddenPowerType(floette, Type.GROUND)
 
         self.handle('|switch|p2a: Thundurus|Thundurus-Therian, L76, M|100/100')
         self.handle('|switch|p1a: Altaria|Altaria, L75, M|236/236')
@@ -1144,7 +1150,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-activate||deltastream')
         self.handle('|turn|6')
         thundurus = self.foe_side.active_pokemon
-        self.assertEqual(thundurus.moveset[0].type, Type.ICE)
+        self.assertHiddenPowerType(thundurus, Type.ICE)
 
     def test_cant_reveals_move(self):
         self.handle('|switch|p1a: Giratina|Giratina-Origin, L73|339/339')
