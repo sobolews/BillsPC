@@ -743,13 +743,25 @@ class BattleClient(object):
         assert side.num_unrevealed > 0, side.num_unrevealed
         assert msg[3] == '100/100', msg[3]
         details = msg[2].split(', ')
+        name = normalize_name(details[0])
         level = int(details[1].lstrip('L'))
         assert 1 <= level <= 100, 'level=%r' % level
         gender = details[2] if len(details) > 2 else None
         assert gender in ('M', 'F', None), gender
-        pokemon = BattlePokemon(pokedex[normalize_name(details[0])], level, moveset=[],
+        pokemon = BattlePokemon(pokedex[name], level, moveset=[],
                                 side=side, ability=abilitydex['_unrevealed_'], gender=gender)
-        # TODO: attempt to deduce more information right away, like ability, moves, etc.
+
+        # reveal item/ability/moves that are known from statistics
+        stats = rbstats[name]
+        if len(stats['item']) == 1:
+            pokemon.item = itemdex[tuple(stats['item'])[0]]
+        if len(stats['ability']) == 1:
+            pokemon.ability = abilitydex[tuple(stats['ability'])[0]]
+            self.set_base_ability(pokemon, pokemon.ability)
+        for move, pmove in rbstats.probability[name]['moves'].items():
+            if pmove == 1.0:
+                self.reveal_move(pokemon, movedex[move])
+
         self.foe_side.reveal(pokemon)
         return pokemon
 

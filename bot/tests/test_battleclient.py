@@ -1294,3 +1294,29 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         dusknoir = self.foe_side.active_pokemon
         self.assertEqual(dusknoir.ability, abilitydex['frisk'])
         self.assertEqual(zekrom.item, itemdex['choicescarf'])
+
+    def test_deduce_foe_moves_when_only_one_moveset(self):
+        self.handle('|switch|p2a: Linoone|Linoone, L82, F|100/100')
+
+        linoone = self.foe_side.active_pokemon
+        self.assertSetEqual(set(linoone.moveset),
+                            {movedex['shadowclaw'], movedex['bellydrum'],
+                             movedex['extremespeed'], movedex['seedbomb']})
+
+        self.handle('|switch|p2a: Sunflora|Sunflora, L82, F|100/100')
+        sunflora = self.foe_side.active_pokemon
+        self.assertSetEqual(set(sunflora.moveset),
+                            {movedex['sunnyday'], movedex['hiddenpowerfire'],
+                             movedex['earthpower']})
+
+    def test_deduce_foe_ability_when_only_one_possibility(self):
+        self.handle('|switch|p2a: Mandibuzz|Mandibuzz, L77, F|100/100')
+
+        mandibuzz = self.foe_side.active_pokemon
+        self.assertEqual(mandibuzz.ability, abilitydex['overcoat'])
+
+    def test_deduce_foe_item_when_only_one_moveset(self):
+        self.handle('|switch|p2a: Chansey|Chansey, L75, F|100/100')
+
+        chansey = self.foe_side.active_pokemon
+        self.assertEqual(chansey.item, itemdex['eviolite'])
