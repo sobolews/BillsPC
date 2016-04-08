@@ -146,6 +146,7 @@ class BattleClient(object):
         if self.hiddenpower_trigger is not None:
             self.deduce_hiddenpower(self.hiddenpower_trigger, msg)
 
+        if __debug__: log.d('%s called with %s', handle_method, msg)
         getattr(self, handle_method)(msg)
 
     handle_supereffective = handle_resisted = handle_miss = lambda self, msg: None
