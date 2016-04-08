@@ -575,6 +575,7 @@ class BattleClient(object):
         `|[still]` (suppress animation), `|[silent]` (suppress message).
 
         |-damage|p2a: Goodra|62/100 brn|[from] brn
+        |-damage|p1a: Phione|252/268 tox|[from] psn
 
         |-damage|p1a: Garchomp|35/286|[from] ability: Iron Barbs|[of] p2a: Ferrothorn
         |-damage|p2a: Gengar|50/208 slp|[from] ability: Bad Dreams|[of] p1a: Darkrai
@@ -600,6 +601,12 @@ class BattleClient(object):
                 if not pokemon.has_effect(Volatile.LEECHSEED):
                     if __debug__: log.e("%s damaged by leechseed; no Volatile.LEECHSEED present",
                                         pokemon, msg)
+            elif msg[2].endswith('tox') and msg[3] == '[from] psn':
+                tox = pokemon.get_effect(Status.TOX)
+                if tox is not None:
+                    tox.stage += 1
+                elif __debug__:
+                    log.e("%s damaged by tox but has no Status.TOX effect: %s", pokemon, msg)
 
         self.set_hp_status(pokemon, msg[2])
 

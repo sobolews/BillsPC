@@ -1489,3 +1489,23 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(ditto.is_transformed)
         self.assertSetEqual(set(ditto.moveset), set(self.my_side.active_pokemon.moveset))
         self.assertEqual(ditto.name, 'zekrom')
+
+    def test_tox_stage_increases_each_turn(self):
+        self.handle('|-status|p2a: Goodra|tox')
+        self.handle('|-damage|p2a: Goodra|94/100 tox|[from] psn')
+        self.handle('|turn|2')
+
+        self.assertEqual(self.goodra.get_effect(Status.TOX).stage, 1)
+
+        self.handle('|-damage|p2a: Goodra|82/100 tox|[from] psn')
+        self.handle('|turn|3')
+
+        self.assertEqual(self.goodra.get_effect(Status.TOX).stage, 2)
+
+        self.handle('|switch|p2a: Ampharos|Ampharos, L77, F|100/100')
+        self.handle('|turn|4')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, M|82/100')
+        self.handle('|-damage|p2a: Goodra|76/100 tox|[from] psn')
+        self.handle('|turn|5')
+
+        self.assertEqual(self.goodra.get_effect(Status.TOX).stage, 1)
