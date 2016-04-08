@@ -124,7 +124,7 @@ class Bot(WebSocketClient):
 
     IGNORE_MSGS = {
         'updateuser', 'queryresponse', 'formats', 'updatesearch', 'title', 'join', 'gen', 'tier',
-        'rated', 'rule', 'start', 'init', 'gametype', '-ability', 'variation', '-crit',
+        'rated', 'rule', 'start', 'init', 'gametype', 'variation', '-crit',
         '-hint', '-center', '-message', '-notarget', '-hitcount', '-nothing', '-waiting',
         '-combine', 'chat', 'c', 'chatmsg', 'chatmsg-raw', 'raw', 'html', 'pm', 'askreg',
         'inactiveoff', 'join', 'j', 'leave', 'l', 'L', 'spectator', 'spectatorleave', 'clearpoke',
