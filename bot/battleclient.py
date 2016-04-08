@@ -53,6 +53,7 @@ class BattleClient(object):
         self.last_sent = None
         self.request = None
         self.rqid = None
+        self.crit = False
         self.hiddenpower_trigger = None
 
         self.make_moves = False # set to True to have the bot make random choices (TODO: use an AI
@@ -148,6 +149,9 @@ class BattleClient(object):
 
         if __debug__: log.d('%s called with %s', handle_method, msg)
         getattr(self, handle_method)(msg)
+
+        if self.crit and msg_type != '-crit':
+            self.crit = False
 
     handle_supereffective = handle_resisted = handle_miss = lambda self, msg: None
 
@@ -1112,7 +1116,7 @@ class BattleClient(object):
             assert foe is not None, pokemon
             move = foe.last_move_used
             assert move is not None, foe
-            expected_damage = self.engine.calculate_expected_damage(foe, move, pokemon)
+            expected_damage = self.engine.calculate_expected_damage(foe, move, pokemon, self.crit)
             if expected_damage is None or expected_damage > sub.hp:
                 sub.hp = 1      # this normally shouldn't happen
                 if __debug__: log.i("Expected damage for %r attacking %r with %s was %s, but did "
@@ -1132,6 +1136,14 @@ class BattleClient(object):
             self.set_ability(foe, abilitydex['mummy'])
         else:
             if __debug__: log.e('Unhandled -activate msg: %s', msg)
+
+    def handle_crit(self, msg):
+        """
+        |-crit|p2a: Cresselia
+
+        Used by handle_activate for estimating damage to a substitute that does not break
+        """
+        self.crit = True
 
     def handle_singleturn(self, msg):
         """

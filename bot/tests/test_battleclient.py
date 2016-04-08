@@ -647,6 +647,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         # hitmonchan rapidspin vs goodra: best guess calc = 18
         self.assertEqual(sub.hp, (self.goodra.max_hp / 4) - 18)
 
+        self.handle('|move|p1a: Hitmonchan|Rapid Spin|p2a: Goodra')
+        self.handle('|-crit|p2a: Goodra')
+        self.handle('|-activate|p2a: Goodra|Substitute|[damage]')
+
+        self.assertTrue(self.goodra.has_effect(Volatile.SUBSTITUTE))
+        # hitmonchan rapidspin vs goodra on a crit: best guess calc = 27
+        self.assertEqual(sub.hp, (self.goodra.max_hp / 4) - 18 - 27)
+
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
         self.handle('|move|p1a: Zekrom|Outrage|p2a: Goodra')
         self.handle('|-activate|p2a: Goodra|Substitute|[damage]')
