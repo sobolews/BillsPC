@@ -786,6 +786,10 @@ class BattleClient(object):
 
         outgoing = side.active_pokemon
         if outgoing is not None:
+            if outgoing.has_effect(Volatile.TRAPPER):
+                foe = self.battlefield.get_foe(pokemon)
+                foe.remove_effect(Volatile.PARTIALTRAP, force=True)
+                foe.remove_effect(Volatile.TRAPPED, force=True)
             outgoing.is_active = False
             outgoing._effect_index.clear()
             outgoing.effect_handlers = {key: list() for key in outgoing.effect_handlers}

@@ -848,6 +848,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertFalse(self.hitmonchan.has_effect(Volatile.PARTIALTRAP))
         self.assertFalse(self.goodra.has_effect(Volatile.TRAPPER))
 
+        self.handle('|-activate|p1a: Hitmonchan|move: Infestation|[of] p2a: Goodra')
+        self.handle('|turn|3')
+        self.handle('|switch|p2a: Lilligant|Lilligant, L81, F|100/100')
+        self.handle('|turn|4')
+
+        self.assertFalse(self.hitmonchan.has_effect(Volatile.PARTIALTRAP))
+        self.assertFalse(self.goodra.has_effect(Volatile.TRAPPER))
+
     def test_handle_move_lockedmove(self):
         self.handle('|switch|p2a: Lilligant|Lilligant, L81, F|100/100')
         self.handle('|move|p2a: Lilligant|Petal Dance|p1a: Hitmonchan')
