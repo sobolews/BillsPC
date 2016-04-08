@@ -299,7 +299,8 @@ class BattleClient(object):
             for effect in thing.effects:
                 if effect.duration is not None:
                     if effect.duration == 0:
-                        if __debug__: log.w("%s's effect %s has a duration of 0, cannot decrement")
+                        if __debug__: log.w("%s's effect %s has a duration of 0, cannot decrement",
+                                            thing, effect)
                         continue
                     effect.duration -= 1
 
