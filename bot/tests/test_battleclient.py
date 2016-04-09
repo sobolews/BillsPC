@@ -1525,3 +1525,19 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|5')
 
         self.assertEqual(self.goodra.get_effect(Status.TOX).stage, 1)
+
+    def test_choicelock(self):
+        self.handle('|-item|p2a: Goodra|Choice Specs|[from] ability: Frisk|[of] p1a: Hitmonchan|[identify]')
+        self.handle('|move|p2a: Goodra|Thunderbolt|p1a: Hitmonchan')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.goodra.has_effect(Volatile.CHOICELOCK))
+        self.assertEqual(self.goodra.get_effect(Volatile.CHOICELOCK).move, movedex['thunderbolt'])
+
+        self.handle('|switch|p2a: Ampharos|Ampharos, L77, F|100/100')
+        self.handle('|turn|3')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|turn|4')
+
+        self.assertEqual(self.goodra.item, itemdex['choicespecs'])
+        self.assertFalse(self.goodra.has_effect(Volatile.CHOICELOCK))

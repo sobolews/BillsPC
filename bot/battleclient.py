@@ -522,6 +522,9 @@ class BattleClient(object):
             else:
                 effect.multiplier += 1
 
+        if pokemon.item in (itemdex['choiceband'], itemdex['choicescarf'], itemdex['choicespecs']):
+            pokemon.set_effect(effects.ChoiceLock(move))
+
     def reveal_move(self, pokemon, move):
         """
         Reveal a move that a foe pokemon definitely has (i.e. was not called via copycat, etc.)
