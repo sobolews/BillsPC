@@ -310,6 +310,12 @@ class BattleClient(object):
 
         self.update_foe_inferences()
 
+        if any(pokemon.ability in (abilitydex['airlock'], abilitydex['cloudnine'])
+               for pokemon in (my_active, foe_active)):
+            self.battlefield.suppress_weather()
+        else:
+            self.battlefield.unsuppress_weather()
+
     def update_foe_inferences(self):
         for pokemon in self.foe_side.team:
             if pokemon.is_fainted() or pokemon.name == UNREVEALED or pokemon.is_transformed:
@@ -950,6 +956,7 @@ class BattleClient(object):
 
     def handle_ability(self, msg):
         """
+        |-ability|p2a: Rayquaza|Air Lock
         |-ability|p1a: Granbull|Intimidate|boost
         |-ability|p1a: Kyurem|Teravolt
         |-ability|p1a: Pyroar|Unnerve|p2: 1-BillsPC

@@ -1541,3 +1541,19 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertEqual(self.goodra.item, itemdex['choicespecs'])
         self.assertFalse(self.goodra.has_effect(Volatile.CHOICELOCK))
+
+    def test_airlock_and_cloudnine(self):
+        self.handle('|switch|p2a: Politoed|Politoed, L77, F|100/100')
+        self.handle('|-weather|RainDance|[from] ability: Drizzle|[of] p2a: Politoed')
+        self.handle('|turn|2')
+        self.handle('|switch|p2a: Rayquaza|Rayquaza, L73|100/100')
+        self.handle('|turn|3')
+
+        self.assertTrue(self.battlefield._weather_suppressed)
+        self.assertTrue(self.battlefield.get_effect(Weather.RAINDANCE).suppressed)
+
+        self.handle('|switch|p2a: Politoed|Politoed, L77, F|100/100')
+        self.handle('|turn|4')
+
+        self.assertFalse(self.battlefield._weather_suppressed)
+        self.assertFalse(self.battlefield.get_effect(Weather.RAINDANCE).suppressed)
