@@ -1571,3 +1571,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertFalse(self.battlefield.has_effect(PseudoWeather.DARKAURA))
         self.assertTrue(self.battlefield.has_effect(PseudoWeather.FAIRYAURA))
+
+    def test_handle_move_wish(self):
+        self.handle('|switch|p2a: Blissey|Blissey, L77, F|100/100')
+        self.handle('|move|p2a: Blissey|Wish|p2a: Blissey')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.foe_side.has_effect(SideCondition.WISH))
+        self.assertEqual(self.foe_side.get_effect(SideCondition.WISH).duration, 1)
+
+        self.handle('|turn|3')
+
+        self.assertFalse(self.foe_side.has_effect(SideCondition.WISH))

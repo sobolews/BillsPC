@@ -302,7 +302,12 @@ class BattleClient(object):
                                    self.battlefield)):
             for effect in thing.effects:
                 if effect.duration is not None:
-                    if effect.duration == 0:
+                    if effect.source == SideCondition.WISH and effect.duration <= 1:
+                        # remove wish automatically, since there's no notification if it ends
+                        # without healing
+                        thing.remove_effect(SideCondition.WISH)
+                        continue
+                    elif effect.duration == 0:
                         if __debug__: log.w("%s's effect %s has a duration of 0, cannot decrement",
                                             thing, effect)
                         continue
@@ -541,6 +546,8 @@ class BattleClient(object):
                 pokemon.set_effect(effects.Autotomize())
             else:
                 effect.multiplier += 1
+        elif move == movedex['wish']:
+            pokemon.side.set_effect(effects.Wish(pokemon.max_hp / 2))
 
         if pokemon.item in (itemdex['choiceband'], itemdex['choicescarf'], itemdex['choicespecs']):
             pokemon.set_effect(effects.ChoiceLock(move))
@@ -645,6 +652,7 @@ class BattleClient(object):
 
         |-heal|p2a: Tyranitar|330/341|[from] ability: Rain Dish
         |-heal|p2a: Moltres|253/267|[from] item: Leftovers
+        |-heal|p2a: Blissey|87/100 tox|[from] move: Wish|[wisher] Blissey
 
         |-enditem|p1a: Exeggutor|Sitrus Berry|[eat]
         |-heal|p1a: Exeggutor|205/288|[from] item: Sitrus Berry
@@ -659,6 +667,8 @@ class BattleClient(object):
                 self.set_item(pokemon, item)
             elif msg[3].startswith('[from] ability'):
                 self.set_ability(pokemon, abilitydex[normalize_name(msg[3])])
+            elif msg[3] == '[from] move: Wish':
+                pokemon.side.remove_effect(SideCondition.WISH)
 
         self.set_hp_status(pokemon, msg[2])
 
