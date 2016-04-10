@@ -504,7 +504,6 @@ class BattleClient(object):
         assert pokemon.is_active, pokemon
         foe = (self.foe_side.active_pokemon if pokemon.side.index == self.my_player
                else self.my_side.active_pokemon)
-        pp_sub = 2 if not foe.is_fainted() and foe.ability is abilitydex['pressure'] else 1
 
         if msg[2] == 'Hidden Power':
             hp_moves = [move for move in pokemon.moveset if
@@ -526,6 +525,12 @@ class BattleClient(object):
             move = movedex[normalize_name(msg[2])]
 
         if move != movedex['struggle']:
+            if (not foe.is_fainted() and
+                foe.ability == abilitydex['pressure'] and
+                not move.targets_user):
+                pp_sub = 2
+            else:
+                pp_sub = 1
             if move in pokemon.pp:
                 pokemon.pp[move] -= pp_sub
             elif pokemon.side.index == self.foe_player: # Add move to foe's moveset
