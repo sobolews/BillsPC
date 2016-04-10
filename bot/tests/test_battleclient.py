@@ -1557,3 +1557,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertFalse(self.battlefield._weather_suppressed)
         self.assertFalse(self.battlefield.get_effect(Weather.RAINDANCE).suppressed)
+
+    def test_aura_effects(self):
+        self.handle('|switch|p2a: Zygarde|Zygarde, L76|100/100')
+        self.handle('|-ability|p2a: Zygarde|Aura Break')
+        self.handle('|turn|2')
+
+        self.assertTrue(self.battlefield.has_effect(PseudoWeather.AURABREAK))
+
+        self.handle('|switch|p2a: Xerneas|Xerneas, L73|100/100')
+        self.handle('|-ability|p2a: Xerneas|Fairy Aura')
+        self.handle('|turn|3')
+
+        self.assertFalse(self.battlefield.has_effect(PseudoWeather.DARKAURA))
+        self.assertTrue(self.battlefield.has_effect(PseudoWeather.FAIRYAURA))

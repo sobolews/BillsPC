@@ -310,11 +310,25 @@ class BattleClient(object):
 
         self.update_foe_inferences()
 
-        if any(pokemon.ability in (abilitydex['airlock'], abilitydex['cloudnine'])
-               for pokemon in (my_active, foe_active)):
+        abilities = (my_active.ability, foe_active.ability)
+
+        # update ability-based field effects
+        if abilitydex['airlock'] in abilities or abilitydex['cloudnine'] in abilities:
             self.battlefield.suppress_weather()
         else:
             self.battlefield.unsuppress_weather()
+        if abilitydex['darkaura'] in abilities:
+            self.battlefield.set_effect(effects.DarkAuraFieldEffect())
+        else:
+            self.battlefield.remove_effect(PseudoWeather.DARKAURA)
+        if abilitydex['fairyaura'] in abilities:
+            self.battlefield.set_effect(effects.FairyAuraFieldEffect())
+        else:
+            self.battlefield.remove_effect(PseudoWeather.FAIRYAURA)
+        if abilitydex['aurabreak'] in abilities:
+            self.battlefield.set_effect(effects.AuraBreakFieldEffect())
+        else:
+            self.battlefield.remove_effect(PseudoWeather.AURABREAK)
 
     def update_foe_inferences(self):
         for pokemon in self.foe_side.team:
