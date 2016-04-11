@@ -1609,3 +1609,21 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|2')
 
         self.assertFalse(self.foe_side.has_effect(SideCondition.HEALINGWISH))
+
+    def test_recalculate_pokemon_stats_when_hiddenpower_revealed(self):
+        self.handle('|switch|p2a: Gothitelle|Gothitelle, L74, M|100/100')
+        self.handle('|switch|p1a: Giratina|Giratina-Origin, L73|339/339')
+        gothitelle = self.foe_side.active_pokemon
+        self.assertDictEqual(gothitelle.stats, {'max_hp': 226, 'atk': 124, 'def': 184,
+                                                'spa': 184, 'spd': 206, 'spe': 139})
+        self.handle('|move|p2a: Gothitelle|Hidden Power|p1a: Giratina')
+        self.handle('|-immune|p1a: Giratina|[msg]')
+        self.handle('|turn|2')
+        self.assertDictEqual(gothitelle.stats, {'max_hp': 226, 'atk': 124, 'def': 183,
+                                                'spa': 183, 'spd': 205, 'spe': 138})
+
+        self.handle('|switch|p2a: Xerneas|Xerneas, L71|100/100')
+        xerneas = self.foe_side.active_pokemon
+        self.handle('|move|p2a: Xerneas|Hidden Power|p1a: Giratina')
+        self.assertDictEqual(xerneas.stats, {'max_hp': 296, 'atk': 227, 'def': 176,
+                                             'spa': 227, 'spd': 181, 'spe': 181})

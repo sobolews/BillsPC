@@ -16,7 +16,7 @@ from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideC
                            PseudoWeather)
 from pokedex.items import itemdex
 from pokedex.moves import movedex
-from pokedex.types import type_effectiveness
+from pokedex.types import type_effectiveness, HPivs
 from pokedex.stats import Boosts, PokemonStats
 
 pokedex = create_pokedex()
@@ -264,6 +264,9 @@ class BattleClient(object):
         else:
             if __debug__: log.e('Unhandled deduce_hiddenpower message for %s: %s', pokemon, msg)
 
+        if moveset[pos] != movedex['hiddenpowernotype']:
+            self.recalculate_stats_hiddenpower(pokemon, moveset[pos].type)
+
         if __debug__:
             if moveset[pos] == movedex['hiddenpowernotype']:
                 log.i("Unable to deduce %s's hiddenpower type vs %s from %s",
@@ -273,6 +276,11 @@ class BattleClient(object):
             else:
                 log.w("Setting %s's hiddenpower type to %s: "
                       "but possible choices were %s", pokemon, moveset[pos], possible)
+
+    def recalculate_stats_hiddenpower(self, pokemon, hp_type):
+        if __debug__: log.i("Recalculating %s's stats for hp_type=%s", pokemon, hp_type)
+        pokemon.ivs = HPivs[hp_type]
+        pokemon.stats = pokemon.calculate_initial_stats(pokemon.evs, pokemon.ivs)
 
     def handle_inactive(self, msg):
         if self.last_sent is not None:
@@ -569,6 +577,8 @@ class BattleClient(object):
                                           (pokemon, move, pokemon))
         pokemon.moveset.append(move)
         pokemon.pp[move] = move.max_pp
+        if move.is_hiddenpower and move.type != Type.NOTYPE:
+            self.recalculate_stats_hiddenpower(pokemon, move.type)
 
     def handle_fail(self, msg):
         """
