@@ -1505,7 +1505,7 @@ class BattleClient(object):
                 if movedex[id] not in foe.moveset:
                     foe.moveset.append(movedex[id])
 
-        pokemon.transform_into(foe, engine=None, force=True)
+        pokemon.transform_into(foe, engine=None, client=True)
 
     def handle_formechange(self, msg):
         """

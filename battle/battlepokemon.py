@@ -415,11 +415,12 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         return weight
 
-    def transform_into(self, other, engine, force=False):
+    def transform_into(self, other, engine, client=False):
         """
-        force=True is only to be used by the battle client.
+        When client=True, success check and ability end/start effects are skipped. client=True is
+        used by the battle client only.
         """
-        if (not force and
+        if (not client and
             (other.is_fainted() or
              other.has_effect(Volatile.SUBSTITUTE) or
              self.is_transformed or
@@ -455,11 +456,11 @@ class BattlePokemon(object, EffectHandlerMixin):
             if self.boosts: log.i('%s copied %r', self, self.boosts)
 
         if other.ability.name not in ('stancechange', 'multitype', 'illusion'):
-            self.remove_effect(ABILITY, engine, force=force)
+            self.remove_effect(ABILITY, engine, force=client)
             self.ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
-            if not force:
+            if not client:
                 ability_effect.start(self, engine)
 
     def revert_transform(self):
