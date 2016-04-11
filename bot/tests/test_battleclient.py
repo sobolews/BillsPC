@@ -1627,3 +1627,21 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|move|p2a: Xerneas|Hidden Power|p1a: Giratina')
         self.assertDictEqual(xerneas.stats, {'max_hp': 296, 'atk': 227, 'def': 176,
                                              'spa': 227, 'spd': 181, 'spe': 181})
+
+    def test_reveal_arceus_genesect_gourgeist(self):
+        self.handle('|switch|p2a: Arceus|Arceus-Psychic, L73|100/100')
+        self.handle('|turn|2')
+
+        arceus = self.foe_side.active_pokemon
+        self.assertEqual(arceus.types, [Type.PSYCHIC, None])
+        self.assertEqual(arceus.item, itemdex['mindplate'])
+        self.assertEqual(arceus.ability, abilitydex['multitype'])
+
+        self.handle('|switch|p2a: Genesect|Genesect-Shock, L74|100/100')
+        genesect = self.foe_side.active_pokemon
+        self.assertEqual(genesect.item, itemdex['shockdrive'])
+
+        self.handle('|switch|p2a: Gourgeist|Gourgeist-Small, L83, M|100/100')
+        gourgeist = self.foe_side.active_pokemon
+        self.assertEqual(gourgeist.name, 'gourgeistsmall')
+        self.assertEqual(gourgeist.stats['spe'], 212)
