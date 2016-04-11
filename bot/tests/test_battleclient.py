@@ -325,7 +325,20 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(self.battlefield.has_effect, Weather.SANDSTORM)
         self.assertEqual(self.battlefield.get_effect(Weather.SANDSTORM).duration, 5)
 
+        self.handle('|switch|p2a: Ludicolo|Ludicolo, L81, M|100/100')
+        self.handle('|-enditem|p2a: Ludicolo|Damp Rock|[from] move: Knock Off|[of] p1a: Hitmonchan')
+        self.handle('|move|p2a: Ludicolo|Rain Dance|p2a: Ludicolo')
         self.handle('|-weather|RainDance')
+
+        self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
+        self.assertTrue(self.battlefield.has_effect, Weather.RAINDANCE)
+        self.assertEqual(self.battlefield.get_effect(Weather.RAINDANCE).duration, 5)
+
+        self.handle('|-weather|Sandstorm')
+        self.handle('|-item|p2a: Ludicolo|Damp Rock|[from] move: Trick')
+        self.handle('|move|p2a: Ludicolo|Rain Dance|p2a: Ludicolo')
+        self.handle('|-weather|RainDance')
+
         self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
         self.assertTrue(self.battlefield.has_effect, Weather.RAINDANCE)
         self.assertEqual(self.battlefield.get_effect(Weather.RAINDANCE).duration, 8)

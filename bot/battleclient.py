@@ -804,6 +804,7 @@ class BattleClient(object):
 
         weather = Weather.values[msg[1].upper()]
 
+        pokemon = None
         if len(msg) > 2 and msg[2] == '[upkeep]':
             if msg[1].lower() not in ('desolateland', 'primordialsea', 'deltastream'):
                 assert self.battlefield.weather is not None, \
@@ -815,10 +816,21 @@ class BattleClient(object):
                 self.set_ability(pokemon, abilitydex[normalize_name(msg[2])])
 
             self.battlefield.set_weather(weather)
-            if msg[1].lower() in ('sunnyday', 'raindance'): # usually has heatrock/damprock boost
-                                                            # TODO: use rbstats to determine
-                                                            # likelihood of 5 vs 8 turns.
-                self.battlefield.get_effect(weather).duration = 8
+
+            # if setter is holding damprock/heatrock or item is unrevealed, use 8 turns
+            msg1 = msg[1].lower()
+            if msg1 in ('sunnyday', 'raindance'):
+                if pokemon is None:
+                    for active in (self.my_side.active_pokemon, self.foe_side.active_pokemon):
+                        if (not active.will_move_this_turn and
+                            active.last_move_used == movedex[msg1]
+                        ):
+                            pokemon = active
+                if (pokemon is None or
+                    pokemon.item == itemdex['_unrevealed_'] or
+                    pokemon.item == itemdex['heatrock' if msg1 == 'sunnyday' else 'damprock']
+                ):
+                    self.battlefield.get_effect(weather).duration = 8
 
     def handle_switch(self, msg):
         """
