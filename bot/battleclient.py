@@ -1331,33 +1331,26 @@ class BattleClient(object):
         |-end|p2a: Chansey|Infestation|[partiallytrapped]
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        effect = normalize_name(msg[2])
-        if effect == 'taunt':
-            pokemon.remove_effect(Volatile.TAUNT)
-        elif effect == 'confusion':
-            pokemon.remove_effect(Volatile.CONFUSE)
-        elif effect == 'substitute':
-            pokemon.remove_effect(Volatile.SUBSTITUTE)
-        elif effect == 'yawn':
-            pokemon.remove_effect(Volatile.YAWN)
-        elif effect == 'leechseed':
-            pokemon.remove_effect(Volatile.LEECHSEED)
-        elif effect == 'encore':
-            pokemon.remove_effect(Volatile.ENCORE)
-        elif effect == 'slowstart':
-            pokemon.remove_effect(Volatile.SLOWSTART)
-        elif effect == 'flashfire':
-            pokemon.remove_effect(Volatile.FLASHFIRE)
-        elif effect == 'disable':
-            pokemon.remove_effect(Volatile.DISABLE)
-        elif effect == 'attract':
-            pokemon.remove_effect(Volatile.ATTRACT)
-        elif effect == 'magnetrise':
-            pokemon.remove_effect(Volatile.MAGNETRISE)
-        elif effect == 'infestation':
-            pokemon.remove_effect(Volatile.PARTIALTRAP)
+        effect = self.END_EFFECT_MAP.get(normalize_name(msg[2]))
+        if effect is not None:
+            pokemon.remove_effect(effect, force=(effect != Volatile.PARTIALTRAP))
         else:
             log.e('Unhandled -end msg: %s', msg)
+
+    END_EFFECT_MAP = {
+        'taunt': Volatile.TAUNT,
+        'confusion': Volatile.CONFUSE,
+        'substitute': Volatile.SUBSTITUTE,
+        'yawn': Volatile.YAWN,
+        'leechseed': Volatile.LEECHSEED,
+        'encore': Volatile.ENCORE,
+        'slowstart': Volatile.SLOWSTART,
+        'flashfire': Volatile.FLASHFIRE,
+        'disable': Volatile.DISABLE,
+        'attract': Volatile.ATTRACT,
+        'magnetrise': Volatile.MAGNETRISE,
+        'infestation': Volatile.PARTIALTRAP,
+    }
 
     def handle_sidestart(self, msg):
         """
