@@ -375,7 +375,7 @@ class BattleClient(object):
                     if (move not in known_info and
                         rbstats.attr_probability(rb_index, move, known_info) == 1
                     ):
-                        pokemon.moveset.append(movedex[move])
+                        self.reveal_move(pokemon, movedex[move])
                         if __debug__: log.i("%s must have %s, given %s",
                                             pokemon.item, move, known_info)
                         assert len(pokemon.moveset) <= 4, (pokemon, pokemon.moveset)
