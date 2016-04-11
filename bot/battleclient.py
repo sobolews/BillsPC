@@ -1420,26 +1420,22 @@ class BattleClient(object):
         ... (same as sidestart)
         """
         side = self.get_side_from_msg(msg)
-        effect = normalize_name(msg[2])
-
-        if effect == 'reflect':
-            side.remove_effect(SideCondition.REFLECT)
-        elif effect == 'lightscreen':
-            side.remove_effect(SideCondition.LIGHTSCREEN)
-        elif effect == 'stealthrock':
-            side.remove_effect(Hazard.STEALTHROCK)
-        elif effect == 'toxicspikes':
-            side.remove_effect(Hazard.TOXICSPIKES)
-        elif effect == 'spikes':
-            side.remove_effect(Hazard.SPIKES)
-        elif effect == 'stickyweb':
-            side.remove_effect(Hazard.STICKYWEB)
-        elif effect == 'tailwind':
-            side.remove_effect(SideCondition.TAILWIND)
-        elif effect == 'safeguard':
-            side.remove_effect(SideCondition.SAFEGUARD)
+        effect = self.SIDEEND_EFFECT_MAP.get(normalize_name(msg[2]))
+        if effect is not None:
+            side.remove_effect(effect)
         elif __debug__:
             log.e('Unhandled -sideend msg: %s', msg)
+
+    SIDEEND_EFFECT_MAP = {
+        'reflect': SideCondition.REFLECT,
+        'lightscreen': SideCondition.LIGHTSCREEN,
+        'stealthrock': Hazard.STEALTHROCK,
+        'toxicspikes': Hazard.TOXICSPIKES,
+        'spikes': Hazard.SPIKES,
+        'stickyweb': Hazard.STICKYWEB,
+        'tailwind': SideCondition.TAILWIND,
+        'safeguard': SideCondition.SAFEGUARD,
+    }
 
     def handle_fieldstart(self, msg):
         """
