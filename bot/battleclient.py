@@ -460,11 +460,7 @@ class BattleClient(object):
         """
         self.request = request
         self.rqid = request.get('rqid')
-        if __debug__:
-            self._validate_my_team()
-        # else:         # TODO
-        #     self._match_request() # change any invalidated data to match request
-        # # (ideally, this should never be called, but defer to the server for any discrepancies)
+        self._validate_my_team()
 
         print repr(self.battlefield)
 
@@ -1586,10 +1582,11 @@ class BattleClient(object):
         This should only ever be called in __debug__ mode. It will fail otherwise.
         """
         request = self.request
+
+        # strip digits from moves (e.g. hiddenpowerfire60)
         if request.get('active') is not None:
             for move in request['active'][0]['moves']:
                 move['id'] = move['id'].rstrip(string.digits)
-
         for reqmon in request['side']['pokemon']:
             reqmon['moves'] = [move_.rstrip(string.digits)
                                for move_ in reqmon['moves']]
@@ -1658,8 +1655,8 @@ class BattleClient(object):
                 assert pokemon.level == int(reqmon['details'].split(', ')[1][1:])
                 assert pokemon.is_active == reqmon['active']
                 if not pokemon.ability.name.startswith('_') and not pokemon.is_transformed:
-                    assert pokemon.ability.name == reqmon['baseAbility'], (pokemon.ability.name,
-                                                                           reqmon['baseAbility'])
+                    assert pokemon.base_ability.name == reqmon['baseAbility'], \
+                        (pokemon.ability.name, reqmon['baseAbility'])
                 if pokemon.item is None:
                     assert reqmon['item'] == ''
                 else:
@@ -1669,21 +1666,43 @@ class BattleClient(object):
 
             except AssertionError:
                 # mocked in tests to raise exception instead
-                log.exception('Assertion failed: ')
-                log.e('My team is invalid/out of sync with the server.\n'
-                      'My team: %r\n Latest request msg: %r', self.my_side, self.request)
+                if __debug__:
+                    log.exception('Assertion failed: ')
+                    log.e('My team is invalid/out of sync with the server.\n'
+                          'My team: %r\n Latest request msg: %r', self.my_side, self.request)
+                self._match_request(request)
             except Exception:
-                log.exception('Exception during team validation: ')
-                log.e('%r\n%r' % (self.my_side, self.request))
+                if __debug__:
+                    log.exception('Exception during team validation: ')
+                    log.e('%r\n%r' % (self.my_side, self.request))
+                self._match_request(request)
+
+    def _match_request(self, request):
+        for pokemon in self.my_side.team:
+            if pokemon.is_active and request.get('active') is not None:
+                pokemon.moveset = []
+                pokemon.pp = {}
+                for jmove in request['active'][0]['moves']:
+                    move = movedex[jmove['id']]
+                    pokemon.moveset.append(move)
+                    pokemon.pp[move] = jmove['pp']
+
+            reqmon = [p for p in self.request['side']['pokemon']
+                      if pokemon.base_species.startswith(normalize_name(p['ident']))][0]
+            pokemon.hp, pokemon.max_hp = map(int, reqmon['condition'].split()[0].split('/'))
+            for stat, val in reqmon['stats'].items():
+                pokemon.stats[stat] = val
+            if reqmon['item']:
+                pokemon.item = itemdex[reqmon['item']]
+            else:
+                pokemon.item = None
+            pokemon.base_ability = abilitydex[reqmon['baseAbility']]
 
     def _warn_if_stats_discrepancy(self, pokemon, stats):
         """
         Warn if the calculated stat for a pokemon is different from what is being sent by the
         Showdown server. A mismatch between these values indicates that we may be calculating
         the opponents' pokemon's stats incorrectly, which would throw off damage calculations.
-
-        TODO: Known issue: Pokemon that will mega-evolve are handled incorrectly (off-by-one). Fix
-        when mega-evolution is implemented.
         """
         for stat, val in stats.items():
             if not val == pokemon.stats[stat]:
