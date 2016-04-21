@@ -1625,7 +1625,11 @@ class BattleClient(object):
                                 assert move in choices, \
                                     "%s's %s should be selectable, but it isn't" % (pokemon, move)
 
-                # TODO: test/validate request['active'][0].get('trapped')
+                    if (request['active'][0].get('trapped') or
+                        request['active'][0].get('maybeTrapped')):
+                        assert (not pokemon.get_switch_choices() or
+                                not pokemon.side.remaining_pokemon_on_bench), \
+                            "%r is not trapped, but should be" % pokemon
 
                 reqmon = [p for p in self.request['side']['pokemon']
                           if pokemon.base_species.startswith(
