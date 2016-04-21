@@ -123,14 +123,15 @@ class TestStatisticsModule(TestCase):
         """
         Test for any changes to the json output format of Showdown's Scripts.randomTeam()
 
-        {u'ability': u'Flash Fire',
+        {u'ability': u'Teravolt',
          u'evs': {u'atk': 85, u'def': 85, u'hp': 85, u'spa': 85, u'spd': 85, u'spe': 85},
-         u'item': u'Choice Band',
+         u'item': u'Leftovers',
          u'ivs': {u'atk': 31, u'def': 31, u'hp': 31, u'spa': 31, u'spd': 31, u'spe': 31},
-         u'level': 78,
-         u'moves': [u'extremespeed', u'bulldoze', u'sacredfire', u'stoneedge'],
-         u'name': u'Entei',
-         u'shiny': False}]]
+         u'level': 75,
+         u'moves': [u'fusionbolt', u'outrage', u'roost', u'icebeam'],
+         u'name': u'Kyurem',
+         u'shiny': False,
+         u'species': u'Kyurem-Black'},
         """
         statistics.copy_miner_file()
         json_team = statistics.get_json_teams(1)[0]
