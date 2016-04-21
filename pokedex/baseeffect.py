@@ -58,8 +58,7 @@ class BaseEffect(object):
                     break
 
         def __repr__(cls):
-            return ("(%s)" % cls.__name__.strip('_') if cls.__name__.startswith('_')
-                    else cls.__name__)
+            return "(unrevealed)" if cls.__name__ == '_unrevealed_' else cls.__name__
 
     source = None   # must be overriden
     duration = None # default: effect does not expire

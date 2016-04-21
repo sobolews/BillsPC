@@ -1303,7 +1303,8 @@ class _none_(AbilityEffect):
     pass
 
 class _unrevealed_(AbilityEffect):
-    pass
+    def __repr__(self):
+        return '(ability)'
 
 abilitydex = {obj.__name__.lower(): obj for obj in vars().values() if
               inspect.isclass(obj) and

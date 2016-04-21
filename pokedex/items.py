@@ -547,7 +547,8 @@ class Diancite(BaseMegaStone):
     forme = 'dianciemega'
 
 class _unrevealed_(ItemEffect):
-    pass
+    def __repr__(self):
+        return '(item)'
 
 
 itemdex = {obj.__name__.lower(): obj for obj in vars().values() if
