@@ -78,6 +78,13 @@ class TestCalculateInitialStats(TestCase):
         self.assertDictEqual(regice.stats, {'atk': 88, 'def': 214, 'max_hp': 267,
                                             'spa': 214, 'spd': 380, 'spe': 131})
 
+        # seismictoss and counter don't count as physical moves
+        chansey = BattlePokemon(pokedex['chansey'], level=75,
+                                moveset=(movedex['counter'], movedex['toxic'],
+                                         movedex['seismictoss'], movedex['wish']))
+        self.assertDictEqual(chansey.stats, {'atk': 12, 'def': 51, 'spa': 96,
+                                             'spd': 201, 'spe': 119, 'max_hp': 499})
+
 
 class TestAbilityChange(MultiMoveTestCase):
     def test_change_ability(self):
