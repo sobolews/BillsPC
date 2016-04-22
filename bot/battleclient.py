@@ -310,10 +310,10 @@ class BattleClient(object):
                                    self.battlefield)):
             for effect in thing.effects:
                 if effect.duration is not None:
-                    if effect.source == SideCondition.WISH and effect.duration <= 1:
-                        # remove wish automatically, since there's no notification if it ends
-                        # without healing
-                        thing.remove_effect(SideCondition.WISH)
+                    if (effect.source in (SideCondition.WISH, Volatile.STALL) and
+                        effect.duration <= 1):
+                        # remove automatically, since there's no notification in protocol
+                        thing.remove_effect(effect.source)
                         continue
                     elif effect.duration == 0:
                         if __debug__: log.w("%s's effect %s has a duration of 0, cannot decrement",

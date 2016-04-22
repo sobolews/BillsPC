@@ -949,7 +949,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(stall.denominator, 9)
 
         alomomola.moveset = [] # clear its moveset so that it doesn't try use protect again
+        self.hitmonchan.moveset = [movedex['machpunch']]
         self.bc.engine.run_turn()
+
+        self.assertFalse(alomomola.has_effect(Volatile.STALL))
+
+        self.handle('|move|p2a: Alomomola|Protect|p2a: Alomomola')
+        self.handle('|-singleturn|p2a: Alomomola|Protect')
+        self.handle('|turn|5')
+        self.handle('|turn|6')
 
         self.assertFalse(alomomola.has_effect(Volatile.STALL))
 
