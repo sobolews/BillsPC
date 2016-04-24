@@ -525,9 +525,11 @@ class BattlePokemon(object, EffectHandlerMixin):
             return '%s (%s)' % (self.name, self.base_species)
 
     def __repr__(self):
+        types = ((' [%s, %s]' % (self.types[0], self.types[1]))
+                 if tuple(self.types) != self.pokedex_entry.types else '')
         return '\n'.join([
-            '%s %d/%d   L%d (side %d)' % (self.name, self.hp, self.max_hp, self.level,
-                                            self.side.index),
+            '%s %d/%d   L%d (side %d)%s' % (self.name, self.hp, self.max_hp, self.level,
+                                            self.side.index, types),
             'moves: [%s]' % ', '.join(move.name for move in self.moveset),
             'status: %s   ability: %s   item: %s' % (self.status and self.status, self.ability,
                                                      self.item)] +
