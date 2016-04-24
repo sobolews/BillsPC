@@ -9,7 +9,7 @@ from tabulate import tabulate
 
 from misc.multitabulate import multitabulate
 
-if __debug__: from _logging import log
+from _logging import log, no_console_log
 
 rbstats = RandbatsStatistics.from_pickle()
 TABLEFMT = 'psql'
@@ -94,6 +94,7 @@ class CheatSheetEngine(BattleEngine):
                                                    *dmg_range).replace('%', '', 1)
         return pct_range
 
+    @no_console_log
     def calculate_damage_range(self, attacker, move, defender):
         """ Return a tuple (mindamage, maxdamage) or None """
         if move in (movedex['mirrorcoat'], movedex['counter'], movedex['metalburst']):
@@ -116,6 +117,7 @@ class CheatSheetEngine(BattleEngine):
             return None
         return mindamage, maxdamage
 
+    @no_console_log
     def calculate_expected_damage(self, attacker, move, defender, crit=False):
         if move in (movedex['mirrorcoat'], movedex['counter'], movedex['metalburst']):
             return (defender.max_hp - defender.hp) * 2 # upper bound

@@ -9,6 +9,7 @@ import sys
 import time
 import types
 from datetime import datetime
+from functools import wraps
 
 LOG_DIR = os.path.expanduser('~/.BillsPC/logs/')
 LOG_FILE = os.path.join(LOG_DIR, 'BillsPC-%s.log' % datetime.now().strftime('%Y.%m.%d-%H:%M:%S'))
@@ -57,3 +58,18 @@ def silence_console():
     if len(log.handlers) < 2:
         return
     log.handlers[1].setLevel(logging.WARNING)
+
+def no_console_log(method):
+    """
+    Silence the console during the decorated method
+    """
+    @wraps(method)
+    def wrapped(*args, **kwargs):
+        if len(log.handlers) >= 2:
+            level = log.handlers[1].level
+            log.handlers[1].setLevel(logging.WARNING)
+        rv = method(*args, **kwargs)
+        if len(log.handlers) >= 2:
+            log.handlers[1].setLevel(level)
+        return rv
+    return wrapped
