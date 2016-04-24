@@ -754,7 +754,6 @@ class BattleEngine(object):
         pokemon.will_move_this_turn = False
         pokemon.damage_done_this_turn = 0
         pokemon.was_attacked_this_turn = None
-        pokemon.hit_by_crit = False
         pokemon.last_move_used = None
         pokemon.turns_out = 0
         pokemon.must_switch = False
@@ -896,7 +895,6 @@ class BattleEngine(object):
                     pokemon.has_moved_this_turn = False
                     pokemon.damage_done_this_turn = 0
                     pokemon.was_attacked_this_turn = None
-                    pokemon.hit_by_crit = False
                     pokemon.item_used_this_turn = None
 
             while switch_queue:
