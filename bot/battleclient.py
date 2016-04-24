@@ -1376,7 +1376,7 @@ class BattleClient(object):
         if effect in ('reflect', 'lightscreen'):
             user = side.active_pokemon
             assert user is not None, user
-            duration = 8 if user.item == itemdex['lightclay'] else 5
+            duration = 8 if user.item in (itemdex['lightclay'], itemdex['_unrevealed_']) else 5
             if effect == 'reflect':
                 side.set_effect(effects.Reflect(duration))
             else:

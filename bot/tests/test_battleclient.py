@@ -1653,3 +1653,9 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         gourgeist = self.foe_side.active_pokemon
         self.assertEqual(gourgeist.name, 'gourgeistsmall')
         self.assertEqual(gourgeist.stats['spe'], 212)
+
+    def test_unknown_item_assumes_lightclay_for_screen_duration(self):
+        self.handle('|switch|p2a: Xatu|Xatu, L81, M|100/100')
+        self.handle('|move|p2a: Xatu|Reflect|p2a: Xatu')
+        self.handle('|-sidestart|p2: other-player|Reflect')
+        self.assertEqual(self.foe_side.get_effect(SideCondition.REFLECT).duration, 8)
