@@ -3,6 +3,7 @@ from unittest import TestCase
 from battle.battlepokemon import BattlePokemon
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
+from pokedex.items import itemdex
 from mining import create_pokedex
 from tests.multi_move_test_case import MultiMoveTestCase
 
@@ -85,6 +86,12 @@ class TestCalculateInitialStats(TestCase):
         self.assertDictEqual(chansey.stats, {'atk': 12, 'def': 51, 'spa': 96,
                                              'spd': 201, 'spe': 119, 'max_hp': 499})
 
+        # sitrus/substitute overrides stealthrock weakness
+        tropius = BattlePokemon(pokedex['tropius'], level=83, item=itemdex['sitrusberry'],
+                                moveset=(movedex['leechseed'], movedex['substitute'],
+                                         movedex['gigadrain'], movedex['protect']))
+        self.assertDictEqual(tropius.stats, {'atk': 117, 'def': 185, 'spa': 167,
+                                             'spd': 192, 'spe': 132, 'max_hp': 300})
 
 class TestAbilityChange(MultiMoveTestCase):
     def test_change_ability(self):

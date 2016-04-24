@@ -245,29 +245,28 @@ class BattlePokemon(object, EffectHandlerMixin):
             ivs = [31, 31, 31, 31, 31, 31]
 
         HP, ATK, SPE = 0, 1, 5
-        hp = self._calc_hp(evs[HP], ivs[HP])
 
         # Adjust HP stat for substitute/bellydrum/stealthrock
-        mod = None
-        if self.item is itemdex['sitrusberry']:
-            if movedex['substitute'] in self.moveset and hp % 4 > 0:
-                mod = 4
-            elif movedex['bellydrum'] in self.moveset and hp % 2 > 0:
-                mod = 2
-        if mod is None:
+        if self.item is itemdex['sitrusberry'] and movedex['substitute'] in self.moveset:
+            while self._calc_hp(evs[HP], ivs[HP]) % 4 > 0:
+                evs[HP] -= 4
+        elif self.item is itemdex['sitrusberry'] and movedex['bellydrum'] in self.moveset:
+            if self._calc_hp(evs[HP], ivs[HP]) % 2 > 0:
+                evs[HP] -= 4
+        else: # stealth rock weakness
             if self.item is not None and self.item.is_mega_stone:
                 forme = POKEDEX[self.item.forme]
             else:
                 forme = self
             eff = effectiveness(Type.ROCK, forme)
-            if eff == 2 and hp % 4 == 0:
+            mod = None
+            if eff == 2:
                 mod = 4
-            elif eff == 4 and hp % 2 == 0:
+            elif eff == 4:
                 mod = 2
-        if mod is not None:
-            evs[HP] -= 4
-            while self._calc_hp(evs[HP], ivs[HP]) % mod == 0:
-                evs[HP] -= 4
+            if mod is not None:
+                while self._calc_hp(evs[HP], ivs[HP]) % mod == 0:
+                    evs[HP] -= 4
 
         # Minimize confusion damage for non-physical pokemon
         if (not any(move not in (movedex['seismictoss'], movedex['counter']) and
