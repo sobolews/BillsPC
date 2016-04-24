@@ -33,9 +33,9 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.types = list(pokedex_entry.types)
         self.item = item
         self.gender = gender    # None, 'M', or 'F'
-        self.stats = self.calculate_initial_stats(evs, ivs)
         self.evs = evs
         self.ivs = ivs
+        self.stats = self.calculate_initial_stats(evs, ivs)
         self.hp = self.max_hp = self.stats['max_hp']
         self._weight = pokedex_entry.weight
         self.ability = self.base_ability = ability
