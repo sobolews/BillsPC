@@ -530,10 +530,9 @@ class BattlePokemon(object, EffectHandlerMixin):
                                             self.side.index),
             'moves: [%s]' % ', '.join(move.name for move in self.moveset),
             'status: %s   ability: %s   item: %s' % (self.status and self.status, self.ability,
-                                                     self.item),
-            ('Active effects: %r  %s' % ([e for e in self.effects], self.boosts or '')
-             if self.is_active else '')
-        ])
+                                                     self.item)] +
+                         [repr(e) for e in self.effects] +
+                         ([repr(self.boosts)] if self.boosts else []))
 
     def debug_sanity_check(self, engine):
         for effect in self._effect_index.values():
