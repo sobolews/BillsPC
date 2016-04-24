@@ -294,7 +294,7 @@ class BattleClient(object):
         after a fainted pokemon is replaced.
         """
         assert self.battlefield.turns == int(msg[1]) - 1, (self.battlefield.turns, msg)
-        self.battlefield.turns = int(msg[1])
+        self.battlefield.turns = turn = int(msg[1])
         my_active = self.my_side.active_pokemon
         foe_active = self.foe_side.active_pokemon
         assert (my_active and foe_active), (my_active, foe_active)
@@ -306,20 +306,21 @@ class BattleClient(object):
         foe_active.will_move_this_turn = True
         foe_active.turns_out += 1
 
-        for thing in filter(None, (my_active, foe_active, my_active.side, foe_active.side,
-                                   self.battlefield)):
-            for effect in thing.effects:
-                if effect.duration is not None:
-                    if (effect.source in (SideCondition.WISH, Volatile.STALL) and
-                        effect.duration <= 1):
-                        # remove automatically, since there's no notification in protocol
-                        thing.remove_effect(effect.source)
-                        continue
-                    elif effect.duration == 0:
-                        if __debug__: log.w("%s's effect %s has a duration of 0, cannot decrement",
-                                            thing, effect)
-                        continue
-                    effect.duration -= 1
+        if turn > 1:
+            for thing in filter(None, (my_active, foe_active, my_active.side, foe_active.side,
+                                       self.battlefield)):
+                for effect in thing.effects:
+                    if effect.duration is not None:
+                        if (effect.source in (SideCondition.WISH, Volatile.STALL) and
+                            effect.duration <= 1):
+                            # remove automatically, since there's no notification in protocol
+                            thing.remove_effect(effect.source)
+                            continue
+                        elif effect.duration == 0:
+                            if __debug__: log.w("%s's effect %s has a duration of 0, cannot "
+                                                "decrement", thing, effect)
+                            continue
+                        effect.duration -= 1
 
         self.update_foe_inferences()
 
