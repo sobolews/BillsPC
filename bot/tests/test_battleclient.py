@@ -918,7 +918,16 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-activate|p1a: Giratina|ability: Mummy|Chlorophyll|[of] p2a: Lilligant')
 
         self.assertEqual(lilligant.base_ability, abilitydex['chlorophyll']) # revealed chlorophyll
-        self.assertEqual(lilligant.get_effect(ABILITY).name, 'mummy')       # then changed to mummy
+        self.assertEqual(lilligant.ability, abilitydex['mummy'])            # then changed to mummy
+        self.assertEqual(lilligant.get_effect(ABILITY).name, 'mummy')
+
+        self.handle('|drag|p2a: Goodra|Goodra, L77, M|100/100')
+        self.handle('|turn|2')
+        self.handle('|switch|p2a: Lilligant|Lilligant, L81, F|100/100')
+
+        self.assertEqual(lilligant.base_ability, abilitydex['chlorophyll'])
+        self.assertEqual(lilligant.ability, abilitydex['chlorophyll'])
+        self.assertEqual(lilligant.get_effect(ABILITY).name, 'chlorophyll')
 
     def test_handle_activate_revealed_ability(self):
         self.handle('|switch|p2a: Arbok|Arbok, L83, M|100/100')
