@@ -71,7 +71,7 @@ class BattleField(object, EffectHandlerMixin):
 
     def set_effect(self, effect):
         if effect.source in self._effect_index:
-            if __debug__: log.i('Tried to set effect %s but it %s already has it', effect, self)
+            if __debug__: log.i('Tried to set effect %s but it is already on the field', effect)
             return FAIL
 
         self._effect_index[effect.source] = effect
