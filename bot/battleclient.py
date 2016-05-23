@@ -857,6 +857,8 @@ class BattleClient(object):
                 foe = self.battlefield.get_foe(pokemon)
                 foe.remove_effect(Volatile.PARTIALTRAP, force=True)
                 foe.remove_effect(Volatile.TRAPPED, force=True)
+            if outgoing.ability == abilitydex['regenerator'] and not outgoing.is_fainted():
+                outgoing.hp = min(outgoing.max_hp, outgoing.hp + outgoing.max_hp / 3)
             outgoing.is_active = False
             outgoing._effect_index.clear()
             outgoing.effect_handlers = {key: list() for key in outgoing.effect_handlers}
