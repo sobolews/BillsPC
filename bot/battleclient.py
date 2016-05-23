@@ -369,7 +369,7 @@ class BattleClient(object):
                     if rbstats.attr_probability(rb_index, item, known_info) == 1:
                         if __debug__: log.i("%s must have %s, given %s",
                                             pokemon.name, item, known_info)
-                        self.reveal_original_item(pokemon, itemdex[item])
+                        self.reveal_foe_original_item(pokemon, itemdex[item])
                         self.set_item(pokemon, itemdex[item])
 
             if pokemon.ability == abilitydex['_unrevealed_']:
@@ -642,7 +642,7 @@ class BattleClient(object):
         if len(msg) > 3:
             if msg[3].startswith('[from] item'):
                 item = itemdex[normalize_name(msg[3])]
-                self.reveal_original_item(pokemon, item)
+                self.reveal_foe_original_item(pokemon, item)
                 self.set_item(pokemon, item)
             elif msg[3].startswith('[from] ability'):
                 who = self.get_pokemon_from_msg(msg, 4)
@@ -678,7 +678,7 @@ class BattleClient(object):
         if len(msg) > 3:
             if msg[3].startswith('[from] item') and 'Berry' not in msg[3]:
                 item = itemdex[normalize_name(msg[3])]
-                self.reveal_original_item(pokemon, item)
+                self.reveal_foe_original_item(pokemon, item)
                 self.set_item(pokemon, item)
             elif msg[3].startswith('[from] ability'):
                 self.set_ability(pokemon, abilitydex[normalize_name(msg[3])])
@@ -723,7 +723,7 @@ class BattleClient(object):
         if len(msg) > 3:
             if msg[3].startswith('[from] item'):
                 item = itemdex[normalize_name(msg[3])]
-                self.reveal_original_item(pokemon, item)
+                self.reveal_foe_original_item(pokemon, item)
                 self.set_item(pokemon, item)
             elif msg[3].startswith('[from] ability'):
                 other = self.get_pokemon_from_msg(msg, 4)
@@ -944,22 +944,22 @@ class BattleClient(object):
                 if ability == 'frisk':
                     frisker = self.get_pokemon_from_msg(msg, 4)
                     self.set_ability(frisker, abilitydex['frisk'])
-                    self.reveal_original_item(pokemon, item)
+                    self.reveal_foe_original_item(pokemon, item)
                 else:
                     self.set_ability(pokemon, abilitydex[ability])
                     if ability in ('pickpocket', 'magician'):
                         victim = self.get_pokemon_from_msg(msg, 4)
-                        self.reveal_original_item(victim, item)
+                        self.reveal_foe_original_item(victim, item)
                         victim.remove_effect(ITEM, force=True)
                         victim.item = None
             elif msg[3].startswith('[from] move: Trick'):
                 foe = self.battlefield.get_foe(pokemon)
-                self.reveal_original_item(foe, item)
+                self.reveal_foe_original_item(foe, item)
             else:
                 if __debug__: log.w('Unhandled part of -item msg: %s', msg)
 
         elif item == itemdex['airballoon']:
-            self.reveal_original_item(pokemon, item)
+            self.reveal_foe_original_item(pokemon, item)
         else:
             if __debug__: log.w('Unhandled part of -item msg: %s', msg)
 
@@ -978,7 +978,7 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         item = itemdex[normalize_name(msg[2])]
 
-        self.reveal_original_item(pokemon, item)
+        self.reveal_foe_original_item(pokemon, item)
 
         pokemon.remove_effect(ITEM, force=True)
         if pokemon.ability == abilitydex['unburden']:
@@ -1004,7 +1004,7 @@ class BattleClient(object):
         pokemon.set_effect(item())
         pokemon.remove_effect(Volatile.UNBURDEN, force=True)
 
-    def reveal_original_item(self, pokemon, item):
+    def reveal_foe_original_item(self, pokemon, item):
         if pokemon.side == self.foe_side:
             if pokemon.item == itemdex['_unrevealed_']:
                 pokemon.original_item = item
@@ -1544,10 +1544,10 @@ class BattleClient(object):
 
         self.forme_change(pokemon, forme)
         if forme == 'kyogreprimal' and pokemon.item != itemdex['blueorb']:
-            self.reveal_original_item(pokemon, itemdex['blueorb'])
+            self.reveal_foe_original_item(pokemon, itemdex['blueorb'])
             self.set_item(pokemon, itemdex['blueorb'])
         if forme == 'groudonprimal' and pokemon.item != itemdex['redorb']:
-            self.reveal_original_item(pokemon, itemdex['redorb'])
+            self.reveal_foe_original_item(pokemon, itemdex['redorb'])
             self.set_item(pokemon, itemdex['redorb'])
 
     def forme_change(self, pokemon, forme):
@@ -1569,7 +1569,7 @@ class BattleClient(object):
         pokemon.side.has_mega_evolved = True
         pokemon.is_mega = True
 
-        self.reveal_original_item(pokemon, megastone)
+        self.reveal_foe_original_item(pokemon, megastone)
         if pokemon.item != megastone:
             self.set_item(pokemon, megastone)
 
