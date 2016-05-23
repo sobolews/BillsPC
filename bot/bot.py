@@ -62,15 +62,21 @@ class Bot(WebSocketClient):
         print received('\n'.join((msg_block, '-' * 60)))
         msg_block = msg_block.splitlines()
 
-        # If there is no battle room for this message, instantiate one
-        room = self.battleroom
-        if msg_block[0].startswith('>battle') and (room is None or room != msg_block[0][1:]):
-            if msg_block[1] == '|init|battle':
-                self.battleroom = msg_block[0][1:]
-                self.battleclient = BattleClient(self.username, self.battleroom, self.send)
-                self.latest_request = None
-            else:
-                log.e('Battle message received for an inactive room:\n%s', msg_block)
+        battleroom = self.battleroom
+        if msg_block[0].startswith('>battle'):
+            if battleroom != msg_block[0][1:]: # Instantiate new battle room
+                if msg_block[1] == '|init|battle':
+                    self.battleroom = msg_block[0][1:]
+                    self.battleclient = BattleClient(self.username, self.battleroom, self.send)
+                    self.latest_request = None
+                else:
+                    log.e('Battle message received for an inactive room:\n%s', msg_block)
+                    return
+            elif battleroom == msg_block[0][1:] and (msg_block[1].startswith('|expire') or
+                                                     msg_block[1].startswith('|deinit')):
+                self.battleroom = None
+                self.battleclient = None
+                self.send('|/leave %s' % battleroom)
                 return
 
         # Save the most recent "request object"; use it to build team if client hasn't done so.
@@ -103,7 +109,7 @@ class Bot(WebSocketClient):
             msg.remove('')
             msg_type = msg[0]
 
-        if msg_type in self.IGNORE_MSGS or msg_type in self.TODO_MSGS:
+        if msg_type in self.IGNORE_MSGS:
             return
 
         if msg_type in self.BATTLE_MSGS or msg_type.startswith('-'):
@@ -130,11 +136,6 @@ class Bot(WebSocketClient):
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
         'error', 'warning', 'gen', 'debug', 'unlink', 'updatechallenges', 'users', ':', 'c:',
         'expire', 'seed', 'choice', '-endability', '-fieldactivate', '-primal', 'n'
-    }
-
-    # TODO: implement (they get ignored for now)
-    TODO_MSGS = {
-        'deinit'
     }
 
     def handle_challstr(self, msg):
