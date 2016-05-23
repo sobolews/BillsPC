@@ -883,7 +883,7 @@ class BattleClient(object):
         pokemon.set_effect(pokemon.ability())
 
         if pokemon.item is not None:
-            self.set_item(pokemon, pokemon.item)
+            self.set_item(pokemon, pokemon.item, reset=True)
 
     handle_drag = handle_switch
     handle_replace = handle_switch
@@ -936,6 +936,7 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         item = itemdex[normalize_name(msg[2])]
+        trick = False
 
         if len(msg) > 3:
             if msg[3].startswith('[from] ability:'):
@@ -953,6 +954,7 @@ class BattleClient(object):
                         victim.remove_effect(ITEM, force=True)
                         victim.item = None
             elif msg[3].startswith('[from] move: Trick'):
+                trick = True
                 foe = self.battlefield.get_foe(pokemon)
                 self.reveal_foe_original_item(foe, item)
             else:
@@ -963,7 +965,7 @@ class BattleClient(object):
         else:
             if __debug__: log.w('Unhandled part of -item msg: %s', msg)
 
-        self.set_item(pokemon, item)
+        self.set_item(pokemon, item, reset=trick)
 
     def handle_enditem(self, msg):
         """
@@ -998,7 +1000,13 @@ class BattleClient(object):
                 return
         pokemon.item_used_this_turn = item
 
-    def set_item(self, pokemon, item):
+    def set_item(self, pokemon, item, reset=False):
+        """
+        reset=True re-sets the item even if the pokemon already holds that item
+        """
+        if pokemon.item == item and not reset:
+            return
+
         pokemon.remove_effect(ITEM, force=True)
         pokemon.item = item
         pokemon.set_effect(item())
