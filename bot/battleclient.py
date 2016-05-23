@@ -866,12 +866,13 @@ class BattleClient(object):
             if outgoing.is_transformed:
                 outgoing.revert_transform()
 
-        # TODO: do any of the other flags from BattleEngine.switch_in need to be set here?
         side.active_pokemon = pokemon
         pokemon.is_active = True
         pokemon.last_move_used = None
         pokemon.turns_out = 0
         pokemon.will_move_this_turn = False
+        pokemon.item_used_this_turn = None
+        pokemon.ability = pokemon.base_ability
 
         self.set_hp_status(pokemon, msg[3])
         if pokemon.status is not None:
