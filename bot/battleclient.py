@@ -951,8 +951,7 @@ class BattleClient(object):
                     if ability in ('pickpocket', 'magician'):
                         victim = self.get_pokemon_from_msg(msg, 4)
                         self.reveal_foe_original_item(victim, item)
-                        victim.remove_effect(ITEM, force=True)
-                        victim.item = None
+                        self.remove_item(victim)
             elif msg[3].startswith('[from] move: Trick'):
                 trick = True
                 foe = self.battlefield.get_foe(pokemon)
@@ -982,10 +981,7 @@ class BattleClient(object):
 
         self.reveal_foe_original_item(pokemon, item)
 
-        pokemon.remove_effect(ITEM, force=True)
-        if pokemon.ability == abilitydex['unburden']:
-            pokemon.set_effect(effects.UnburdenVolatile())
-        pokemon.item = None
+        self.remove_item(pokemon)
         pokemon.last_berry_used = None
 
         if len(msg) > 3:
@@ -1007,10 +1003,17 @@ class BattleClient(object):
         if pokemon.item == item and not reset:
             return
 
-        pokemon.remove_effect(ITEM, force=True)
+        self.remove_item(pokemon)
         pokemon.item = item
         pokemon.set_effect(item())
         pokemon.remove_effect(Volatile.UNBURDEN, force=True)
+
+    def remove_item(self, pokemon):
+        pokemon.remove_effect(ITEM, force=True)
+        pokemon.remove_effect(Volatile.CHOICELOCK, force=True)
+        pokemon.item = None
+        if pokemon.ability == abilitydex['unburden']:
+            pokemon.set_effect(effects.UnburdenVolatile())
 
     def reveal_foe_original_item(self, pokemon, item):
         if pokemon.side == self.foe_side:
