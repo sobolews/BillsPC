@@ -119,7 +119,7 @@ class Bot(WebSocketClient):
         'cant', '-item', '-enditem', '-ability', '-transform', '-start', '-end', '-activate',
         'callback', '-singleturn', '-singlemove', '-sidestart', '-sideend', '-fieldstart',
         '-fieldend', '-formechange', 'detailschange', '-mega', '-supereffective', '-resisted',
-        '-miss', '-immune', '-fail', '-crit',
+        '-miss', '-immune', '-fail', '-crit', 'win', 'tie', 'prematureend'
     }
 
     IGNORE_MSGS = {
@@ -134,7 +134,6 @@ class Bot(WebSocketClient):
 
     # TODO: implement (they get ignored for now)
     TODO_MSGS = {
-        'win', 'tie', 'prematureend',
         'deinit'
     }
 

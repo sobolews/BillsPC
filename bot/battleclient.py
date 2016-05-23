@@ -1579,6 +1579,29 @@ class BattleClient(object):
             log.e("Tried to switch out while trapped: switch choice was rejected")
             # TODO: handle this?
 
+    def handle_win(self, msg):
+        """
+        |win|1-BillsPC
+        """
+        if msg[1] == self.name:
+            log.i('I win!')
+        elif msg[1] == self.foe_name:
+            log.i('I lost.')
+        else:
+            log.w("The game is over, but I don't know who won: %s", msg)
+
+    def handle_tie(self, msg):
+        """
+        |tie
+        """
+        log.i('We tied?')
+
+    def handle_prematureend(self, msg):
+        """
+        |tie
+        """
+        log.i('Game over... what happened?')
+
     def _validate_my_team(self):
         """
         Validate that the current team state matching what is being sent from the server.
