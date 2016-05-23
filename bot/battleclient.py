@@ -1719,6 +1719,12 @@ class BattleClient(object):
 
             reqmon = [p for p in self.request['side']['pokemon']
                       if pokemon.base_species.startswith(normalize_name(p['ident']))][0]
+
+            if reqmon['condition'] == '0 fnt':
+                pokemon.hp = 0
+                pokemon.status = Status.FNT
+                continue
+
             pokemon.hp, pokemon.max_hp = map(int, reqmon['condition'].split()[0].split('/'))
             for stat, val in reqmon['stats'].items():
                 pokemon.stats[stat] = val
