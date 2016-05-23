@@ -1673,8 +1673,10 @@ class BattleClient(object):
                         '%s has the wrong status' % pokemon
                 else: # no status
                     hp, max_hp = map(int, condition[0].split('/'))
-                    assert pokemon.hp == hp, '%s has the wrong hp' % pokemon
-                    assert pokemon.max_hp == max_hp, '%s has the wrong max_hp' % pokemon
+                    assert pokemon.hp == hp, '%s has the wrong hp: %s %s' % (pokemon,
+                                                                             pokemon.hp, hp)
+                    assert pokemon.max_hp == max_hp, '%s has the wrong max_hp: %s %s' % \
+                        (pokemon, pokemon.max_hp, max_hp)
                 if not pokemon.is_transformed:
                     for stat, val in reqmon['stats'].items():
                         assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
