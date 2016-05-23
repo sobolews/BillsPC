@@ -196,6 +196,17 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertStatus(self.umbreon, None)
 
+    @patch('random.randrange', lambda _: 1) # no miss
+    def test_batonpass_effect_immunity(self):
+        self.add_pokemon('breloom', 0)
+        self.choose_move(self.leafeon, 'leechseed')
+        self.run_turn()
+        self.choose_move(self.vaporeon, 'batonpass')
+        self.run_turn()
+
+        self.assertDamageTaken(self.breloom, self.breloom.max_hp / 8)
+        self.assertTrue(self.breloom.has_effect(Volatile.LEECHSEED))
+
     def test_bellydrum_successful(self):
         damage = self.engine.use_move(self.vaporeon, movedex['bellydrum'], self.leafeon)
         self.assertIsNone(damage)

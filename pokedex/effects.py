@@ -112,7 +112,7 @@ class BatonPass(BaseEffect):
         for source, effect in pokemon._effect_index.items():
             if source in CAN_BATONPASS:
                 pokemon.remove_effect(source, force=True)
-                incoming.set_effect(effect)
+                incoming.set_effect(effect, override_immunity=True)
 
         if __debug__: log.i('Batonpassed %s to %s',
                             filter(None, chain([incoming.boosts], incoming.effects)) or None,
