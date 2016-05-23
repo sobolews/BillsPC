@@ -1576,7 +1576,7 @@ class BattleClient(object):
         |callback|trapped|0
         """
         if msg[1] == 'trapped':
-            log.w("Tried to switch out while trapped: switch choice was rejected")
+            log.e("Tried to switch out while trapped: switch choice was rejected")
             # TODO: handle this?
 
     def _validate_my_team(self):
