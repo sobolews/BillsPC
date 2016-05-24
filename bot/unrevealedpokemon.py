@@ -27,8 +27,5 @@ class UnrevealedPokemon(BattlePokemon):
     def is_fainted(self):
         return False
 
-    def __str__(self):
-        return '<unrevealed pokemon>'
-
     def __repr__(self):
-        return 'UnrevealedPokemon(side=%d)' % self.side.index
+        return '(unrevealed pokemon)'
