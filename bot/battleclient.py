@@ -1655,6 +1655,7 @@ class BattleClient(object):
                     active_moves = request['active'][0]['moves']
                     if len(active_moves) == 1:
                         assert (pokemon.has_effect(Volatile.TWOTURNMOVE) or
+                                pokemon.has_effect(Volatile.LOCKEDMOVE) or
                                 active_moves[0]['id'] in ('struggle', 'transform')), \
                             '%s has one move available but it appears invalid?' % pokemon
                     else:
