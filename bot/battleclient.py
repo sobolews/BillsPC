@@ -560,6 +560,8 @@ class BattleClient(object):
             pokemon.side.set_effect(effects.Wish(pokemon.max_hp / 2))
         elif move == movedex['healingwish']:
             pokemon.side.set_effect(effects.HealingWish())
+        elif move == movedex['batonpass']:
+            pokemon.set_effect(effects.BatonPass())
 
         if pokemon.item in (itemdex['choiceband'], itemdex['choicescarf'], itemdex['choicespecs']):
             pokemon.set_effect(effects.ChoiceLock(move))
@@ -595,6 +597,8 @@ class BattleClient(object):
                 pokemon = self.get_pokemon_from_msg(msg, i+1)
                 ability = abilitydex[normalize_name(msg[i])]
                 self.set_ability(pokemon, ability)
+        failmon = self.get_pokemon_from_msg(msg)
+        failmon.remove_effect(Volatile.BATONPASS)
 
     def handle_immune(self, msg):
         """
@@ -853,7 +857,10 @@ class BattleClient(object):
 
         outgoing = side.active_pokemon
         if outgoing is not None:
-            if outgoing.has_effect(Volatile.TRAPPER):
+            bp = outgoing.get_effect(Volatile.BATONPASS)
+            if bp is not None:
+                bp.on_switch_out(outgoing, incoming=pokemon, engine=None)
+            elif outgoing.has_effect(Volatile.TRAPPER):
                 foe = self.battlefield.get_foe(pokemon)
                 foe.remove_effect(Volatile.PARTIALTRAP, force=True)
                 foe.remove_effect(Volatile.TRAPPED, force=True)

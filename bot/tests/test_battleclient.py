@@ -1677,3 +1677,27 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
 
         self.assertEqual(zekrom.hp, zekrom.max_hp)
+
+    def test_batonpass(self):
+        self.handle('|switch|p2a: Gorebyss|Gorebyss, L83, M|100/100')
+        self.handle('|turn|2')
+        self.handle('|move|p2a: Gorebyss|Shell Smash|p2a: Omastar')
+        self.handle('|-unboost|p2a: Gorebyss|def|1')
+        self.handle('|-unboost|p2a: Gorebyss|spd|1')
+        self.handle('|-boost|p2a: Gorebyss|atk|2')
+        self.handle('|-boost|p2a: Gorebyss|spa|2')
+        self.handle('|-boost|p2a: Gorebyss|spe|2')
+        self.handle('|-enditem|p2a: Gorebyss|White Herb')
+        self.handle('|-restoreboost|p2a: Gorebyss|[silent]')
+        self.handle('|turn|3')
+        self.handle('|move|p2a: Gorebyss|Substitute|p2a: Gorebyss')
+        self.handle('|move|p2a: Gorebyss|Substitute|p2a: Gorebyss')
+        self.handle('|-start|p2a: Gorebyss|Substitute')
+        self.handle('|-damage|p2a: Gorebyss|75/100')
+        self.handle('|move|p2a: Gorebyss|Baton Pass|p2a: Gorebyss')
+        self.handle('|switch|p2a: Haxorus|Haxorus, L77, F|100/100')
+
+        haxorus = self.foe_side.active_pokemon
+        self.assertDictContainsSubset({'atk': 2, 'spa': 2, 'spe': 2, 'spd': 0, 'def': 0},
+                                      haxorus.boosts)
+        self.assertTrue(haxorus.has_effect(Volatile.SUBSTITUTE))
