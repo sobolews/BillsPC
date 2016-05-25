@@ -165,7 +165,7 @@ class RandbatsStatistics(object):
                         self._item_index[item][pokemon] = prob
         return self._item_index
 
-    def sample(self, pokemon, mega=False, level=False):
+    def sample(self, pokemon, mega=False, level=False, primal=False):
         """
         Add the data from this pokemon to self.counter.
         `pokemon` is one of the 6 JSON dict members of Scripts.randomTeam()
@@ -190,6 +190,11 @@ class RandbatsStatistics(object):
             megapokemon['species'] = megapokemon['name'] = str(
                 self.pokedex[pokemon['name']].mega_formes[forme])
             self.sample(megapokemon, mega=True)
+
+        if item in ('Red Orb', 'Blue Orb') and not primal and not level:
+            primalpokemon = deepcopy(pokemon)
+            primalpokemon['species'] = primalpokemon['name'] = pokemon['species'] + '-Primal'
+            self.sample(primalpokemon, primal=True)
 
         if name not in self.counter:
             self.counter[name] = self.new_entry()
