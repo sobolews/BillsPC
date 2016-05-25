@@ -70,7 +70,7 @@ class Bot(WebSocketClient):
                     self.battleclient = BattleClient(self.username, self.battleroom, self.send)
                     self.latest_request = None
                 else:
-                    log.e('Battle message received for an inactive room:\n%s', msg_block)
+                    log.i('Battle message received for an inactive room:\n%s', msg_block)
                     return
             elif battleroom == msg_block[0][1:] and (msg_block[1].startswith('|expire') or
                                                      msg_block[1].startswith('|deinit')):
