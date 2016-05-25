@@ -386,7 +386,7 @@ class BattleClient(object):
                     ):
                         self.reveal_move(pokemon, movedex[move])
                         if __debug__: log.i("%s must have %s, given %s",
-                                            pokemon.item, move, known_info)
+                                            pokemon.name, move, known_info)
                         assert len(pokemon.moveset) <= 4, (pokemon, pokemon.moveset)
 
         active = self.my_side.active_pokemon
