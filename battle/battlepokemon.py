@@ -530,13 +530,20 @@ class BattlePokemon(object, EffectHandlerMixin):
         moves = ['?', '?', '?', '?']
         for i, move in enumerate(self.moveset):
             moves[i] = str(move)
-        return '\n'.join([
-            '%s %s %d/%d   L%d (side %d)%s' % (self.name, self.status or '', self.hp, self.max_hp,
-                                               self.level, self.side.index, types),
-            '[%s]' % ', '.join(move for move in moves),
-            '%s   %s' % (self.ability, self.item)] +
-                         [repr(e) for e in self.effects] +
-                         ([repr(self.boosts)] if self.boosts else []))
+        rv = '\n'.join([
+            '%s  %s%d/%d  L%d%s' % (self.name, self.status + '  ' if self.status else  '',
+                                    self.hp, self.max_hp, self.level, types),
+            '[%s]' % '/'.join(move for move in moves),
+            '%s  %s' % (self.ability, self.item)] +
+                       [repr(e) for e in self.effects if e.source not in (ABILITY, ITEM)] +
+                       ([repr(self.boosts)] if self.boosts else []))
+        if self.is_fainted():
+            rv = '\n'.join(line.join(('\x1b[38;5;8m', '\x1b[0m'))
+                           for line in rv.splitlines())
+        elif self.is_active:
+            rv = '\n'.join(line.join(('\x1b[1;40;97m\x1b[38;5;10m', '\x1b[0m'))
+                           for line in rv.splitlines())
+        return rv
 
     def debug_sanity_check(self, engine):
         for effect in self._effect_index.values():

@@ -2,6 +2,7 @@ from itertools import izip_longest
 from subprocess import check_output
 
 from battle.effecthandler import EffectHandlerMixin
+from misc.bashcolors import strip_ANSI
 from pokedex.baseeffect import BaseEffect
 from pokedex.enums import FAIL, Status, Hazard, Weather
 from pokedex.weather import WEATHER_EFFECTS
@@ -95,15 +96,24 @@ class BattleField(object, EffectHandlerMixin):
         if __debug__: log.i('Removed %s from battlefield', effect)
 
     def __repr__(self):
-        cols = int(check_output(['stty', 'size']).split()[1]) or 80
+        cols = min((int(check_output(['stty', 'size']).split()[1]) or 80), 102)
         header = '\n'.join(('Battlefield'.center(cols),
                             ('effects: %s    turns: %d    win: %s' %
                             (' ,'.join(str(effect) for effect in self.effects).join(('[', ']')),
                              self.turns, self.win)).center(cols)))
-        teams = '\n'.join((''.join((line[0].ljust(cols/2), line[1].rjust(cols/2))) for line in
+        teams = '\n'.join((split_justify(line[0], line[1], cols) for line in
                            izip_longest(repr(self.sides[0]).splitlines(),
                                         repr(self.sides[1]).splitlines(), fillvalue='')))
         return '\n\n'.join((header, teams))
+
+
+def split_justify(lline, rline, cols):
+    """
+    Left- and right-justify lline and rline respectively within cols,
+    properly adjusting for ANSI escape codes.
+    """
+    pad = cols - len(strip_ANSI(lline)) - len(strip_ANSI(rline))
+    return lline + ' '*pad + rline
 
 
 class BattleSide(object, EffectHandlerMixin):
