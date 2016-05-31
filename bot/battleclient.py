@@ -1024,11 +1024,9 @@ class BattleClient(object):
             pokemon.set_effect(effects.UnburdenVolatile())
 
     def reveal_foe_original_item(self, pokemon, item):
-        if pokemon.side == self.foe_side:
-            if pokemon.item == itemdex['_unrevealed_']:
-                pokemon.original_item = item
-            else:
-                assert pokemon.original_item != itemdex['_unrevealed_']
+        if (pokemon.side == self.foe_side and
+            itemdex['_unrevealed_'] in (pokemon.item, pokemon.original_item)):
+            pokemon.original_item = item
 
     def handle_ability(self, msg):
         """
