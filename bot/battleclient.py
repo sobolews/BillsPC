@@ -1739,7 +1739,8 @@ class BattleClient(object):
                 for jmove in request['active'][0]['moves']:
                     move = movedex[jmove['id']]
                     pokemon.moveset.append(move)
-                    pokemon.pp[move] = jmove['pp']
+                    if jmove.get('pp'):
+                        pokemon.pp[move] = jmove['pp']
 
             reqmon = [p for p in self.request['side']['pokemon']
                       if pokemon.base_species.startswith(normalize_name(p['ident']))][0]
