@@ -1749,8 +1749,10 @@ class BattleClient(object):
                 continue
 
             pokemon.hp, pokemon.max_hp = map(int, reqmon['condition'].split()[0].split('/'))
-            for stat, val in reqmon['stats'].items():
-                pokemon.stats[stat] = val
+            stats = reqmon['stats'].copy()
+            stats['max_hp'] = pokemon.max_hp
+            pokemon.stats = PokemonStats.from_dict(stats)
+
             if reqmon['item']:
                 pokemon.item = itemdex[reqmon['item']]
             else:
