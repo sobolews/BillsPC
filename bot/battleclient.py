@@ -311,8 +311,8 @@ class BattleClient(object):
                                        self.battlefield)):
                 for effect in thing.effects:
                     if effect.duration is not None:
-                        if (effect.source in (SideCondition.WISH, Volatile.STALL) and
-                            effect.duration <= 1):
+                        if (effect.duration <= 1 and effect.source in (
+                                SideCondition.WISH, Volatile.STALL, Volatile.TWOTURNMOVE)):
                             # remove automatically, since there's no notification in protocol
                             thing.remove_effect(effect.source)
                             continue
