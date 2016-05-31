@@ -2187,9 +2187,9 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
     def test_pressure(self):
         self.new_battle(p0_moves=(movedex['protect'], movedex['rest'],
-                                  movedex['toxic'], movedex['return']),
+                                  movedex['spikes'], movedex['return']),
                         p1_moves=(movedex['xscissor'], movedex['drillpeck'],
-                                  movedex['dragonclaw'], movedex['bulkup']),
+                                  movedex['spikes'], movedex['bulkup']),
                         p0_ability='pressure')
         self.choose_move(self.leafeon, 'xscissor')
         self.choose_move(self.vaporeon, 'protect')
@@ -2204,6 +2204,13 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
 
         self.assertPpUsed(self.leafeon, 'bulkup', 1)
         self.assertPpUsed(self.vaporeon, 'return', 1)
+
+        self.choose_move(self.leafeon, 'spikes')
+        self.choose_move(self.vaporeon, 'spikes')
+        self.run_turn()
+
+        self.assertPpUsed(self.leafeon, 'spikes', 2)
+        self.assertPpUsed(self.vaporeon, 'spikes', 1)
 
     def test_primordialsea(self):
         self.new_battle()

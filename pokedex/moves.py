@@ -56,6 +56,7 @@ class Move(object):
     is_bounceable = False
     ignore_substitute = False   # will bypass foe's substitute
     targets_user = False        # will ignore foe's substitute and can be used against an empty foe
+    targets_foe_side = False    # will ignore foe's substitute and can be used against an empty foe
     multihit = None    # tuple of number of hits that can be random.choice()'d
     secondary_effects = ()
     always_crit = False
@@ -109,7 +110,7 @@ class Move(object):
 
         Assumes that the move has executed successfully, including doing any normal damage it would
         do. Return FAIL for move failure. WILL NOT execute if the move hits a substitute unless
-        any(ignore_substitute, targets_user, on_success_ignores_substitute).
+        any(ignore_substitute, targets_user, targets_foe_side, on_success_ignores_substitute).
 
         If self.targets_user, `target` will be None.
         """
@@ -2892,7 +2893,7 @@ class spikes(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -2952,7 +2953,7 @@ class stealthrock(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -2981,7 +2982,7 @@ class stickyweb(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -3310,7 +3311,7 @@ class toxicspikes(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)

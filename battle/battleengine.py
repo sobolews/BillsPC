@@ -140,7 +140,7 @@ class BattleEngine(object):
         if target is not None:
             target.activate_effect('on_modify_foe_move', move, user, self)
 
-        if move.targets_user:
+        if move.targets_user or move.targets_foe_side:
             return self.fast_use_move(user, move) # fast path for moves not targeting opponent
 
         if target is None or target.is_fainted():
@@ -308,8 +308,8 @@ class BattleEngine(object):
     def fast_use_move(self, user, move):
         """
         Fast path optimization out of self.use_move for moves not targeting an opponent
-        (move.targets_user == True). Replaces try_move_hit and move_hit and allows them to skip
-        (if target is None) checks.
+        (move.targets_user or move.targets_foe_side). Replaces try_move_hit and move_hit and allows
+        them to skip (if target is None) checks.
 
         Specifically skips on_foe_try_hit, {immunity,accuracy,multihit,substitute} checks,
         calculate_damage, drain check, move.target_status, move.secondary_effects,
