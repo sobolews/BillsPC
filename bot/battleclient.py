@@ -1014,6 +1014,7 @@ class BattleClient(object):
         pokemon.item = item
         pokemon.set_effect(item())
         pokemon.remove_effect(Volatile.UNBURDEN, force=True)
+        pokemon.remove_effect(Volatile.CHOICELOCK, force=True)
 
     def remove_item(self, pokemon):
         pokemon.remove_effect(ITEM, force=True)
