@@ -1,7 +1,7 @@
 from battle.battleengine import BattleEngine
 from mining.statistics import RandbatsStatistics
 from pokedex import effects
-from pokedex.enums import FAIL, Volatile
+from pokedex.enums import FAIL, Volatile, Type
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
 
@@ -48,7 +48,7 @@ class CheatSheetEngine(BattleEngine):
         if __debug__:
             for move in foe.moveset:
                 if (move.name not in rbstats.probability[foe.name]['moves'] and
-                    move != movedex['hiddenpowernotype']):
+                    move.type != Type.NOTYPE):
                     log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
 
         if len(foe.moveset) >= 4:
@@ -59,7 +59,8 @@ class CheatSheetEngine(BattleEngine):
         data = []
         for move in possible_moves[:]:
             prob = rbstats.attr_probability(foe.name, move.name,
-                                            [move_.name for move_ in foe.moveset])
+                                            [move_.name for move_ in foe.moveset if
+                                             move.type != Type.NOTYPE])
             if not prob:
                 possible_moves.remove(move)
                 continue
