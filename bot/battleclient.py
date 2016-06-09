@@ -1673,9 +1673,8 @@ class BattleClient(object):
 
                     if (request['active'][0].get('trapped') or
                         request['active'][0].get('maybeTrapped')):
-                        assert (not pokemon.get_switch_choices() or
-                                not pokemon.side.remaining_pokemon_on_bench), \
-                            "%r is not trapped, but should be" % pokemon
+                        assert not pokemon.get_switch_choices(), \
+                            "%s has available switch choices, but should be trapped" % pokemon
 
                 reqmon = [p for p in self.request['side']['pokemon']
                           if pokemon.base_species.startswith(
