@@ -1697,7 +1697,7 @@ class BattleClient(object):
                 condition = reqmon['condition'].split()
                 if condition[-1] == 'fnt':
                     assert pokemon.status is Status.FNT, '%s should be fainted' % pokemon
-                    assert pokemon.hp == 0, "%s's hp should be 0" % pokemon
+                    assert pokemon.hp == 0, "%s's hp=%s; should be 0" % (pokemon, pokemon.hp)
                 elif condition[-1] in self.STATUS_MAP:
                     assert self.STATUS_MAP[condition[-1]][0] is pokemon.status, \
                         '%s has the wrong status' % pokemon
