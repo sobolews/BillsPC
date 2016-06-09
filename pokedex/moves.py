@@ -2620,7 +2620,6 @@ class sacredfire(Move):
         self.category = PHYSICAL
         self.type = Type.FIRE
         self.accuracy = 95
-        self.makes_contact = True
         self.base_power = 100
         self.secondary_effects = SecondaryEffect(50, status=Status.BRN),
 
