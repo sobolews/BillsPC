@@ -439,7 +439,7 @@ class BattleClient(object):
     def handle_request(self, request):
         """
         |request|
-        {"active":[{"moves":[4 moves]}],
+        {"active":[{"moves":[1-4 moves], "maybeTrapped":true, "trapped":true}],
          "rqid": 1
          "wait": true (or undefined)
          "side": {
@@ -457,10 +457,20 @@ class BattleClient(object):
               "canMegaEvo": false
             } ... ]}}
 
+        or
+        {"forceSwitch": [true],
+         "side"...,
+         "rqid": 2}
+
         If this is the first request (beginning of game), "active" and "rqid" are omitted
         """
         self.request = request
         self.rqid = request.get('rqid')
+
+        if request['active'][0].get('maybeTrapped'):
+            BaseTrappingAbility.trap(self.foe_side.active_pokemon,
+                                     self.my_side.active_pokemon)
+
         self._validate_my_team()
 
         print repr(self.battlefield)
