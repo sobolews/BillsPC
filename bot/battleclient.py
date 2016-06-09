@@ -11,7 +11,7 @@ from mining import create_pokedex
 from mining.statistics import RandbatsStatistics
 from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
-from pokedex.abilities import abilitydex
+from pokedex.abilities import abilitydex, BaseTrappingAbility
 from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
                            PseudoWeather)
 from pokedex.items import itemdex
@@ -467,7 +467,8 @@ class BattleClient(object):
         self.request = request
         self.rqid = request.get('rqid')
 
-        if request['active'][0].get('maybeTrapped'):
+        active = request.get('active')
+        if active is not None and active[0].get('maybeTrapped'):
             BaseTrappingAbility.trap(self.foe_side.active_pokemon,
                                      self.my_side.active_pokemon)
 

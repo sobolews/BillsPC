@@ -108,6 +108,7 @@ class TestBattleClient(TestBattleClientBase):
 class TestBattleClientPostTurn0(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
+        self.bc.make_moves = False
         self.bc.engine.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
         self.set_up_turn_0()
         self.hitmonchan = self.my_side.active_pokemon
@@ -1701,3 +1702,16 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertDictContainsSubset({'atk': 2, 'spa': 2, 'spe': 2, 'spd': 0, 'def': 0},
                                       haxorus.boosts)
         self.assertTrue(haxorus.has_effect(Volatile.SUBSTITUTE))
+
+    @patch('bot.battleclient.BattleClient._validate_my_team', lambda _: None)
+    @patch('bot.cheatsheetengine.CheatSheetEngine.show_my_moves', lambda *_: None)
+    def test_maybe_trapped(self):
+        self.handle('|switch|p2a: Wobbuffet|Wobbuffet, L74, M|100/100')
+        self.handle('|turn|2')
+        self.handle_request({"active":[{"maybeTrapped":True}], "rqid":2})
+
+        wobbuffet = self.foe_side.active_pokemon
+        self.assertTrue(self.hitmonchan.has_effect(Volatile.TRAPPED))
+        self.assertEqual(self.hitmonchan.get_effect(Volatile.TRAPPED).trapper, wobbuffet)
+        self.assertTrue(wobbuffet.has_effect(Volatile.TRAPPER))
+        self.assertEqual(wobbuffet.get_effect(Volatile.TRAPPER).trappee, self.hitmonchan)
