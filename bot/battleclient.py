@@ -598,12 +598,16 @@ class BattleClient(object):
         """
         Reveal a move that a foe pokemon definitely has (i.e. was not called via copycat, etc.)
         """
-        if move in pokemon.moveset or move == movedex['struggle']:
+        if (move in pokemon.moveset or
+            move == movedex['struggle'] or
+            (move.is_hiddenpower and any(known.is_hiddenpower for known in pokemon.moveset))):
             return
-        assert len(pokemon.moveset) < 4, ('%s used %s but already has a full moveset:\n %r' %
-                                          (pokemon, move, pokemon))
+        assert len(pokemon.moveset) < 4, ("%s was revealed to have %s but already has a full "
+                                          'moveset:\n %r' % (pokemon, move, pokemon))
+
         pokemon.moveset.append(move)
         pokemon.pp[move] = move.max_pp
+        log.i("%s's %s was revealed!", pokemon, move)
         if move.is_hiddenpower and move.type != Type.NOTYPE:
             self.recalculate_stats_hiddenpower(pokemon, move.type)
 
@@ -1569,19 +1573,22 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         foe = self.get_pokemon_from_msg(msg, 2)
 
-        if pokemon == self.my_side.active_pokemon:
-            for move in self.request['active'][0]['moves']:
-                id = move['id']
-                if movedex[id] not in foe.moveset:
-                    foe.moveset.append(movedex[id])
-
         pokemon.transform_into(foe, engine=None, client=True)
 
-        # The moves might be in the wrong order, so reset them according to the current request
         if pokemon.side.index == self.my_player:
+            # The moves might be in the wrong order, so reset them according to the current request.
+            # Set any of the foe's moves that are revealed by transforming.
             pokemon.moveset = []
             for move in self.request['active'][0]['moves']:
-                pokemon.moveset.append(movedex[normalize_name(move['move'])])
+                my_move = movedex[normalize_name(move['move'])]
+                pokemon.moveset.append(my_move)
+
+                if my_move.is_hiddenpower:
+                    foe_move, _ = self.get_possible_hiddenpowers(foe)
+                else:
+                    foe_move = my_move
+                self.reveal_move(foe, foe_move)
+
             pokemon.pp = {move: 5 for move in pokemon.moveset}
 
     def handle_formechange(self, msg):

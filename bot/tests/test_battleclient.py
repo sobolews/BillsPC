@@ -35,6 +35,7 @@ class TestBattleClientBase(TestCase):
             self.bc.build_my_side(request)
         else:
             self.bc.handle_request(request)
+        self.bc.request = request
 
     def set_up_players(self):
         self.handle('|player|p1|test-BillsPC|200')
