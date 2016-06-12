@@ -33,9 +33,9 @@ class CheatSheetEngine(BattleEngine):
                 for move in my_active.moveset]
 
     def show_my_moves(self, my_active, foe):
-        print tabulate([(move, self.format_damage_range(dmg_range, foe))
-                        for move, dmg_range in self.describe_my_moves(my_active, foe)],
-                       ('My Moves', 'damage'), tablefmt=TABLEFMT)
+        log.i('\n' + (tabulate([(move, self.format_damage_range(dmg_range, foe))
+                                for move, dmg_range in self.describe_my_moves(my_active, foe)],
+                               ('My Moves', 'damage'), tablefmt=TABLEFMT)))
 
     def describe_known_foe_moves(self, my_active, foe):
         if not foe.moveset:
@@ -81,7 +81,7 @@ class CheatSheetEngine(BattleEngine):
             pct_range = self.format_damage_range(dmg_range, my_active)
             possible_rows.append((name, '{:.0%}'.format(prob), pct_range))
 
-        print multitabulate((known_rows, possible_rows))
+        log.i('\n' + multitabulate((known_rows, possible_rows)))
 
     def format_damage_range(self, dmg_range, pokemon):
         if dmg_range is None:

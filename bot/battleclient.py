@@ -478,7 +478,7 @@ class BattleClient(object):
 
         self._validate_my_team()
 
-        print repr(self.battlefield)
+        log.i('\n'+repr(self.battlefield))
 
         if request.get('wait'): # The opponent has more decisions to make
             return

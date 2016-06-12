@@ -53,10 +53,10 @@ class Bot(WebSocketClient):
             time.sleep(0.1)
 
     def opened(self):
-        print "Connected to %s" % self.url
+        log.i("Connected to %s" % self.url)
 
     def send(self, msg, _=False):
-        print sent(msg)
+        log.i(sent(msg))
         super(Bot, self).send(msg)
 
     def received_message(self, msg_block):
@@ -65,7 +65,7 @@ class Bot(WebSocketClient):
         so split them and process each one. 0-1 character messages can be ignored.
         """
         msg_block = unicode(msg_block).encode('ascii', 'ignore')
-        print received('\n'.join((msg_block, '-' * 60)))
+        log.i(received('\n'.join((msg_block, '-' * 60))))
         msg_block = msg_block.splitlines()
 
         battleroom = self.battleroom
@@ -98,7 +98,6 @@ class Bot(WebSocketClient):
                 self.process_message(msg)
             except Exception:
                 log.exception('Exception processing msg: %s', msg)
-                print 'msg:\n%s' % msg
 
         # Process the request after the next message is sent (the server always sends it one message
         # before I want to use it).
