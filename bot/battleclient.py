@@ -314,7 +314,7 @@ class BattleClient(object):
             for thing in filter(None, (my_active, foe_active, my_active.side, foe_active.side,
                                        self.battlefield)):
                 for effect in thing.effects:
-                    if effect.duration is not None:
+                    if effect.duration is not None and effect.source not in Weather.values:
                         if (effect.duration <= 1 and effect.source in (
                                 SideCondition.WISH, Volatile.STALL, Volatile.TWOTURNMOVE)):
                             # remove automatically, since there's no notification in protocol
