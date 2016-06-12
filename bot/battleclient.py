@@ -65,6 +65,10 @@ class BattleClient(object):
             send(msg)
         self.send = _send
 
+    @property
+    def win(self):
+        return None if self.battlefield is None else self.battlefield.win
+
     def get_side_from_msg(self, msg, index=1):
         """
         All `POKEMON` in messages are formatted 'p2a: Goodra' or '[of] p2a: Goodra'
@@ -1620,10 +1624,13 @@ class BattleClient(object):
         """
         if msg[1] == self.name:
             log.i('I win!')
+            self.battlefield.win = self.my_player
         elif msg[1] == self.foe_name:
             log.i('I lost.')
+            self.battlefield.win = self.foe_player
         else:
             log.w("The game is over, but I don't know who won: %s", msg)
+            self.battlefield.win = -1
 
     def handle_tie(self, msg):
         """

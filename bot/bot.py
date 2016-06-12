@@ -38,6 +38,10 @@ class Bot(WebSocketClient):
         self.battleroom = None
         self.logged_in = False
 
+    @property
+    def battle_in_progress(self):
+        return self.battleclient is not None and self.battleclient.win is None
+
     def start(self, interactive=True):
         self.logged_in = False
         self.connect()
