@@ -1555,6 +1555,13 @@ class BattleClient(object):
 
         pokemon.transform_into(foe, engine=None, client=True)
 
+        # The moves might be in the wrong order, so reset them according to the current request
+        if pokemon.side.index == self.my_player:
+            pokemon.moveset = []
+            for move in self.request['active'][0]['moves']:
+                pokemon.moveset.append(movedex[normalize_name(move['move'])])
+            pokemon.pp = {move: 5 for move in pokemon.moveset}
+
     def handle_formechange(self, msg):
         """
         |-formechange|p1a: Castform|Castform-Rainy|[msg]
