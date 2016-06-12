@@ -1189,6 +1189,7 @@ class BattleClient(object):
         |-activate|p1a: Shedinja|ability: Wonder Guard
         |-activate|p2a: Groudon|ability: Sticky Hold
         |-activate|p2a: Charizard|ability: Suction Cups
+        |-activate|p1a: Musharna|ability: Synchronize
 
         Ignored:
         |-activate|p1a: Banette|Destiny Bond (destinybond's on_faint activated)
@@ -1209,7 +1210,7 @@ class BattleClient(object):
 
         if effect in ('shedskin', 'aromaveil', 'hydration', 'immunity', 'limber', 'insomnia',
                       'sweetveil', 'vitalspirit', 'waterveil', 'wonderguard', 'stickyhold',
-                      'suctioncups'):
+                      'suctioncups', 'synchronize'):
             self.set_ability(pokemon, abilitydex[effect])
         elif effect == 'confusion':
             assert pokemon.has_effect(Volatile.CONFUSE), pokemon
