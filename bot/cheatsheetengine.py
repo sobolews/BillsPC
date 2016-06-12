@@ -112,7 +112,8 @@ class CheatSheetEngine(BattleEngine):
 
         self.get_critical_hit = BattleEngine.get_critical_hit
         self.damage_randomizer = BattleEngine.damage_randomizer
-        attacker.remove_effect(Volatile.SHEERFORCE)
+        if attacker.has_effect(Volatile.SHEERFORCE):
+            attacker.remove_effect(Volatile.SHEERFORCE)
 
         if mindamage is None:
             return None

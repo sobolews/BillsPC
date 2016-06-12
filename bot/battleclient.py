@@ -561,7 +561,8 @@ class BattleClient(object):
 
         pokemon.last_move_used = move
         pokemon.will_move_this_turn = False
-        pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
+        if pokemon.has_effect(Volatile.TWOTURNMOVE):
+            pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
         if move in (movedex['outrage'], movedex['petaldance']):
             pokemon.set_effect(effects.LockedMove(move))
