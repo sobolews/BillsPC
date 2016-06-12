@@ -658,7 +658,7 @@ class BattleClient(object):
         |-damage|p1a: Arceus|350/381|[from] ability: Liquid Ooze|[of] p2a: Graveler
         |-damage|p2a: Porygon-Z|30/100|[from] item: Life Orb
         |-damage|p2a: Cresselia|264/381|[from] item: Black Sludge
-        |-damage|p1a: Throh|169/331|[from] Leech Seed|[of] p2a: Venusaur (log.e)
+        |-damage|p1a: Throh|169/331|[from] Leech Seed|[of] p2a: Venusaur
         """
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
