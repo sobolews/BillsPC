@@ -542,7 +542,7 @@ class BattlePokemon(object, EffectHandlerMixin):
             rv = '\n'.join(line.join(('\x1b[38;5;8m', '\x1b[0m'))
                            for line in rv.splitlines())
         elif self.is_active:
-            rv = '\n'.join(line.join(('\x1b[1;40;97m\x1b[38;5;10m', '\x1b[0m'))
+            rv = '\n'.join(line.join(('\x1b[1m\x1b[38;5;10m', '\x1b[0m'))
                            for line in rv.splitlines())
         return rv
 
