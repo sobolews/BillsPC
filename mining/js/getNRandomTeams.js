@@ -1,6 +1,5 @@
 /** Generates a random team. **/
 
-require('sugar');
 var fs = require('fs');
 var path = require('path');
 
