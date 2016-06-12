@@ -1327,6 +1327,12 @@ class BattleClient(object):
             pokemon.set_effect(effects.Confuse())
             if len(msg) > 3 and msg[3] == '[fatigue]':
                 pokemon.remove_effect(Volatile.LOCKEDMOVE)
+        elif effect == 'autotomize':
+            effect = pokemon.get_effect(Volatile.AUTOTOMIZE)
+            if effect is None:
+                pokemon.set_effect(effects.Autotomize())
+            else:
+                effect.multiplier += 1
         elif effect == 'substitute':
             pokemon.set_effect(effects.Substitute(pokemon.max_hp / 4))
             pokemon.remove_effect(Volatile.PARTIALTRAP)
