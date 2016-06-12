@@ -56,7 +56,7 @@ class Move(object):
     is_bounceable = False
     ignore_substitute = False   # will bypass foe's substitute
     targets_user = False        # will ignore foe's substitute and can be used against an empty foe
-    targets_foe_side = False    # will ignore foe's substitute and can be used against an empty foe
+    targets_foe_side = False    # same as targets_user, but is affected by Pressure
     multihit = None    # tuple of number of hits that can be random.choice()'d
     secondary_effects = ()
     always_crit = False
@@ -971,7 +971,7 @@ class electricterrain(Move):
         self.category = STATUS
         self.type = Type.ELECTRIC
         self.is_protectable = False
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def check_success(self, user, _, engine):
         if engine.battlefield.terrain is not None:
@@ -1386,7 +1386,7 @@ class haze(Move):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.ICE
-        self.targets_user = True
+        self.targets_foe_side = True
         self.is_protectable = False
 
     def on_success(self, user, _, engine):
@@ -2155,6 +2155,7 @@ class perishsong(Move):
         self.type = Type.NORMAL
         self.is_protectable = False
         self.is_sound = True
+        self.targets_foe_side = True
 
     def on_success(self, user, target, engine):
         user.set_effect(effects.PerishSong())
@@ -2392,7 +2393,7 @@ class raindance(Move):
         self.category = STATUS
         self.type = Type.WATER
         self.is_protectable = False
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def check_success(self, user, _, engine):
         if engine.battlefield.weather is Weather.RAINDANCE:
@@ -3089,7 +3090,7 @@ class sunnyday(Move):
         self.category = STATUS
         self.type = Type.FIRE
         self.is_protectable = False
-        self.targets_user = True
+        self.targets_foe_side = True
 
     def check_success(self, user, _, engine):
         if engine.battlefield.weather is Weather.SUNNYDAY:
@@ -3369,7 +3370,7 @@ class trickroom(Move):
         self.category = STATUS
         self.type = Type.PSYCHIC
         self.is_protectable = False
-        self.targets_user = True
+        self.targets_foe_side = True
         self.priority = -7
 
     def on_success(self, user, _, engine):
