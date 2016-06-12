@@ -56,7 +56,7 @@ class Move(object):
     is_bounceable = False
     ignore_substitute = False   # will bypass foe's substitute
     targets_user = False        # will ignore foe's substitute and can be used against an empty foe
-    targets_foe_side = False    # same as targets_user, but is affected by Pressure
+    targets_field = False       # same as targets_user, but is affected by Pressure
     multihit = None    # tuple of number of hits that can be random.choice()'d
     secondary_effects = ()
     always_crit = False
@@ -110,7 +110,7 @@ class Move(object):
 
         Assumes that the move has executed successfully, including doing any normal damage it would
         do. Return FAIL for move failure. WILL NOT execute if the move hits a substitute unless
-        any(ignore_substitute, targets_user, targets_foe_side, on_success_ignores_substitute).
+        any(ignore_substitute, targets_user, targets_field, on_success_ignores_substitute).
 
         If self.targets_user, `target` will be None.
         """
@@ -971,7 +971,7 @@ class electricterrain(Move):
         self.category = STATUS
         self.type = Type.ELECTRIC
         self.is_protectable = False
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def check_success(self, user, _, engine):
         if engine.battlefield.terrain is not None:
@@ -1386,7 +1386,7 @@ class haze(Move):
         self.max_pp = _MAX_PP[30]
         self.category = STATUS
         self.type = Type.ICE
-        self.targets_foe_side = True
+        self.targets_field = True
         self.is_protectable = False
 
     def on_success(self, user, _, engine):
@@ -2155,11 +2155,16 @@ class perishsong(Move):
         self.type = Type.NORMAL
         self.is_protectable = False
         self.is_sound = True
-        self.targets_foe_side = True
+        self.targets_field = True
 
-    def on_success(self, user, target, engine):
-        user.set_effect(effects.PerishSong())
-        target.set_effect(effects.PerishSong())
+    def on_success(self, user, _, engine):
+        if not user.ability.name == 'soundproof':
+            user.set_effect(effects.PerishSong())
+
+        # Since this is a targets_field move, no target is passed in.
+        foe = engine.get_foe(user)
+        if foe is not None and not foe.ability.name == 'soundproof':
+            foe.set_effect(effects.PerishSong())
 
 class petaldance(Move):
     def init_move(self):
@@ -2393,7 +2398,7 @@ class raindance(Move):
         self.category = STATUS
         self.type = Type.WATER
         self.is_protectable = False
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def check_success(self, user, _, engine):
         if engine.battlefield.weather is Weather.RAINDANCE:
@@ -2893,7 +2898,7 @@ class spikes(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -2953,7 +2958,7 @@ class stealthrock(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -2982,7 +2987,7 @@ class stickyweb(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -3090,7 +3095,7 @@ class sunnyday(Move):
         self.category = STATUS
         self.type = Type.FIRE
         self.is_protectable = False
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def check_success(self, user, _, engine):
         if engine.battlefield.weather is Weather.SUNNYDAY:
@@ -3311,7 +3316,7 @@ class toxicspikes(Move):
         self.is_protectable = False
         self.is_bounceable = True
         self.ignore_substitute = True
-        self.targets_foe_side = True
+        self.targets_field = True
 
     def on_success(self, user, _, engine):
         foe_side = engine.get_foe_side(user)
@@ -3370,7 +3375,7 @@ class trickroom(Move):
         self.category = STATUS
         self.type = Type.PSYCHIC
         self.is_protectable = False
-        self.targets_foe_side = True
+        self.targets_field = True
         self.priority = -7
 
     def on_success(self, user, _, engine):

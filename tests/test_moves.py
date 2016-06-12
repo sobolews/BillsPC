@@ -60,7 +60,7 @@ class TestMoveDefinitions(TestCase):
 
     def test_targets_user_moves_dont_have_inappropriate_attributes(self):
         for move in self.all_moves:
-            if move.targets_user or move.targets_foe_side:
+            if move.targets_user or move.targets_field:
                 if move != movedex['confusiondamage']:
                     self.assertEqual(move.category, MoveCategory.STATUS, move)
                 self.assertIsNone(move.accuracy, move)
