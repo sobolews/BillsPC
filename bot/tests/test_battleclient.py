@@ -32,7 +32,7 @@ class TestBattleClientBase(TestCase):
 
     def handle_request(self, request):
         if self.bc.my_side is None:
-            self.bc.build_my_side(self.REQUEST)
+            self.bc.build_my_side(request)
         else:
             self.bc.handle_request(request)
 
@@ -54,6 +54,27 @@ class TestBattleClientBase(TestCase):
         self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
         self.handle('|switch|p2a: Goodra|Goodra, L77, F|100/100')
         self.handle('|turn|1')
+
+
+class TestBattleClientInitialRequest(TestBattleClientBase):
+    def setUp(self):
+        self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
+        self.bc.make_moves = False
+
+    def initial_request(self, request):
+        self.handle('|player|p1|test-BillsPC|200')
+        self.handle_request(request)
+        self.handle('|player|p2|other-player|200')
+
+    def test_start_with_ditto_turn_0(self):
+        request = '|request|{"active":[{"moves":[{"move":"Volt Switch","id":"voltswitch","pp":5,"maxpp":5,"target":"normal","disabled":false},{"move":"Ice Punch","id":"icepunch","pp":5,"maxpp":5,"target":"normal","disabled":false},{"move":"Wild Charge","id":"wildcharge","pp":5,"maxpp":5,"target":"normal","disabled":false},{"move":"Cross Chop","id":"crosschop","pp":5,"maxpp":5,"target":"normal","disabled":false}]}],"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Ditto","details":"Ditto, L83","condition":"215/215","active":true,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["voltswitch","icepunch","wildcharge","crosschop"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"},{"ident":"p1: Unfezant","details":"Unfezant, L83, M","condition":"267/267","active":false,"stats":{"atk":239,"def":180,"spa":156,"spd":139,"spe":202},"moves":["pluck","uturn","tailwind","roost"],"baseAbility":"superluck","item":"scopelens","pokeball":"pokeball"},{"ident":"p1: Dugtrio","details":"Dugtrio, L79, F","condition":"185/185","active":false,"stats":{"atk":172,"def":125,"spa":125,"spd":156,"spe":235},"moves":["stealthrock","suckerpunch","reversal","earthquake"],"baseAbility":"arenatrap","item":"focussash","pokeball":"pokeball"},{"ident":"p1: Typhlosion","details":"Typhlosion, L79, M","condition":"253/253","active":false,"stats":{"atk":137,"def":169,"spa":218,"spd":180,"spe":204},"moves":["focusblast","eruption","extrasensory","fireblast"],"baseAbility":"flashfire","item":"choicescarf","pokeball":"pokeball"},{"ident":"p1: Kyogre","details":"Kyogre, L73","condition":"266/266","active":false,"stats":{"atk":151,"def":174,"spa":261,"spd":247,"spe":174},"moves":["waterspout","icebeam","scald","thunder"],"baseAbility":"drizzle","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Manaphy","details":"Manaphy, L75","condition":"274/274","active":false,"stats":{"atk":155,"def":194,"spa":194,"spd":194,"spe":194},"moves":["surf","energyball","psychic","tailglow"],"baseAbility":"hydration","item":"leftovers","pokeball":"pokeball"}]},"rqid":1}'
+        self.initial_request(json.loads(request.split('|')[2]))
+        self.handle('|switch|p2a: Electivire|Electivire, L81, F|100/100')
+        self.handle('|switch|p1a: Ditto|Ditto, L83|215/215')
+        self.handle('|-transform|p1a: Ditto|p2a: Electivire|[from] ability: Imposter')
+        self.handle('|turn|1')
+
+        self.bc._validate_my_team()
 
 
 class TestBattleClient(TestBattleClientBase):
