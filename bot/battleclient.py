@@ -565,7 +565,7 @@ class BattleClient(object):
                 pokemon.pp[move] -= pp_sub
             elif pokemon.side.index == self.foe_player: # Add move to foe's moveset
                 self.reveal_move(pokemon, move)
-                pokemon.pp[move] = move.max_pp - pp_sub
+                pokemon.pp[move] = max(0, move.max_pp - pp_sub)
             elif __debug__:
                 log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
