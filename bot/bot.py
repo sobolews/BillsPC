@@ -28,11 +28,13 @@ class Bot(WebSocketClient):
     is very CPU intensive; even one battle will pin resources so simultaneous battles is low
     priority.
     """
-    def __init__(self, username=None, password=None, *args, **kwargs):
+    def __init__(self, username=None, password=None, accept_challenges=False, *args, **kwargs):
         super(Bot, self).__init__(*args, **kwargs)
         self.username = ((username or raw_input('Showdown username: '))
                          .decode('utf-8').encode('ascii', 'ignore'))
         self.password = password or getpass.getpass()
+        self.challenging = None
+        self.accept_challenges = accept_challenges
         self.latest_request = None
         self.battleclient = None
         self.battleroom = None
@@ -73,6 +75,7 @@ class Bot(WebSocketClient):
                     self.battleroom = msg_block[0][1:]
                     self.battleclient = BattleClient(self.username, self.battleroom, self.send)
                     self.latest_request = None
+                    self.challenging = None
                 else:
                     log.i('Battle message received for an inactive room:\n%s', msg_block)
                     return
@@ -119,10 +122,12 @@ class Bot(WebSocketClient):
         if msg_type in self.BATTLE_MSGS or msg_type.startswith('-'):
             return self.battleclient.handle(msg_type, msg)
 
-        if msg_type == 'challstr':
-            return self.handle_challstr(msg)
+        if msg_type in self.BOT_MSGS:
+            return getattr(self, 'handle_%s' % msg_type)(msg)
 
         log.e('Unhandled msg:\n%s', msg)
+
+    BOT_MSGS = {'challstr', 'updatechallenges'}
 
     BATTLE_MSGS = {
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
@@ -138,8 +143,8 @@ class Bot(WebSocketClient):
         '-notarget', '-hitcount', '-nothing', '-waiting', '-combine', 'chat', 'c', 'chatmsg',
         'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
-        'error', 'warning', 'gen', 'debug', 'unlink', 'updatechallenges', 'users', ':', 'c:',
-        'expire', 'seed', 'choice', '-endability', '-fieldactivate', '-primal', 'n'
+        'error', 'warning', 'gen', 'debug', 'unlink', 'users', ':', 'c:', 'expire', 'seed',
+        'choice', '-endability', '-fieldactivate', '-primal', 'n'
     }
 
     def handle_challstr(self, msg):
@@ -155,6 +160,35 @@ class Bot(WebSocketClient):
 
         self.send('|/trn %s,0,%s' % (self.username, response['assertion']))
         self.logged_in = True
+
+    def handle_updatechallenges(self, msg):
+        """
+        |updatechallenges|{"challengesFrom":{"1raichu":"randombattle"},
+                           "challengeTo":{"to":"0raichu","format":"randombattle"}}
+        """
+        challenges = json.loads(msg[1])
+        challengeTo, challengesFrom = challenges['challengeTo'], challenges['challengesFrom']
+        if challengeTo:
+            log.i('Challenging %s to %s', challengeTo['to'], challengeTo['format'])
+            self.challenging = challengeTo['to']
+        else:
+            self.challenging = None
+
+        if challengesFrom and self.accept_challenges and not self.battle_in_progress:
+            challenger = challengesFrom.keys()[0]
+            self.send('|/utm null')
+            self.send('|/accept %s' % challenger)
+            log.i('Accepted challenge from %s', challenger)
+
+    def send_challenge(self, opponent, cancel=False):
+        if cancel:
+            self.cancel_challenge(self.challenging or opponent)
+        if not self.challenging:
+            self.send('|/challenge %s, randombattle' % opponent)
+            self.challenging = opponent
+
+    def cancel_challenge(self, opponent):
+        self.send('|/cancelchallenge %s' % opponent)
 
 
 class InteractiveBot(Bot):
