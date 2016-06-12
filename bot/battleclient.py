@@ -544,12 +544,8 @@ class BattleClient(object):
             else:
                 assert pokemon is self.foe_side.active_pokemon, \
                     (pokemon, self.foe_side.active_pokemon)
-                possible = [movedex[move] for move in rbstats[pokemon.base_species]['moves']
-                            if move.startswith('hiddenpower')]
-                if len(possible) == 1:
-                    move = possible[0]
-                else:
-                    move = movedex['hiddenpowernotype']
+                move, possible = self.get_possible_hiddenpowers(pokemon)
+                if len(possible) > 1:
                     self.hiddenpower_trigger = (pokemon, possible)
         else:
             move = movedex[normalize_name(msg[2])]
@@ -591,6 +587,12 @@ class BattleClient(object):
 
         if pokemon.item in (itemdex['choiceband'], itemdex['choicescarf'], itemdex['choicespecs']):
             pokemon.set_effect(effects.ChoiceLock(move))
+
+    def get_possible_hiddenpowers(self, pokemon):
+        possible = [movedex[move] for move in rbstats[pokemon.base_species]['moves']
+                    if move.startswith('hiddenpower')]
+        move = possible[0] if len(possible) == 1 else movedex['hiddenpowernotype']
+        return move, possible
 
     def reveal_move(self, pokemon, move):
         """
