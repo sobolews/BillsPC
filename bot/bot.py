@@ -127,7 +127,7 @@ class Bot(WebSocketClient):
 
         log.e('Unhandled msg:\n%s', msg)
 
-    BOT_MSGS = {'challstr', 'updatechallenges'}
+    BOT_MSGS = {'challstr', 'updatechallenges', 'popup'}
 
     BATTLE_MSGS = {
         'switch', 'turn', 'move', 'request', 'detailschange', 'faint', 'player', 'inactive', 'drag',
@@ -189,6 +189,9 @@ class Bot(WebSocketClient):
 
     def cancel_challenge(self, opponent):
         self.send('|/cancelchallenge %s' % opponent)
+
+    def handle_popup(self, msg):
+        log.i('Popup: %s', msg[1])
 
 
 class InteractiveBot(Bot):
