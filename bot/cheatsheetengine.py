@@ -60,7 +60,7 @@ class CheatSheetEngine(BattleEngine):
         for move in possible_moves[:]:
             prob = rbstats.attr_probability(foe.name, move.name,
                                             [move_.name for move_ in foe.moveset if
-                                             move.type != Type.NOTYPE])
+                                             move_.type != Type.NOTYPE])
             if not prob:
                 possible_moves.remove(move)
                 continue
