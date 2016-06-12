@@ -24,9 +24,9 @@ class CheatSheetEngine(BattleEngine):
         if __debug__:
             if not my_active.is_transformed:
                 for move in my_active.moveset:
-                    my_name = (my_active.item.forme if my_active.can_mega_evolve else
-                               my_active.base_species)
-                    if move.name not in rbstats.probability[my_name]['moves']:
+                    rb_index = (my_active.item.forme if my_active.can_mega_evolve else
+                                '%sL%d' % (my_active.base_species, my_active.level))
+                    if move.name not in rbstats.probability[rb_index]['moves']:
                         log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
 
         return [(move.name, self.calculate_damage_range(my_active, move, foe))
@@ -45,20 +45,23 @@ class CheatSheetEngine(BattleEngine):
                 for move in foe.moveset]
 
     def describe_possible_foe_moves(self, my_active, foe):
+        foe_index = (foe.item.forme if foe.can_mega_evolve else
+                    '%sL%d' % (foe.base_species, foe.level))
+
         if __debug__:
             for move in foe.moveset:
-                if (move.name not in rbstats.probability[foe.name]['moves'] and
+                if (move.name not in rbstats.probability[foe_index]['moves'] and
                     move.type != Type.NOTYPE):
                     log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
 
         if len(foe.moveset) >= 4:
             return ''
 
-        possible_moves = [movedex[move] for move in rbstats[foe.name]['moves']
+        possible_moves = [movedex[move] for move in rbstats[foe_index]['moves']
                           if movedex[move] not in foe.moveset]
         data = []
         for move in possible_moves[:]:
-            prob = rbstats.attr_probability(foe.name, move.name,
+            prob = rbstats.attr_probability(foe_index, move.name,
                                             [move_.name for move_ in foe.moveset if
                                              move_.type != Type.NOTYPE])
             if not prob:
