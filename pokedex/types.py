@@ -53,7 +53,7 @@ HPivs = {
     Type.ELECTRIC: (31, 31, 31, 30, 31, 31),
     Type.FIGHTING: (31, 31, 30, 30, 30, 30),
     Type.FIRE:     (31, 30, 31, 30, 31, 30),
-    Type.FLYING:   (31, 30, 30, 30, 30, 31),
+    Type.FLYING:   (30, 30, 30, 30, 30, 31),
     Type.GHOST:    (31, 31, 30, 31, 30, 31),
     Type.GRASS:    (31, 30, 31, 30, 31, 31),
     Type.GROUND:   (31, 31, 31, 30, 30, 31),
