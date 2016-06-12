@@ -657,6 +657,7 @@ class BattleClient(object):
         |-damage|p2a: Cresselia|311/381|[from] ability: Dry Skin|[of] p2a: Cresselia
         |-damage|p1a: Arceus|350/381|[from] ability: Liquid Ooze|[of] p2a: Graveler
         |-damage|p2a: Porygon-Z|30/100|[from] item: Life Orb
+        |-damage|p2a: Electivire|35/100|[from] item: Rocky Helmet|[of] p1a: Ferrothorn
         |-damage|p2a: Cresselia|264/381|[from] item: Black Sludge
         |-damage|p1a: Throh|169/331|[from] Leech Seed|[of] p2a: Venusaur
         """
@@ -666,8 +667,9 @@ class BattleClient(object):
         if len(msg) > 3:
             if msg[3].startswith('[from] item'):
                 item = itemdex[normalize_name(msg[3])]
-                self.reveal_foe_original_item(pokemon, item)
-                self.set_item(pokemon, item)
+                holder = self.get_pokemon_from_msg(msg, 4) if len(msg) > 4 else pokemon
+                self.reveal_foe_original_item(holder, item)
+                self.set_item(holder, item)
             elif msg[3].startswith('[from] ability'):
                 who = self.get_pokemon_from_msg(msg, 4)
                 self.set_ability(who, abilitydex[normalize_name(msg[3])])
