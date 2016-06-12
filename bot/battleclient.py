@@ -490,21 +490,31 @@ class BattleClient(object):
             self.engine.show_foe_moves(self.my_side.active_pokemon,
                                        self.foe_side.active_pokemon)
 
-        if self.make_moves:     # naive implementation for testing interaction with server:
-            if request.get('forceSwitch') or random.randrange(10) == 0:
-                choice = int(raw_input(
-                    '\n'.join(['choose switch:',
-                               '\n'.join(normalize_name(p['ident'].split(None, 1)[-1]) for i, p in
-                                         enumerate(request['side']['pokemon'], 1)),
-                               '> '])))
-                choices = [i for i, p in enumerate(request['side']['pokemon'], 1)
-                           if not p['condition'] == '0 fnt']
-                choice = random.choice(choices)
-                self.send('|'.join([self.room, '/choose switch %d' % choice] +
-                                   filter(None, [str(self.rqid)])))
-            else:
-                move = random.randint(1, 4)
-                self.send('%s|/choose move %d|%d' % (self.room, move, self.request['rqid']))
+        if self.make_moves:
+            self.make_move(request)
+
+    def make_move(self, request):
+        """
+        Temporary random implementation of moves for testing interaction with server
+
+        TODO: Use an AI module for move selection
+        """
+        if request.get('forceSwitch') or (random.randrange(10) == 0 and
+                                          self.my_side.active_pokemon.get_switch_choices()):
+            choices = [i for i, p in enumerate(request['side']['pokemon'], 1)
+                       if not p['condition'] == '0 fnt' and not p['active']]
+            log.i("switch choices: %s", choices)
+            choice = random.choice(choices)
+            self.send('|'.join([self.room, '/choose switch %d' % choice] +
+                               filter(None, [str(self.rqid)])))
+        else:
+            choices = [i for i, m in enumerate(request['active'][0]['moves'], 1)
+                       if not m.get('disabled')]
+            log.i("move choices: %s", choices)
+            move = random.choice(choices)
+            mega = (" mega" if request['active'][0].get('canMegaEvo', False) and random.randrange(2)
+                    else "")
+            self.send('%s|/choose move %d%s|%d' % (self.room, move, mega, self.request['rqid']))
 
     # TODO: handle zoroark/illusion
     def handle_move(self, msg):
