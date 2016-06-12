@@ -982,7 +982,7 @@ class BattleClient(object):
                         victim = self.get_pokemon_from_msg(msg, 4)
                         self.reveal_foe_original_item(victim, item)
                         self.remove_item(victim)
-            elif msg[3].startswith('[from] move: Trick'):
+            elif msg[3].endswith('Trick'):
                 trick = True
                 foe = self.battlefield.get_foe(pokemon)
                 self.reveal_foe_original_item(foe, item)
