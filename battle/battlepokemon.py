@@ -536,7 +536,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         for i, move in enumerate(self.moveset):
             moves[i] = str(move)
         rv = '\n'.join([
-            '%s  %s%d/%d  L%d%s' % (self.name, self.status + '  ' if self.status else  '',
+            '%s  %s%d/%d  L%d%s' % (str(self), self.status + '  ' if self.status else  '',
                                     self.hp, self.max_hp, self.level, types),
             '[%s]' % '/'.join(move for move in moves),
             '%s  %s' % (self.ability, self.item)] +
