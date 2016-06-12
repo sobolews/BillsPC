@@ -1715,3 +1715,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.get_effect(Volatile.TRAPPED).trapper, wobbuffet)
         self.assertTrue(wobbuffet.has_effect(Volatile.TRAPPER))
         self.assertEqual(wobbuffet.get_effect(Volatile.TRAPPER).trappee, self.hitmonchan)
+
+    def test_lockedmove_isnt_set_if_foe_is_immune(self):
+        self.handle('|switch|p2a: Clefable|Clefable, L75, M|100/100')
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|turn|2')
+
+        self.handle('|move|p1a: Zekrom|Outrage|p2a: Clefable')
+        self.handle('|-immune|p2a: Clefable|[msg]')
+
+        zekrom = self.my_side.active_pokemon
+        self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))

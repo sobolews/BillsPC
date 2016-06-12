@@ -622,17 +622,22 @@ class BattleClient(object):
 
         |-immune|p2a: Muk|[msg]|[from] ability: Synchronize|[of] p1a: Umbreon
         """
+        pokemon = self.get_pokemon_from_msg(msg)
         if len(msg) > 3:
-            pokemon = self.get_pokemon_from_msg(msg)
             ability = normalize_name(msg[3])
             if ability == 'synchronize':
                 pokemon = self.get_pokemon_from_msg(msg, 4)
             self.set_ability(pokemon, abilitydex[ability])
         elif msg[2] == 'confusion':
-            pokemon = self.get_pokemon_from_msg(msg)
             self.set_ability(pokemon, abilitydex['owntempo'])
             if pokemon.has_effect(Volatile.LOCKEDMOVE):
                 pokemon.remove_effect(Volatile.LOCKEDMOVE)
+
+        foe = self.battlefield.get_foe(pokemon)
+        if (foe is not None and
+            foe.last_move_used in (movedex['outrage'], movedex['petaldance'])
+        ):
+            foe.remove_effect(Volatile.LOCKEDMOVE)
 
     def handle_damage(self, msg):
         """
