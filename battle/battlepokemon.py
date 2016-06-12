@@ -255,10 +255,14 @@ class BattlePokemon(object, EffectHandlerMixin):
             if self._calc_hp(evs[HP], ivs[HP]) % 2 > 0:
                 evs[HP] -= 4
         else: # stealth rock weakness
+            forme = self
             if self.item is not None and self.item.is_mega_stone:
                 forme = POKEDEX[self.item.forme]
-            else:
-                forme = self
+            elif self.name == 'castform':
+                if self.item == itemdex['heatrock']:
+                    forme = POKEDEX['castformsunny']
+                elif self.item == itemdex['damprock']:
+                    forme = POKEDEX['castformrainy']
             eff = effectiveness(Type.ROCK, forme)
             mod = None
             if eff == 2:

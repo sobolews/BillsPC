@@ -93,6 +93,14 @@ class TestCalculateInitialStats(TestCase):
         self.assertDictEqual(tropius.stats, {'atk': 117, 'def': 185, 'spa': 167,
                                              'spd': 192, 'spe': 132, 'max_hp': 300})
 
+        # detect castformsunny forme and adjust HP for stealthrock weakness
+        castform = BattlePokemon(pokedex['castform'], level=83, item=itemdex['heatrock'],
+                                 moveset=(movedex['weatherball'], movedex['solarbeam'],
+                                          movedex['sunnyday'], movedex['icebeam']))
+        self.assertDictEqual(castform.stats, {'atk': 121, 'def': 164, 'spa': 164,
+                                              'spd': 164, 'spe': 164, 'max_hp': 251})
+
+
 class TestAbilityChange(MultiMoveTestCase):
     def test_change_ability(self):
         self.new_battle(p0_ability='levitate')
