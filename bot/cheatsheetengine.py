@@ -45,6 +45,9 @@ class CheatSheetEngine(BattleEngine):
                 for move in foe.moveset]
 
     def describe_possible_foe_moves(self, my_active, foe):
+        if len(foe.moveset) >= 4 or foe.base_species == 'ditto':
+            return ''
+
         foe_index = (foe.item.forme if foe.can_mega_evolve else
                     '%sL%d' % (foe.base_species, foe.level))
 
@@ -53,9 +56,6 @@ class CheatSheetEngine(BattleEngine):
                 if (move.name not in rbstats.probability[foe_index]['moves'] and
                     move.type != Type.NOTYPE):
                     log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
-
-        if len(foe.moveset) >= 4:
-            return ''
 
         possible_moves = [movedex[move] for move in rbstats[foe_index]['moves']
                           if movedex[move] not in foe.moveset]
