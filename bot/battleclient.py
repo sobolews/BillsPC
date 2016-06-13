@@ -1793,7 +1793,7 @@ class BattleClient(object):
                 pokemon.moveset = []
                 pokemon.pp = {}
                 for jmove in request['active'][0]['moves']:
-                    move = movedex[jmove['id']]
+                    move = movedex[normalize_name(jmove['move'])]
                     pokemon.moveset.append(move)
                     if jmove.get('pp'):
                         pokemon.pp[move] = jmove['pp']
