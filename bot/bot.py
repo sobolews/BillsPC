@@ -28,13 +28,15 @@ class Bot(WebSocketClient):
     is very CPU intensive; even one battle will pin resources so simultaneous battles is low
     priority.
     """
-    def __init__(self, username=None, password=None, accept_challenges=False, *args, **kwargs):
+    def __init__(self, username=None, password=None, accept_challenges=False, make_moves=False,
+                 *args, **kwargs):
         super(Bot, self).__init__(*args, **kwargs)
         self.username = ((username or raw_input('Showdown username: '))
                          .decode('utf-8').encode('ascii', 'ignore'))
         self.password = password or getpass.getpass()
         self.challenging = None
         self.accept_challenges = accept_challenges
+        self.make_moves = make_moves
         self.latest_request = None
         self.battleclient = None
         self.battleroom = None
@@ -73,7 +75,8 @@ class Bot(WebSocketClient):
             if battleroom != msg_block[0][1:]: # Instantiate new battle room
                 if msg_block[1] == '|init|battle':
                     self.battleroom = msg_block[0][1:]
-                    self.battleclient = BattleClient(self.username, self.battleroom, self.send)
+                    self.battleclient = BattleClient(self.username, self.battleroom, self.send,
+                                                     self.make_moves)
                     self.latest_request = None
                     self.challenging = None
                 else:

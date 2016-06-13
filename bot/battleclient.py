@@ -35,7 +35,7 @@ class BattleClient(object):
     Purposefully unimplemented message types (because they don't occur in randbats):
     {-swapboost, -copyboost, -invertboost, -ohko, -mustrecharge}
     """
-    def __init__(self, name, room, send):
+    def __init__(self, name, room, send, make_moves=False):
         """
         name: (str) client's username
         room: (str) the showdown room that battle messages should be sent to
@@ -56,8 +56,7 @@ class BattleClient(object):
         self.crit = False
         self.hiddenpower_trigger = None
 
-        self.make_moves = False # set to True to have the bot make random choices (TODO: use an AI
-                                # module for choices)
+        self.make_moves = make_moves # send move choices to the server
         self.engine = CheatSheetEngine.from_battlefield(None)
 
         def _send(msg):
