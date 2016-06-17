@@ -86,9 +86,25 @@ class BattleClient(object):
         A different index may be passed, e.g. index=3 to get Weezing from
         `|-sethp|p2a: Emboar|55/100|p1a: Weezing|166/238|[from] move: Pain Split`
         """
-        for pokemon in self.get_side_from_msg(msg, index).team:
-            if pokemon.base_species.startswith(normalize_name(msg[index])):
+        side = self.get_side_from_msg(msg, index)
+        name = normalize_name(msg[index])
+
+        # is it referring to my own illusioned zoroark?
+        if (side.index == self.my_player and
+            normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark' and
+            self.get_illusion_target_name(self.request) == name
+        ):
+            name = 'zoroark'
+
+        for pokemon in side.team:
+            if pokemon.base_species.startswith(name):
                 return pokemon
+
+    @staticmethod
+    def get_illusion_target_name(request):
+        for pokemon in reversed(request['side']['pokemon']):
+            if pokemon['condition'] != '0 fnt':
+                return normalize_name(pokemon['ident'])
 
     def set_hp_status(self, pokemon, hp_msg):
         """
@@ -929,6 +945,9 @@ class BattleClient(object):
 
         if pokemon.item is not None:
             self.set_item(pokemon, pokemon.item, reset=True)
+
+        if pokemon.name == 'zoroark' and not msg[1].endswith('Zoroark'):
+            pokemon.illusion = True
 
     handle_drag = handle_switch
     handle_replace = handle_switch
