@@ -136,7 +136,7 @@ class Bot(WebSocketClient):
         'cant', '-item', '-enditem', '-ability', '-transform', '-start', '-end', '-activate',
         'callback', '-singleturn', '-singlemove', '-sidestart', '-sideend', '-fieldstart',
         '-fieldend', '-formechange', 'detailschange', '-mega', '-supereffective', '-resisted',
-        '-miss', '-immune', '-fail', '-crit', 'win', 'tie', 'prematureend'
+        '-miss', '-immune', '-fail', '-crit', 'win', 'tie', 'prematureend', 'replace'
     }
 
     IGNORE_MSGS = {

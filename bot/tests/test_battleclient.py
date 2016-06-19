@@ -1800,3 +1800,16 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.handle('|-damage|p1a: Wobbuffet|72/222')
         self.assertEqual(self.zoroark.hp, 72)
         self.assertEqual(self.wobbuffet.hp, self.wobbuffet.max_hp)
+
+    def test_replace_my_zoroark(self):
+        self.switch_in_zoroark_as_wobbuffet()
+        self.handle('|move|p2a: Goodra|Dragon Pulse|p1a: Wobbuffet')
+        self.handle('|replace|p1a: Zoroark|Zoroark, L78, M|200/222')
+        self.handle('|-end|p1a: Zoroark|Illusion')
+        self.handle('|-damage|p1a: Zoroark|114/222')
+
+        self.assertFalse(self.zoroark.illusion)
+        self.assertEqual(self.zoroark.hp, 114)
+        self.assertEqual(self.wobbuffet.hp, self.wobbuffet.max_hp)
+        self.assertTrue(self.zoroark.is_active)
+        self.assertFalse(self.wobbuffet.is_active)

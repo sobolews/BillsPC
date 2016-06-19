@@ -950,7 +950,6 @@ class BattleClient(object):
             pokemon.illusion = True
 
     handle_drag = handle_switch
-    handle_replace = handle_switch
 
     def reveal_foe_pokemon(self, side, msg):
         assert side.index == self.foe_player, (side.index, self.foe_player)
@@ -980,6 +979,18 @@ class BattleClient(object):
 
         self.foe_side.reveal(pokemon)
         return pokemon
+
+    def handle_replace(self, msg):
+        """
+        |replace|p1a: Zoroark|Zoroark, L78, F|53/100 par
+        """
+        side = self.get_side_from_msg(msg)
+
+        if side.index == self.my_player:
+            pokemon = side.active_pokemon
+            assert pokemon.name == 'zoroark', pokemon
+            pokemon.illusion = False
+            return
 
     def handle_item(self, msg):
         """
@@ -1421,7 +1432,11 @@ class BattleClient(object):
         |-end|p2a: Leafeon|Attract|[silent]
         |-end|p2a: Ditto|Magnet Rise
         |-end|p2a: Chansey|Infestation|[partiallytrapped]
+        |-end|p2a: Zoroark|Illusion
         """
+        if msg[2] == 'Illusion':
+            return
+
         pokemon = self.get_pokemon_from_msg(msg)
         effect = self.END_EFFECT_MAP.get(normalize_name(msg[2]))
         if effect is not None:
