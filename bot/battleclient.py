@@ -100,6 +100,12 @@ class BattleClient(object):
             if pokemon.base_species.startswith(name):
                 return pokemon
 
+    def is_ally(self, pokemon):
+        return pokemon.side.index == self.my_player
+
+    def is_foe(self, pokemon):
+        return pokemon.side.index == self.foe_player
+
     @staticmethod
     def get_illusion_target_name(request):
         for pokemon in reversed(request['side']['pokemon']):
@@ -126,7 +132,7 @@ class BattleClient(object):
             pokemon.status = None
 
         hp, max_hp = map(int, msg[0].split('/'))
-        if pokemon.side.index == self.foe_player:
+        if self.is_foe(pokemon):
             # We do some estimation here, since information on the opponent's HP is always a
             # percentage.
             assert max_hp == 100, max_hp
@@ -553,7 +559,7 @@ class BattleClient(object):
 
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
-        foe = (self.foe_side.active_pokemon if pokemon.side.index == self.my_player
+        foe = (self.foe_side.active_pokemon if self.is_ally(pokemon)
                else self.my_side.active_pokemon)
 
         if msg[2] == 'Hidden Power':
@@ -580,7 +586,7 @@ class BattleClient(object):
                 pp_sub = 1
             if move in pokemon.pp:
                 pokemon.pp[move] -= pp_sub
-            elif pokemon.side.index == self.foe_player: # Add move to foe's moveset
+            elif self.is_foe(pokemon): # Add move to foe's moveset
                 self.reveal_move(pokemon, move)
                 pokemon.pp[move] = max(0, move.max_pp - pp_sub)
             elif __debug__:
@@ -1133,7 +1139,7 @@ class BattleClient(object):
             pokemon.set_effect(effects.UnburdenVolatile())
 
     def reveal_foe_original_item(self, pokemon, item):
-        if (pokemon.side == self.foe_side and
+        if (self.is_foe(pokemon) and
             itemdex['_unrevealed_'] in (pokemon.item, pokemon.original_item)):
             pokemon.original_item = item
 
@@ -1649,7 +1655,7 @@ class BattleClient(object):
 
         pokemon.transform_into(foe, engine=None, client=True)
 
-        if pokemon.side.index == self.my_player:
+        if self.is_ally(pokemon):
             # The moves might be in the wrong order, so reset them according to the current request.
             # Set any of the foe's moves that are revealed by transforming.
             pokemon.moveset = []
