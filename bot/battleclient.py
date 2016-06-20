@@ -549,18 +549,28 @@ class BattleClient(object):
         `|move|POKEMON|MOVE|TARGET[|FROM]`
 
         |move|p1a: Groudon|Aerial Ace|p2a: Fraxure|[from]Copycat
+        |move|p1a: Kyurem|Outrage|p2a: Glalie|[from]lockedmove
+        |move|p2a: Stunfisk|Earth Power|p1a: Swalot|[from]Sleep Talk
 
         Just subtract pp for MOVE from POKEMON
         Start autotomize from here, since there's no -start message when incrementing the multiplier
         """
-        if len(msg) > 4:
-            if msg[4].startswith('[from]'):
-                return # this move is called by another (copycat, sleeptalk, lockedmove)
-
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
         foe = (self.foe_side.active_pokemon if self.is_ally(pokemon)
                else self.my_side.active_pokemon)
+
+        if len(msg) > 4 and msg[4].startswith('[from]'):
+            # if hiddenpower is used, then for the purposes of copycat (the consumer of
+            # battlefield.last_move_used), it is the default hiddenpowerdark
+            called_move = movedex['hiddenpowerdark' if msg[2] == 'Hidden Power' else
+                                  normalize_name(msg[2])]
+            self.battlefield.last_move_used = called_move
+            if msg[4].endswith('Sleep Talk'):
+                self.reveal_move(pokemon, called_move)
+            else:
+                pokemon.last_move_used = called_move
+            return          # this move is called by another (copycat, sleeptalk, lockedmove)
 
         if msg[2] == 'Hidden Power':
             hp_moves = [move for move in pokemon.moveset if
@@ -593,6 +603,7 @@ class BattleClient(object):
                 log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
         pokemon.last_move_used = move
+        self.battlefield.last_move_used = move
         pokemon.will_move_this_turn = False
         if pokemon.has_effect(Volatile.TWOTURNMOVE):
             pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)

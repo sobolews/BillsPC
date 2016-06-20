@@ -1761,6 +1761,22 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         electivire = self.foe_side.active_pokemon
         self.assertEqual(electivire.item, itemdex['_unrevealed_'])
 
+    def test_battlefield_and_pokemon_last_move_used(self):
+        self.handle('|switch|p2a: Stunfisk|Stunfisk, L83, M|100/100')
+        stunfisk = self.foe_side.active_pokemon
+        self.handle('|move|p2a: Stunfisk|Dragon Pulse|p1a: Hitmonchan|[from]Copycat')
+        self.assertFalse(movedex['dragonpulse'] in self.goodra.moveset)
+        self.assertEqual(self.battlefield.last_move_used, movedex['dragonpulse'])
+        self.assertEqual(stunfisk.last_move_used, movedex['dragonpulse'])
+
+        self.handle('|turn|2')
+        self.handle('|move|p2a: Stunfisk|Sleep Talk|p2a: Stunfisk')
+        self.handle('|move|p2a: Stunfisk|Stealth Rock|p1a: Hitmonchan|[from]Sleep Talk')
+        self.assertTrue(movedex['stealthrock'] in stunfisk.moveset)
+        self.assertEqual(self.battlefield.last_move_used, movedex['stealthrock'])
+        self.assertEqual(stunfisk.last_move_used, movedex['sleeptalk'])
+
+
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):
         super(TestBattleClientZoroark, self).setUp()
