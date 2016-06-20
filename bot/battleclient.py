@@ -960,9 +960,9 @@ class BattleClient(object):
     def reveal_foe_pokemon(self, side, msg):
         assert side.index == self.foe_player, (side.index, self.foe_player)
         assert side.num_unrevealed > 0, side.num_unrevealed
-        assert msg[3] == '100/100', msg[3]
         details = msg[2].split(', ')
         name = normalize_name(details[0])
+        assert msg[3] == '100/100' or name == 'zoroark', (msg[3], name)
         level = int(details[1].lstrip('L'))
         assert 1 <= level <= 100, 'level=%r' % level
         gender = details[2] if len(details) > 2 else None
