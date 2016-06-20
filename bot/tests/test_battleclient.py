@@ -1776,9 +1776,11 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.avalugg = self.my_side.team[0]
         self.zoroark = self.my_side.team[1]
         self.wobbuffet = self.my_side.team[5]
+        self.goodra = self.foe_side.team[0]
         self.assertEqual(self.avalugg.name, 'avalugg')
         self.assertEqual(self.zoroark.name, 'zoroark')
         self.assertEqual(self.wobbuffet.name, 'wobbuffet')
+        self.assertEqual(self.goodra.name, 'goodra')
 
     def switch_in_zoroark_as_wobbuffet(self):
         self.bc.request = json.loads('{"active":[{"moves":[{"move":"Nasty Plot","id":"nastyplot","pp":32,"maxpp":32,"target":"self","disabled":false},{"move":"Flamethrower","id":"flamethrower","pp":24,"maxpp":24,"target":"normal","disabled":false},{"move":"Focus Blast","id":"focusblast","pp":8,"maxpp":8,"target":"normal","disabled":false},{"move":"Dark Pulse","id":"darkpulse","pp":24,"maxpp":24,"target":"any","disabled":false}]}],"side":{"name":"0raichu","id":"p1","pokemon":[{"ident":"p1: Zoroark","details":"Zoroark, L78, M","condition":"222/222","active":true,"stats":{"atk":168,"def":139,"spa":232,"spd":139,"spe":209},"moves":["nastyplot","flamethrower","focusblast","darkpulse"],"baseAbility":"illusion","item":"lifeorb","pokeball":"pokeball"},{"ident":"p1: Avalugg","details":"Avalugg, L83, F","condition":"293/293","active":false,"stats":{"atk":242,"def":353,"spa":121,"spd":124,"spe":94},"moves":["avalanche","toxic","roar","rapidspin"],"baseAbility":"sturdy","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Klinklang","details":"Klinklang, L81","condition":"230/230","active":false,"stats":{"atk":209,"def":233,"spa":160,"spd":184,"spe":192},"moves":["wildcharge","shiftgear","substitute","geargrind"],"baseAbility":"clearbody","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Sandslash","details":"Sandslash, L81, M","condition":"254/254","active":false,"stats":{"atk":209,"def":225,"spa":120,"spd":136,"spe":152},"moves":["swordsdance","knockoff","rapidspin","earthquake"],"baseAbility":"sandrush","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Volcanion","details":"Volcanion, L75","condition":"243/243","active":false,"stats":{"atk":208,"def":223,"spa":239,"spd":179,"spe":149},"moves":["superpower","hiddenpowerice60","fireblast","substitute"],"baseAbility":"waterabsorb","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Wobbuffet","details":"Wobbuffet, L74, F","condition":"403/403","active":false,"stats":{"atk":53,"def":129,"spa":92,"spd":129,"spe":92},"moves":["mirrorcoat","destinybond","encore","counter"],"baseAbility":"shadowtag","item":"custapberry","pokeball":"pokeball"}]},"rqid":2}')
@@ -1813,3 +1815,40 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertEqual(self.wobbuffet.hp, self.wobbuffet.max_hp)
         self.assertTrue(self.zoroark.is_active)
         self.assertFalse(self.wobbuffet.is_active)
+
+    def test_replace_foe_zoroark(self):
+        self.handle('|-damage|p2a: Goodra|50/100')
+        self.handle('|move|p1a: Avalugg|Rapid Spin|p2a: Goodra')
+        self.handle('|replace|p2a: Zoroark|Zoroark, L78, F|50/100')
+        self.handle('|-end|p2a: Zoroark|Illusion')
+        self.handle('|-damage|p2a: Zoroark|45/100')
+
+        self.assertFalse(self.goodra.is_active)
+        foe_zoroark = self.foe_side.active_pokemon
+        self.assertEqual(foe_zoroark.name, 'zoroark')
+        self.assertEqual(foe_zoroark.hp, round(222 * 0.45))
+        self.assertEqual(self.goodra.hp, self.goodra.max_hp)
+
+    def test_replace_foe_zoroark_with_effects(self):
+        self.handle('|-status|p2a: Goodra|par')
+        self.handle('|-boost|p2a: Goodra|atk|2')
+        self.handle('|-start|p2a: Goodra|move: Yawn|[of] p1a: Avalugg')
+        self.handle('|move|p1a: Avalugg|Rapid Spin|p2a: Goodra')
+        self.handle('|replace|p2a: Zoroark|Zoroark, L78, F|100/100 par')
+        self.handle('|-end|p2a: Zoroark|Illusion')
+        self.handle('|-damage|p2a: Zoroark|95/100 par')
+
+        self.assertFalse(self.goodra.is_active)
+        self.assertNotEqual(self.foe_side.active_pokemon, self.goodra)
+        self.assertIsNone(self.goodra.status)
+        self.assertEqual(self.goodra.hp, self.goodra.max_hp)
+        self.assertFalse(self.goodra.has_effect(Volatile.YAWN))
+        self.assertFalse(self.goodra.boosts)
+
+        foe_zoroark = self.foe_side.active_pokemon
+
+        self.assertEqual(foe_zoroark.status, Status.PAR)
+        self.assertTrue(foe_zoroark.has_effect(Status.PAR))
+        self.assertTrue(foe_zoroark.has_effect(Volatile.YAWN))
+        self.assertEqual(foe_zoroark.boosts['atk'], 2)
+        self.assertEqual(foe_zoroark.hp, round(222 * 0.95))

@@ -998,6 +998,41 @@ class BattleClient(object):
             pokemon.illusion = False
             return
 
+        foe_zoroark = self.get_pokemon_from_msg(msg)
+        if foe_zoroark is None:
+            log.i("Revealing foe's zoroark for the first time")
+            foe_zoroark = self.reveal_foe_pokemon(self.foe_side, msg)
+
+        decoy = self.foe_side.active_pokemon
+        log.i("%s was a decoy for foe's zoroark", decoy)
+
+        decoy.is_active = False
+        side.active_pokemon = foe_zoroark
+        foe_zoroark.is_active = True
+        foe_zoroark.last_move_used = decoy.last_move_used
+        foe_zoroark.turns_out = decoy.turns_out
+        foe_zoroark.will_move_this_turn = decoy.will_move_this_turn
+        foe_zoroark.item_used_this_turn = decoy.item_used_this_turn
+
+        decoy.remove_effect(ITEM, force=True)
+        decoy.remove_effect(ABILITY, force=True)
+
+        foe_zoroark._effect_index = decoy._effect_index
+        decoy._effect_index = {}
+        foe_zoroark.effect_handlers = decoy.effect_handlers
+        decoy.effect_handlers = {key: list() for key in decoy.effect_handlers}
+        foe_zoroark.status = decoy.status
+        foe_zoroark.turns_slept = decoy.turns_slept
+        foe_zoroark.boosts = decoy.boosts
+        decoy.boosts = Boosts()
+        self.set_hp_status(foe_zoroark, msg[3])
+
+        decoy.ability = decoy.base_ability
+        # TODO: remember the pre-switch values for hp and status and turns_slept
+        decoy.hp = decoy.max_hp
+        decoy.status = None
+        decoy.turns_slept = None
+
     def handle_item(self, msg):
         """
         `|-item|POKEMON|ITEM`
