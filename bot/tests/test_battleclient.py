@@ -210,7 +210,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertListEqual(self.hitmonchan.effects, [])
         self.assertListEqual(self.hitmonchan.effect_handlers['on_residual'], [])
         self.assertFalse(self.hitmonchan.has_effect(Status.PSN))
-        self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
+        self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209 psn')
         self.assertTrue(self.hitmonchan.has_effect(Status.PSN))
 
     def test_opponent_switch_in_turns_slept(self):
@@ -218,7 +218,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|cant|p1a: Hitmonchan|slp')
         self.assertEqual(self.hitmonchan.turns_slept, 1)
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
-        self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209')
+        self.handle('|switch|p1a: Hitmonchan|Hitmonchan, L79, M|209/209 slp')
         self.assertEqual(self.hitmonchan.turns_slept, 1)
         self.assertEqual(self.hitmonchan.status, Status.SLP)
         self.assertTrue(self.hitmonchan.has_effect(Status.SLP))
@@ -1575,7 +1575,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|switch|p2a: Ampharos|Ampharos, L77, F|100/100')
         self.handle('|turn|4')
-        self.handle('|switch|p2a: Goodra|Goodra, L77, M|82/100')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, M|82/100 tox')
         self.handle('|-damage|p2a: Goodra|76/100 tox|[from] psn')
         self.handle('|turn|5')
 

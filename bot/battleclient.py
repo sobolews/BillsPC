@@ -118,6 +118,12 @@ class BattleClient(object):
                 pokemon.hp = 0
                 pokemon.status = Status.FNT
                 return
+            else:
+                status = self.STATUS_MAP[msg[1]][0]
+                if not pokemon.has_effect(status):
+                    self.set_status(pokemon, status)
+        else:
+            pokemon.status = None
 
         hp, max_hp = map(int, msg[0].split('/'))
         if pokemon.side.index == self.foe_player:
