@@ -60,13 +60,22 @@ class CheatSheetEngine(BattleEngine):
         possible_moves = [movedex[move] for move in rbstats[foe_index]['moves']
                           if movedex[move] not in foe.moveset]
         data = []
+        known_attrs = [move_.name for move_ in foe.moveset if move_.type != Type.NOTYPE]
+        if not rbstats.possible_sets(foe_index, known_attrs):
+            if __debug__: log.w("%s's move probabilities cannot be calculated: unexpected "
+                                "attribute in %s", foe_index, known_attrs)
+            calculate_prob = False
+        else:
+            calculate_prob = True
+
         for move in possible_moves[:]:
-            prob = rbstats.attr_probability(foe_index, move.name,
-                                            [move_.name for move_ in foe.moveset if
-                                             move_.type != Type.NOTYPE])
-            if not prob:
-                possible_moves.remove(move)
-                continue
+            if calculate_prob:
+                prob = rbstats.attr_probability(foe_index, move.name, known_attrs)
+                if not prob:
+                    possible_moves.remove(move)
+                    continue
+            else:
+                prob = 0.5
 
             dmg_range = self.calculate_damage_range(foe, move, my_active)
             data.append((move.name, prob, dmg_range))

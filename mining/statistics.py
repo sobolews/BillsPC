@@ -234,26 +234,29 @@ class RandbatsStatistics(object):
             self.counter[name]['level'].update(other.counter[name]['level'])
             self.counter[name]['sets'].update(other.counter[name]['sets'])
 
+    def possible_sets(self, pokemon, known_attrs):
+        attrs_counter = self[pokemon]['sets']
+        return [attrset for attrset in attrs_counter if
+                all(attr_ in attrset for attr_ in known_attrs)]
+
     def attr_probability(self, pokemon, attr, known_attrs):
         """
         Return the probability [0.0, 1.0] that pokemon has attr, given that it has [known_attrs].
         pokemon: str, attr: str, known_attrs: list<str>
         """
         attrs_counter = self[pokemon]['sets']
-        possible_attrs = [attrset for attrset in attrs_counter if
-                          all(attr_ in attrset for attr_ in known_attrs)]
+        possible = self.possible_sets(pokemon, known_attrs)
 
-        if not possible_attrs:
+        if not possible:
             if __debug__:
                 log.e("%s's known_attrs %s does not correspond to any known attrset in rbstats. "
                       "Cannot calculate move probabilities; returning 0.5", pokemon, known_attrs)
             return 0.5
 
-        target_attrs = [attrset for attrset in possible_attrs if
-                        attr in attrset]
+        target_attrs = [attrset for attrset in possible if attr in attrset]
 
         probability = (float(sum(attrs_counter[attrset] for attrset in target_attrs)) /
-                       sum(attrs_counter[attrset] for attrset in possible_attrs))
+                       sum(attrs_counter[attrset] for attrset in possible))
         return probability
 
 
