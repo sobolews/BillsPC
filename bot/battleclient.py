@@ -930,7 +930,8 @@ class BattleClient(object):
         side = self.get_side_from_msg(msg)
 
         if pokemon is None:     # we are revealing a foe's pokemon
-            pokemon = self.reveal_foe_pokemon(side, msg)
+            pokemon = self.create_foe_pokemon_from_msg(side, msg)
+            self.reveal_foe_pokemon(side, pokemon)
 
         outgoing = side.active_pokemon
         if outgoing is not None:
@@ -974,7 +975,7 @@ class BattleClient(object):
 
     handle_drag = handle_switch
 
-    def reveal_foe_pokemon(self, side, msg):
+    def create_foe_pokemon_from_msg(self, side, msg):
         assert side.index == self.foe_player, (side.index, self.foe_player)
         assert side.num_unrevealed > 0, side.num_unrevealed
         details = msg[2].split(', ')
@@ -984,12 +985,13 @@ class BattleClient(object):
         assert 1 <= level <= 100, 'level=%r' % level
         gender = details[2] if len(details) > 2 else None
         assert gender in ('M', 'F', None), gender
-        pokemon = FoePokemon(pokedex[name], level, moveset=[],
-                             side=side, ability=abilitydex['_unrevealed_'],
-                             item=itemdex['_unrevealed_'], gender=gender)
+        return FoePokemon(pokedex[name], level, moveset=[],
+                          side=side, ability=abilitydex['_unrevealed_'],
+                          item=itemdex['_unrevealed_'], gender=gender)
 
+    def reveal_foe_pokemon(self, side, pokemon):
         # reveal item/ability/moves that are known from statistics
-        rb_index = '%sL%d' % (name, level) # using level-based rbstats index
+        rb_index = '%sL%d' % (pokemon.name, pokemon.level) # using level-based rbstats index
         stats = rbstats[rb_index]
         if len(stats['item']) == 1:
             pokemon.item = pokemon.original_item = itemdex[tuple(stats['item'])[0]]
@@ -1001,7 +1003,6 @@ class BattleClient(object):
                 self.reveal_move(pokemon, movedex[move])
 
         self.foe_side.reveal(pokemon)
-        return pokemon
 
     def handle_replace(self, msg):
         """
