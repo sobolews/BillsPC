@@ -13,6 +13,7 @@ class FoeBattleSide(BattleSide):
         super(FoeBattleSide, self).__init__(*args, **kwargs)
         self.active_pokemon.is_active = False
         self.active_pokemon = None
+        self.active_illusion = False
 
     @property
     def num_unrevealed(self):

@@ -85,16 +85,21 @@ class BattleClient(object):
 
         A different index may be passed, e.g. index=3 to get Weezing from
         `|-sethp|p2a: Emboar|55/100|p1a: Weezing|166/238|[from] move: Pain Split`
+
+        If getting a foe pokemon and foe_side.active_illusion is set, then return the foe's
+        zoroark instead of that pokemon.
         """
         side = self.get_side_from_msg(msg, index)
         name = normalize_name(msg[index])
 
-        # is it referring to my own illusioned zoroark?
+        # is it referring to an illusioned zoroark?
         if (side.index == self.my_player and
             normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark' and
             self.get_illusion_target_name(self.request) == name
         ):
             name = 'zoroark'
+        elif side.index == self.foe_player and side.active_illusion:
+            return self.get_foe_zoroark()
 
         for pokemon in side.team:
             if pokemon.base_species.startswith(name):
@@ -543,7 +548,6 @@ class BattleClient(object):
                     else "")
             self.send('%s|/choose move %d%s|%d' % (self.room, move, mega, self.request['rqid']))
 
-    # TODO: handle zoroark/illusion
     def handle_move(self, msg):
         """
         `|move|POKEMON|MOVE|TARGET[|FROM]`
@@ -597,8 +601,15 @@ class BattleClient(object):
             if move in pokemon.pp:
                 pokemon.pp[move] -= pp_sub
             elif self.is_foe(pokemon): # Add move to foe's moveset
-                self.reveal_move(pokemon, move)
-                pokemon.pp[move] = max(0, move.max_pp - pp_sub)
+                rb_index = '%sL%d' % (pokemon.base_species, pokemon.level)
+                if (move.name not in rbstats[rb_index]['moves'] and
+                    move.name in rbstats['zoroark']['moves']
+                ):
+                    log.i('Detected zoroark based on move %s', move)
+                    pokemon = self.detect_illusioned_foe(pokemon, break_illusion=False)
+                else:
+                    self.reveal_move(pokemon, move)
+                    pokemon.pp[move] = max(0, move.max_pp - pp_sub)
             elif __debug__:
                 log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
@@ -926,8 +937,10 @@ class BattleClient(object):
 
         |switch|p1a: Whiscash|Whiscash, L83, F|318/318
         """
-        pokemon = self.get_pokemon_from_msg(msg)
         side = self.get_side_from_msg(msg)
+        if side == self.foe_side:
+            side.active_illusion = False
+        pokemon = self.get_pokemon_from_msg(msg)
 
         if pokemon is None:     # we are revealing a foe's pokemon
             pokemon = self.create_foe_pokemon_from_msg(side, msg)
@@ -995,7 +1008,7 @@ class BattleClient(object):
         stats = rbstats[rb_index]
         if len(stats['item']) == 1:
             pokemon.item = pokemon.original_item = itemdex[tuple(stats['item'])[0]]
-        if len(stats['ability']) == 1:
+        if len(stats['ability']) == 1 and pokemon.ability == abilitydex['_unrevealed_']:
             pokemon.ability = abilitydex[tuple(stats['ability'])[0]]
             self.set_base_ability(pokemon, pokemon.ability)
         for move, pmove in rbstats.probability[rb_index]['moves'].items():
@@ -1017,18 +1030,47 @@ class BattleClient(object):
             pokemon = side.active_pokemon
             assert pokemon.name == 'zoroark', pokemon
             pokemon.illusion = False
-            return
+        elif side.active_illusion:
+            foe = side.active_pokemon
+            assert foe.name == 'zoroark', foe
+            foe.illusion = False
+            side.active_illusion = False
+        else:
+            self.detect_illusioned_foe(side.active_pokemon, break_illusion=True)
 
-        foe_zoroark = self.get_pokemon_from_msg(msg)
+    def get_foe_zoroark(self):
+        for pokemon in self.foe_side.team:
+            if pokemon.base_species == 'zoroark':
+                return pokemon
+        log.d("No zoroark found on foe's team")
+        return None
+
+    def detect_illusioned_foe(self, decoy, break_illusion):
+        """
+        Called upon the revelation that the foe is actually an illusioned zoroark.
+
+        Swap out the current active pokemon for the foe's zoroark, possibly newly revealing
+        it. All effects are transferred from the current pokemon to zoroark, and the active
+        pokemon is placed on the bench and rolled back to its previous state as though it never
+        had been sent out.
+        """
+        assert self.is_foe(decoy), decoy
+        assert decoy.is_active, decoy
+        assert decoy == self.foe_side.active_pokemon, self.foe_side
+        assert not (not break_illusion and decoy.name == 'zoroark'), decoy
+
+        foe_side = self.foe_side
+        foe_zoroark = self.get_foe_zoroark()
         if foe_zoroark is None:
             log.i("Revealing foe's zoroark for the first time")
-            foe_zoroark = self.reveal_foe_pokemon(self.foe_side, msg)
-
-        decoy = self.foe_side.active_pokemon
+            foe_zoroark = FoePokemon(pokedex['zoroark'], rbstats['zoroark']['level'].keys()[0],
+                                     moveset=[], side=foe_side, ability=abilitydex['illusion'],
+                                     item=itemdex['_unrevealed_'], gender='M')
+            self.reveal_foe_pokemon(foe_side, foe_zoroark)
         log.i("%s was a decoy for foe's zoroark", decoy)
 
         decoy.is_active = False
-        side.active_pokemon = foe_zoroark
+        foe_side.active_pokemon = foe_zoroark
         foe_zoroark.is_active = True
         foe_zoroark.last_move_used = decoy.last_move_used
         foe_zoroark.turns_out = decoy.turns_out
@@ -1046,13 +1088,18 @@ class BattleClient(object):
         foe_zoroark.turns_slept = decoy.turns_slept
         foe_zoroark.boosts = decoy.boosts
         decoy.boosts = Boosts()
-        self.set_hp_status(foe_zoroark, msg[3])
+        foe_zoroark.hp = int(round((float(decoy.hp) / decoy.max_hp) * foe_zoroark.max_hp))
 
         decoy.ability = decoy.base_ability
         # TODO: remember the pre-switch values for hp and status and turns_slept
         decoy.hp = decoy.max_hp
         decoy.status = None
         decoy.turns_slept = None
+
+        foe_zoroark.illusion = not break_illusion
+        self.foe_side.active_illusion = not break_illusion
+
+        return foe_zoroark
 
     def handle_item(self, msg):
         """

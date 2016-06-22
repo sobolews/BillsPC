@@ -5,6 +5,7 @@ from mock import patch
 
 from battle.decisionmakers import AutoDecisionMaker
 from bot.battleclient import BattleClient
+from mining.statistics import RandbatsStatistics
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard,
                            PseudoWeather)
@@ -1776,6 +1777,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.battlefield.last_move_used, movedex['stealthrock'])
         self.assertEqual(stunfisk.last_move_used, movedex['sleeptalk'])
 
+    def test_rbstats_has_only_one_level_for_zoroark(self):
+        """
+        BattleClient.detect_illusioned_foe currently depends on zoroark having only one possible
+        level when generating a new zoroark
+        """
+        rbstats = RandbatsStatistics.from_pickle()
+        self.assertEqual(len(rbstats['zoroark']['level']), 1)
+
 
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):
@@ -1868,3 +1877,37 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertTrue(foe_zoroark.has_effect(Volatile.YAWN))
         self.assertEqual(foe_zoroark.boosts['atk'], 2)
         self.assertEqual(foe_zoroark.hp, round(222 * 0.95))
+
+    def test_detect_zoroark_based_on_move(self):
+        self.handle('|switch|p2a: Wobbuffet|Wobbuffet, L74, M|100/100')
+        self.handle('|-damage|p2a: Wobbuffet|40/100')
+        self.handle('|turn|2')
+
+        wobbuffet = self.foe_side.active_pokemon
+        # using flamethrower should reveal that it's a zoroark
+        self.handle('|move|p2a: Wobbuffet|Flamethrower|p1a: Avalugg')
+        self.handle('|-miss|p2a: Wobbuffet|p1a: Avalugg')
+
+        zoroark = self.foe_side.active_pokemon
+        self.assertNotEqual(zoroark, wobbuffet)
+        self.assertEqual(zoroark.name, 'zoroark')
+        self.assertTrue(zoroark.illusion)
+        self.assertEqual(wobbuffet.hp, wobbuffet.max_hp)
+        self.assertTrue(zoroark.is_active)
+        self.assertFalse(wobbuffet.is_active)
+        self.assertEqual(zoroark.hp, round(222 * 0.40))
+
+        self.handle('|-status|p2a: Wobbuffet|psn')
+        self.handle('|-damage|p2a: Wobbuffet|28/100 psn|[from] psn')
+        self.assertEqual(zoroark.hp, round(222 * 0.28))
+        self.assertEqual(wobbuffet.hp, wobbuffet.max_hp)
+        self.assertEqual(zoroark.status, Status.PSN)
+        self.assertIsNone(wobbuffet.status)
+        self.assertTrue(zoroark.illusion)
+
+        self.handle('|replace|p2a: Zoroark|Zoroark, L78, F|28/100 psn')
+        self.assertEqual(zoroark.hp, round(222 * 0.28))
+        self.assertEqual(wobbuffet.hp, wobbuffet.max_hp)
+        self.assertEqual(zoroark.status, Status.PSN)
+        self.assertIsNone(wobbuffet.status)
+        self.assertFalse(zoroark.illusion)
