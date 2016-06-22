@@ -1007,6 +1007,9 @@ class BattleClient(object):
         """
         |replace|p1a: Zoroark|Zoroark, L78, F|53/100 par
         """
+        if not msg[1].endswith('Zoroark'):
+            log.e('Got replace msg for non-Zoroark pokemon', msg)
+
         side = self.get_side_from_msg(msg)
 
         if side.index == self.my_player:
