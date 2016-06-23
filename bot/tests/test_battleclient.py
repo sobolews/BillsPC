@@ -1928,3 +1928,28 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertEqual(self.goodra.status, Status.PSN)
         self.assertEqual(zoroark.hp, round(zoroark.max_hp * 0.66))
         self.assertEqual(zoroark.status, Status.PAR)
+
+    def test_save_and_reset_learned_moves_on_reveal_illusion(self):
+        self.handle('|switch|p2a: Yveltal|Yveltal, L73|100/100')
+        yveltal = self.foe_side.active_pokemon
+        self.handle('|move|p2a: Yveltal|Dark Pulse|p1a: Avalugg')
+        self.handle('|turn|2')
+        self.handle('|move|p2a: Yveltal|Roost|p2a: Yveltal')
+        self.handle('|turn|3')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, F|100/100')
+        self.handle('|turn|4')
+        self.handle('|switch|p2a: Yveltal|Yveltal, L73|100/100')
+        self.handle('|turn|5')
+        self.handle('|move|p2a: Yveltal|U-turn|p1a: Avalugg')
+        self.handle('|replace|p2a: Zoroark|Zoroark, L78, F|100/100')
+
+        # Expected: all zoroark-possible moves are removed from yveltal, and only those moves
+        # that zoroark used during this switch are added to zoroark's moveset. Even though in
+        # this case we know that yveltal does have darkpulse, we could have added darkpulse to
+        # yveltal's moveset during a separate switch-in when it was actually zoroark. Since we
+        # may not be able to tell who actually tell who has darkpulse, nobody should have it.
+
+        zoroark = self.foe_side.active_pokemon
+        self.assertNotEqual(zoroark, yveltal)
+        self.assertSetEqual(set(zoroark.moveset), {movedex['uturn']})
+        self.assertSetEqual(set(yveltal.moveset), {movedex['roost']})

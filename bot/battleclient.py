@@ -1091,12 +1091,20 @@ class BattleClient(object):
         foe_zoroark.boosts = decoy.boosts
         decoy.boosts = Boosts()
         foe_zoroark.hp = int(round((float(decoy.hp) / decoy.max_hp) * foe_zoroark.max_hp))
+        foe_zoroark.illusion = not break_illusion
+        self.foe_side.active_illusion = not break_illusion
+
+        for move in decoy.moveset:
+            if move not in decoy.pre_switch_state.pp_moves.keys():
+                self.reveal_move(foe_zoroark, move)
 
         decoy.ability = decoy.base_ability
         decoy.reset_pre_switch_state()
-
-        foe_zoroark.illusion = not break_illusion
-        self.foe_side.active_illusion = not break_illusion
+        # forget any possibly false moves that could have been revealed from a previous illusion
+        for move in decoy.moveset[:]:
+            if move.name in rbstats['zoroark']['moves']:
+                decoy.moveset.remove(move)
+                del decoy.pp[move]
 
         return foe_zoroark
 
