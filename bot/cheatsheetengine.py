@@ -1,5 +1,5 @@
 from battle.battleengine import BattleEngine
-from mining.statistics import RandbatsStatistics
+from mining.statistics import RandbatsStatistics, rbstats_key
 from pokedex import effects
 from pokedex.enums import FAIL, Volatile, Type
 from pokedex.abilities import abilitydex
@@ -23,10 +23,9 @@ class CheatSheetEngine(BattleEngine):
         """ :type my_active BattlePokemon """
         if __debug__:
             if not my_active.is_transformed:
+                active = rbstats_key(my_active)
                 for move in my_active.moveset:
-                    rb_index = (my_active.item.forme if my_active.can_mega_evolve else
-                                '%sL%d' % (my_active.base_species, my_active.level))
-                    if move.name not in rbstats.probability[rb_index]['moves']:
+                    if move.name not in rbstats.probability[active]['moves']:
                         log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
 
         return [(move.name, self.calculate_damage_range(my_active, move, foe))
@@ -48,8 +47,7 @@ class CheatSheetEngine(BattleEngine):
         if len(foe.moveset) >= 4 or foe.base_species == 'ditto':
             return ''
 
-        foe_index = (foe.item.forme if foe.can_mega_evolve else
-                    '%sL%d' % (foe.base_species, foe.level))
+        foe_index = rbstats_key(foe)
 
         if __debug__:
             for move in foe.moveset:

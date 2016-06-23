@@ -8,7 +8,7 @@ from bot.foeside import FoeBattleSide, FoePokemon
 from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
 from bot.cheatsheetengine import CheatSheetEngine
 from mining import create_pokedex
-from mining.statistics import RandbatsStatistics
+from mining.statistics import RandbatsStatistics, rbstats_key
 from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex, BaseTrappingAbility
@@ -399,7 +399,7 @@ class BattleClient(object):
             if len(known_info) == 6 or (pokemon.is_mega and len(known_info) == 5):
                 continue        # all info is known
 
-            rb_index = '%sL%d' % (pokemon.base_species, pokemon.level)
+            rb_index = rbstats_key(pokemon)
             if pokemon.item == itemdex['_unrevealed_']:
                 for item in rbstats[rb_index]['item']:
                     if rbstats.attr_probability(rb_index, item, known_info) == 1:
@@ -601,8 +601,7 @@ class BattleClient(object):
             if move in pokemon.pp:
                 pokemon.pp[move] -= pp_sub
             elif self.is_foe(pokemon): # Add move to foe's moveset
-                rb_index = '%sL%d' % (pokemon.base_species, pokemon.level)
-                if (move.name not in rbstats[rb_index]['moves'] and
+                if (move.name not in rbstats[rbstats_key(pokemon)]['moves'] and
                     move.name in rbstats['zoroark']['moves']
                 ):
                     log.i('Detected zoroark based on move %s', move)
@@ -638,7 +637,7 @@ class BattleClient(object):
             pokemon.set_effect(effects.ChoiceLock(move))
 
     def get_possible_hiddenpowers(self, pokemon):
-        possible = [movedex[move] for move in rbstats[pokemon.base_species]['moves']
+        possible = [movedex[move] for move in rbstats[rbstats_key(pokemon)]['moves']
                     if move.startswith('hiddenpower')]
         move = possible[0] if len(possible) == 1 else movedex['hiddenpowernotype']
         return move, possible
@@ -1006,7 +1005,7 @@ class BattleClient(object):
 
     def reveal_foe_pokemon(self, side, pokemon):
         # reveal item/ability/moves that are known from statistics
-        rb_index = '%sL%d' % (pokemon.name, pokemon.level) # using level-based rbstats index
+        rb_index = rbstats_key(pokemon)
         stats = rbstats[rb_index]
         if len(stats['item']) == 1:
             pokemon.item = pokemon.original_item = itemdex[tuple(stats['item'])[0]]

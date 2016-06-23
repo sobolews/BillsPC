@@ -260,6 +260,16 @@ class RandbatsStatistics(object):
         return probability
 
 
+def rbstats_key(battlepokemon):
+    """
+    Get the rbstats key associated with a BattlePokemon. For use by clients of RandbatsStatistics.
+    """
+    if battlepokemon.can_mega_evolve:
+        return battlepokemon.item.forme
+    else:
+        return '%sL%d' % (battlepokemon.base_species, battlepokemon.level)
+
+
 def copy_miner_file():
     shutil.copyfile(SHOWDOWN_MINER_LOCAL, SHOWDOWN_MINER)
 
