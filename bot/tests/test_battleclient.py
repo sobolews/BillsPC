@@ -1911,3 +1911,20 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertEqual(zoroark.status, Status.PSN)
         self.assertIsNone(wobbuffet.status)
         self.assertFalse(zoroark.illusion)
+
+    def test_save_and_reset_pre_switch_state_on_reveal_illusion(self):
+        self.handle('|-damage|p2a: Goodra|77/100')
+        self.handle('|-status|p2a: Goodra|psn')
+        self.handle('|switch|p2a: Stunfisk|Stunfisk, L83, M|100/100')
+        self.handle('|turn|2')
+        self.handle('|switch|p2a: Goodra|Goodra, L77, F|100/100')
+        self.handle('|-damage|p2a: Goodra|66/100')
+        self.handle('|-status|p2a: Goodra|par')
+        self.handle('|replace|p2a: Zoroark|Zoroark, L78, F|66/100 par')
+
+        zoroark = self.foe_side.active_pokemon
+        self.assertNotEqual(zoroark, self.goodra)
+        self.assertEqual(self.goodra.hp, round(self.goodra.max_hp * 0.77))
+        self.assertEqual(self.goodra.status, Status.PSN)
+        self.assertEqual(zoroark.hp, round(zoroark.max_hp * 0.66))
+        self.assertEqual(zoroark.status, Status.PAR)

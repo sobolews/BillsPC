@@ -973,6 +973,8 @@ class BattleClient(object):
         pokemon.will_move_this_turn = False
         pokemon.item_used_this_turn = None
         pokemon.ability = pokemon.base_ability
+        if self.is_foe(pokemon):
+            pokemon.save_pre_switch_state()
 
         self.set_hp_status(pokemon, msg[3])
         if pokemon.status is not None:
@@ -1091,10 +1093,7 @@ class BattleClient(object):
         foe_zoroark.hp = int(round((float(decoy.hp) / decoy.max_hp) * foe_zoroark.max_hp))
 
         decoy.ability = decoy.base_ability
-        # TODO: remember the pre-switch values for hp and status and turns_slept
-        decoy.hp = decoy.max_hp
-        decoy.status = None
-        decoy.turns_slept = None
+        decoy.reset_pre_switch_state()
 
         foe_zoroark.illusion = not break_illusion
         self.foe_side.active_illusion = not break_illusion
