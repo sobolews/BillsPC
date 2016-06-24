@@ -1953,3 +1953,57 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertNotEqual(zoroark, yveltal)
         self.assertSetEqual(set(zoroark.moveset), {movedex['uturn']})
         self.assertSetEqual(set(yveltal.moveset), {movedex['roost']})
+
+    def test_illusion_faints_without_being_revealed(self):
+        self.handle('|switch|p2a: Illumise|Illumise, L83, F|100/100') # actually a zoroark
+        illusion = self.foe_side.active_pokemon
+        self.handle('|-status|p2a: Illumise|tox')
+        self.handle('|-damage|p2a: Illumise|1/100')
+        self.handle('|turn|2')
+        self.handle('|-damage|p2a: Illumise|0 fnt')
+        self.handle('|faint|p2a: Illumise')
+        self.handle('|switch|p2a: Illumise|Illumise, L83, F|100/100') # the real illumise
+        illumise = self.foe_side.active_pokemon
+        self.handle('|turn|3')
+
+        self.assertTrue(illusion.is_fainted())
+        self.assertEqual(illumise.hp, illumise.max_hp)
+        self.assertEqual(illumise.status, None)
+        self.assertTrue(illumise.is_active)
+        self.assertEqual(illumise, self.foe_side.active_pokemon)
+
+        self.handle('|-damage|p2a: Illumise|50/100|')
+        self.handle('|-status|p2a: Illumise|par')
+
+        self.assertTrue(illusion.is_fainted())
+        self.assertEqual(illumise.hp, round(illumise.max_hp * 0.5))
+        self.assertEqual(illumise.status, Status.PAR)
+
+        self.handle('|-damage|p2a: Illumise|0 fnt')
+        self.handle('|-faint|p2a: Illumise')
+
+        self.assertTrue(illusion.is_fainted())
+        self.assertTrue(illumise.is_fainted())
+
+    def get_fainted_pokemon(self, side):
+        for pokemon in side.team:
+            if pokemon.is_fainted():
+                return pokemon
+
+    def test_illusion_faints_after_both_being_damaged_and_revealed(self):
+        self.handle('|switch|p2a: Vaporeon|Vaporeon, L77, F|100/100') # the real vaporeon
+        self.handle('|-status|p2a: Vaporeon|tox')
+        self.handle('|-damage|p2a: Vaporeon|1/100 tox')
+        self.handle('|turn|2')
+        self.handle('|switch|p2a: Vaporeon|Vaporeon, L77, F|100/100') # actually zoroark
+        self.handle('|-damage|p2a: Vaporeon|0 fnt') # faint without |replace|
+        self.handle('|faint|p2a: Vaporeon')
+        self.handle('|switch|p2a: Vaporeon|Vaporeon, L77, F|1/100 tox')
+        self.handle('|turn|3')
+
+        vaporeon = self.foe_side.active_pokemon
+        self.assertIsNotNone(self.get_fainted_pokemon(self.foe_side))
+        self.assertEqual(vaporeon.hp, 1)
+        self.assertEqual(vaporeon.status, Status.TOX)
+        self.assertTrue(vaporeon.is_active, Status.TOX)
+        self.assertEqual(vaporeon.name, 'vaporeon')

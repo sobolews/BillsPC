@@ -103,6 +103,8 @@ class BattleClient(object):
 
         for pokemon in side.team:
             if pokemon.base_species.startswith(name):
+                if pokemon.is_fainted():
+                    continue
                 return pokemon
 
     def is_ally(self, pokemon):
@@ -787,6 +789,8 @@ class BattleClient(object):
         |faint|p1a: Hitmonchan
         """
         pokemon = self.get_pokemon_from_msg(msg)
+        if pokemon is None:
+            return # pokemon was already fainted, probably from `|-damage|POKEMON|0 fnt|`
         pokemon.hp = 0
         pokemon.status = Status.FNT
 
