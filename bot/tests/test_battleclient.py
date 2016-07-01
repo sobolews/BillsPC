@@ -12,6 +12,8 @@ from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideC
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 
+rbstats = RandbatsStatistics.from_pickle()
+
 class TestBattleClientBase(TestCase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
@@ -1782,7 +1784,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         BattleClient.detect_illusioned_foe currently depends on zoroark having only one possible
         level when generating a new zoroark
         """
-        rbstats = RandbatsStatistics.from_pickle()
         self.assertEqual(len(rbstats['zoroark']['level']), 1)
 
 
@@ -2007,3 +2008,23 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertEqual(vaporeon.status, Status.TOX)
         self.assertTrue(vaporeon.is_active, Status.TOX)
         self.assertEqual(vaporeon.name, 'vaporeon')
+
+    @patch.dict(rbstats['yveltalL73'],
+                {('darkpulse', 'hurricane', 'suckerpunch', 'uturn', 'darkaura', 'leftovers'): 1})
+    def test_learn_fifth_move_because_of_illusion_shenanigans(self):
+        self.handle('|switch|p2a: Yveltal|Yveltal, L73|100/100') # actually a zoroark
+        self.handle('|move|p2a: Yveltal|Sucker Punch|p1a: Avalugg')
+        self.handle('|turn|2')
+        self.handle('|move|p2a: Yveltal|Dark Pulse|p1a: Avalugg')
+        self.handle('|turn|3')
+        self.handle('|move|p2a: Yveltal|U-turn|p1a: Avalugg')
+        self.handle('|switch|p2a: Scrafty|Scrafty, L79, F|100/100')
+        self.handle('|turn|4')
+        self.handle('|switch|p2a: Yveltal|Yveltal, L73|100/100') # actually yveltal
+        yveltal = self.foe_side.active_pokemon
+        self.handle('|move|p2a: Yveltal|Hurricane|p1a: Avalugg')
+        self.handle('|turn|5')
+        self.handle('|move|p2a: Yveltal|Toxic|p1a: Avalugg') # 5th move
+        self.handle('|turn|6')
+
+        self.assertSetEqual(set(yveltal.moveset), {movedex['hurricane'], movedex['toxic']})

@@ -652,6 +652,21 @@ class BattleClient(object):
             move == movedex['struggle'] or
             (move.is_hiddenpower and any(known.is_hiddenpower for known in pokemon.moveset))):
             return
+
+        if len(pokemon.moveset) >= 4:
+            log.i('Revealing %s when %s already has a full moveset: %s',
+                  move, pokemon, pokemon.moveset)
+            for name in rbstats['zoroark']['moves']:
+                known_move = movedex[name]
+                if known_move in pokemon.moveset:
+                    log.i('Forgetting possible zoroark move: %s', known_move)
+                    pokemon.moveset.remove(known_move)
+            # reset assumed item, because item could have been revealed due to faulty assumptions
+            pokemon.item = itemdex['_unrevealed_']
+            pokemon.original_item = itemdex['_unrevealed_']
+            if move.name in rbstats['zoroark']['moves']:
+                log.i('Rejected learning %s due to possibility of zoroark', move)
+                return
         assert len(pokemon.moveset) < 4, ("%s was revealed to have %s but already has a full "
                                           'moveset:\n %r' % (pokemon, move, pokemon))
 
