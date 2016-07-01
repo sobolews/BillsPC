@@ -371,15 +371,15 @@ class BattleClient(object):
             self.battlefield.unsuppress_weather()
         if abilitydex['darkaura'] in abilities:
             self.battlefield.set_effect(effects.DarkAuraFieldEffect())
-        else:
+        elif self.battlefield.has_effect(PseudoWeather.DARKAURA):
             self.battlefield.remove_effect(PseudoWeather.DARKAURA)
         if abilitydex['fairyaura'] in abilities:
             self.battlefield.set_effect(effects.FairyAuraFieldEffect())
-        else:
+        elif self.battlefield.has_effect(PseudoWeather.FAIRYAURA):
             self.battlefield.remove_effect(PseudoWeather.FAIRYAURA)
         if abilitydex['aurabreak'] in abilities:
             self.battlefield.set_effect(effects.AuraBreakFieldEffect())
-        else:
+        elif self.battlefield.has_effect(PseudoWeather.AURABREAK):
             self.battlefield.remove_effect(PseudoWeather.AURABREAK)
 
     def update_foe_inferences(self):
