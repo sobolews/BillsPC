@@ -1016,7 +1016,6 @@ class BattleClient(object):
 
     def create_foe_pokemon_from_msg(self, side, msg):
         assert side.index == self.foe_player, (side.index, self.foe_player)
-        assert side.num_unrevealed > 0, side.num_unrevealed
         details = msg[2].split(', ')
         name = normalize_name(details[0])
         level = int(details[1].lstrip('L'))
