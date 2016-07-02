@@ -78,7 +78,7 @@ class BattleClient(object):
         assert side is not None, side
         return side
 
-    def get_pokemon_from_msg(self, msg, index=1):
+    def get_pokemon_from_msg(self, msg, index=1, switching=False):
         """
         All `POKEMON` in messages are formatted 'p2a: Vaporeon'
         Returning None is allowed when the pokemon is one of the foe's unrevealed pokemon
@@ -93,11 +93,15 @@ class BattleClient(object):
         name = normalize_name(msg[index])
 
         # is it referring to an illusioned zoroark?
-        if (side.index == self.my_player and
-            normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark' and
-            self.get_illusion_target_name(self.request) == name
-        ):
-            name = 'zoroark'
+        if side.index == self.my_player:
+            if ((not switching and
+                 self.my_side.active_pokemon is not None and
+                 self.my_side.active_pokemon.base_species == 'zoroark')
+                or
+                (normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark' and
+                 self.get_illusion_target_name(self.request) == name)
+            ):
+                name = 'zoroark'
         elif side.index == self.foe_player and side.active_illusion:
             return self.get_foe_zoroark()
 
@@ -964,7 +968,7 @@ class BattleClient(object):
         side = self.get_side_from_msg(msg)
         if side == self.foe_side:
             side.active_illusion = False
-        pokemon = self.get_pokemon_from_msg(msg)
+        pokemon = self.get_pokemon_from_msg(msg, switching=True)
 
         if pokemon is None:     # we are revealing a foe's pokemon
             pokemon = self.create_foe_pokemon_from_msg(side, msg)
