@@ -967,7 +967,7 @@ class BattleClient(object):
 
         if pokemon is None:     # we are revealing a foe's pokemon
             pokemon = self.create_foe_pokemon_from_msg(side, msg)
-            self.reveal_foe_pokemon(side, pokemon)
+            self.reveal_foe_pokemon(pokemon)
 
         outgoing = side.active_pokemon
         if outgoing is not None:
@@ -1026,7 +1026,7 @@ class BattleClient(object):
                           side=side, ability=abilitydex['_unrevealed_'],
                           item=itemdex['_unrevealed_'], gender=gender)
 
-    def reveal_foe_pokemon(self, side, pokemon):
+    def reveal_foe_pokemon(self, pokemon):
         # reveal item/ability/moves that are known from statistics
         rb_index = rbstats_key(pokemon)
         stats = rbstats[rb_index]
@@ -1090,7 +1090,7 @@ class BattleClient(object):
             foe_zoroark = FoePokemon(pokedex['zoroark'], rbstats['zoroark']['level'].keys()[0],
                                      moveset=[], side=foe_side, ability=abilitydex['illusion'],
                                      item=itemdex['_unrevealed_'], gender='M')
-            self.reveal_foe_pokemon(foe_side, foe_zoroark)
+            self.reveal_foe_pokemon(foe_zoroark)
         log.i("%s was a decoy for foe's zoroark", decoy)
 
         decoy.is_active = False
