@@ -670,8 +670,11 @@ class BattleClient(object):
             if move.name in rbstats['zoroark']['moves']:
                 log.i('Rejected learning %s due to possibility of zoroark', move)
                 return
-        assert len(pokemon.moveset) < 4, ("%s was revealed to have %s but already has a full "
-                                          'moveset:\n %r' % (pokemon, move, pokemon))
+        if len(pokemon.moveset) >= 4: # if the above handling didn't fix it, something's gone wrong
+            log.e("%s's moveset %s is full; cannot reveal %s. Clearing moveset as a last resort.",
+                  pokemon, pokemon.moveset, move)
+            pokemon.moveset = []
+            pokemon.pp.clear()
 
         pokemon.moveset.append(move)
         pokemon.pp[move] = move.max_pp
