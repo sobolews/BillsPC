@@ -1776,6 +1776,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         """
         self.assertEqual(len(rbstats['zoroark']['level']), 1)
 
+    def test_remove_lockedmove_on_confusion_damage(self):
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|-start|p1a: Zekrom|confusion')
+        self.handle('|turn|2')
+        self.handle('|move|p1a: Zekrom|Outrage|p2a: Goodra')
+        self.handle('|turn|3')
+        zekrom = self.my_side.active_pokemon
+        self.assertTrue(zekrom.has_effect(Volatile.LOCKEDMOVE))
+        self.handle('|-activate|p1a: Zekrom|confusion')
+        self.handle('|-damage|p1a: Zekrom|49/266|[from] confusion')
+        self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))
+
 
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):

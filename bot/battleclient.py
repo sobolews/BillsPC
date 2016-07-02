@@ -741,6 +741,7 @@ class BattleClient(object):
         |-damage|p2a: Electivire|35/100|[from] item: Rocky Helmet|[of] p1a: Ferrothorn
         |-damage|p2a: Cresselia|264/381|[from] item: Black Sludge
         |-damage|p1a: Throh|169/331|[from] Leech Seed|[of] p2a: Venusaur
+        |-damage|p1a: Haxorus|119/244|[from] confusion
         """
         pokemon = self.get_pokemon_from_msg(msg)
         assert pokemon.is_active, pokemon
@@ -764,6 +765,8 @@ class BattleClient(object):
                     tox.stage += 1
                 elif __debug__:
                     log.e("%s damaged by tox but has no Status.TOX effect: %s", pokemon, msg)
+            elif msg[3].endswith('confusion'):
+                pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
         self.set_hp_status(pokemon, msg[2])
 
@@ -844,6 +847,8 @@ class BattleClient(object):
         """
         `|cant|POKEMON|REASON` or `|cant|POKEMON|REASON|MOVE`
 
+        |cant|p2a: Omastar|flinch
+
         Increment pokemon.turns_slept if its sleeping:
         |cant|p2a: Alomomola|slp
 
@@ -853,6 +858,7 @@ class BattleClient(object):
         |cant|p2a: Aerodactyl|Focus Punch|Focus Punch
         """
         pokemon = self.get_pokemon_from_msg(msg)
+        pokemon.remove_effect(Volatile.LOCKEDMOVE)
         if msg[2] == 'slp':
             assert pokemon.status is Status.SLP, (pokemon, pokemon.status)
             if pokemon.turns_slept < 3:
