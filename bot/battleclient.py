@@ -1122,7 +1122,8 @@ class BattleClient(object):
         self.foe_side.active_illusion = not break_illusion
 
         for move in decoy.moveset:
-            if move not in decoy.pre_switch_state.pp_moves.keys():
+            if (move not in decoy.pre_switch_state.pp_moves.keys() and
+                move.name in rbstats['zoroark']['moves']):
                 self.reveal_move(foe_zoroark, move)
 
         decoy.ability = decoy.base_ability
