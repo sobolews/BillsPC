@@ -694,7 +694,8 @@ class BattleClient(object):
                 ability = abilitydex[normalize_name(msg[i])]
                 self.set_ability(pokemon, ability)
         failmon = self.get_pokemon_from_msg(msg)
-        failmon.remove_effect(Volatile.BATONPASS)
+        if failmon is not None:
+            failmon.remove_effect(Volatile.BATONPASS)
 
     def handle_immune(self, msg):
         """
