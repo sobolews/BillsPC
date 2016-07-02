@@ -591,6 +591,10 @@ class BattleEngine(object):
         if attacker is not None and not attacker.is_fainted():
             attacker.activate_effect('on_foe_faint', attacker, cause, source, pokemon, self)
 
+        foe = self.get_foe(pokemon)
+        if foe is not None:
+            foe.remove_trap_effects()
+
         pokemon.clear_effects(self)
         pokemon.boosts = Boosts()
 
@@ -742,6 +746,10 @@ class BattleEngine(object):
         outgoing.side.active_pokemon = None
         outgoing.is_switching_out = False
         outgoing.turns_out = 0
+
+        foe = self.get_foe(outgoing)
+        if foe is not None:
+            foe.remove_trap_effects()
 
     @staticmethod
     def switch_in(pokemon):

@@ -37,9 +37,7 @@ class BaseTrappingAbility(AbilityEffect):
     @staticmethod
     def trap(pokemon, foe):
         """ Cause `foe` to be trapped by `pokemon` """
-        trap_effect = effects.Trapped(pokemon)
-        foe.set_effect(trap_effect)
-        pokemon.set_effect(effects.Trapper(duration=None, trappee=foe))
+        foe.set_effect(effects.Trapped())
 
 class Adaptability(AbilityEffect):
     def on_modify_move(self, move, user, engine):

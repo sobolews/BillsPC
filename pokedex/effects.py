@@ -267,8 +267,7 @@ class HealingWish(BaseEffect):
 class PartialTrap(BaseEffect):
     source = Volatile.PARTIALTRAP
 
-    def __init__(self, trapper):
-        self.trapper = trapper
+    def __init__(self):
         # 4 or 5 turns of residual effects, plus one turn of trap then release
         # 4 turns case is handled in on_residual
         self.duration = 6
@@ -278,49 +277,16 @@ class PartialTrap(BaseEffect):
 
     @priority(-11)
     def on_residual(self, pokemon, foe, engine):
-        if self.trapper.is_fainted() or not self.trapper.is_active:
-            pokemon.remove_effect(Volatile.PARTIALTRAP)
-            return
         if __debug__: log.i("%s was hurt by PartialTrap", pokemon)
         engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
         if self.duration == 2 and random.randrange(2) == 0:
             self.duration = 1   # 4 turns
 
-    def on_end(self, pokemon, _):  # could end by e.g. uturn or roar
-        self.trapper.remove_effect(Volatile.TRAPPER)
-
-class Trapper(BaseEffect):
-    source = Volatile.TRAPPER
-
-    def __init__(self, duration, trappee):
-        self.duration = duration
-        self.trappee = trappee
-
-    def on_end(self, pokemon, _):
-        """ When the trapper leaves, the trappee is no longer trapped """
-        self.trappee.remove_effect(Volatile.PARTIALTRAP)
-        self.trappee.remove_effect(Volatile.TRAPPED)
-
-    @priority(0)
-    def on_residual(self, pokemon, foe, engine):
-        """ Handle foe batonpassing partialtrap effect """
-        if (not self.trappee == foe and
-            foe.has_effect(Volatile.PARTIALTRAP) and
-            foe.get_effect(Volatile.PARTIALTRAP).trapper == pokemon
-        ):
-            self.trappee = foe
-
 class Trapped(BaseEffect):
     source = Volatile.TRAPPED
 
-    def __init__(self, trapper):
-        self.trapper = trapper
-
     def on_trap_check(self, pokemon):
         return Type.GHOST not in pokemon.types
-
-    def on_end(self, pokemon, _):  # could end by e.g. uturn or roar
-        self.trapper.remove_effect(Volatile.TRAPPER)
 
 class StallCounter(BaseEffect):
     """

@@ -1725,9 +1725,7 @@ class infestation(Move):
 
     def on_success(self, user, target, engine):
         if not target.is_fainted() and not user.is_fainted():
-            trap_effect = effects.PartialTrap(user)
-            target.set_effect(trap_effect)
-            user.set_effect(effects.Trapper(trap_effect.duration, target))
+            target.set_effect(effects.PartialTrap())
 
 class ironhead(Move):
     def init_move(self):

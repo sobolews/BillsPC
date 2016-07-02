@@ -149,6 +149,10 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         return True
 
+    def remove_trap_effects(self):
+        self.remove_effect(Volatile.PARTIALTRAP)
+        self.remove_effect(Volatile.TRAPPED)
+
     def clear_effects(self, engine):
         self.activate_effect('on_end', self, engine)
 

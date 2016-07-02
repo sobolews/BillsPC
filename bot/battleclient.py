@@ -11,7 +11,7 @@ from mining import create_pokedex
 from mining.statistics import RandbatsStatistics, rbstats_key
 from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
-from pokedex.abilities import abilitydex, BaseTrappingAbility
+from pokedex.abilities import abilitydex
 from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
                            PseudoWeather)
 from pokedex.items import itemdex
@@ -507,8 +507,7 @@ class BattleClient(object):
 
         active = request.get('active')
         if active is not None and active[0].get('maybeTrapped'):
-            BaseTrappingAbility.trap(self.foe_side.active_pokemon,
-                                     self.my_side.active_pokemon)
+            self.my_side.active_pokemon.set_effect(effects.Trapped())
 
         self._validate_my_team()
 
@@ -969,8 +968,8 @@ class BattleClient(object):
             bp = outgoing.get_effect(Volatile.BATONPASS)
             if bp is not None:
                 bp.on_switch_out(outgoing, incoming=pokemon, engine=None)
-            elif outgoing.has_effect(Volatile.TRAPPER):
-                foe = self.battlefield.get_foe(pokemon)
+            foe = self.battlefield.get_foe(pokemon)
+            if foe is not None:
                 foe.remove_effect(Volatile.PARTIALTRAP, force=True)
                 foe.remove_effect(Volatile.TRAPPED, force=True)
             if outgoing.ability == abilitydex['regenerator'] and not outgoing.is_fainted():
@@ -1413,8 +1412,7 @@ class BattleClient(object):
             # The infestation effect is starting
             foe = self.battlefield.get_foe(pokemon)
             assert foe is not None, pokemon
-            pokemon.set_effect(effects.PartialTrap(foe))
-            foe.set_effect(effects.Trapper(6, pokemon))
+            pokemon.set_effect(effects.PartialTrap())
         elif effect == 'mummy':
             self.set_ability(pokemon, abilitydex['mummy'])
             foe = self.battlefield.get_foe(pokemon)
@@ -1573,7 +1571,7 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         effect = self.END_EFFECT_MAP.get(normalize_name(msg[2]))
         if effect is not None:
-            pokemon.remove_effect(effect, force=(effect != Volatile.PARTIALTRAP))
+            pokemon.remove_effect(effect, force=True)
         else:
             log.e('Unhandled -end msg: %s', msg)
 
