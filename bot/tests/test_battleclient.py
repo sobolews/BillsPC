@@ -886,16 +886,10 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         ptrap = self.hitmonchan.get_effect(Volatile.PARTIALTRAP)
         self.assertIsNotNone(ptrap)
         self.assertEqual(ptrap.duration, 5)
-        self.assertEqual(ptrap.trapper, self.goodra)
-
-        trapper = self.goodra.get_effect(Volatile.TRAPPER)
-        self.assertIsNotNone(trapper)
-        self.assertEqual(trapper.trappee, self.hitmonchan)
 
         self.handle('|-end|p1a: Hitmonchan|Infestation|[partiallytrapped]')
 
         self.assertFalse(self.hitmonchan.has_effect(Volatile.PARTIALTRAP))
-        self.assertFalse(self.goodra.has_effect(Volatile.TRAPPER))
 
         self.handle('|-activate|p1a: Hitmonchan|move: Infestation|[of] p2a: Goodra')
         self.handle('|turn|3')
@@ -903,7 +897,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|4')
 
         self.assertFalse(self.hitmonchan.has_effect(Volatile.PARTIALTRAP))
-        self.assertFalse(self.goodra.has_effect(Volatile.TRAPPER))
 
     def test_handle_move_lockedmove(self):
         self.handle('|switch|p2a: Lilligant|Lilligant, L81, F|100/100')
@@ -1739,9 +1732,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         wobbuffet = self.foe_side.active_pokemon
         self.assertTrue(self.hitmonchan.has_effect(Volatile.TRAPPED))
-        self.assertEqual(self.hitmonchan.get_effect(Volatile.TRAPPED).trapper, wobbuffet)
-        self.assertTrue(wobbuffet.has_effect(Volatile.TRAPPER))
-        self.assertEqual(wobbuffet.get_effect(Volatile.TRAPPER).trappee, self.hitmonchan)
 
     def test_lockedmove_isnt_set_if_foe_is_immune(self):
         self.handle('|switch|p2a: Clefable|Clefable, L75, M|100/100')

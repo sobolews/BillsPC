@@ -1225,7 +1225,6 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
 
         self.assertTrue(self.jolteon.has_effect(Volatile.PARTIALTRAP))
-        self.assertTrue(self.leafeon.get_effect(Volatile.TRAPPER).trappee == self.jolteon)
         self.assertDamageTaken(self.jolteon, self.jolteon.max_hp / 8)
 
         self.choose_switch(self.leafeon, self.flareon)
@@ -1245,7 +1244,6 @@ class TestMoves(MultiMoveTestCase):
         self.assertSwitchChoices(self.espeon, {self.vaporeon})
         self.assertDamageTaken(self.vaporeon, 13)
         for pokemon in [self.espeon, self.vaporeon, self.leafeon]:
-            self.assertFalse(pokemon.has_effect(Volatile.TRAPPER))
             self.assertFalse(pokemon.has_effect(Volatile.PARTIALTRAP))
 
     def test_infestation_released_when_trapper_faints(self):
@@ -1257,18 +1255,7 @@ class TestMoves(MultiMoveTestCase):
 
         for pokemon in (self.vaporeon, self.leafeon):
             self.assertFalse(pokemon.has_effect(Volatile.PARTIALTRAP))
-            self.assertFalse(pokemon.has_effect(Volatile.TRAPPER))
         self.assertDamageTaken(self.vaporeon, 13)
-
-    def test_infestation_when_trappee_faints(self):
-        self.add_pokemon('espeon', 0)
-        self.add_pokemon('glaceon', 1)
-        self.choose_move(self.leafeon, 'infestation')
-        self.run_turn()
-        self.choose_move(self.leafeon, 'woodhammer')
-        self.run_turn()
-
-        self.assertFalse(self.leafeon.has_effect(Volatile.TRAPPER))
 
     def test_infestation_doesnt_trap_ghosts(self):
         self.new_battle('gengar', 'leafeon')
@@ -1286,7 +1273,6 @@ class TestMoves(MultiMoveTestCase):
         self.run_turn()
 
         self.assertFainted(self.leafeon)
-        self.assertFalse(self.vaporeon.has_effect(Volatile.TRAPPER))
         self.engine.init_turn()
         self.assertActive(self.espeon)
 

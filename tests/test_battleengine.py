@@ -349,8 +349,6 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertDamageTaken(self.jolteon, 0)
         self.assertFalse(self.jolteon.has_effect(Volatile.PARTIALTRAP))
         self.assertFalse(self.leafeon.has_effect(Volatile.PARTIALTRAP))
-        self.assertFalse(self.vaporeon.has_effect(Volatile.TRAPPER))
-        self.assertFalse(self.umbreon.has_effect(Volatile.TRAPPER))
 
     def test_dont_try_user_boost_if_user_fainted(self):
         """
@@ -1038,9 +1036,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 1)
         self.engine.init_turn()
-        self.assertTrue(self.vaporeon.has_effect(Volatile.TRAPPER))
         self.assertTrue(self.vaporeon.has_effect(Volatile.TRAPPED))
-        self.assertTrue(self.leafeon.has_effect(Volatile.TRAPPER))
         self.assertTrue(self.leafeon.has_effect(Volatile.TRAPPED))
         self.assertSwitchChoices(self.vaporeon, set())
         self.assertSwitchChoices(self.vaporeon, set())
