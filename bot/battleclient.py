@@ -1185,6 +1185,8 @@ class BattleClient(object):
         |-enditem|p1a: Leafeon|Sitrus Berry|[from] stealeat|[move] Bug Bite|[of] p2a: Aerodactyl
         """
         pokemon = self.get_pokemon_from_msg(msg)
+        if pokemon is None:
+            return
         item = itemdex[normalize_name(msg[2])]
 
         self.reveal_foe_original_item(pokemon, item)
