@@ -525,12 +525,9 @@ class BattleClient(object):
         if request.get('wait'): # The opponent has more decisions to make
             return
 
-        if not any([self.my_side.active_pokemon.is_fainted(),
-                    self.foe_side.active_pokemon.is_fainted()]):
-            self.engine.show_my_moves(self.my_side.active_pokemon,
-                                      self.foe_side.active_pokemon)
-            self.engine.show_foe_moves(self.my_side.active_pokemon,
-                                       self.foe_side.active_pokemon)
+        if not my_active.is_fainted() and not foe_active.is_fainted():
+            self.engine.show_my_moves(my_active, foe_active)
+            self.engine.show_foe_moves(my_active, foe_active)
 
         if self.make_moves:
             self.make_move(request)
