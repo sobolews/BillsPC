@@ -320,12 +320,19 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.boosts['atk'], 4)
         self.handle('|-boost|p1a: Hitmonchan|accuracy|1')
         self.assertEqual(self.hitmonchan.boosts['acc'], 1)
+        self.handle('|-boost|p1a: Hitmonchan|atk|1')
+        # server sends 2 even though it can only go up 1 from +5
+        self.handle('|-boost|p1a: Hitmonchan|atk|2')
+        self.assertEqual(self.hitmonchan.boosts['atk'], 6) # don't go above 6
 
     def test_handle_unboost(self):
         self.handle('|-unboost|p1a: Hitmonchan|spe|1')
         self.assertEqual(self.hitmonchan.boosts['spe'], -1)
         self.handle('|-unboost|p1a: Hitmonchan|evasion|1')
         self.assertEqual(self.hitmonchan.boosts['evn'], -1)
+        self.handle('|-unboost|p1a: Hitmonchan|spe|4')
+        self.handle('|-unboost|p1a: Hitmonchan|spe|5')
+        self.assertEqual(self.hitmonchan.boosts['spe'], -6) # don't go below -6
 
     def test_handle_curestatus(self):
         self.handle('|-status|p1a: Hitmonchan|slp|[from] move: Rest')

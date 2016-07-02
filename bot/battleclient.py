@@ -1304,11 +1304,15 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         boost = self.BOOST_MAP.get(msg[2], msg[2])
         pokemon.boosts[boost] += int(msg[3])
+        if pokemon.boosts[boost] > 6:
+            pokemon.boosts[boost] = 6
 
     def handle_unboost(self, msg):
         pokemon = self.get_pokemon_from_msg(msg)
         boost = self.BOOST_MAP.get(msg[2], msg[2])
         pokemon.boosts[boost] -= int(msg[3])
+        if pokemon.boosts[boost] < -6:
+            pokemon.boosts[boost] = -6
 
     BOOST_MAP = {'evasion': 'evn', 'accuracy': 'acc'}
 
