@@ -1593,6 +1593,9 @@ class BattleClient(object):
             return
 
         pokemon = self.get_pokemon_from_msg(msg)
+        if pokemon is None:
+            return
+
         effect = self.END_EFFECT_MAP.get(normalize_name(msg[2]))
         if effect is not None:
             pokemon.remove_effect(effect, force=True)
