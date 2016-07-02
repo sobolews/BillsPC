@@ -560,6 +560,7 @@ class BattleClient(object):
         |move|p1a: Groudon|Aerial Ace|p2a: Fraxure|[from]Copycat
         |move|p1a: Kyurem|Outrage|p2a: Glalie|[from]lockedmove
         |move|p2a: Stunfisk|Earth Power|p1a: Swalot|[from]Sleep Talk
+        |move|p1a: Haxorus|Outrage|p2: Zoroark|[notarget]
 
         Just subtract pp for MOVE from POKEMON
         Start autotomize from here, since there's no -start message when incrementing the multiplier
@@ -623,7 +624,7 @@ class BattleClient(object):
         if pokemon.has_effect(Volatile.TWOTURNMOVE):
             pokemon.remove_effect(Volatile.TWOTURNMOVE, force=True)
 
-        if move in (movedex['outrage'], movedex['petaldance']):
+        if move in (movedex['outrage'], movedex['petaldance']) and not msg[-1] == '[notarget]':
             pokemon.set_effect(effects.LockedMove(move))
         elif move == movedex['autotomize']:
             effect = pokemon.get_effect(Volatile.AUTOTOMIZE)

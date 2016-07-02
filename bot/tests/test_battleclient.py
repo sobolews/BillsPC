@@ -1751,6 +1751,15 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         zekrom = self.my_side.active_pokemon
         self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))
 
+    def test_lockedmove_isnt_set_when_notarget(self):
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|turn|2')
+        self.handle('|faint|p2a: Goodra')
+        self.handle('|move|p1a: Zekrom|Outrage|p2: Goodra|[notarget]')
+
+        zekrom = self.my_side.active_pokemon
+        self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))
+
     def test_rockyhelmet_damage_reveals_item_correctly(self):
         self.bc.set_item(self.hitmonchan, itemdex['rockyhelmet'])
         self.handle('|switch|p2a: Electivire|Electivire, L81, M|100/100')
