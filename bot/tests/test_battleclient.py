@@ -1645,14 +1645,16 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
     def test_handle_move_healingwish(self):
         self.handle('|switch|p2a: Cherrim|Cherrim, L83, M|100/100')
         self.handle('|move|p2a: Cherrim|Healing Wish|p2a: Cherrim')
-
         self.assertTrue(self.foe_side.has_effect(SideCondition.HEALINGWISH))
 
         self.handle('|faint|p2a: Cherrim')
-        self.handle('|switch|p2a: Tyranitar|Tyranitar, L75, M|100/100')
-        self.handle('|-heal|p2a: Tyranitar|100/100|[from] move: Healing Wish')
+        self.handle('|switch|p2a: Latias|Latias, L75, F|100/100')
+        self.handle('|-heal|p2a: Latias|100/100|[from] move: Healing Wish')
         self.handle('|turn|2')
+        self.assertFalse(self.foe_side.has_effect(SideCondition.HEALINGWISH))
 
+        self.handle('|move|p2a: Latias|Healing Wish|p2a: Latias')
+        self.handle('|-fail|p2a: Latias')
         self.assertFalse(self.foe_side.has_effect(SideCondition.HEALINGWISH))
 
     def test_recalculate_pokemon_stats_when_hiddenpower_revealed(self):

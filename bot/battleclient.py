@@ -697,6 +697,10 @@ class BattleClient(object):
         |-fail|p2a: Registeel|unboost|[from] ability: Clear Body|[of] p2a: Registeel
         |-fail|p2a: Graveler|unboost|Attack|[from] ability: Hyper Cutter|[of] p2a: Graveler
         |-fail|p2a: Haunter|unboost|accuracy|[from] ability: Keen Eye|[of] p2a: Haunter
+
+        Fail - Healing Wish
+        |move|p2a: Latias|Healing Wish|p2a: Latias
+        |-fail|p2a: Latias
         """
         for i in range(3, len(msg)):
             if msg[i].startswith('[from] ability:'):
@@ -706,6 +710,8 @@ class BattleClient(object):
         failmon = self.get_pokemon_from_msg(msg)
         if failmon is not None:
             failmon.remove_effect(Volatile.BATONPASS)
+            if failmon.last_move_used == movedex['healingwish']:
+                failmon.side.remove_effect(SideCondition.HEALINGWISH)
 
     def handle_immune(self, msg):
         """
