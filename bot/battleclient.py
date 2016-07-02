@@ -1265,6 +1265,8 @@ class BattleClient(object):
 
         If the base ability was unrevealed, set it.
         """
+        if pokemon is None:
+            return
         if pokemon.ability == ability:
             if __debug__: log.d("%s's ability is already %s", pokemon, ability)
             return
