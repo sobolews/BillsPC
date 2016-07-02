@@ -980,6 +980,7 @@ class BattleClient(object):
             outgoing.boosts = Boosts()
             outgoing.types = list(outgoing.pokedex_entry.types) # protean etc. may have changed type
             outgoing.ability = outgoing.base_ability
+            outgoing.illusion = False
             if outgoing.is_transformed:
                 outgoing.revert_transform()
 
