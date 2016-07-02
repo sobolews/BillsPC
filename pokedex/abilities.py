@@ -33,12 +33,6 @@ class BaseAbility(object):
 class AbilityEffect(BaseAbility, BaseEffect):
     pass
 
-class BaseTrappingAbility(AbilityEffect):
-    @staticmethod
-    def trap(pokemon, foe):
-        """ Cause `foe` to be trapped by `pokemon` """
-        foe.set_effect(effects.Trapped())
-
 class Adaptability(AbilityEffect):
     def on_modify_move(self, move, user, engine):
         move.stab = 2
@@ -85,10 +79,10 @@ class AngerPoint(AbilityEffect):
             if __debug__: log.i("Anger Point maximized %s's atk!", pokemon)
             pokemon.boosts['atk'] = 6
 
-class ArenaTrap(BaseTrappingAbility):
+class ArenaTrap(AbilityEffect):
     def on_before_turn(self, pokemon, foe):
         if not foe.is_immune_to(Type.GROUND) and not foe.has_effect(Volatile.TRAPPED):
-            self.trap(pokemon, foe)
+            foe.set_effect(effects.Trapped())
 
 class AromaVeil(AbilityEffect):
     BLOCKS = {'attract', 'disable', 'encore', 'healblock', 'taunt', 'torment'}
@@ -595,10 +589,10 @@ class Magician(AbilityEffect):
                 if __debug__: log.i("%s stole %s's item!", user, target)
                 user.set_item(item)
 
-class MagnetPull(BaseTrappingAbility):
+class MagnetPull(AbilityEffect):
     def on_before_turn(self, pokemon, foe):
         if Type.STEEL in foe.types and not foe.has_effect(Volatile.TRAPPED):
-            self.trap(pokemon, foe)
+            foe.set_effect(effects.Trapped())
 
 class MarvelScale(AbilityEffect):
     def on_modify_def(self, pokemon, move, engine, def_):
@@ -924,10 +918,10 @@ class SereneGrace(AbilityEffect):
         for s_effect in move.secondary_effects:
             s_effect.chance *= 2
 
-class ShadowTag(BaseTrappingAbility):
+class ShadowTag(AbilityEffect):
     def on_before_turn(self, pokemon, foe):
         if not foe.has_effect(Volatile.TRAPPED) and foe.ability is not ShadowTag:
-            self.trap(pokemon, foe)
+            foe.set_effect(effects.Trapped())
 
 class ShedSkin(AbilityEffect):
     @priority(-5.1)
