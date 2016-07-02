@@ -509,9 +509,14 @@ class BattleClient(object):
         self.request = request
         self.rqid = request.get('rqid')
 
-        active = request.get('active')
-        if active is not None and active[0].get('maybeTrapped'):
-            self.my_side.active_pokemon.set_effect(effects.Trapped())
+        my_active = self.my_side.active_pokemon
+        foe_active = self.foe_side.active_pokemon
+        req_active = request.get('active')
+        if req_active is not None:
+            if req_active[0].get('maybeTrapped'):
+                my_active.set_effect(effects.Trapped())
+            if len(req_active[0]['moves']) > 1 and my_active.has_effect(Volatile.LOCKEDMOVE):
+                my_active.remove_effect(Volatile.LOCKEDMOVE)
 
         self._validate_my_team()
 

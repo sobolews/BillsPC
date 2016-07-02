@@ -1735,7 +1735,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
     def test_maybe_trapped(self):
         self.handle('|switch|p2a: Wobbuffet|Wobbuffet, L74, M|100/100')
         self.handle('|turn|2')
-        self.handle_request({"active":[{"maybeTrapped":True}], "rqid":2})
+        self.handle_request({"active":[{"moves": [], "maybeTrapped":True}], "rqid":2})
 
         wobbuffet = self.foe_side.active_pokemon
         self.assertTrue(self.hitmonchan.has_effect(Volatile.TRAPPED))
