@@ -1922,22 +1922,25 @@ class BattleClient(object):
                                                                              pokemon.hp, hp)
                     assert pokemon.max_hp == max_hp, '%s has the wrong max_hp: %s %s' % \
                         (pokemon, pokemon.max_hp, max_hp)
-                if not pokemon.is_transformed:
-                    for stat, val in reqmon['stats'].items():
-                        assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
-                for i, move in enumerate(reqmon['moves']):
-                    assert pokemon.moveset[i].name == move, \
-                        ("%s's move %s doesn't match the request's %s" %
-                         (pokemon, pokemon.moveset[i].name, move))
                 assert pokemon.level == int(reqmon['details'].split(', ')[1][1:])
                 assert pokemon.is_active == reqmon['active']
-                if not pokemon.ability.name.startswith('_') and not pokemon.is_transformed:
-                    assert pokemon.base_ability.name == reqmon['baseAbility'], \
-                        (pokemon.ability.name, reqmon['baseAbility'])
-                if pokemon.item is None:
-                    assert reqmon['item'] == ''
-                else:
-                    assert reqmon['item'] == pokemon.item.name
+
+                if not pokemon.is_fainted():
+                    if not pokemon.is_transformed:
+                        for stat, val in reqmon['stats'].items():
+                            assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
+                    for i, move in enumerate(reqmon['moves']):
+                        assert pokemon.moveset[i].name == move, \
+                            ("%s's move %s doesn't match the request's %s" %
+                             (pokemon, pokemon.moveset[i].name, move))
+                    if not pokemon.ability.name.startswith('_') and not pokemon.is_transformed:
+                        assert pokemon.base_ability.name == reqmon['baseAbility'], \
+                            (pokemon.ability.name, reqmon['baseAbility'])
+                    if pokemon.item is None:
+                        assert reqmon['item'] == ''
+                    else:
+                        assert reqmon['item'] == pokemon.item.name
+
                 assert int(request['side']['id'][1]) - 1 == self.my_player, self.my_player
                 assert request['side']['name'] == self.name, self.name
 
