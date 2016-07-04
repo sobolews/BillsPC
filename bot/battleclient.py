@@ -94,11 +94,13 @@ class BattleClient(object):
 
         # is it referring to an illusioned zoroark?
         if side.index == self.my_player:
+            active = self.my_side.active_pokemon
             if ((not switching and
-                 self.my_side.active_pokemon is not None and
-                 self.my_side.active_pokemon.base_species == 'zoroark')
+                 active is not None and
+                 active.base_species == 'zoroark')
                 or
                 (normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark' and
+                 side.remaining_pokemon > 1 and
                  self.get_illusion_target_name(self.request) == name)
             ):
                 name = 'zoroark'

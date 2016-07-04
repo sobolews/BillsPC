@@ -146,6 +146,10 @@ class BattleSide(object, EffectHandlerMixin):
     def remaining_pokemon_on_bench(self):
         return len([pokemon for pokemon in self.bench if not pokemon.status is Status.FNT])
 
+    @property
+    def remaining_pokemon(self):
+        return len([pokemon for pokemon in self.team if not pokemon.status is Status.FNT])
+
     def set_effect(self, effect):
         if effect.source in self._effect_index:
             if __debug__: log.i('Tried to set condition %s but it %s already has it', effect, self)
