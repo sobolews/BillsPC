@@ -3589,6 +3589,7 @@ movedex = {name.rstrip('_'): obj() for name, obj in vars().items()
            issubclass(obj, Move) and
            obj not in (Move, hiddenpower)}
 
+movedex['return102'] = movedex['return'] # Showdown sends 'Return 102' in the request object
 for name, move in movedex.items():
     if name.startswith('hiddenpower'):
         movedex['%s60' % name] = move # Showdown likes to call them e.g. hiddenpowerice60 in some
