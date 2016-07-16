@@ -278,7 +278,9 @@ class BattlePokemon(object, EffectHandlerMixin):
                     evs[HP] -= 4
 
         # Minimize confusion damage for non-physical pokemon
-        if (not any(move not in (movedex['seismictoss'], movedex['counter']) and
+        if (not any(move not in (movedex['seismictoss'],
+                                 movedex['counter'],
+                                 movedex['metalburst']) and
                     move.category == MoveCategory.PHYSICAL for move in self.moveset) and
             movedex['copycat'] not in self.moveset and
             movedex['transform'] not in self.moveset and
