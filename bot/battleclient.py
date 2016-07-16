@@ -78,7 +78,7 @@ class BattleClient(object):
         assert side is not None, side
         return side
 
-    def get_pokemon_from_msg(self, msg, index=1, switching=False):
+    def get_pokemon_from_msg(self, msg, index=1):
         """
         All `POKEMON` in messages are formatted 'p2a: Vaporeon'
         Returning None is allowed when the pokemon is one of the foe's unrevealed pokemon
@@ -94,16 +94,24 @@ class BattleClient(object):
 
         # is it referring to an illusioned zoroark?
         if side.index == self.my_player:
+            switching = msg[0] in ('switch', 'drag')
             active = self.my_side.active_pokemon
-            if ((not switching and
-                 active is not None and
-                 active.base_species == 'zoroark')
-                or
-                (normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark' and
-                 side.remaining_pokemon > 1 and
-                 self.get_illusion_target_name(self.request) == name)
-            ):
-                name = 'zoroark'
+            if switching:
+                hp, max_hp = map(int, msg[3].split()[0].split('/'))
+                my_zoroark = self.get_zoroark(side)
+                if (my_zoroark is not None and
+                    not my_zoroark.is_fainted() and
+                    not my_zoroark is active and
+                    side.remaining_pokemon > 1 and
+                    self.get_illusion_target_name(self.request) == name and
+                    hp == my_zoroark.hp and
+                    max_hp == my_zoroark.max_hp
+                ):
+                    name = 'zoroark'
+            else:
+                if active is not None and active.base_species == 'zoroark':
+                    name = 'zoroark'
+
         elif side.index == self.foe_player and side.active_illusion:
             return self.get_zoroark(side)
 
@@ -982,7 +990,7 @@ class BattleClient(object):
         side = self.get_side_from_msg(msg)
         if side == self.foe_side:
             side.active_illusion = False
-        pokemon = self.get_pokemon_from_msg(msg, switching=True)
+        pokemon = self.get_pokemon_from_msg(msg)
 
         if pokemon is None:     # we are revealing a foe's pokemon
             pokemon = self.create_foe_pokemon_from_msg(side, msg)
