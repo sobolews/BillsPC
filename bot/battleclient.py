@@ -1924,8 +1924,7 @@ class BattleClient(object):
                                      move.name.startswith('hiddenpower'))), \
                                 ("%s: request %s doesn't match %s" %
                                  (pokemon, active_moves[i]['id'], move))
-                            assert active_moves[i]['pp'] == pokemon.pp[move], \
-                                '%s: %s has %d pp' % (pokemon, move, pokemon.pp[move])
+                            pokemon.pp[move] = active_moves[i]['pp']
                             choices = pokemon.get_move_choices()
                             if not active_moves[i]['disabled']:
                                 assert move in choices, \
