@@ -948,8 +948,8 @@ class BattleClient(object):
         pokemon = None
         if len(msg) > 2 and msg[2] == '[upkeep]':
             if msg[1].lower() not in ('desolateland', 'primordialsea', 'deltastream'):
-                assert self.battlefield.weather is not None, \
-                    'Handling upkeep (%s) but weather is None' % msg[1]
+                assert self.battlefield._weather is not None, \
+                    'Handling upkeep (%s) but _weather is None' % msg[1]
                 self.battlefield.get_effect(weather).duration -= 1
         else:
             if len(msg) > 2 and msg[2].startswith('[from] ability'):
