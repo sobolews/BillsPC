@@ -105,7 +105,7 @@ class BattleClient(object):
             ):
                 name = 'zoroark'
         elif side.index == self.foe_player and side.active_illusion:
-            return self.get_foe_zoroark()
+            return self.get_zoroark(side)
 
         for pokemon in side.team:
             if pokemon.base_species.startswith(name):
@@ -1081,11 +1081,11 @@ class BattleClient(object):
         else:
             self.detect_illusioned_foe(side.active_pokemon, break_illusion=True)
 
-    def get_foe_zoroark(self):
-        for pokemon in self.foe_side.team:
+    def get_zoroark(self, side):
+        for pokemon in side.team:
             if pokemon.base_species == 'zoroark':
                 return pokemon
-        log.d("No zoroark found on foe's team")
+        log.d("No zoroark found on side %s", side.index)
         return None
 
     def detect_illusioned_foe(self, decoy, break_illusion):
@@ -1103,7 +1103,7 @@ class BattleClient(object):
         assert not (not break_illusion and decoy.name == 'zoroark'), decoy
 
         foe_side = self.foe_side
-        foe_zoroark = self.get_foe_zoroark()
+        foe_zoroark = self.get_zoroark(foe_side)
         if foe_zoroark is None:
             log.i("Revealing foe's zoroark for the first time")
             foe_zoroark = FoePokemon(pokedex['zoroark'], rbstats['zoroark']['level'].keys()[0],
