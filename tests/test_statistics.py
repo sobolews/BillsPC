@@ -2,7 +2,10 @@ from random import randint
 from unittest import TestCase
 
 from mining import statistics
+from mining.pokedexmaker import create_pokedex
 from tests.test_statistics_data import TEAM1, TEAM2, TEAM3
+
+pokedex = create_pokedex()
 
 class TestRandbatsCounter(TestCase):
     def test_sample(self):
@@ -105,6 +108,22 @@ class TestRandbatsCounter(TestCase):
             counter2.sample(pokemon)
         counter.update(counter2)
         return counter
+
+    def test_zoroark_has_unique_max_hp(self):
+        """
+        The BattleClient depends on zoroark having a unique max_hp (currently 222 only) in order to
+        identify its own zoroark in the corner case of a switch-to-zoroark, zoroark gets damaged
+        (e.g. by dragontail), then another pokemon is dragged out.
+        """
+        counter = statistics.RandbatsStatistics.from_pickle()
+        zoroark_levels = counter['zoroark']['level'].keys()
+        zoroark_max_hp = pokedex['zoroark'].base_stats['max_hp']
+        for name, stats in counter.counter.items():
+            if name[-3] == 'L' or name.startswith('zoroark'):
+                continue
+            if any(level in zoroark_levels for level in stats['level']):
+                self.assertNotEqual(pokedex[name].base_stats['max_hp'], zoroark_max_hp,
+                                    "%s: %s + %s" % (name, pokedex[name], stats))
 
 
 class TestStatisticsModule(TestCase):
