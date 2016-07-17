@@ -85,7 +85,6 @@ class TestBattleClientDittoLead(TestBattleClientInitialRequestBase):
 
 class TestBattleClient(TestBattleClientBase):
     def test_build_my_side_from_request_msg(self):
-        # TODO: ability/item
         self.bc.my_player = 0
         self.handle_request(self.REQUEST)
 
