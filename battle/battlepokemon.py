@@ -18,7 +18,7 @@ class BattlePokemon(object, EffectHandlerMixin):
     """
     Represents a pokemon in a battle.
     """
-    def __init__(self, pokedex_entry, level=100, moveset=(), ability=abilitydex['_none_'],
+    def __init__(self, pokedex_entry, level=100, moves=(), ability=abilitydex['_none_'],
                  item=None, gender=None, evs=None, ivs=None, side=None):
         """
         Note: If evs/ivs are not specified, they will be calculated according to randbats (see
@@ -28,8 +28,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.name = self.base_species = pokedex_entry.name # base_species for transform etc.
         self.side = side
         self.level = level
-        self.moveset = moveset
-        self.pp = {move: move.max_pp for move in moveset}
+        self.moves = {move: move.max_pp for move in moves}
         self.types = list(pokedex_entry.types)
         self.item = item
         self.gender = gender    # None, 'M', or 'F'
@@ -62,6 +61,11 @@ class BattlePokemon(object, EffectHandlerMixin):
         self._suppressed_ability = None
         self._effect_index = {}
         self.effect_handlers = {key: list() for key in BaseEffect.handler_names}
+
+    @property
+    def pp(self):
+        """Allow pp to be read/set using `self.pp[move]` """
+        return self.moves
 
     @property
     def can_mega_evolve(self):
@@ -240,7 +244,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         evs = [85, 85, 85, 85, 85, 85]
 
         # Use correct IVs for hiddenpower
-        for move in self.moveset:
+        for move in self.moves:
             if move.is_hiddenpower:
                 has_hiddenpower = True
                 ivs = list(HPivs[move.type])
@@ -252,10 +256,10 @@ class BattlePokemon(object, EffectHandlerMixin):
         HP, ATK, SPE = 0, 1, 5
 
         # Adjust HP stat for substitute/bellydrum/stealthrock
-        if self.item is itemdex['sitrusberry'] and movedex['substitute'] in self.moveset:
+        if self.item is itemdex['sitrusberry'] and movedex['substitute'] in self.moves:
             while self._calc_hp(evs[HP], ivs[HP]) % 4 > 0:
                 evs[HP] -= 4
-        elif self.item is itemdex['sitrusberry'] and movedex['bellydrum'] in self.moveset:
+        elif self.item is itemdex['sitrusberry'] and movedex['bellydrum'] in self.moves:
             if self._calc_hp(evs[HP], ivs[HP]) % 2 > 0:
                 evs[HP] -= 4
         else: # stealth rock weakness
@@ -281,10 +285,10 @@ class BattlePokemon(object, EffectHandlerMixin):
         if (not any(move not in (movedex['seismictoss'],
                                  movedex['counter'],
                                  movedex['metalburst']) and
-                    move.category == MoveCategory.PHYSICAL for move in self.moveset) and
-            movedex['copycat'] not in self.moveset and
-            movedex['transform'] not in self.moveset and
-            len(self.moveset) == 4 # for remote pokemon with unknown moves.
+                    move.category == MoveCategory.PHYSICAL for move in self.moves) and
+            movedex['copycat'] not in self.moves and
+            movedex['transform'] not in self.moves and
+            len(self.moves) == 4 # for remote pokemon with unknown moves.
         ):
             evs[ATK] = 0
             if has_hiddenpower:
@@ -293,7 +297,7 @@ class BattlePokemon(object, EffectHandlerMixin):
                 ivs[ATK] = 0
 
         # Reduce speed for gyroball/trickroom
-        if movedex['gyroball'] in self.moveset or movedex['trickroom'] in self.moveset:
+        if movedex['gyroball'] in self.moves or movedex['trickroom'] in self.moves:
             evs[SPE] = 0
             ivs[SPE] = 0
 
@@ -442,8 +446,7 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         self.is_transformed = True
 
-        self.base_data['moveset'] = self.moveset
-        self.base_data['pp'] = self.pp
+        self.base_data['moves'] = self.moves
         self.base_data['types'] = self.types
         self.base_data['gender'] = self.gender
         self.base_data['stats'] = self.stats
@@ -451,9 +454,8 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.base_data['weight'] = self._weight
 
         self.name = other.name
-        self.moveset = [movedex['hiddenpowerdark'] if move.is_hiddenpower else move
-                        for move in other.moveset]
-        self.pp = {move: 5 for move in self.moveset}
+        self.moves = {(movedex['hiddenpowerdark'] if move.is_hiddenpower else move): 5
+                      for move in other.moves}
         self.types = list(other.types)
         self.gender = other.gender
         self.stats = other.stats.copy()
@@ -477,8 +479,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         """ This should only be done on switch out or on faint """
         assert self.is_transformed
         self.name = self.base_species
-        self.moveset = self.base_data['moveset']
-        self.pp = self.base_data['pp']
+        self.moves = self.base_data['moves']
         self.types = self.base_data['types']
         self.gender = self.base_data['gender']
         self.stats = self.base_data['stats']
@@ -517,7 +518,7 @@ class BattlePokemon(object, EffectHandlerMixin):
 
     def get_move_choices(self):
         move_choices = self.accumulate_effect('on_get_move_choices', self,
-                                              [move for move in self.moveset if self.pp[move] > 0])
+                                              [move for move, pp in self.moves.items() if pp > 0])
         return move_choices or [movedex['struggle']]
 
     def apply_boosts(self, boosts, self_induced=True):
@@ -539,7 +540,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         types = ((' [%s, %s]' % (self.types[0], self.types[1]))
                  if tuple(self.types) != self.pokedex_entry.types else '')
         moves = ['?', '?', '?', '?']
-        for i, move in enumerate(self.moveset):
+        for i, move in enumerate(self.moves):
             moves[i] = str(move)
         rv = '\n'.join([
             '%s %s %s%d/%d  L%d%s' % (str(self), '(illusioned) ' if self.illusion else '',

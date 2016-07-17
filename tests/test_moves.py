@@ -835,14 +835,14 @@ class TestMoves(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'encore')
         self.run_turn()
 
-        self.assertMoveChoices(self.umbreon, set(self.umbreon.moveset))
+        self.assertMoveChoices(self.umbreon, set(self.umbreon.moves))
 
         self.umbreon.pp[movedex['toxic']] = 1
         self.choose_move(self.umbreon, 'toxic')
         self.choose_move(self.vaporeon, 'encore')
         self.run_turn()
 
-        self.assertMoveChoices(self.umbreon, set(self.umbreon.moveset) - {movedex['toxic']})
+        self.assertMoveChoices(self.umbreon, set(self.umbreon.moves) - {movedex['toxic']})
 
         self.choose_move(self.umbreon, 'encore')
         self.choose_move(self.vaporeon, 'encore')

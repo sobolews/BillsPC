@@ -83,7 +83,7 @@ class TestBot(TestCase):
         self.assertEqual(bc.foe_side.active_pokemon.name, 'beautifly')
         beautifly = bc.foe_side.active_pokemon
         self.assertEqual(beautifly.hp, 1)
-        self.assertListEqual(beautifly.moveset, [movedex['bugbuzz']])
+        self.assertListEqual(beautifly.moves.keys(), [movedex['bugbuzz']])
         self.assertEqual(beautifly.pp[movedex['bugbuzz']], movedex['bugbuzz'].max_pp - 1)
         haxorus = bc.my_side.active_pokemon
         self.assertEqual(haxorus.hp, 0)

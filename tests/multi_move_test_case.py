@@ -19,9 +19,15 @@ from pokedex.moves import movedex
 
 pokedex = create_pokedex()
 
-class AnyMovePPDict(defaultdict):
+class AnyMovePPDict(dict):
     def get(self, key, default=None):
         return self[key]
+
+    def __getitem__(self, item):
+        if item in self:
+            return dict.__getitem__(self, item)
+        else:
+            return 100
 
 class AnyMovePokemon(BattlePokemon):
     """
@@ -31,7 +37,7 @@ class AnyMovePokemon(BattlePokemon):
     """
     def __init__(self, *args, **kwargs):
         super(AnyMovePokemon, self).__init__(*args, **kwargs)
-        self.pp = AnyMovePPDict(lambda: 100, **{move: move.max_pp for move in self.moveset})
+        self.moves = AnyMovePPDict(**{move: move.max_pp for move in self.moves})
 
 class LoggingFaintQueue(list):
     """
@@ -128,13 +134,13 @@ class MultiMoveTestCase(TestCase):
         setattr(self, p0_name, PokemonClass(pokedex[p0_name], side=None,
                                             ability=abilitydex[p0_ability],
                                             evs=p0_evs, ivs=p0_ivs,
-                                            moveset=p0_moves,
+                                            moves=p0_moves,
                                             item=itemdex.get(p0_item),
                                             level=p0_level, gender=p0_gender))
         setattr(self, p1_name, PokemonClass(pokedex[p1_name], side=None,
                                             ability=abilitydex[p1_ability],
                                             evs=p1_evs, ivs=p1_ivs,
-                                            moveset=p1_moves,
+                                            moves=p1_moves,
                                             item=itemdex.get(p1_item),
                                             level=p1_level, gender=p1_gender))
         self.engine = TestingEngine([getattr(self, p0_name)],
@@ -159,7 +165,7 @@ class MultiMoveTestCase(TestCase):
         moves = [movedex[move] if isinstance(move, str) else move for move in moves]
         battle_side = self.engine.battlefield.sides[side]
         pokemon = AnyMovePokemon(pokedex[name], side=battle_side, evs=(0,)*6, ivs=(31,)*6,
-                                 moveset=moves, ability=abilitydex[ability],
+                                 moves=moves, ability=abilitydex[ability],
                                  item=itemdex.get(item))
         setattr(self, name, pokemon)
         battle_side.team.append(pokemon)

@@ -289,16 +289,16 @@ class TestBattleEngineUseMove(BattleEngineMovesTestCase):
 class TestBattleEngineRunMove(TestCase):
     def setUp(self):
         self.vaporeon = BattlePokemon(pokedex['vaporeon'], evs=(0,)*6,
-                                      moveset=(movedex['scald'],
-                                               movedex['icebeam'],
-                                               movedex['rest'],
-                                               movedex['toxic']),
+                                      moves=(movedex['scald'],
+                                             movedex['icebeam'],
+                                             movedex['rest'],
+                                             movedex['toxic']),
                                       ability=abilitydex['_none_'])
         self.flareon = BattlePokemon(pokedex['flareon'], evs=(0,)*6,
-                                     moveset=(movedex['flareblitz'],
-                                              movedex['flamecharge'],
-                                              movedex['facade'],
-                                              movedex['protect']),
+                                     moves=(movedex['flareblitz'],
+                                            movedex['flamecharge'],
+                                            movedex['facade'],
+                                            movedex['protect']),
                                      ability=abilitydex['_none_'])
         self.engine = BattleEngine([self.vaporeon], [self.flareon])
         # make it deterministic
@@ -308,16 +308,16 @@ class TestBattleEngineRunMove(TestCase):
     def test_run_move_decrements_pp(self):
         self.engine.init_battle()
         self.vaporeon.will_move_this_turn = True
-        self.engine.run_move(self.vaporeon, self.vaporeon.moveset[0], self.flareon)
-        self.assertEqual(self.vaporeon.pp[self.vaporeon.moveset[0]],
-                         self.vaporeon.moveset[0].max_pp - 1)
+        self.engine.run_move(self.vaporeon, movedex['scald'], self.flareon)
+        self.assertEqual(self.vaporeon.pp[movedex['scald']],
+                         movedex['scald'].max_pp - 1)
 
     def test_run_move_sets_last_move_used(self):
         self.engine.init_battle()
         self.vaporeon.will_move_this_turn = True
-        self.engine.run_move(self.vaporeon, self.vaporeon.moveset[0], self.flareon)
-        self.assertEqual(self.vaporeon.last_move_used, self.vaporeon.moveset[0])
-        self.assertEqual(self.engine.battlefield.last_move_used, self.vaporeon.moveset[0])
+        self.engine.run_move(self.vaporeon, movedex['scald'], self.flareon)
+        self.assertEqual(self.vaporeon.last_move_used, movedex['scald'])
+        self.assertEqual(self.engine.battlefield.last_move_used, movedex['scald'])
 
 class TestBattleEngineMultiTurn(MultiMoveTestCase):
     def test_force_random_switch_into_hazards(self):
@@ -484,7 +484,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
-        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moves))
         self.assertEqual(self.vaporeon.pp[movedex['outrage']], movedex['outrage'].max_pp - 1)
         self.assertTrue(self.vaporeon.has_effect(Volatile.CONFUSE))
 
@@ -513,7 +513,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, 'protect')
         self.run_turn()
 
-        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moves))
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
 
     @patch('random.randrange', lambda *_: 0) # two-turn outrage
@@ -533,7 +533,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.sylveon, 'return')
         self.run_turn()
 
-        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moves))
         self.assertTrue(self.vaporeon.has_effect(Volatile.CONFUSE))
 
     @patch('random.randrange', lambda *_: 1) # three-turn outrage
@@ -551,7 +551,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.assertEqual(self.vaporeon.status, Status.SLP)
         self.assertFalse(self.vaporeon.has_effect(Volatile.CONFUSE))
         self.assertFalse(self.vaporeon.has_effect(Volatile.LOCKEDMOVE))
-        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moveset))
+        self.assertMoveChoices(self.vaporeon, set(self.vaporeon.moves))
 
     def test_locked_move_user_faints_first_turn(self):
         self.new_battle(p0_item='rockyhelmet')

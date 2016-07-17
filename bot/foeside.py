@@ -55,23 +55,22 @@ class FoePokemon(BattlePokemon):
 
     def save_pre_switch_state(self):
         self.pre_switch_state = FoePreSwitchState(self.hp, self.status, self.turns_slept,
-                                                  self.pp, self.item, self.original_item)
+                                                  self.moves, self.item, self.original_item)
 
     def reset_pre_switch_state(self):
         self.hp = self.pre_switch_state.hp
         self.status = self.pre_switch_state.status
         self.turns_slept = self.pre_switch_state.turns_slept
-        self.pp = self.pre_switch_state.pp_moves
-        self.moveset = self.pre_switch_state.pp_moves.keys()
+        self.moves = self.pre_switch_state.moves
         self.item = self.pre_switch_state.item
         self.original_item = self.pre_switch_state.original_item
         self.pre_switch_state = None
 
 class FoePreSwitchState(object):
-    def __init__(self, hp, status, turns_slept, pp_moves, item, original_item):
+    def __init__(self, hp, status, turns_slept, moves, item, original_item):
         self.hp = hp
         self.status = status
         self.turns_slept = turns_slept
-        self.pp_moves = pp_moves.copy()
+        self.moves = moves.copy()
         self.item = item
         self.original_item = original_item

@@ -24,12 +24,12 @@ class CheatSheetEngine(BattleEngine):
         if __debug__:
             if not my_active.is_transformed:
                 active = rbstats_key(my_active)
-                for move in my_active.moveset:
+                for move in my_active.moves:
                     if move.name not in rbstats.probability[active]['moves']:
                         log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
 
         return [(move.name, self.calculate_damage_range(my_active, move, foe))
-                for move in my_active.moveset]
+                for move in my_active.moves]
 
     def show_my_moves(self, my_active, foe):
         log.i('\n' + (tabulate([(move, self.format_damage_range(dmg_range, foe))
@@ -37,28 +37,28 @@ class CheatSheetEngine(BattleEngine):
                                ('My Moves', 'damage'), tablefmt=TABLEFMT)))
 
     def describe_known_foe_moves(self, my_active, foe):
-        if not foe.moveset:
+        if not foe.moves:
             return []
 
         return [(move.name, self.calculate_damage_range(foe, move, my_active))
-                for move in foe.moveset]
+                for move in foe.moves]
 
     def describe_possible_foe_moves(self, my_active, foe):
-        if len(foe.moveset) >= 4 or foe.base_species == 'ditto':
+        if len(foe.moves) >= 4 or foe.base_species == 'ditto':
             return ''
 
         foe_index = rbstats_key(foe)
 
         if __debug__:
-            for move in foe.moveset:
+            for move in foe.moves:
                 if (move.name not in rbstats.probability[foe_index]['moves'] and
                     move.type != Type.NOTYPE):
                     log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
 
         possible_moves = [movedex[move] for move in rbstats[foe_index]['moves']
-                          if movedex[move] not in foe.moveset]
+                          if movedex[move] not in foe.moves]
         data = []
-        known_attrs = [move_.name for move_ in foe.moveset if move_.type != Type.NOTYPE]
+        known_attrs = [move_.name for move_ in foe.moves if move_.type != Type.NOTYPE]
         if not rbstats.possible_sets(foe_index, known_attrs):
             if __debug__: log.w("%s's move probabilities cannot be calculated: unexpected "
                                 "attribute in %s", foe_index, known_attrs)

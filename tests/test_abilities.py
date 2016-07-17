@@ -1,3 +1,4 @@
+
 from mock import patch
 
 if __debug__: from _logging import log
@@ -962,7 +963,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.assertEqual(self.ditto.ability, self.leafeon.ability)
         self.assertEqual(self.ditto.base_ability.name, 'imposter')
         self.assertEqual(self.ditto.gender, self.leafeon.gender)
-        self.assertSequenceEqual(self.ditto.moveset, self.leafeon.moveset)
+        self.assertSetEqual(set(self.ditto.moves), set(self.leafeon.moves))
         self.assertListEqual(self.ditto.types, self.leafeon.types)
 
         self.assertBoosts(self.leafeon, {'spa': 1})
@@ -1582,7 +1583,7 @@ class TestAbilities(MultiMoveTestCaseWithoutSetup):
         self.engine.heal(self.vaporeon, 200)
         self.engine.heal(self.leafeon, 200)
         self.vaporeon.apply_boosts(Boosts(spe=1))
-        self.choose_move(self.vaporeon, 'thunderwave')
+        self.engine.set_status(self.leafeon, Status.PAR, None)
         self.choose_move(self.leafeon, 'sleeppowder')
         self.run_turn()
 

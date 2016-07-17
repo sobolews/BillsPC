@@ -182,11 +182,11 @@ class BattleClient(object):
         hp, max_hp = map(int, j_pokemon['condition'].split('/'))
         stats = j_pokemon['stats']
         stats['max_hp'] = max_hp
-        moveset = [movedex[move.rstrip(string.digits)] for move in j_pokemon['moves']]
+        moves = [movedex[move.rstrip(string.digits)] for move in j_pokemon['moves']]
         ability = abilitydex[j_pokemon['baseAbility']]
         item = itemdex[j_pokemon['item']]
 
-        pokemon = BattlePokemon(pokedex[species], level, moveset, ability, item, gender)
+        pokemon = BattlePokemon(pokedex[species], level, moves, ability, item, gender)
         pokemon.hp, pokemon.max_hp = hp, max_hp
         if __debug__: self._warn_if_stats_discrepancy(pokemon, stats)
         pokemon.stats = PokemonStats.from_dict(stats)
@@ -246,11 +246,13 @@ class BattleClient(object):
             return
 
         pokemon, possible = trigger
-        moveset = pokemon.moveset
-        pos = moveset.index(movedex['hiddenpowernotype'])
+        hiddenpower = None
+        hp_notype = movedex['hiddenpowernotype']
+        pp = pokemon.pp[hp_notype]
+        del pokemon.moves[hp_notype]
 
         if msg[0] == '-start' and msg[2] == 'typechange': # reveals type in msg[3]
-            moveset[pos] = movedex['hiddenpower' + normalize_name(msg[3])]
+            pokemon.moves['hiddenpower' + normalize_name(msg[3])] = pp
             return
 
         defender = self.get_pokemon_from_msg(msg, 1) if msg[1] else None
@@ -264,7 +266,7 @@ class BattleClient(object):
                        (self.engine.get_effectiveness(pokemon, move, defender) *
                         (not defender.is_immune_to_move(pokemon, move))) in msg_to_eff[msg[0]]]
             if len(reduced) == 1:
-                moveset[pos] = reduced[0]
+                hiddenpower = reduced[0]
             else:
                 if len(reduced) == 0:
                     if __debug__: log.w('Error deducing hiddenpower type (no candidates): '
@@ -272,62 +274,65 @@ class BattleClient(object):
 
         # handle all the abilities and other effects that could reveal the hiddenpower type
         elif msg[0] == '-start' and normalize_name(msg[2]) == 'flashfire':
-            moveset[pos] = movedex['hiddenpowerfire']
+            hiddenpower = movedex['hiddenpowerfire']
         elif msg[0] == '-immune':
             effect = normalize_name(msg[3])
             if effect == 'flashfire':
-                moveset[pos] = movedex['hiddenpowerfire']
+                hiddenpower = movedex['hiddenpowerfire']
             elif effect == 'voltabsorb':
-                moveset[pos] = movedex['hiddenpowerelectric']
+                hiddenpower = movedex['hiddenpowerelectric']
             elif effect in ('waterabsorb', 'dryskin'):
-                moveset[pos] = movedex['hiddenpowerwater']
+                hiddenpower = movedex['hiddenpowerwater']
             elif effect == 'levitate':
-                moveset[pos] = movedex['hiddenpowerground']
+                hiddenpower = movedex['hiddenpowerground']
         elif msg[0] == '-heal':
             effect = normalize_name(msg[3])
             if effect == 'voltabsorb':
-                moveset[pos] = movedex['hiddenpowerelectric']
+                hiddenpower = movedex['hiddenpowerelectric']
             elif effect in ('waterabsorb', 'dryskin'):
-                moveset[pos] = movedex['hiddenpowerwater']
+                hiddenpower = movedex['hiddenpowerwater']
         elif msg[0] == '-ability':
             effect = normalize_name(msg[3])
             if effect in ('lightningrod', 'motordrive'):
-                moveset[pos] = movedex['hiddenpowerelectric']
+                hiddenpower = movedex['hiddenpowerelectric']
             elif effect == 'stormdrain':
-                moveset[pos] = movedex['hiddenpowerwater']
+                hiddenpower = movedex['hiddenpowerwater']
         elif msg[0] == '-fail':
             effect = normalize_name(msg[3])
             if effect == 'primordialsea':
-                moveset[pos] = movedex['hiddenpowerfire']
+                hiddenpower = movedex['hiddenpowerfire']
             if effect == 'desolateland':
-                moveset[pos] = movedex['hiddenpowerwater']
+                hiddenpower = movedex['hiddenpowerwater']
         elif msg[0] == '-activate':
             effect = normalize_name(msg[2])
             if effect == 'wonderguard':
                 reduced = [move for move in possible if
                            self.engine.get_effectiveness(pokemon, move, defender) < 2]
                 if len(reduced) == 1:
-                    moveset[pos] = reduced[0]
+                    hiddenpower = reduced[0]
             elif effect == 'deltastream':
                 reduced = [move for move in possible if
                            type_effectiveness(move.type, Type.FLYING) > 1]
                 if len(reduced) == 1:
-                    moveset[pos] = reduced[0]
+                    hiddenpower = reduced[0]
         else:
             if __debug__: log.e('Unhandled deduce_hiddenpower message for %s: %s', pokemon, msg)
 
-        if moveset[pos] != movedex['hiddenpowernotype']:
-            self.recalculate_stats_hiddenpower(pokemon, moveset[pos].type)
+        if hiddenpower is None:
+            pokemon.moves[hp_notype] = pp
+        else:
+            pokemon.moves[hiddenpower] = pp
+            self.recalculate_stats_hiddenpower(pokemon, hiddenpower.type)
 
         if __debug__:
-            if moveset[pos] == movedex['hiddenpowernotype']:
+            if hiddenpower is None:
                 log.i("Unable to deduce %s's hiddenpower type vs %s from %s",
                       pokemon, defender, msg)
-            elif moveset[pos] in possible:
-                log.i("Deduced %s's hiddenpower type to be %s", pokemon, moveset[pos])
+            elif hiddenpower in possible:
+                log.i("Deduced %s's hiddenpower type to be %s", pokemon, hiddenpower)
             else:
                 log.w("Setting %s's hiddenpower type to %s: "
-                      "but possible choices were %s", pokemon, moveset[pos], possible)
+                      "but possible choices were %s", pokemon, hiddenpower, possible)
 
     def recalculate_stats_hiddenpower(self, pokemon, hp_type):
         if __debug__: log.i("Recalculating %s's stats for hp_type=%s", pokemon, hp_type)
@@ -403,7 +408,7 @@ class BattleClient(object):
 
             if __debug__: log.d("Updating foe: %s" % pokemon)
 
-            known_info = [move.name for move in pokemon.moveset
+            known_info = [move.name for move in pokemon.moves
                           if move.type != Type.NOTYPE]
             if pokemon.original_item != itemdex['_unrevealed_']:
                 known_info.append(pokemon.original_item.name)
@@ -431,7 +436,7 @@ class BattleClient(object):
                                             pokemon.name, ability, known_info)
                         self.set_ability(pokemon, abilitydex[ability])
 
-            if len(pokemon.moveset) < 4:
+            if len(pokemon.moves) < 4:
                 for move in rbstats[rb_index]['moves']:
                     if (move not in known_info and
                         rbstats.attr_probability(rb_index, move, known_info) == 1
@@ -439,7 +444,7 @@ class BattleClient(object):
                         self.reveal_move(pokemon, movedex[move])
                         if __debug__: log.i("%s must have %s, given %s",
                                             pokemon.name, move, known_info)
-                        assert len(pokemon.moveset) <= 4, (pokemon, pokemon.moveset)
+                        assert len(pokemon.moves) <= 4, (pokemon, pokemon.moves)
 
         active = self.my_side.active_pokemon
         foe = self.foe_side.active_pokemon
@@ -595,7 +600,7 @@ class BattleClient(object):
             return          # this move is called by another (copycat, sleeptalk, lockedmove)
 
         if msg[2] == 'Hidden Power':
-            hp_moves = [move for move in pokemon.moveset if
+            hp_moves = [move for move in pokemon.moves if
                         move.is_hiddenpower and move != movedex['hiddenpowernotype']]
             if hp_moves:
                 assert len(hp_moves) == 1, hp_moves
@@ -664,33 +669,31 @@ class BattleClient(object):
         """
         Reveal a move that a foe pokemon definitely has (i.e. was not called via copycat, etc.)
         """
-        if (move in pokemon.moveset or
+        if (move in pokemon.moves or
             move == movedex['struggle'] or
-            (move.is_hiddenpower and any(known.is_hiddenpower for known in pokemon.moveset))):
+            (move.is_hiddenpower and any(known.is_hiddenpower for known in pokemon.moves))):
             return
 
-        if len(pokemon.moveset) >= 4:
+        if len(pokemon.moves) >= 4:
             log.i('Revealing %s when %s already has a full moveset: %s',
-                  move, pokemon, pokemon.moveset)
+                  move, pokemon, pokemon.moves)
             for name in rbstats['zoroark']['moves']:
                 known_move = movedex[name]
-                if known_move in pokemon.moveset:
+                if known_move in pokemon.moves:
                     log.i('Forgetting possible zoroark move: %s', known_move)
-                    pokemon.moveset.remove(known_move)
+                    del pokemon.moves[known_move]
             # reset assumed item, because item could have been revealed due to faulty assumptions
             pokemon.item = itemdex['_unrevealed_']
             pokemon.original_item = itemdex['_unrevealed_']
             if move.name in rbstats['zoroark']['moves']:
                 log.i('Rejected learning %s due to possibility of zoroark', move)
                 return
-        if len(pokemon.moveset) >= 4: # if the above handling didn't fix it, something's gone wrong
+        if len(pokemon.moves) >= 4: # if the above handling didn't fix it, something's gone wrong
             log.e("%s's moveset %s is full; cannot reveal %s. Clearing moveset as a last resort.",
-                  pokemon, pokemon.moveset, move)
-            pokemon.moveset = []
-            pokemon.pp.clear()
+                  pokemon, pokemon.moves, move)
+            pokemon.moves.clear()
 
-        pokemon.moveset.append(move)
-        pokemon.pp[move] = move.max_pp
+        pokemon.moves[move] = move.max_pp
         log.i("%s's %s was revealed!", pokemon, move)
         if move.is_hiddenpower and move.type != Type.NOTYPE:
             self.recalculate_stats_hiddenpower(pokemon, move.type)
@@ -1049,7 +1052,7 @@ class BattleClient(object):
         assert 1 <= level <= 100, 'level=%r' % level
         gender = details[2] if len(details) > 2 else None
         assert gender in ('M', 'F', None), gender
-        return FoePokemon(pokedex[name], level, moveset=[],
+        return FoePokemon(pokedex[name], level, moves=[],
                           side=side, ability=abilitydex['_unrevealed_'],
                           item=itemdex['_unrevealed_'], gender=gender)
 
@@ -1115,7 +1118,7 @@ class BattleClient(object):
         if foe_zoroark is None:
             log.i("Revealing foe's zoroark for the first time")
             foe_zoroark = FoePokemon(pokedex['zoroark'], rbstats['zoroark']['level'].keys()[0],
-                                     moveset=[], side=foe_side, ability=abilitydex['illusion'],
+                                     moves=[], side=foe_side, ability=abilitydex['illusion'],
                                      item=itemdex['_unrevealed_'], gender='M')
             self.reveal_foe_pokemon(foe_zoroark)
         log.i("%s was a decoy for foe's zoroark", decoy)
@@ -1143,18 +1146,17 @@ class BattleClient(object):
         foe_zoroark.illusion = not break_illusion
         self.foe_side.active_illusion = not break_illusion
 
-        for move in decoy.moveset:
-            if (move not in decoy.pre_switch_state.pp_moves.keys() and
+        for move in decoy.moves:
+            if (move not in decoy.pre_switch_state.moves and
                 move.name in rbstats['zoroark']['moves']):
                 self.reveal_move(foe_zoroark, move)
 
         decoy.ability = decoy.base_ability
         decoy.reset_pre_switch_state()
         # forget any possibly false moves that could have been revealed from a previous illusion
-        for move in decoy.moveset[:]:
+        for move in decoy.moves.copy():
             if move.name in rbstats['zoroark']['moves']:
-                decoy.moveset.remove(move)
-                del decoy.pp[move]
+                del decoy.moves[move]
 
         return foe_zoroark
 
@@ -1577,9 +1579,9 @@ class BattleClient(object):
         elif effect == 'disable':
             duration = 4 if pokemon.will_move_this_turn else 5
             move = movedex[normalize_name(msg[3])]
-            if move not in pokemon.moveset:
+            if move not in pokemon.moves:
                 if __debug__: log.w("%s: %s isn't in %s's moveset: %s",
-                                    msg, move, pokemon, pokemon.moveset)
+                                    msg, move, pokemon, pokemon.moves)
             pokemon.set_effect(effects.Disable(move, duration))
         elif effect == 'attract':
             foe = self.battlefield.get_foe(pokemon)
@@ -1787,18 +1789,16 @@ class BattleClient(object):
         if self.is_ally(pokemon):
             # The moves might be in the wrong order, so reset them according to the current request.
             # Set any of the foe's moves that are revealed by transforming.
-            pokemon.moveset = []
+            pokemon.moves = {}
             for move in self.request['active'][0]['moves']:
                 my_move = movedex[normalize_name(move['move'])]
-                pokemon.moveset.append(my_move)
+                pokemon.moves[my_move] = 5
 
                 if my_move.is_hiddenpower:
                     foe_move, _ = self.get_possible_hiddenpowers(foe)
                 else:
                     foe_move = my_move
                 self.reveal_move(foe, foe_move)
-
-            pokemon.pp = {move: 5 for move in pokemon.moveset}
 
     def handle_formechange(self, msg):
         """
@@ -1919,14 +1919,14 @@ class BattleClient(object):
                     assert can_mega_evo == pokemon.can_mega_evolve, \
                         "%s's mega-evolution state is incorrect" % pokemon
 
-                    active_moves = request['active'][0]['moves']
+                    active_moves = sorted(request['active'][0]['moves'])
                     if len(active_moves) == 1:
                         assert (pokemon.has_effect(Volatile.TWOTURNMOVE) or
                                 pokemon.has_effect(Volatile.LOCKEDMOVE) or
                                 active_moves[0]['id'] in ('struggle', 'transform')), \
                             '%s has one move available but it appears invalid?' % pokemon
                     else:
-                        for i, move in enumerate(pokemon.moveset):
+                        for i, move in enumerate(sorted(pokemon.moves)):
                             assert (active_moves[i]['id'] == move.name or
                                     (active_moves[i]['id'] == 'hiddenpower' and
                                      move.name.startswith('hiddenpower'))), \
@@ -1970,10 +1970,10 @@ class BattleClient(object):
                     if not pokemon.is_transformed:
                         for stat, val in reqmon['stats'].items():
                             assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
-                    for i, move in enumerate(reqmon['moves']):
-                        assert pokemon.moveset[i].name == move, \
+                    for i, move in enumerate(sorted(reqmon['moves'])):
+                        assert sorted(pokemon.moves)[i].name == move, \
                             ("%s's move %s doesn't match the request's %s" %
-                             (pokemon, pokemon.moveset[i].name, move))
+                             (pokemon, sorted(pokemon.moves)[i].name, move))
                     if not pokemon.ability.name.startswith('_') and not pokemon.is_transformed:
                         assert pokemon.base_ability.name == reqmon['baseAbility'], \
                             (pokemon.ability.name, reqmon['baseAbility'])
@@ -2001,13 +2001,10 @@ class BattleClient(object):
     def _match_request(self, request):
         for pokemon in self.my_side.team:
             if pokemon.is_active and request.get('active') is not None:
-                pokemon.moveset = []
-                pokemon.pp = {}
+                pokemon.moves = {}
                 for jmove in request['active'][0]['moves']:
                     move = movedex[normalize_name(jmove['move'])]
-                    pokemon.moveset.append(move)
-                    if jmove.get('pp'):
-                        pokemon.pp[move] = jmove['pp']
+                    pokemon.moves[move] = jmove.get('pp', move.max_pp)
 
             reqmon = [p for p in self.request['side']['pokemon']
                       if pokemon.base_species.startswith(normalize_name(p['ident']))][0]

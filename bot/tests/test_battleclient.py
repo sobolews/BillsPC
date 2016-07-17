@@ -93,9 +93,8 @@ class TestBattleClient(TestBattleClientBase):
         self.assertIsNotNone(side)
         self.assertEqual(side.team[0].name, 'hitmonchan')
         self.assertEqual(side.team[1].level, 73)
-        self.assertListEqual(side.team[2].moveset,
-                             [movedex[move] for move in ['return', 'dragondance',
-                                                         'earthquake', 'roost']])
+        self.assertSetEqual(set(move.name for move in side.team[2].moves),
+                            {'return', 'dragondance', 'earthquake', 'roost'})
         self.assertDictEqual(dict(side.team[3].stats),
                              {'atk': 127, 'def': 127, 'spa': 127,
                               'spd': 127, 'spe': 127, 'max_hp': 215})
@@ -142,11 +141,11 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.goodra = self.foe_side.active_pokemon
 
     def assertHiddenPowerType(self, pokemon, type):
-        hps = [move for move in pokemon.moveset if move.is_hiddenpower]
+        hps = [move for move in pokemon.moves if move.is_hiddenpower]
         if len(hps) == 0:
-            raise AssertionError("%s doesn't have a hiddenpower: %s" % (pokemon, pokemon.moveset))
+            raise AssertionError("%s doesn't have a hiddenpower: %s" % (pokemon, pokemon.moves))
         elif len(hps) > 1:
-            raise AssertionError("%s has multiple hiddenpowers: %s" % (pokemon, pokemon.moveset))
+            raise AssertionError("%s has multiple hiddenpowers: %s" % (pokemon, pokemon.moves))
         self.assertEqual(hps[0].type, type)
 
     def test_first_switch_in(self):
@@ -161,7 +160,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.assertEqual(self.goodra.name, 'goodra')
         self.assertEqual(self.goodra.hp, 265)
-        self.assertListEqual(self.goodra.moveset, [])
+        self.assertDictEqual(self.goodra.moves, {})
         self.assertEqual(self.goodra.gender, 'F')
 
         self.assertEqual(self.foe_side.num_unrevealed, 5)
@@ -172,8 +171,8 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         zekrom = self.my_side.active_pokemon
         self.assertEqual(zekrom.name, 'zekrom')
         self.assertTrue(zekrom.is_active)
-        self.assertListEqual(zekrom.moveset, [movedex[move] for move in
-                                              ['outrage', 'roost', 'voltswitch', 'boltstrike']])
+        self.assertSetEqual(set(move.name for move in zekrom.moves),
+                            {'outrage', 'roost', 'voltswitch', 'boltstrike'})
         self.assertFalse(self.hitmonchan.is_active)
         self.assertEqual(zekrom.hp, 266)
         self.assertEqual(zekrom.gender, None)
@@ -243,9 +242,9 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(self.hitmonchan.pp[movedex['hiddenpowerice']], 24 - 1)
 
     def test_handle_foe_move(self):
-        self.assertListEqual(self.goodra.moveset, [])
+        self.assertDictEqual(self.goodra.moves, {})
         self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
-        self.assertListEqual(self.goodra.moveset, [movedex['dracometeor']])
+        self.assertListEqual(self.goodra.moves.keys(), [movedex['dracometeor']])
         self.assertEqual(self.goodra.pp[movedex['dracometeor']], 8 - 1)
 
         self.handle('|move|p2a: Goodra|Draco Meteor|p1a: Hitmonchan')
@@ -253,7 +252,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
     def test_handle_foe_move_hiddenpower(self):
         self.handle('|move|p2a: Goodra|Hidden Power|p1a: Hitmonchan')
-        hp = [move for move in self.goodra.moveset if move.is_hiddenpower][0]
+        hp = [move for move in self.goodra.moves if move.is_hiddenpower][0]
         self.assertEqual(self.goodra.pp[hp], 24 - 1)
 
     def test_handle_move_not_in_moveset(self):
@@ -559,8 +558,8 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|2')
 
         self.assertTrue(ditto.is_transformed)
-        self.assertIn(movedex['dragontail'], ditto.moveset)
-        self.assertIn(movedex['dragontail'], self.goodra.moveset)
+        self.assertIn(movedex['dragontail'], ditto.moves)
+        self.assertIn(movedex['dragontail'], self.goodra.moves)
         self.assertEqual(ditto.pp.get(movedex['thunderbolt']), 5)
         self.assertEqual(ditto.name, 'goodra')
         self.assertListEqual(ditto.types, [Type.DRAGON, None])
@@ -579,7 +578,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertFalse(ditto.is_transformed)
         self.assertEqual(ditto.stats['atk'], 127)
         self.assertEqual(ditto.name, 'ditto')
-        self.assertListEqual(ditto.moveset, [movedex['transform']])
+        self.assertListEqual(ditto.moves.keys(), [movedex['transform']])
         self.assertEqual(ditto.ability, abilitydex['imposter'])
 
     def base_ditto_scrafty(self):
@@ -985,8 +984,8 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(stall.duration, 1)
         self.assertEqual(stall.denominator, 9)
 
-        alomomola.moveset = [] # clear its moveset so that it doesn't try use protect again
-        self.hitmonchan.moveset = [movedex['machpunch']]
+        alomomola.moves.clear() # clear its moveset so that it doesn't try use protect again
+        self.hitmonchan.moves = {movedex['machpunch']: 5}
         self.bc.engine.run_turn()
 
         self.assertFalse(alomomola.has_effect(Volatile.STALL))
@@ -1003,7 +1002,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|cant|p2a: Goodra|Focus Punch|Focus Punch')
 
         focuspunch = movedex['focuspunch']
-        self.assertTrue(focuspunch in self.goodra.moveset)
+        self.assertTrue(focuspunch in self.goodra.moves)
         self.assertEqual(self.goodra.pp[focuspunch], focuspunch.max_pp)
 
     def test_handle_singlemove_destinybond(self):
@@ -1152,7 +1151,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|2')
 
         virizion = self.foe_side.active_pokemon
-        self.assertIn(movedex['hiddenpowerice'], virizion.moveset)
+        self.assertIn(movedex['hiddenpowerice'], virizion.moves)
 
     def test_deduce_foe_hiddenpower_multiple_possibilities(self):
         # deduce from resisted
@@ -1282,7 +1281,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|cant|p2a: Azelf|move: Taunt|Taunt')
         self.handle('|turn|3')
 
-        self.assertIn(movedex['taunt'], self.foe_side.active_pokemon.moveset)
+        self.assertIn(movedex['taunt'], self.foe_side.active_pokemon.moves)
 
     def test_heal_reveals_item_ability(self):
         self.handle('|switch|p2a: Blastoise|Blastoise, L79, M|100/100')
@@ -1421,13 +1420,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|switch|p2a: Linoone|Linoone, L82, F|100/100')
 
         linoone = self.foe_side.active_pokemon
-        self.assertSetEqual(set(linoone.moveset),
+        self.assertSetEqual(set(linoone.moves),
                             {movedex['shadowclaw'], movedex['bellydrum'],
                              movedex['extremespeed'], movedex['seedbomb']})
 
         self.handle('|switch|p2a: Sunflora|Sunflora, L83, F|100/100')
         sunflora = self.foe_side.active_pokemon
-        self.assertSetEqual(set(sunflora.moveset),
+        self.assertSetEqual(set(sunflora.moves),
                             {movedex['sunnyday'], movedex['hiddenpowerfire'],
                              movedex['earthpower']})
 
@@ -1507,7 +1506,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
 
         politoed = self.foe_side.active_pokemon
-        self.assertIn(movedex['rest'], politoed.moveset) # inferred from chestoberry
+        self.assertIn(movedex['rest'], politoed.moves) # inferred from chestoberry
 
         self.handle('|switch|p2a: Barbaracle|Barbaracle, L81, F|100/100')
         self.handle('|cant|p2a: Barbaracle|move: Taunt|Shell Smash')
@@ -1522,7 +1521,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|2')
 
         xerneas = self.foe_side.active_pokemon
-        self.assertIn(movedex['geomancy'], xerneas.moveset)
+        self.assertIn(movedex['geomancy'], xerneas.moves)
         self.assertEqual(xerneas.item, itemdex['powerherb'])
 
     def test_infer_megastone_from_level(self):
@@ -1548,20 +1547,20 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(ditto.ability, abilitydex['ironfist'])
         self.assertEqual(ditto.base_ability, abilitydex['imposter'])
         self.assertEqual(ditto.item, itemdex['choicescarf'])
-        self.assertIn(movedex['machpunch'], ditto.moveset)
-        self.assertIn(movedex['hiddenpowerdark'], ditto.moveset)
+        self.assertIn(movedex['machpunch'], ditto.moves)
+        self.assertIn(movedex['hiddenpowerdark'], ditto.moves)
 
         self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
         self.handle('|switch|p2a: Goodra|Goodra, L77, M|100/100')
         self.handle('|turn|3')
         self.assertFalse(ditto.is_transformed)
-        self.assertListEqual(ditto.moveset, [movedex['transform']])
+        self.assertListEqual(ditto.moves.keys(), [movedex['transform']])
         self.handle('|switch|p2a: Ditto|Ditto, L83|87/100')
         self.handle('|-transform|p2a: Ditto|p1a: Zekrom|[from] ability: Imposter')
         self.handle('|turn|4')
 
         self.assertTrue(ditto.is_transformed)
-        self.assertSetEqual(set(ditto.moveset), set(self.my_side.active_pokemon.moveset))
+        self.assertSetEqual(set(ditto.moves), set(self.my_side.active_pokemon.moves))
         self.assertEqual(ditto.name, 'zekrom')
 
     def test_tox_stage_increases_each_turn(self):
@@ -1776,14 +1775,14 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|switch|p2a: Stunfisk|Stunfisk, L83, M|100/100')
         stunfisk = self.foe_side.active_pokemon
         self.handle('|move|p2a: Stunfisk|Dragon Pulse|p1a: Hitmonchan|[from]Copycat')
-        self.assertFalse(movedex['dragonpulse'] in self.goodra.moveset)
+        self.assertFalse(movedex['dragonpulse'] in self.goodra.moves)
         self.assertEqual(self.battlefield.last_move_used, movedex['dragonpulse'])
         self.assertEqual(stunfisk.last_move_used, movedex['dragonpulse'])
 
         self.handle('|turn|2')
         self.handle('|move|p2a: Stunfisk|Sleep Talk|p2a: Stunfisk')
         self.handle('|move|p2a: Stunfisk|Stealth Rock|p1a: Hitmonchan|[from]Sleep Talk')
-        self.assertTrue(movedex['stealthrock'] in stunfisk.moveset)
+        self.assertTrue(movedex['stealthrock'] in stunfisk.moves)
         self.assertEqual(self.battlefield.last_move_used, movedex['stealthrock'])
         self.assertEqual(stunfisk.last_move_used, movedex['sleeptalk'])
 
@@ -1984,8 +1983,8 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
 
         zoroark = self.foe_side.active_pokemon
         self.assertNotEqual(zoroark, yveltal)
-        self.assertSetEqual(set(zoroark.moveset), {movedex['uturn']})
-        self.assertSetEqual(set(yveltal.moveset), {movedex['roost']})
+        self.assertSetEqual(set(zoroark.moves), {movedex['uturn']})
+        self.assertSetEqual(set(yveltal.moves), {movedex['roost']})
 
     def test_illusion_faints_without_being_revealed(self):
         self.handle('|switch|p2a: Illumise|Illumise, L83, F|100/100') # actually a zoroark
@@ -2059,4 +2058,4 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.handle('|move|p2a: Yveltal|Toxic|p1a: Avalugg') # 5th move
         self.handle('|turn|6')
 
-        self.assertSetEqual(set(yveltal.moveset), {movedex['hurricane'], movedex['toxic']})
+        self.assertSetEqual(set(yveltal.moves), {movedex['hurricane'], movedex['toxic']})

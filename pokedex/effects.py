@@ -126,7 +126,7 @@ class ChoiceLock(BaseEffect):
 
     @priority(0)
     def on_get_move_choices(self, pokemon, moves):
-        if self.move not in pokemon.moveset:
+        if self.move not in pokemon.moves:
             pokemon.remove_effect(Volatile.CHOICELOCK)
             if __debug__: log.d("%s doesn't have the choiced move %s, removing choicelock",
                                 pokemon, self.move)

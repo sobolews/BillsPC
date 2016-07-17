@@ -2820,7 +2820,7 @@ class sleeptalk(Move):
             return FAIL
 
     def on_success(self, user, _, engine):
-        moves = [move for move in user.moveset if
+        moves = [move for move in user.moves if
                  move.name not in self.NO_SLEEP_TALK and not move.is_two_turn]
         if __debug__: log.i('sleeptalk choosing randomly from %s', moves)
 
