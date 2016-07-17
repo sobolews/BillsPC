@@ -1888,7 +1888,7 @@ class BattleClient(object):
 
     def handle_prematureend(self, msg):
         """
-        |tie
+        |prematureend
         """
         log.i('Game over... what happened?')
 
