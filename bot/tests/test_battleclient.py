@@ -1804,6 +1804,18 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-damage|p1a: Zekrom|49/266|[from] confusion')
         self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))
 
+    def test_remove_lockedmove_on_protect_activation(self):
+        self.handle('|switch|p1a: Zekrom|Zekrom, L73|266/266')
+        self.handle('|switch|p2a: Alomomola|Alomomola, L79, M|100/100')
+        self.handle('|turn|2')
+        zekrom = self.my_side.active_pokemon
+        self.handle('|move|p2a: Alomomola|Protect|p2a: Alomomola')
+        self.handle('|-singleturn|p2a: Alomomola|Protect')
+        self.handle('|move|p1a: Zekrom|Outrage|p2a: Alomomola')
+        self.handle('|-activate|p2a: Alomomola|Protect')
+        self.handle('|turn|3')
+        self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))
+
 
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):

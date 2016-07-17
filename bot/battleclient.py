@@ -1403,6 +1403,7 @@ class BattleClient(object):
         |-activate|p1a: Dusknoir|Substitute|[damage]
         |-activate|p1a: Chansey|move: Infestation|[of] p2a: Fraxure
         |-activate|p2a: Aerodactyl|ability: Mummy|Snow Warning|[of] p1a: Chansey
+        |-activate|p2a: Chesnaught|Protect (protect blocked an attack - remove LOCKEDMOVE)
 
         Reveal only:
         |-activate|p2a: Seviper|ability: Shed Skin
@@ -1418,7 +1419,6 @@ class BattleClient(object):
         Ignored:
         |-activate|p1a: Banette|Destiny Bond (destinybond's on_faint activated)
         |-activate|p2a: Rotom-Fan|move: Trick|[of] p1a: Chimecho (trick was successful)
-        |-activate|p2a: Chesnaught|Protect (protect blocked an attack)
         |-activate|p1a: Exeggutor|move: Sticky Web (stickyweb lowered spe on switch in)
         |-activate|p2a: Leafeon|Attract|[of] p1a: Fraxure (attract roll)
         |-activate|p1a: Machoke|Custap Berry
@@ -1427,7 +1427,7 @@ class BattleClient(object):
         |-activate||deltastream (deltastream reduced the effectiveness of a move)
         """
         effect = normalize_name(msg[2])
-        if effect in ('destinybond', 'trick', 'protect', 'stickyweb', 'attract', 'custapberry',
+        if effect in ('destinybond', 'trick', 'stickyweb', 'attract', 'custapberry',
                       'pursuit', 'struggle', 'trapped', 'deltastream'):
             return
         pokemon = self.get_pokemon_from_msg(msg)
@@ -1464,6 +1464,10 @@ class BattleClient(object):
             foe = self.battlefield.get_foe(pokemon)
             self.set_ability(foe, abilitydex[normalize_name(msg[3])]) # old ability was revealed
             self.set_ability(foe, abilitydex['mummy'])
+        elif effect == 'protect':
+            foe = self.battlefield.get_foe(pokemon)
+            assert foe is not None
+            foe.remove_effect(Volatile.LOCKEDMOVE, force=True)
         else:
             if __debug__: log.e('Unhandled -activate msg: %s', msg)
 
