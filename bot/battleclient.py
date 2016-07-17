@@ -1,6 +1,7 @@
 from __future__ import absolute_import
-import string
 import random
+import string
+import traceback
 
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
@@ -1792,7 +1793,7 @@ class BattleClient(object):
             # Set any of the foe's moves that are revealed by transforming.
             pokemon.moves = {}
             for move in self.request['active'][0]['moves']:
-                my_move = movedex[normalize_name(move['move'])]
+                my_move = movedex[normalize_name(move['id'])]
                 pokemon.moves[my_move] = 5
 
                 if my_move.is_hiddenpower:
@@ -1895,7 +1896,7 @@ class BattleClient(object):
     def _validate_my_team(self):
         """
         Validate that the current team state matching what is being sent from the server.
-        This should only ever be called in __debug__ mode. It will fail otherwise.
+        Correct the state if it doesn't match.
         """
         request = self.request
 
@@ -1904,129 +1905,122 @@ class BattleClient(object):
             for move in request['active'][0]['moves']:
                 move['id'] = move['id'].rstrip(string.digits)
         for reqmon in request['side']['pokemon']:
-            reqmon['moves'] = [move_.rstrip(string.digits)
-                               for move_ in reqmon['moves']]
+            reqmon['moves'] = [move_.rstrip(string.digits) for move_ in reqmon['moves']]
 
-        for pokemon in self.my_side.team:
-            try:
-                if pokemon.status not in (None, Status.FNT):
-                    if pokemon.is_active:
-                        assert pokemon.has_effect(pokemon.status), \
-                            '%s\n has status but no effect' % pokemon
-                    else:
-                        assert not pokemon.effects, \
-                            '%s has effects but is benched' % pokemon
+        active = self.my_side.active_pokemon
+        check(active.is_active, "Active pokemon %s is not active", active)
+        if request.get('active') is not None:
+            can_mega_evo = request['active'][0].get('canMegaEvo', False)
+            check(can_mega_evo == active.can_mega_evolve,
+                  "%s's mega-evolution state is incorrect", active)
 
-                if pokemon.is_active and request.get('active') is not None:
-                    can_mega_evo = request['active'][0].get('canMegaEvo', False)
-                    assert can_mega_evo == pokemon.can_mega_evolve, \
-                        "%s's mega-evolution state is incorrect" % pokemon
-
-                    active_moves = sorted(request['active'][0]['moves'])
-                    if len(active_moves) == 1:
-                        assert (pokemon.has_effect(Volatile.TWOTURNMOVE) or
-                                pokemon.has_effect(Volatile.LOCKEDMOVE) or
-                                active_moves[0]['id'] in ('struggle', 'transform')), \
-                            '%s has one move available but it appears invalid?' % pokemon
-                    else:
-                        for i, move in enumerate(sorted(pokemon.moves)):
-                            assert (active_moves[i]['id'] == move.name or
-                                    (active_moves[i]['id'] == 'hiddenpower' and
-                                     move.name.startswith('hiddenpower'))), \
-                                ("%s: request %s doesn't match %s" %
-                                 (pokemon, active_moves[i]['id'], move))
-                            pokemon.pp[move] = active_moves[i]['pp']
-                            choices = pokemon.get_move_choices()
-                            if not active_moves[i]['disabled']:
-                                assert move in choices, \
-                                    "%s's %s should be selectable, but it isn't" % (pokemon, move)
-
-                    if (request['active'][0].get('trapped') or
-                        request['active'][0].get('maybeTrapped')):
-                        assert not pokemon.get_switch_choices(), \
-                            "%s has available switch choices, but should be trapped" % pokemon
-
-                reqmon = [p for p in self.request['side']['pokemon']
-                          if pokemon.base_species.startswith(
-                                  normalize_name(p['ident'].split(None, 1)[-1]))]
-                assert reqmon, ("%s didn't match with any: %s" % (
-                    pokemon, [normalize_name(p['ident'].split(None, 1)[-1])
-                              for p in self.request['side']['pokemon']]))
-                reqmon = reqmon[0]
-                condition = reqmon['condition'].split()
-                if condition[-1] == 'fnt':
-                    assert pokemon.status is Status.FNT, '%s should be fainted' % pokemon
-                    assert pokemon.hp == 0, "%s's hp=%s; should be 0" % (pokemon, pokemon.hp)
-                elif condition[-1] in self.STATUS_MAP:
-                    assert self.STATUS_MAP[condition[-1]][0] is pokemon.status, \
-                        '%s has the wrong status' % pokemon
-                else: # no status
-                    hp, max_hp = map(int, condition[0].split('/'))
-                    assert pokemon.hp == hp, '%s has the wrong hp: %s %s' % (pokemon,
-                                                                             pokemon.hp, hp)
-                    assert pokemon.max_hp == max_hp, '%s has the wrong max_hp: %s %s' % \
-                        (pokemon, pokemon.max_hp, max_hp)
-                assert pokemon.level == int(reqmon['details'].split(', ')[1][1:])
-                assert pokemon.is_active == reqmon['active']
-
-                if not pokemon.is_fainted():
-                    if not pokemon.is_transformed:
-                        for stat, val in reqmon['stats'].items():
-                            assert pokemon.stats[stat] == val, "%s's %s is wrong" % (pokemon, stat)
-                    for i, move in enumerate(sorted(reqmon['moves'])):
-                        assert sorted(pokemon.moves)[i].name == move, \
-                            ("%s's move %s doesn't match the request's %s" %
-                             (pokemon, sorted(pokemon.moves)[i].name, move))
-                    if not pokemon.ability.name.startswith('_') and not pokemon.is_transformed:
-                        assert pokemon.base_ability.name == reqmon['baseAbility'], \
-                            (pokemon.ability.name, reqmon['baseAbility'])
-                    if pokemon.item is None:
-                        assert reqmon['item'] == ''
-                    else:
-                        assert reqmon['item'] == pokemon.item.name
-
-                assert int(request['side']['id'][1]) - 1 == self.my_player, self.my_player
-                assert request['side']['name'] == self.name, self.name
-
-            except AssertionError:
-                # mocked in tests to raise exception instead
-                if __debug__:
-                    log.exception('Assertion failed: ')
-                    log.e('My team is invalid/out of sync with the server.\n'
-                          'My team: %r\n Latest request msg: %r', self.my_side, self.request)
-                self._match_request(request)
-            except Exception:
-                if __debug__:
-                    log.exception('Exception during team validation: ')
-                    log.e('%r\n%r' % (self.my_side, self.request))
-                self._match_request(request)
-
-    def _match_request(self, request):
-        for pokemon in self.my_side.team:
-            if pokemon.is_active and request.get('active') is not None:
-                pokemon.moves = {}
-                for jmove in request['active'][0]['moves']:
-                    move = movedex[normalize_name(jmove['move'])]
-                    pokemon.moves[move] = jmove.get('pp', move.max_pp)
-
-            reqmon = [p for p in self.request['side']['pokemon']
-                      if pokemon.base_species.startswith(normalize_name(p['ident']))][0]
-
-            if reqmon['condition'] == '0 fnt':
-                pokemon.hp = 0
-                pokemon.status = Status.FNT
-                continue
-
-            pokemon.hp, pokemon.max_hp = map(int, reqmon['condition'].split()[0].split('/'))
-            stats = reqmon['stats'].copy()
-            stats['max_hp'] = pokemon.max_hp
-            pokemon.stats = PokemonStats.from_dict(stats)
-
-            if reqmon['item']:
-                pokemon.item = itemdex[reqmon['item']]
+            reqmoves = sorted(request['active'][0]['moves'], key=lambda move: move['id'])
+            if len(reqmoves) == 1:
+                check(active.has_effect(Volatile.TWOTURNMOVE) or
+                      active.has_effect(Volatile.LOCKEDMOVE) or
+                      reqmoves[0]['id'] in ('struggle', 'transform'),
+                      '%s has one move available but it appears invalid?', active)
             else:
-                pokemon.item = None
-            pokemon.base_ability = abilitydex[reqmon['baseAbility']]
+                choices = active.get_move_choices()
+                reset_moves_needed = False
+                for i, move in enumerate(sorted(active.moves, key=lambda move: move.name)):
+                    if not check(reqmoves[i]['id'] == move.name or
+                                 (reqmoves[i]['id'] == 'hiddenpower' and
+                                  move.name.startswith('hiddenpower')),
+                                 "%s: request moves %s don't match %s", active, reqmoves, move):
+                        reset_moves_needed = True
+                        break
+                    active.pp[move] = reqmoves[i].get('pp', move.max_pp)
+                if reset_moves_needed:
+                    for jmove in request['active'][0]['moves']:
+                        move = movedex[normalize_name(jmove['id'])]
+                        active.moves[move] = jmove.get('pp', move.max_pp)
+
+                for i, move in enumerate(sorted(active.moves, key=lambda move: move.name)):
+                    if reqmoves[i]['disabled']:
+                        check(move not in choices,
+                              "%s's %s should be disabled, but it isn't", active, move)
+                    else:
+                        check(move in choices,
+                              "%s's %s should be selectable, but it isn't", active, move)
+
+            if (request['active'][0].get('trapped') or
+                request['active'][0].get('maybeTrapped')):
+                check(not active.get_switch_choices(),
+                      "%s has available switch choices, but should be trapped", active)
+
+        for pokemon in self.my_side.team:
+            if not pokemon.is_active:
+                check(not pokemon.effects, '%s has effects but is benched' % pokemon)
+
+            if pokemon.status not in (None, Status.FNT) and pokemon.is_active:
+                if not check(pokemon.has_effect(pokemon.status),
+                             '%s\n has status but no effect', pokemon):
+                    self.set_status(pokemon, pokemon.status)
+
+            reqteam = request['side']['pokemon']
+            reqmon = [p for p in reqteam
+                      if pokemon.base_species.startswith(normalize_name(p['ident']))]
+            check(len(reqmon) > 0,
+                  "%s didn't match with any: %s", pokemon, [p['ident'] for p in reqteam])
+            check(len(reqmon) == 1,
+                  "%s matched with more than 1: %s", pokemon, [p['ident'] for p in reqteam])
+            reqmon = reqmon[0]
+
+            condition = reqmon['condition'].split()
+            if condition == '0 fnt':
+                if not check(pokemon.status is Status.FNT, '%s should be fainted', pokemon):
+                    pokemon.status = Status.FNT
+                if not check(pokemon.hp == 0, "%s's hp=%s; should be 0", pokemon, pokemon.hp):
+                    pokemon.hp = 0
+
+            check(pokemon.level == int(reqmon['details'].split(', ')[1][1:]), pokemon.level)
+            check(pokemon.is_active == reqmon['active'],
+                  "%s.is_active is %s, should be %s", pokemon, pokemon.is_active, reqmon['active'])
+
+            if not pokemon.is_fainted():
+                hp, max_hp = map(int, reqmon['condition'].split()[0].split('/'))
+                status = condition[-1]
+                if status in self.STATUS_MAP:
+                    if not check(self.STATUS_MAP[status][0] == pokemon.status,
+                                 '%s has the wrong status' % pokemon):
+                        pokemon.status = self.STATUS_MAP[status][0]
+                if not check(pokemon.hp == hp,
+                             '%s has the wrong hp: %s %s', pokemon, pokemon.hp, hp):
+                    pokemon.hp = hp
+                if not check(pokemon.max_hp == max_hp,
+                             '%s has the wrong max_hp: %s %s', pokemon, pokemon.max_hp, max_hp):
+                    pokemon.max_hp = max_hp
+
+                if not pokemon.is_transformed:
+                    if not check(all(pokemon.stats[stat] == val
+                                     for stat, val in reqmon['stats'].items()),
+                                 "%s's stats: %s\nshould be %s",
+                                 pokemon, pokemon.stats, reqmon['stats']):
+                        stats = reqmon['stats'].copy()
+                        stats['max_hp'] = max_hp
+                        pokemon.stats = PokemonStats.from_dict(stats)
+
+                    if not pokemon.ability.name.startswith('_'):
+                        reqability = reqmon['baseAbility']
+                        if not check(pokemon.base_ability.name == reqability,
+                                     "%s's base_ability %s should be %s",
+                                     pokemon, pokemon.ability.name, reqability):
+                            pokemon.base_ability = abilitydex[reqability]
+
+                for i, move in enumerate(sorted(reqmon['moves'])):
+                    check(sorted(pokemon.moves)[i].name == move,
+                          "%s's move %s doesn't match the request's %s",
+                          pokemon, sorted(pokemon.moves)[i].name, move)
+
+                if pokemon.item is None:
+                    check(reqmon['item'] == '', "%s should have %s", pokemon, reqmon['item'])
+                else:
+                    check(reqmon['item'] == pokemon.item.name,
+                          "%s's %s should be %s", pokemon, pokemon.item, reqmon['item'])
+
+            check(int(request['side']['id'][1]) - 1 == self.my_player, str(self.my_player))
+            check(request['side']['name'] == self.name, self.name)
 
     def _warn_if_stats_discrepancy(self, pokemon, stats):
         """
@@ -2038,3 +2032,13 @@ class BattleClient(object):
             if not val == pokemon.stats[stat]:
                 log.w("%s lvl %d's %s: Showdown=%d, calculated=%d",
                       pokemon, pokemon.level, stat, val, pokemon.stats[stat])
+
+
+def check(condition, msg, *fmt):
+    """
+    Check that condition is True and warn msg if not. Return value of condition.
+    """
+    if not condition:
+        log.w('Team validation failed:\n%s' % msg % fmt)
+        log.w(''.join(traceback.format_stack(limit=2)))
+    return condition
