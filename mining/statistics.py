@@ -249,7 +249,7 @@ class RandbatsStatistics(object):
 
         if not possible:
             if __debug__:
-                log.e("%s's known_attrs %s does not correspond to any known attrset in rbstats. "
+                log.w("%s's known_attrs %s does not correspond to any known attrset in rbstats. "
                       "Cannot calculate move probabilities; returning 0.5", pokemon, known_attrs)
             return 0.5
 
