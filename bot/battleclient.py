@@ -547,14 +547,15 @@ class BattleClient(object):
         if self.make_moves:
             self.make_move(request)
 
-    def make_move(self, request):
+    def make_move(self, request, switch_rejected=False):
         """
         Temporary random implementation of moves for testing interaction with server
 
         TODO: Use an AI module for move selection
         """
-        if request.get('forceSwitch') or (random.randrange(10) == 0 and
-                                          self.my_side.active_pokemon.get_switch_choices()):
+        if (not switch_rejected and
+            (request.get('forceSwitch') or (random.randrange(10) == 0 and
+                                            self.my_side.active_pokemon.get_switch_choices()))):
             choices = [i for i, p in enumerate(request['side']['pokemon'], 1)
                        if not p['condition'] == '0 fnt' and not p['active']]
             log.i("switch choices: %s", choices)
@@ -1861,7 +1862,9 @@ class BattleClient(object):
         """
         if msg[1] == 'trapped':
             log.e("Tried to switch out while trapped: switch choice was rejected")
-            # TODO: handle this?
+            self.make_move(self.request, switch_rejected=True)
+        else:
+            log.e("Unhandled |callback| message: %s", msg)
 
     def handle_win(self, msg):
         """
