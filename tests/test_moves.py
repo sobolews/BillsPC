@@ -2374,6 +2374,15 @@ class TestMoves(MultiMoveTestCase):
 
         self.assertDamageTaken(self.leafeon, 78)
 
+        self.choose_move(self.leafeon, 'raindance')
+        self.choose_move(self.vaporeon, 'solarbeam')
+        self.run_turn()
+        self.choose_move(self.leafeon, 'milkdrink')
+        self.choose_move(self.vaporeon, 'solarbeam')
+        self.run_turn()
+
+        self.assertDamageTaken(self.leafeon, 39) # half damage in unfavorable weather
+
     def test_spikes(self):
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 0)

@@ -2867,7 +2867,6 @@ class solarbeam(Move):
         self.category = SPECIAL
         self.type = Type.GRASS
         self.accuracy = 100
-        self.base_power = 120
 
     def check_success(self, user, target, engine):
         if user.remove_effect(Volatile.TWOTURNMOVE):
@@ -2878,6 +2877,12 @@ class solarbeam(Move):
                 return
             user.set_effect(effects.TwoTurnMoveEffect(self))
             return FAIL
+
+    def get_base_power(self, user, target, engine):
+        if engine.battlefield.weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA,
+                                          Weather.SANDSTORM, Weather.HAIL):
+            return 60
+        return 120
 
 class spacialrend(Move):
     def init_move(self):
