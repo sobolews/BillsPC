@@ -1816,6 +1816,13 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|turn|3')
         self.assertFalse(zekrom.has_effect(Volatile.LOCKEDMOVE))
 
+    def test_handle_switch_shiny(self):
+        self.handle('|switch|p2a: Genesect|Genesect-Shock, L74, shiny|100/100')
+        self.assertEqual(self.foe_side.active_pokemon.name, 'genesectshock')
+
+        self.handle('|switch|p2a: Alomomola|Alomomola, L79, M, shiny|100/100')
+        self.assertEqual(self.foe_side.active_pokemon.name, 'alomomola')
+
 
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):
