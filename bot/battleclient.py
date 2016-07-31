@@ -56,6 +56,7 @@ class BattleClient(object):
         self.rqid = None
         self.crit = False
         self.hiddenpower_trigger = None
+        self.previous_msg = ['']
 
         self.make_moves = make_moves # send move choices to the server
         self.engine = CheatSheetEngine.from_battlefield(None)
@@ -205,6 +206,8 @@ class BattleClient(object):
 
         if self.crit and msg_type != '-crit':
             self.crit = False
+
+        self.previous_msg = msg
 
     handle_supereffective = handle_resisted = handle_miss = lambda self, msg: None
 
@@ -744,11 +747,22 @@ class BattleClient(object):
             if pokemon.has_effect(Volatile.LOCKEDMOVE):
                 pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
-        foe = self.battlefield.get_foe(pokemon)
-        if (foe is not None and
-            foe.last_move_used in (movedex['outrage'], movedex['petaldance'])
+        attacker = self.battlefield.get_foe(pokemon)
+        if (attacker is not None and
+            attacker.last_move_used in (movedex['outrage'], movedex['petaldance'])
         ):
-            foe.remove_effect(Volatile.LOCKEDMOVE)
+            attacker.remove_effect(Volatile.LOCKEDMOVE)
+
+        foe = self.foe_side.active_pokemon
+        if pokemon is foe:
+            if (self.previous_msg[0] == 'move' and
+                self.battlefield.last_move_used.type == Type.PSYCHIC and
+                not Type.DARK in foe.types and
+                not foe.ability == abilitydex['wonderguard']
+            ):
+                log.i('Detected foe zoroark based on psychic immunity')
+                self.detect_illusioned_foe(foe, break_illusion=False)
+
 
     def handle_damage(self, msg):
         """
