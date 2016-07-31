@@ -8,8 +8,7 @@ from ws4py.client.threadedclient import WebSocketClient
 
 from bot.battleclient import BattleClient
 from misc.bashcolors import sent, received
-
-if __debug__: from _logging import log
+from _logging import log
 
 LOGIN_SERVER_URL = 'http://play.pokemonshowdown.com/action.php'
 SERVER_URL = 'http://localhost:8000'

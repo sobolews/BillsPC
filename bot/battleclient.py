@@ -19,11 +19,11 @@ from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.types import type_effectiveness, HPivs
 from pokedex.stats import Boosts, PokemonStats
+from _logging import log
 
 pokedex = create_pokedex()
 rbstats = RandbatsStatistics.from_pickle()
 
-if __debug__: from _logging import log
 
 class BattleClient(object):
     """
@@ -189,7 +189,7 @@ class BattleClient(object):
 
         pokemon = BattlePokemon(pokedex[species], level, moves, ability, item, gender)
         pokemon.hp, pokemon.max_hp = hp, max_hp
-        if __debug__: self._warn_if_stats_discrepancy(pokemon, stats)
+        self._warn_if_stats_discrepancy(pokemon, stats)
         pokemon.stats = PokemonStats.from_dict(stats)
 
         return pokemon
@@ -200,7 +200,7 @@ class BattleClient(object):
         if self.hiddenpower_trigger is not None:
             self.deduce_hiddenpower(self.hiddenpower_trigger, msg)
 
-        if __debug__: log.d('%s called with %s', handle_method, msg)
+        log.d('%s called with %s', handle_method, msg)
         getattr(self, handle_method)(msg)
 
         if self.crit and msg_type != '-crit':
@@ -268,10 +268,9 @@ class BattleClient(object):
                         (not defender.is_immune_to_move(pokemon, move))) in msg_to_eff[msg[0]]]
             if len(reduced) == 1:
                 hiddenpower = reduced[0]
-            else:
-                if len(reduced) == 0:
-                    if __debug__: log.w('Error deducing hiddenpower type (no candidates): '
-                                        '%s, %s: %s', pokemon, possible, msg)
+            elif len(reduced) == 0:
+                log.w('Error deducing hiddenpower type (no candidates): '
+                      '%s, %s: %s', pokemon, possible, msg)
 
         # handle all the abilities and other effects that could reveal the hiddenpower type
         elif msg[0] == '-start' and normalize_name(msg[2]) == 'flashfire':
@@ -317,7 +316,7 @@ class BattleClient(object):
                 if len(reduced) == 1:
                     hiddenpower = reduced[0]
         else:
-            if __debug__: log.e('Unhandled deduce_hiddenpower message for %s: %s', pokemon, msg)
+            log.e('Unhandled deduce_hiddenpower message for %s: %s', pokemon, msg)
 
         if hiddenpower is None:
             pokemon.moves[hp_notype] = pp
@@ -325,18 +324,17 @@ class BattleClient(object):
             pokemon.moves[hiddenpower] = pp
             self.recalculate_stats_hiddenpower(pokemon, hiddenpower.type)
 
-        if __debug__:
-            if hiddenpower is None:
-                log.i("Unable to deduce %s's hiddenpower type vs %s from %s",
-                      pokemon, defender, msg)
-            elif hiddenpower in possible:
-                log.i("Deduced %s's hiddenpower type to be %s", pokemon, hiddenpower)
-            else:
-                log.w("Setting %s's hiddenpower type to %s: "
-                      "but possible choices were %s", pokemon, hiddenpower, possible)
+        if hiddenpower is None:
+            log.i("Unable to deduce %s's hiddenpower type vs %s from %s",
+                  pokemon, defender, msg)
+        elif hiddenpower in possible:
+            log.i("Deduced %s's hiddenpower type to be %s", pokemon, hiddenpower)
+        else:
+            log.w("Setting %s's hiddenpower type to %s: "
+                  "but possible choices were %s", pokemon, hiddenpower, possible)
 
     def recalculate_stats_hiddenpower(self, pokemon, hp_type):
-        if __debug__: log.i("Recalculating %s's stats for hp_type=%s", pokemon, hp_type)
+        log.i("Recalculating %s's stats for hp_type=%s", pokemon, hp_type)
         pokemon.ivs = HPivs[hp_type]
         pokemon.stats = pokemon.calculate_initial_stats(pokemon.evs, pokemon.ivs)
 
@@ -375,8 +373,8 @@ class BattleClient(object):
                             thing.remove_effect(effect.source)
                             continue
                         elif effect.duration == 0:
-                            if __debug__: log.w("%s's effect %s has a duration of 0, cannot "
-                                                "decrement", thing, effect)
+                            log.w("%s's effect %s has a duration of 0, cannot "
+                                  "decrement", thing, effect)
                             continue
                         effect.duration -= 1
 
@@ -407,7 +405,7 @@ class BattleClient(object):
             if pokemon.is_fainted() or pokemon.name == UNREVEALED or pokemon.is_transformed:
                 continue
 
-            if __debug__: log.d("Updating foe: %s" % pokemon)
+            log.d("Updating foe: %s" % pokemon)
 
             known_info = [move.name for move in pokemon.moves
                           if move.type != Type.NOTYPE]
@@ -417,7 +415,7 @@ class BattleClient(object):
                 (pokemon.is_mega or pokemon.name.endswith('primal'))):
                 known_info.append(pokemon.base_ability.name)
 
-            if __debug__: log.d("known_info: %s", known_info)
+            log.d("known_info: %s", known_info)
             if len(known_info) == 6 or (pokemon.is_mega and len(known_info) == 5):
                 continue        # all info is known
 
@@ -425,16 +423,14 @@ class BattleClient(object):
             if pokemon.item == itemdex['_unrevealed_']:
                 for item in rbstats[rb_index]['item']:
                     if rbstats.attr_probability(rb_index, item, known_info) == 1:
-                        if __debug__: log.i("%s must have %s, given %s",
-                                            pokemon.name, item, known_info)
+                        log.i("%s must have %s, given %s", pokemon.name, item, known_info)
                         self.reveal_foe_original_item(pokemon, itemdex[item])
                         self.set_item(pokemon, itemdex[item])
 
             if pokemon.ability == abilitydex['_unrevealed_']:
                 for ability in rbstats[rb_index]['ability']:
                     if rbstats.attr_probability(rb_index, ability, known_info) == 1:
-                        if __debug__: log.i("%s must have %s, given %s",
-                                            pokemon.name, ability, known_info)
+                        log.i("%s must have %s, given %s", pokemon.name, ability, known_info)
                         self.set_ability(pokemon, abilitydex[ability])
 
             if len(pokemon.moves) < 4:
@@ -443,8 +439,7 @@ class BattleClient(object):
                         rbstats.attr_probability(rb_index, move, known_info) == 1
                     ):
                         self.reveal_move(pokemon, movedex[move])
-                        if __debug__: log.i("%s must have %s, given %s",
-                                            pokemon.name, move, known_info)
+                        log.i("%s must have %s, given %s", pokemon.name, move, known_info)
                         assert len(pokemon.moves) <= 4, (pokemon, pokemon.moves)
 
         active = self.my_side.active_pokemon
@@ -471,10 +466,9 @@ class BattleClient(object):
                     assert self.foe_player == int(not self.my_player), (self.foe_player,
                                                                         self.my_player)
             else:
-                if __debug__:
-                    if self.foe_name is not None:
-                        log.w('Received a second (foe) player registration (%s); '
-                              'foe already named as (%s)', msg[2], self.foe_name)
+                if self.foe_name is not None:
+                    log.w('Received a second (foe) player registration (%s); '
+                          'foe already named as (%s)', msg[2], self.foe_name)
                 if self.foe_name is None:
                     if self.my_player is None:
                         self.foe_player = int(msg[1][1]) - 1
@@ -634,7 +628,7 @@ class BattleClient(object):
                 else:
                     self.reveal_move(pokemon, move)
                     pokemon.pp[move] = max(0, move.max_pp - pp_sub)
-            elif __debug__:
+            else:
                 log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
         pokemon.last_move_used = move
@@ -789,14 +783,13 @@ class BattleClient(object):
                 self.set_ability(who, abilitydex[normalize_name(msg[3])])
             elif normalize_name(msg[3]) == 'leechseed':
                 if not pokemon.has_effect(Volatile.LEECHSEED):
-                    if __debug__: log.e("%s damaged by leechseed; no Volatile.LEECHSEED present",
-                                        pokemon, msg)
+                    log.e("%s damaged by leechseed; no Volatile.LEECHSEED present", pokemon, msg)
             elif msg[2].endswith('tox') and msg[3] == '[from] psn':
                 tox = pokemon.get_effect(Status.TOX)
-                if tox is not None:
-                    tox.stage += 1
-                elif __debug__:
+                if tox is None:
                     log.e("%s damaged by tox but has no Status.TOX effect: %s", pokemon, msg)
+                else:
+                    tox.stage += 1
             elif msg[3].endswith('confusion'):
                 pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
@@ -872,7 +865,7 @@ class BattleClient(object):
             elif msg[3].startswith('[from] ability'):
                 other = self.get_pokemon_from_msg(msg, 4)
                 self.set_ability(other, abilitydex[normalize_name(msg[3])])
-            elif __debug__:
+            else:
                 log.w('Unhandled part of -status msg: %s', msg)
 
     def handle_cant(self, msg):
@@ -911,7 +904,7 @@ class BattleClient(object):
         if len(msg) > 3 and msg[3].startswith('[from] ability:'):
             if msg[3] == '[from] ability: Natural Cure':
                 self.set_ability(pokemon, abilitydex['naturalcure'])
-            elif __debug__:
+            else:
                 log.e('Unhandled -curestatus msg: %s', msg)
 
         pokemon.cure_status()
@@ -1202,12 +1195,12 @@ class BattleClient(object):
                 foe = self.battlefield.get_foe(pokemon)
                 self.reveal_foe_original_item(foe, item)
             else:
-                if __debug__: log.w('Unhandled part of -item msg: %s', msg)
+                log.w('Unhandled part of -item msg: %s', msg)
 
         elif item == itemdex['airballoon']:
             self.reveal_foe_original_item(pokemon, item)
         else:
-            if __debug__: log.w('Unhandled part of -item msg: %s', msg)
+            log.w('Unhandled part of -item msg: %s', msg)
 
         self.set_item(pokemon, item, reset=trick)
 
@@ -1295,10 +1288,10 @@ class BattleClient(object):
         if pokemon is None:
             return
         if pokemon.ability == ability:
-            if __debug__: log.d("%s's ability is already %s", pokemon, ability)
+            log.d("%s's ability is already %s", pokemon, ability)
             return
         else:
-            if __debug__: log.d("%s's ability was changed from %s", pokemon, pokemon.ability)
+            log.d("%s's ability was changed from %s", pokemon, pokemon.ability)
 
         pokemon.remove_effect(ABILITY, force=True)
         pokemon.ability = ability
@@ -1321,11 +1314,11 @@ class BattleClient(object):
                 len(pokemon.pokedex_entry.abilities) == 1 and
                 ability != pokemon.pokedex_entry.abilities[0]
             ):
-                if __debug__: log.w("Overwriting %s's base_ability %s with %s!:\n%r",
-                                    pokemon, pokemon.base_ability, ability, pokemon)
+                log.w("Overwriting %s's base_ability %s with %s!:\n%r",
+                      pokemon, pokemon.base_ability, ability, pokemon)
             if ability.name not in pokemon.pokedex_entry.abilities:
-                if __debug__: log.w("Giving %s a base_ability %s that it shouldn't get:\n%r",
-                                    pokemon, ability, pokemon)
+                log.w("Giving %s a base_ability %s that it shouldn't get:\n%r",
+                      pokemon, ability, pokemon)
 
             pokemon.base_ability = ability
 
@@ -1450,8 +1443,8 @@ class BattleClient(object):
             expected_damage = self.engine.calculate_expected_damage(foe, move, pokemon, self.crit)
             if expected_damage is None or expected_damage > sub.hp:
                 sub.hp = 1      # this normally shouldn't happen
-                if __debug__: log.i("Expected damage for %r attacking %r with %s was %s, but did "
-                                    "not break its substitute", foe, pokemon, move, expected_damage)
+                log.i("Expected damage for %r attacking %r with %s was %s, "
+                      "but did not break its substitute", foe, pokemon, move, expected_damage)
             else:
                 sub.hp -= expected_damage
         elif effect == 'infestation':
@@ -1469,7 +1462,7 @@ class BattleClient(object):
             assert foe is not None
             foe.remove_effect(Volatile.LOCKEDMOVE, force=True)
         else:
-            if __debug__: log.e('Unhandled -activate msg: %s', msg)
+            log.e('Unhandled -activate msg: %s', msg)
 
     def handle_crit(self, msg):
         """
@@ -1499,7 +1492,7 @@ class BattleClient(object):
             # this is safe because focuspunch is exempt from copycat, sleeptalk, etc.
             self.reveal_move(pokemon, movedex['focuspunch'])
         elif move != 'magiccoat': # ignore magiccoat
-            if __debug__: log.e('Unhandled -singleturn msg: %s', msg)
+            log.e('Unhandled -singleturn msg: %s', msg)
 
     def handle_singlemove(self, msg):
         """
@@ -1511,7 +1504,7 @@ class BattleClient(object):
         if move == 'destinybond':
             pokemon.set_effect(effects.DestinyBond())
         else:
-            if __debug__: log.e('Unhandled -singlemove msg: %s', msg)
+            log.e('Unhandled -singlemove msg: %s', msg)
 
     def handle_start(self, msg):
         """
@@ -1560,7 +1553,7 @@ class BattleClient(object):
             duration = 3 if pokemon.will_move_this_turn else 4
             move = pokemon.last_move_used
             if move is None:
-                if __debug__: log.w('%s got encored, but its last move was None!', pokemon)
+                log.w('%s got encored, but its last move was None!', pokemon)
                 return
             pokemon.set_effect(effects.Encore(move, duration))
         elif effect.startswith('perish'):
@@ -1586,8 +1579,7 @@ class BattleClient(object):
             duration = 4 if pokemon.will_move_this_turn else 5
             move = movedex[normalize_name(msg[3])]
             if move not in pokemon.moves:
-                if __debug__: log.w("%s: %s isn't in %s's moveset: %s",
-                                    msg, move, pokemon, pokemon.moves)
+                log.w("%s: %s isn't in %s's moveset: %s", msg, move, pokemon, pokemon.moves)
             pokemon.set_effect(effects.Disable(move, duration))
         elif effect == 'attract':
             foe = self.battlefield.get_foe(pokemon)
@@ -1667,7 +1659,7 @@ class BattleClient(object):
                 side.set_effect(effects.LightScreen(duration))
         elif effect == 'stealthrock':
             if side.has_effect(Hazard.STEALTHROCK):
-                if __debug__: log.w('%s already has stealthrock: %s', side, msg)
+                log.w('%s already has stealthrock: %s', side, msg)
             side.set_effect(effects.StealthRock())
         elif effect == 'toxicspikes':
             toxicspikes = side.get_effect(Hazard.TOXICSPIKES)
@@ -1675,8 +1667,7 @@ class BattleClient(object):
                 side.set_effect(effects.ToxicSpikes())
             else:
                 if toxicspikes.layers >= 2:
-                    if __debug__: log.w('%s already has 2 layers of toxicspikes (%s): %s',
-                                        side, toxicspikes, msg)
+                    log.w('%s already has 2 layers of toxicspikes (%s): %s', side, toxicspikes, msg)
                     return
                 toxicspikes.layers += 1
         elif effect == 'spikes':
@@ -1685,23 +1676,22 @@ class BattleClient(object):
                 side.set_effect(effects.Spikes())
             else:
                 if spikes.layers >= 3:
-                    if __debug__: log.w('%s already has 3 layers of spikes (%s): %s',
-                                        side, spikes, msg)
+                    log.w('%s already has 3 layers of spikes (%s): %s', side, spikes, msg)
                     return
                 spikes.layers += 1
         elif effect == 'stickyweb':
             if side.has_effect(Hazard.STICKYWEB):
-                if __debug__: log.w('%s already has stickyweb: %s', side, msg)
+                log.w('%s already has stickyweb: %s', side, msg)
             side.set_effect(effects.StickyWeb())
         elif effect == 'tailwind':
             if side.has_effect(SideCondition.TAILWIND):
-                if __debug__: log.w('%s already has tailwind: %s', side, msg)
+                log.w('%s already has tailwind: %s', side, msg)
             side.set_effect(effects.Tailwind())
         elif effect == 'safeguard':
             if side.has_effect(SideCondition.SAFEGUARD):
-                if __debug__: log.w('%s already has tailwind: %s', side, msg)
+                log.w('%s already has tailwind: %s', side, msg)
             side.set_effect(effects.Safeguard())
-        elif __debug__:
+        else:
             log.e('Unhandled -sidestart msg: %s', msg)
 
     def handle_sideend(self, msg):
@@ -1714,7 +1704,7 @@ class BattleClient(object):
         effect = self.SIDEEND_EFFECT_MAP.get(normalize_name(msg[2]))
         if effect is not None:
             side.remove_effect(effect)
-        elif __debug__:
+        else:
             log.e('Unhandled -sideend msg: %s', msg)
 
     SIDEEND_EFFECT_MAP = {
@@ -1738,7 +1728,7 @@ class BattleClient(object):
             if self.battlefield.has_effect(PseudoWeather.TRICKROOM):
                 log.w('Battlefield already has trickroom: %s', msg)
             self.battlefield.set_effect(effects.TrickRoom())
-        elif __debug__:
+        else:
             log.e('Unhandled -fieldstart msg: %s', msg)
 
     def handle_fieldend(self, msg):
@@ -1749,7 +1739,7 @@ class BattleClient(object):
 
         if effect == 'trickroom':
             self.battlefield.remove_effect(PseudoWeather.TRICKROOM)
-        elif __debug__:
+        else:
             log.e('Unhandled -fieldstart msg: %s', msg)
 
     def handle_prepare(self, msg):

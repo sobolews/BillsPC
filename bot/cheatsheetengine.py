@@ -21,12 +21,11 @@ class CheatSheetEngine(BattleEngine):
     """
     def describe_my_moves(self, my_active, foe):
         """ :type my_active BattlePokemon """
-        if __debug__:
-            if not my_active.is_transformed:
-                active = rbstats_key(my_active)
-                for move in my_active.moves:
-                    if move.name not in rbstats.probability[active]['moves']:
-                        log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
+        if not my_active.is_transformed:
+            active = rbstats_key(my_active)
+            for move in my_active.moves:
+                if move.name not in rbstats.probability[active]['moves']:
+                    log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
 
         return [(move.name, self.calculate_damage_range(my_active, move, foe))
                 for move in my_active.moves]
@@ -49,19 +48,18 @@ class CheatSheetEngine(BattleEngine):
 
         foe_index = rbstats_key(foe)
 
-        if __debug__:
-            for move in foe.moves:
-                if (move.name not in rbstats.probability[foe_index]['moves'] and
-                    move.type != Type.NOTYPE):
-                    log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
+        for move in foe.moves:
+            if (move.name not in rbstats.probability[foe_index]['moves'] and
+                move.type != Type.NOTYPE):
+                log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
 
         possible_moves = [movedex[move] for move in rbstats[foe_index]['moves']
                           if movedex[move] not in foe.moves]
         data = []
         known_attrs = [move_.name for move_ in foe.moves if move_.type != Type.NOTYPE]
         if not rbstats.possible_sets(foe_index, known_attrs):
-            if __debug__: log.w("%s's move probabilities cannot be calculated: unexpected "
-                                "attribute in %s", foe_index, known_attrs)
+            log.w("%s's move probabilities cannot be calculated: unexpected attribute in %s",
+                  foe_index, known_attrs)
             calculate_prob = False
         else:
             calculate_prob = True
