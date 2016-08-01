@@ -927,10 +927,11 @@ class BattleClient(object):
         """
         `|-cureteam|POKEMON`
         |-cureteam|p1a: Granbull|[from] move: HealBell
+
+        After -cureteam, -curestatus is now sent for every pokemon that was actually cured, so there
+        is nothing to do for this message.
         """
-        side = self.get_side_from_msg(msg)
-        for pokemon in side.team:
-            pokemon.cure_status()
+        pass
 
     def set_status(self, pokemon, status):
         assert status in self.STATUS_MAP, status

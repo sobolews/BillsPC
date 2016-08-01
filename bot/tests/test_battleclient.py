@@ -338,20 +338,6 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|-curestatus|p1a: Hitmonchan|slp')
         self.assertIsNone(self.hitmonchan.status)
 
-    def test_handle_cureteam(self):
-        self.bc.set_status(self.hitmonchan, 'psn')
-        zekrom = self.my_side.team[1]
-        altaria = self.my_side.team[2]
-        zekrom.status = Status.SLP
-        zekrom.turns_slept = 1
-        altaria.hp = 0
-        altaria.status = Status.FNT
-        self.handle('|-cureteam|p1a: Hitmonchan|[from] move: HealBell')
-        self.assertIsNone(self.hitmonchan.status)
-        self.assertIsNone(zekrom.status)
-        self.assertIsNone(zekrom.turns_slept)
-        self.assertEqual(altaria.status, Status.FNT)
-
     def test_handle_weather_start(self):
         self.handle('|-weather|Sandstorm')
         self.assertEqual(self.battlefield.weather, Weather.SANDSTORM)
