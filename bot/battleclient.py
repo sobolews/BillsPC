@@ -371,7 +371,8 @@ class BattleClient(object):
                 for effect in thing.effects:
                     if effect.duration is not None and effect.source not in Weather.values:
                         if (effect.duration <= 1 and effect.source in (
-                                SideCondition.WISH, Volatile.STALL, Volatile.TWOTURNMOVE)):
+                                SideCondition.WISH, Volatile.STALL, Volatile.TWOTURNMOVE,
+                                Volatile.LOCKEDMOVE)):
                             # remove automatically, since there's no notification in protocol
                             thing.remove_effect(effect.source)
                             continue
@@ -728,7 +729,6 @@ class BattleClient(object):
     def handle_immune(self, msg):
         """
         |-immune|p2a: Drifblim|[msg]
-        |-immune|p1a: Lilligant|confusion -- Reveals owntempo, (probably) ends LockedMove
 
         |-immune|p2a: Quagsire|[msg]|[from] ability: Water Absorb
         |-immune|p1a: Uxie|[msg]|[from] ability: Levitate
@@ -742,10 +742,6 @@ class BattleClient(object):
             if ability == 'synchronize':
                 pokemon = self.get_pokemon_from_msg(msg, 4)
             self.set_ability(pokemon, abilitydex[ability])
-        elif msg[2] == 'confusion':
-            self.set_ability(pokemon, abilitydex['owntempo'])
-            if pokemon.has_effect(Volatile.LOCKEDMOVE):
-                pokemon.remove_effect(Volatile.LOCKEDMOVE)
 
         attacker = self.battlefield.get_foe(pokemon)
         if (attacker is not None and
