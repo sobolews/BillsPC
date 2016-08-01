@@ -1183,9 +1183,16 @@ class BattleClient(object):
         """
         pokemon = self.get_pokemon_from_msg(msg)
         item = itemdex[normalize_name(msg[2])]
-        trick = False
 
-        if len(msg) > 3:
+        # Tricking some items e.g. airballoon triggers two -item messages:
+        #   |-activate|p1a: Zoroark|move: Trick|[of] p2a: Rotom
+        #   |-item|p2a: Rotom|Choice Scarf|[from] move: Trick
+        #   |-item|p1a: Zoroark|Air Balloon
+        #   |-item|p1a: Zoroark|Air Balloon|[from] move: Trick
+        # We need to detect that it's being tricked in the first airballoon message
+        trick = 'Trick' in ' '.join(self.previous_msg)
+
+        if len(msg) > 3 or trick:
             if msg[3].startswith('[from] ability:'):
                 ability = normalize_name(msg[3])
 
@@ -1199,7 +1206,7 @@ class BattleClient(object):
                         victim = self.get_pokemon_from_msg(msg, 4)
                         self.reveal_foe_original_item(victim, item)
                         self.remove_item(victim)
-            elif msg[3].endswith('Trick'):
+            elif msg[3].endswith('Trick') or trick:
                 trick = True
                 foe = self.battlefield.get_foe(pokemon)
                 self.reveal_foe_original_item(foe, item)
