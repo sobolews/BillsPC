@@ -245,6 +245,9 @@ class BattleClient(object):
             |-start|p1a: Kecleon|typechange|Rock|[from] Protean
             |-activate||deltastream
         """
+        if msg[0] == '-crit':
+            return              # expect information in the next message instead
+
         self.hiddenpower_trigger = None
         if msg[0] == '-miss':   # no information
             return

@@ -1149,10 +1149,11 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         cherrim = self.foe_side.active_pokemon
         self.assertHiddenPowerType(cherrim, Type.FIRE)
 
-        # deduce from supereffective
+        # deduce from supereffective with crit
         self.handle('|switch|p2a: Floette|Floette-Eternal, L75, F|100/100')
         self.handle('|move|p2a: Floette|Hidden Power|p1a: Hitmonchan')
         self.handle('|-supereffective|p1a: Zekrom')
+        self.handle('|-crit|p1a: Zekrom')
         self.handle('|turn|4')
         floette = self.foe_side.active_pokemon
         self.assertHiddenPowerType(floette, Type.GROUND)
