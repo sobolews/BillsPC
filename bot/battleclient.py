@@ -1386,6 +1386,9 @@ class BattleClient(object):
         |-clearboost|p1a: Volcarona
         """
         pokemon = self.get_pokemon_from_msg(msg)
+        if pokemon is None:
+            return
+
         pokemon.boosts = Boosts()
 
     def handle_clearallboost(self, msg):
