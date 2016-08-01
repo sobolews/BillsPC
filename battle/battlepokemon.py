@@ -74,6 +74,7 @@ class BattlePokemon(object, EffectHandlerMixin):
                 not self.side.has_mega_evolved and
                 not self.is_mega and
                 not self.has_effect(Volatile.TWOTURNMOVE) and
+                not self.has_effect(Volatile.LOCKEDMOVE) and
                 self.item.forme in self.pokedex_entry.mega_formes)
 
     def mega_evolve(self, engine):
