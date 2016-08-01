@@ -605,6 +605,16 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertEqual(ditto.ability, abilitydex['shedskin'])
         self.assertEqual(ditto.base_ability, abilitydex['imposter'])
 
+    def test_handle_transform_with_foe_hidden_power(self):
+        self.handle('|switch|p1a: Ditto|Ditto, L83|215/215')
+        self.handle('|switch|p2a: Serperior|Serperior, L75, F|100/100')
+        self.bc.request = {"active":[{"moves":[{"move":"Substitute","id":"substitute","pp":5,"maxpp":5,"target":"self","disabled":False},{"move":"Dragon Pulse","id":"dragonpulse","pp":5,"maxpp":5,"target":"any","disabled":False},{"move":"Hidden Power Dark","id":"hiddenpower","pp":5,"maxpp":5,"target":"normal","disabled":False},{"move":"Leaf Storm","id":"leafstorm","pp":5,"maxpp":5,"target":"normal","disabled":False}]}],"side":{"name":"test-BillsPC", "id":"p1","pokemon":[{"ident":"p2: Ditto","details":"Ditto, L83","condition":"215/215","active":True,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["substitute","dragonpulse","hiddenpowerdark","leafstorm"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"}]},"rqid":3}
+        self.handle('|-transform|p1a: Ditto|p2a: Serperior|[from] ability: Imposter')
+        self.handle('|turn|2')
+
+        ditto = self.my_side.active_pokemon
+        self.assertIn(movedex['hiddenpowerdark'], ditto.moves)
+
     def test_handle_start_end_taunt(self):
         self.handle('|switch|p1a: Dunsparce|Dunsparce, L83, M|302/302')
         self.handle('|turn|2')

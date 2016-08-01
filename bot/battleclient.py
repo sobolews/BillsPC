@@ -1806,7 +1806,7 @@ class BattleClient(object):
             # Set any of the foe's moves that are revealed by transforming.
             pokemon.moves = {}
             for move in self.request['active'][0]['moves']:
-                my_move = movedex[normalize_name(move['id'])]
+                my_move = movedex[normalize_name(move['move'])]
                 pokemon.moves[my_move] = 5
 
                 if my_move.is_hiddenpower:
