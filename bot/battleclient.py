@@ -105,7 +105,6 @@ class BattleClient(object):
                     not my_zoroark.is_fainted() and
                     not my_zoroark is active and
                     side.remaining_pokemon > 1 and
-                    self.get_illusion_target_name(self.request) == name and
                     hp == my_zoroark.hp and
                     max_hp == my_zoroark.max_hp
                 ):
@@ -128,12 +127,6 @@ class BattleClient(object):
 
     def is_foe(self, pokemon):
         return pokemon.side.index == self.foe_player
-
-    @staticmethod
-    def get_illusion_target_name(request):
-        for pokemon in reversed(request['side']['pokemon']):
-            if pokemon['condition'] != '0 fnt':
-                return normalize_name(pokemon['ident'])
 
     def set_hp_status(self, pokemon, hp_msg):
         """

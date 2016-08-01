@@ -2074,3 +2074,12 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
 
         self.assertTrue(self.foe_side.active_illusion)
         self.assertEqual(self.foe_side.active_pokemon.name, 'zoroark')
+
+    def test_detect_not_my_zoroark_after_drag(self):
+        self.handle('|switch|p2a: Noctowl|Noctowl, L83|100/100')
+        self.handle('|turn|2')
+        self.handle('|switch|p1a: Klinklang|Klinklang, L81|222/222')
+        self.handle('|move|p2a: Noctowl|Whirlwind|p2a: Klinklang')
+        self.handle('|drag|p1a: Klinklang|Klinklang, L81|230/230')
+
+        self.assertEqual(self.my_side.active_pokemon.name, 'klinklang')
