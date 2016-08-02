@@ -89,6 +89,8 @@ class Bot(WebSocketClient):
                 return
 
         # Save the most recent "request object"; use it to build team if client hasn't done so.
+        # Set .request on the battleclient, because it occasionally needs to peek at the request
+        # that it will process following this block
         if len(msg_block) > 1 and msg_block[1].startswith('|request|'):
             self.latest_request = self.battleclient.request = json.loads(msg_block[1].split('|')[2])
             if self.battleclient.my_side is None:
