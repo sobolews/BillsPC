@@ -1841,6 +1841,12 @@ class BattleClient(object):
             # The moves might be in the wrong order, so reset them according to the current request.
             # Set any of the foe's moves that are revealed by transforming.
             pokemon.moves = {}
+
+            if normalize_name(self.request['side']['pokemon'][0]['ident']) != pokemon.base_species:
+                # A different pokemon ends up active (probably due to a |drag|), so we can't peek at
+                # the opponent's moves
+                return
+
             for move in self.request['active'][0]['moves']:
                 my_move = movedex[normalize_name(move['move'])]
                 pokemon.moves[my_move] = 5
