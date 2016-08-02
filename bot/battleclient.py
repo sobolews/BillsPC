@@ -809,8 +809,9 @@ class BattleClient(object):
             if msg[3].startswith('[from] item'):
                 item = itemdex[normalize_name(msg[3])]
                 holder = self.get_pokemon_from_msg(msg, 4) if len(msg) > 4 else pokemon
-                self.reveal_foe_original_item(holder, item)
-                self.set_item(holder, item)
+                if holder is not None: # may be fainted e.g. from move that triggered rockyhelmet
+                    self.reveal_foe_original_item(holder, item)
+                    self.set_item(holder, item)
             elif msg[3].startswith('[from] ability'):
                 who = self.get_pokemon_from_msg(msg, 4)
                 self.set_ability(who, abilitydex[normalize_name(msg[3])])

@@ -1839,6 +1839,17 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.handle('|switch|p2a: Alomomola|Alomomola, L79, M, shiny|100/100')
         self.assertEqual(self.foe_side.active_pokemon.name, 'alomomola')
 
+    def test_handle_rocky_helmet_reveal_item_on_fainted_foe(self):
+        self.handle('|switch|p2a: Ferrothorn|Ferrothorn, L75, M|100/100')
+        ferrothorn = self.foe_side.active_pokemon
+        self.handle('|move|p1a: Hitmonchan|Mach Punch|p2a: Ferrothorn')
+        self.handle('|-damage|p2a: Ferrothorn|0 fnt')
+        self.handle('|-damage|p1a: Hitmonchan|168/209|[from] ability: Iron Barbs|[of] p2a: Ferrothorn')
+        self.handle('|-damage|p1a: Hitmonchan|131/209|[from] item: Rocky Helmet|[of] p2a: Ferrothorn')
+        self.handle('|-damage|p1a: Hitmonchan|109/209|[from] item: Life Orb')
+        self.handle('|faint|p2a: Ferrothorn')
+        self.assertTrue(ferrothorn.is_fainted())
+
 
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):
