@@ -260,7 +260,7 @@ class BattleClient(object):
             |-start|p1a: Kecleon|typechange|Rock|[from] Protean
             |-activate||deltastream
         """
-        if msg[0] == '-crit':
+        if msg[0] in ('-crit', 'replace', '-end'):
             return              # expect information in the next message instead
 
         self.hiddenpower_trigger = None
