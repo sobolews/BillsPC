@@ -125,6 +125,25 @@ class BattleClient(object):
                     continue
                 return pokemon
 
+    def get_move(self, move_name, pokemon):
+        """
+        Get the move object corresponding to a name sent by the server. If it's a hiddenpower move,
+        then return the correct one for the pokemon or hiddenpowernotype if the type can't be
+        determined.
+        """
+        move_name = normalize_name(move_name)
+        if move_name == 'hiddenpower':
+            hp_moves = [hp_move for hp_move in pokemon.moves if hp_move.is_hiddenpower]
+            if hp_moves:
+                assert len(hp_moves) == 1, (hp_moves, pokemon)
+                move = hp_moves[0]
+            else:
+                assert pokemon.side.index == self.foe_player, pokemon
+                move, _ = self.get_possible_hiddenpowers(pokemon)
+        else:
+            move = movedex[move_name]
+        return move
+
     def is_ally(self, pokemon):
         return pokemon.side.index == self.my_player
 
@@ -608,8 +627,7 @@ class BattleClient(object):
                 assert len(hp_moves) == 1, hp_moves
                 move = hp_moves[0]
             else:
-                assert pokemon is self.foe_side.active_pokemon, \
-                    (pokemon, self.foe_side.active_pokemon)
+                assert pokemon.side.index == self.foe_player, pokemon
                 move, possible = self.get_possible_hiddenpowers(pokemon)
                 if len(possible) > 1:
                     self.hiddenpower_trigger = (pokemon, possible)
@@ -905,7 +923,7 @@ class BattleClient(object):
                 pokemon.turns_slept += 1
 
         elif len(msg) > 3:
-            self.reveal_move(pokemon, movedex[normalize_name(msg[3])])
+            self.reveal_move(pokemon, self.get_move(msg[3], pokemon))
 
     def handle_curestatus(self, msg):
         """
@@ -1605,7 +1623,7 @@ class BattleClient(object):
             pokemon.set_effect(effects.FlashFireVolatile())
         elif effect == 'disable':
             duration = 4 if pokemon.will_move_this_turn else 5
-            move = movedex[normalize_name(msg[3])]
+            move = self.get_move(msg[3], pokemon)
             if move not in pokemon.moves:
                 log.w("%s: %s isn't in %s's moveset: %s", msg, move, pokemon, pokemon.moves)
             pokemon.set_effect(effects.Disable(move, duration))
@@ -1776,7 +1794,7 @@ class BattleClient(object):
         |-prepare|p1a: Castform|Solar Beam|p2a: Corsola
         """
         pokemon = self.get_pokemon_from_msg(msg)
-        move = movedex[normalize_name(msg[2])]
+        move = self.get_move(msg[2], pokemon)
         if move.name == 'bounce':
             effect = effects.Bounce
         elif move.name in ('phantomforce', 'shadowforce'):
@@ -1955,7 +1973,7 @@ class BattleClient(object):
                     active.pp[move] = reqmoves[i].get('pp', move.max_pp)
                 if reset_moves_needed:
                     for jmove in request['active'][0]['moves']:
-                        move = movedex[normalize_name(jmove['id'])]
+                        move = movedex[normalize_name(jmove['move'])]
                         active.moves[move] = jmove.get('pp', move.max_pp)
 
                 for i, move in enumerate(sorted(active.moves, key=lambda move: move.name)):
