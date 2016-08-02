@@ -632,8 +632,8 @@ class BattleClient(object):
                     log.i('Detected zoroark based on move %s', move)
                     pokemon = self.detect_illusioned_foe(pokemon, break_illusion=False)
                 else:
-                    self.reveal_move(pokemon, move)
-                    pokemon.pp[move] = max(0, move.max_pp - pp_sub)
+                    if self.reveal_move(pokemon, move):
+                        pokemon.pp[move] = max(0, move.max_pp - pp_sub)
             else:
                 log.w("Handling a move (%s) not in %r's moveset", normalize_name(msg[2]), pokemon)
 
@@ -670,11 +670,12 @@ class BattleClient(object):
     def reveal_move(self, pokemon, move):
         """
         Reveal a move that a foe pokemon definitely has (i.e. was not called via copycat, etc.)
+        Return success.
         """
         if (move in pokemon.moves or
             move == movedex['struggle'] or
             (move.is_hiddenpower and any(known.is_hiddenpower for known in pokemon.moves))):
-            return
+            return False
 
         if len(pokemon.moves) >= 4:
             log.i('Revealing %s when %s already has a full moveset: %s',
@@ -689,7 +690,7 @@ class BattleClient(object):
             pokemon.original_item = itemdex['_unrevealed_']
             if move.name in rbstats['zoroark']['moves']:
                 log.i('Rejected learning %s due to possibility of zoroark', move)
-                return
+                return False
         if len(pokemon.moves) >= 4: # if the above handling didn't fix it, something's gone wrong
             log.e("%s's moveset %s is full; cannot reveal %s. Clearing moveset as a last resort.",
                   pokemon, pokemon.moves, move)
@@ -699,6 +700,8 @@ class BattleClient(object):
         log.i("%s's %s was revealed!", pokemon, move)
         if move.is_hiddenpower and move.type != Type.NOTYPE:
             self.recalculate_stats_hiddenpower(pokemon, move.type)
+
+        return True
 
     def handle_fail(self, msg):
         """
