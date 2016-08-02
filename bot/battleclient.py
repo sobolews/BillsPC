@@ -1048,6 +1048,14 @@ class BattleClient(object):
             outgoing.illusion = False
             if outgoing.is_transformed:
                 outgoing.revert_transform()
+            elif not outgoing.is_fainted():
+                if outgoing.name == 'aegislashblade':
+                    self.forme_change(outgoing, 'aegislash')
+                elif (outgoing.base_species == 'castform' and
+                      outgoing.name != 'castform'):
+                    self.forme_change(outgoing, 'castform')
+                elif outgoing.name == 'meloettapirouette':
+                    self.forme_change(outgoing, 'meloetta')
 
         side.active_pokemon = pokemon
         pokemon.is_active = True

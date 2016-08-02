@@ -83,6 +83,21 @@ class TestBattleClientDittoLead(TestBattleClientInitialRequestBase):
 
         self.bc._validate_my_team()
 
+    def test_aegislash_forme_change_revert_on_switch_in(self):
+        request = '|request|{"active":[{"moves":[{"move":"Substitute","id":"substitute","pp":16,"maxpp":16,"target":"self","disabled":false},{"move":"Swords Dance","id":"swordsdance","pp":32,"maxpp":32,"target":"self","disabled":false},{"move":"Earthquake","id":"earthquake","pp":16,"maxpp":16,"target":"allAdjacent","disabled":false},{"move":"Outrage","id":"outrage","pp":16,"maxpp":16,"target":"randomNormal","disabled":false}]}],"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Haxorus","details":"Haxorus, L77, M","condition":"244/244","active":true,"stats":{"atk":271,"def":183,"spa":137,"spd":152,"spe":194},"moves":["substitute","swordsdance","earthquake","outrage"],"baseAbility":"moldbreaker","item":"lumberry","pokeball":"pokeball"},{"ident":"p1: Manaphy","details":"Manaphy, L75","condition":"274/274","active":false,"stats":{"atk":155,"def":194,"spa":194,"spd":194,"spe":194},"moves":["surf","energyball","psychic","tailglow"],"baseAbility":"hydration","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Aegislash","details":"Aegislash, L74, M","condition":"211/211","active":false,"stats":{"atk":117,"def":265,"spa":117,"spd":265,"spe":132},"moves":["ironhead","shadowclaw","swordsdance","kingsshield"],"baseAbility":"stancechange","item":"airballoon","pokeball":"pokeball"},{"ident":"p1: Heracross","details":"Heracross, L76, F","condition":"247/247","active":false,"stats":{"atk":234,"def":158,"spa":105,"spd":188,"spe":173},"moves":["pinmissile","bulletseed","substitute","rockblast"],"baseAbility":"moxie","item":"heracronite","pokeball":"pokeball"},{"ident":"p1: Electivire","details":"Electivire, L81, M","condition":"254/254","active":false,"stats":{"atk":246,"def":155,"spa":201,"spd":184,"spe":201},"moves":["wildcharge","voltswitch","crosschop","earthquake"],"baseAbility":"motordrive","item":"expertbelt","pokeball":"pokeball"},{"ident":"p1: Scizor","details":"Scizor, L75, M","condition":"229/229","active":false,"stats":{"atk":239,"def":194,"spa":126,"spd":164,"spe":141},"moves":["uturn","pursuit","bulletpunch","superpower"],"baseAbility":"technician","item":"choiceband","pokeball":"pokeball"}]},"rqid":1}'
+        self.initial_request(json.loads(request.split('|')[2]))
+        self.handle('|switch|p2a: Electivire|Electivire, L81, F|100/100')
+        self.handle('|switch|p1a: Haxorus|Haxorus, L77, M|244/244')
+        self.handle('|turn|1')
+        self.handle('|switch|p1a: Aegislash|Aegislash, L74, M|211/211')
+        self.handle('|-formechange|p1a: Aegislash|Aegislash-Blade|[from] ability: Stance Change')
+        self.handle('|move|p1a: Aegislash|Iron Head|p2a: Electivire')
+        self.handle('|-damage|p2a: Electivire|26/100')
+        self.handle('|turn|2')
+        self.handle('|switch|p1a: Haxorus|Haxorus, L77, M|244/244')
+
+        self.bc._validate_my_team()
+
 
 class TestBattleClient(TestBattleClientBase):
     def handle(self, msg):
