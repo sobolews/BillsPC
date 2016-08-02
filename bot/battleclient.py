@@ -460,8 +460,8 @@ class BattleClient(object):
                     if (move not in known_info and
                         rbstats.attr_probability(rb_index, move, known_info) == 1
                     ):
-                        self.reveal_move(pokemon, movedex[move])
                         log.i("%s must have %s, given %s", pokemon.name, move, known_info)
+                        self.reveal_move(pokemon, movedex[move])
                         assert len(pokemon.moves) <= 4, (pokemon, pokemon.moves)
 
         active = self.my_side.active_pokemon
