@@ -6,6 +6,7 @@ from mock import patch
 from battle.decisionmakers import AutoDecisionMaker
 from bot.battleclient import BattleClient
 from mining.statistics import RandbatsStatistics
+from misc.functions import normalize_name
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard,
                            PseudoWeather)
@@ -84,6 +85,11 @@ class TestBattleClientDittoLead(TestBattleClientInitialRequestBase):
 
 
 class TestBattleClient(TestBattleClientBase):
+    def handle(self, msg):
+        if msg.startswith('|switch|p1a: '):
+            self.bc.switch_choice = normalize_name(msg[1:].split('|')[1])
+        super(TestBattleClient, self).handle(msg)
+
     def test_build_my_side_from_request_msg(self):
         self.bc.my_player = 0
         self.handle_request(self.REQUEST)
@@ -1822,7 +1828,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def setUp(self):
         super(TestBattleClientZoroark, self).setUp()
-        request = '|request|{"active":[{"moves":[{"move":"Avalanche","id":"avalanche","pp":16,"maxpp":16,"target":"normal","disabled":false},{"move":"Toxic","id":"toxic","pp":16,"maxpp":16,"target":"normal","disabled":false},{"move":"Roar","id":"roar","pp":32,"maxpp":32,"target":"normal","disabled":false},{"move":"Rapid Spin","id":"rapidspin","pp":64,"maxpp":64,"target":"normal","disabled":false}]}],"side":{"name":"0raichu","id":"p1","pokemon":[{"ident":"p1: Avalugg","details":"Avalugg, L83, F","condition":"293/293","active":true,"stats":{"atk":242,"def":353,"spa":121,"spd":124,"spe":94},"moves":["avalanche","toxic","roar","rapidspin"],"baseAbility":"sturdy","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Zoroark","details":"Zoroark, L78, M","condition":"222/222","active":false,"stats":{"atk":168,"def":139,"spa":232,"spd":139,"spe":209},"moves":["nastyplot","flamethrower","focusblast","darkpulse"],"baseAbility":"illusion","item":"lifeorb","pokeball":"pokeball"},{"ident":"p1: Klinklang","details":"Klinklang, L81","condition":"230/230","active":false,"stats":{"atk":209,"def":233,"spa":160,"spd":184,"spe":192},"moves":["wildcharge","shiftgear","substitute","geargrind"],"baseAbility":"clearbody","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Gothitelle","details":"Gothitelle, L74, F","condition":"226/226","active":false,"stats":{"atk":86,"def":184,"spa":183,"spd":206,"spe":138},"moves":["shadowball","thunderbolt","psyshock","hiddenpowerfire60"],"baseAbility":"shadowtag","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Volcanion","details":"Volcanion, L75","condition":"243/243","active":false,"stats":{"atk":208,"def":223,"spa":239,"spd":179,"spe":149},"moves":["superpower","hiddenpowerice60","fireblast","substitute"],"baseAbility":"waterabsorb","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Wobbuffet","details":"Wobbuffet, L74, F","condition":"403/403","active":false,"stats":{"atk":53,"def":129,"spa":92,"spd":129,"spe":92},"moves":["mirrorcoat","destinybond","encore","counter"],"baseAbility":"shadowtag","item":"custapberry","pokeball":"pokeball"}]},"rqid":1}'
+        request = '|request|{"active":[{"moves":[{"move":"Avalanche","id":"avalanche","pp":16,"maxpp":16,"target":"normal","disabled":false},{"move":"Toxic","id":"toxic","pp":16,"maxpp":16,"target":"normal","disabled":false},{"move":"Roar","id":"roar","pp":32,"maxpp":32,"target":"normal","disabled":false},{"move":"Rapid Spin","id":"rapidspin","pp":64,"maxpp":64,"target":"normal","disabled":false}]}],"side":{"name":"0raichu","id":"p1","pokemon":[{"ident":"p1: Avalugg","details":"Avalugg, L83, F","condition":"293/293","active":true,"stats":{"atk":242,"def":353,"spa":121,"spd":124,"spe":94},"moves":["avalanche","toxic","roar","rapidspin"],"baseAbility":"sturdy","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Zoroark","details":"Zoroark, L78, M","condition":"222/222","active":false,"stats":{"atk":168,"def":139,"spa":232,"spd":139,"spe":209},"moves":["nastyplot","flamethrower","focusblast","darkpulse"],"baseAbility":"illusion","item":"lifeorb","pokeball":"pokeball"},{"ident":"p1: Klinklang","details":"Klinklang, L81","condition":"230/230","active":false,"stats":{"atk":209,"def":233,"spa":160,"spd":184,"spe":192},"moves":["wildcharge","shiftgear","substitute","geargrind"],"baseAbility":"clearbody","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Gothitelle","details":"Gothitelle, L74, F","condition":"226/226","active":false,"stats":{"atk":86,"def":184,"spa":183,"spd":206,"spe":138},"moves":["shadowball","thunderbolt","psyshock","hiddenpowerfire60"],"baseAbility":"shadowtag","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Heliolisk","details":"Heliolisk, L77, F","condition":"222/222","active":false,"stats":{"atk":89,"def":125,"spa":212,"spd":189,"spe":212},"moves":["hypervoice","voltswitch","thunderbolt","surf"],"baseAbility":"dryskin","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Wobbuffet","details":"Wobbuffet, L74, F","condition":"403/403","active":false,"stats":{"atk":53,"def":129,"spa":92,"spd":129,"spe":92},"moves":["mirrorcoat","destinybond","encore","counter"],"baseAbility":"shadowtag","item":"custapberry","pokeball":"pokeball"}]},"rqid":1}'
         self.initial_request(json.loads(request.split('|')[2]))
         self.turn_0()
 
@@ -1833,6 +1839,7 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
 
         self.avalugg = self.my_side.team[0]
         self.zoroark = self.my_side.team[1]
+        self.heliolisk = self.my_side.team[4]
         self.wobbuffet = self.my_side.team[5]
         self.goodra = self.foe_side.team[0]
         self.assertEqual(self.avalugg.name, 'avalugg')
@@ -1841,7 +1848,8 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.assertEqual(self.goodra.name, 'goodra')
 
     def switch_in_zoroark_as_wobbuffet(self):
-        self.bc.request = json.loads('{"active":[{"moves":[{"move":"Nasty Plot","id":"nastyplot","pp":32,"maxpp":32,"target":"self","disabled":false},{"move":"Flamethrower","id":"flamethrower","pp":24,"maxpp":24,"target":"normal","disabled":false},{"move":"Focus Blast","id":"focusblast","pp":8,"maxpp":8,"target":"normal","disabled":false},{"move":"Dark Pulse","id":"darkpulse","pp":24,"maxpp":24,"target":"any","disabled":false}]}],"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Zoroark","details":"Zoroark, L78, M","condition":"222/222","active":true,"stats":{"atk":168,"def":139,"spa":232,"spd":139,"spe":209},"moves":["nastyplot","flamethrower","focusblast","darkpulse"],"baseAbility":"illusion","item":"lifeorb","pokeball":"pokeball"},{"ident":"p1: Avalugg","details":"Avalugg, L83, F","condition":"293/293","active":false,"stats":{"atk":242,"def":353,"spa":121,"spd":124,"spe":94},"moves":["avalanche","toxic","roar","rapidspin"],"baseAbility":"sturdy","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Klinklang","details":"Klinklang, L81","condition":"230/230","active":false,"stats":{"atk":209,"def":233,"spa":160,"spd":184,"spe":192},"moves":["wildcharge","shiftgear","substitute","geargrind"],"baseAbility":"clearbody","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Gothitelle","details":"Gothitelle, L74, F","condition":"226/226","active":false,"stats":{"atk":86,"def":184,"spa":183,"spd":206,"spe":138},"moves":["shadowball","thunderbolt","psyshock","hiddenpowerfire60"],"baseAbility":"shadowtag","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Volcanion","details":"Volcanion, L75","condition":"243/243","active":false,"stats":{"atk":208,"def":223,"spa":239,"spd":179,"spe":149},"moves":["superpower","hiddenpowerice60","fireblast","substitute"],"baseAbility":"waterabsorb","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Wobbuffet","details":"Wobbuffet, L74, F","condition":"403/403","active":false,"stats":{"atk":53,"def":129,"spa":92,"spd":129,"spe":92},"moves":["mirrorcoat","destinybond","encore","counter"],"baseAbility":"shadowtag","item":"custapberry","pokeball":"pokeball"}]},"rqid":2}')
+        self.bc.request = json.loads('{"active":[{"moves":[{"move":"Nasty Plot","id":"nastyplot","pp":32,"maxpp":32,"target":"self","disabled":false},{"move":"Flamethrower","id":"flamethrower","pp":24,"maxpp":24,"target":"normal","disabled":false},{"move":"Focus Blast","id":"focusblast","pp":8,"maxpp":8,"target":"normal","disabled":false},{"move":"Dark Pulse","id":"darkpulse","pp":24,"maxpp":24,"target":"any","disabled":false}]}],"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Zoroark","details":"Zoroark, L78, M","condition":"222/222","active":true,"stats":{"atk":168,"def":139,"spa":232,"spd":139,"spe":209},"moves":["nastyplot","flamethrower","focusblast","darkpulse"],"baseAbility":"illusion","item":"lifeorb","pokeball":"pokeball"},{"ident":"p1: Avalugg","details":"Avalugg, L83, F","condition":"293/293","active":false,"stats":{"atk":242,"def":353,"spa":121,"spd":124,"spe":94},"moves":["avalanche","toxic","roar","rapidspin"],"baseAbility":"sturdy","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Klinklang","details":"Klinklang, L81","condition":"230/230","active":false,"stats":{"atk":209,"def":233,"spa":160,"spd":184,"spe":192},"moves":["wildcharge","shiftgear","substitute","geargrind"],"baseAbility":"clearbody","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Gothitelle","details":"Gothitelle, L74, F","condition":"226/226","active":false,"stats":{"atk":86,"def":184,"spa":183,"spd":206,"spe":138},"moves":["shadowball","thunderbolt","psyshock","hiddenpowerfire60"],"baseAbility":"shadowtag","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Heliolisk","details":"Heliolisk, L77, F","condition":"222/222","active":false,"stats":{"atk":89,"def":125,"spa":212,"spd":189,"spe":212},"moves":["hypervoice","voltswitch","thunderbolt","surf"],"baseAbility":"dryskin","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Wobbuffet","details":"Wobbuffet, L74, F","condition":"403/403","active":false,"stats":{"atk":53,"def":129,"spa":92,"spd":129,"spe":92},"moves":["mirrorcoat","destinybond","encore","counter"],"baseAbility":"shadowtag","item":"custapberry","pokeball":"pokeball"}]},"rqid":2}')
+        self.bc.switch_choice = 'zoroark'
         self.handle('|switch|p1a: Wobbuffet|Wobbuffet, L74, F|222/222')
         self.assertEqual(self.my_side.active_pokemon.base_species, 'zoroark')
         self.assertTrue(self.zoroark.illusion)
@@ -2058,6 +2066,7 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     @patch.dict(rbstats['yveltalL73'],
                 {('darkpulse', 'hurricane', 'suckerpunch', 'uturn', 'darkaura', 'leftovers'): 1})
     def test_learn_fifth_move_because_of_illusion_shenanigans(self):
+        self.bc.switch_choice = 'zoroark'
         self.handle('|switch|p2a: Yveltal|Yveltal, L73|100/100') # actually a zoroark
         self.handle('|move|p2a: Yveltal|Sucker Punch|p1a: Avalugg')
         self.handle('|turn|2')
@@ -2066,6 +2075,7 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
         self.handle('|move|p2a: Yveltal|U-turn|p1a: Avalugg')
         self.handle('|switch|p2a: Scrafty|Scrafty, L79, F|100/100')
         self.handle('|turn|4')
+        self.bc.switch_choice = 'yveltal'
         self.handle('|switch|p2a: Yveltal|Yveltal, L73|100/100') # actually yveltal
         yveltal = self.foe_side.active_pokemon
         self.handle('|move|p2a: Yveltal|Hurricane|p1a: Avalugg')
@@ -2077,6 +2087,7 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
 
     def test_detect_zoroark_based_on_psychic_immunity(self):
         self.handle('|switch|p2a: Vaporeon|Vaporeon, L77, F|100/100') # illusioned zoroark
+        self.bc.switch_choice = 'gothitelle'
         self.handle('|switch|p1a: Gothitelle|Gothitelle, L74, F|226/226')
         self.handle('|turn|2')
         self.handle('|move|p1a: Gothitelle|Psyshock|p2a: Vaporeon')
@@ -2088,8 +2099,31 @@ class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
     def test_detect_not_my_zoroark_after_drag(self):
         self.handle('|switch|p2a: Noctowl|Noctowl, L83|100/100')
         self.handle('|turn|2')
+        self.bc.switch_choice = 'zoroark'
         self.handle('|switch|p1a: Klinklang|Klinklang, L81|222/222')
         self.handle('|move|p2a: Noctowl|Whirlwind|p2a: Klinklang')
         self.handle('|drag|p1a: Klinklang|Klinklang, L81|230/230')
 
         self.assertEqual(self.my_side.active_pokemon.name, 'klinklang')
+
+    def test_switch_to_non_zoroark_with_same_hp(self):
+        self.bc.switch_choice = 'heliolisk'
+        self.handle('|switch|p1a: Heliolisk|Heliolisk, L77, F|222/222')
+        self.assertEqual(self.my_side.active_pokemon.name, 'heliolisk')
+
+    def test_detect_my_zoroark_on_switch_with_drag_to_other_pokemon_after(self):
+        self.handle('|switch|p2a: Gyarados|Gyarados, L76, F|100/100')
+        self.handle('|turn|2')
+        self.bc.switch_choice = 'zoroark'
+        self.bc.request = self.WOBBUFFET_ACTIVE_REQUEST
+        self.handle('|switch|p1a: Heliolisk|Heliolisk, L77, M|222/222') # illusioned zoroark
+        self.handle('|move|p2a: Gyarados|Dragon Tail|p1a: Heliolisk')
+        self.handle('|replace|p1a: Zoroark|Zoroark, L78, M|222/222')
+        self.handle('|-end|p1a: Zoroark|Illusion')
+        self.handle('|-damage|p1a: Zoroark|164/222')
+        self.handle('|drag|p1a: Wobbuffet|Wobbuffet, L74, F|403/403')
+
+        self.assertEqual(self.zoroark.hp, 164)
+        self.assertFalse(self.zoroark.is_active)
+        self.assertEqual(self.heliolisk.hp, self.heliolisk.max_hp)
+        self.assertTrue(self.wobbuffet.is_active)

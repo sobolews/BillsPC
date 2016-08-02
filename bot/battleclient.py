@@ -57,6 +57,7 @@ class BattleClient(object):
         self.crit = False
         self.hiddenpower_trigger = None
         self.previous_msg = ['']
+        self.switch_choice = None
 
         self.make_moves = make_moves # send move choices to the server
         self.engine = CheatSheetEngine.from_battlefield(None)
@@ -96,20 +97,22 @@ class BattleClient(object):
 
         # is it referring to an illusioned zoroark?
         if side.index == self.my_player:
-            switching = msg[0] in ('switch', 'drag')
-            active = self.my_side.active_pokemon
-            if switching:
-                hp, max_hp = map(int, msg[3].split()[0].split('/'))
+            if msg[0] == 'switch':
+                if self.switch_choice is None:
+                    if self.get_zoroark(side) is not None and self.battlefield.turns > 0:
+                        log.w('My switch choice was not recorded and I have a zoroark')
+                else:
+                    name = self.switch_choice
+            elif msg[0] == 'drag':
                 my_zoroark = self.get_zoroark(side)
                 if (my_zoroark is not None and
                     not my_zoroark.is_fainted() and
-                    not my_zoroark is active and
                     side.remaining_pokemon > 1 and
-                    hp == my_zoroark.hp and
-                    max_hp == my_zoroark.max_hp
+                    normalize_name(self.request['side']['pokemon'][0]['ident']) == 'zoroark'
                 ):
                     name = 'zoroark'
             else:
+                active = side.active_pokemon
                 if active is not None and active.base_species == 'zoroark':
                     name = 'zoroark'
 
@@ -548,14 +551,17 @@ class BattleClient(object):
 
         TODO: Use an AI module for move selection
         """
+        self.switch_choice = None
         if (not switch_rejected and
             (request.get('forceSwitch') or (random.randrange(10) == 0 and
                                             self.my_side.active_pokemon.get_switch_choices()))):
-            choices = [i for i, p in enumerate(request['side']['pokemon'], 1)
+            choices = [(i, normalize_name(p['ident']))
+                       for i, p in enumerate(request['side']['pokemon'], 1)
                        if not p['condition'] == '0 fnt' and not p['active']]
-            log.i("switch choices: %s", choices)
-            choice = random.choice(choices)
-            self.send('|'.join([self.room, '/choose switch %d' % choice] +
+            index, ident = random.choice(choices)
+            self.switch_choice = ident
+            log.i("switch choices: %s choosing %s (%s)", choices, index, ident)
+            self.send('|'.join([self.room, '/choose switch %d' % index] +
                                filter(None, [str(self.rqid)])))
         else:
             choices = [i for i, m in enumerate(request['active'][0]['moves'], 1)
