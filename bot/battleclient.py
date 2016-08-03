@@ -2102,6 +2102,6 @@ def check(condition, msg, *fmt):
     Check that condition is True and warn msg if not. Return value of condition.
     """
     if not condition:
-        log.w('Team validation failed:\n%s' % msg % fmt)
-        log.w(''.join(traceback.format_stack(limit=2)))
+        lineno = traceback.extract_stack(limit=2)[0][1]
+        log.w('At battleclient.py:%d: team validation failed:\n%s' % (lineno, msg % fmt))
     return condition
