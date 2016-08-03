@@ -1842,13 +1842,14 @@ class BattleClient(object):
             # Set any of the foe's moves that are revealed by transforming.
             pokemon.moves = {}
 
-            if normalize_name(self.request['side']['pokemon'][0]['ident']) != pokemon.base_species:
+            jditto = self.request['side']['pokemon'][0]
+            if normalize_name(jditto['ident']) != pokemon.base_species:
                 # A different pokemon ends up active (probably due to a |drag|), so we can't peek at
                 # the opponent's moves
                 return
 
-            for move in self.request['active'][0]['moves']:
-                my_move = movedex[normalize_name(move['move'])]
+            for move in jditto['moves']:
+                my_move = movedex[normalize_name(move.rstrip(string.digits))]
                 pokemon.moves[my_move] = 5
 
                 if my_move.is_hiddenpower:
