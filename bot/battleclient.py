@@ -710,7 +710,7 @@ class BattleClient(object):
                 log.i('Rejected learning %s due to possibility of zoroark', move)
                 return False
         if len(pokemon.moves) >= 4: # if the above handling didn't fix it, something's gone wrong
-            log.e("%s's moveset %s is full; cannot reveal %s. Clearing moveset as a last resort.",
+            log.w("%s's moveset %s is full; cannot reveal %s. Clearing moveset as a last resort.",
                   pokemon, pokemon.moves, move)
             pokemon.moves.clear()
 
