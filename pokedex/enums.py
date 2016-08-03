@@ -6,18 +6,18 @@ class EnumMeta(type):
         dct['values'] = {k: v for k, v in dct.items() if not k.startswith('__')}
         return type.__new__(mcs, name, bases, dct)
 
-class Type(object):
+class EnumBase(object):
     __metaclass__ = EnumMeta
+
+class Type(EnumBase):
     (NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK,
      BUG, GHOST, STEEL, FIRE, WATER, GRASS, ELECTRIC,
      PSYCHIC, ICE, DRAGON, DARK, FAIRY, NOTYPE) = [()]*19
 
-class Status(object):
-    __metaclass__ = EnumMeta
+class Status(EnumBase):
     BRN, FNT, FRZ, PAR, PSN, SLP, TOX = [()]*7
 
-class Volatile(object):
-    __metaclass__ = EnumMeta
+class Volatile(EnumBase):
     (ATTRACT, AUTOTOMIZE, BATONPASS, CHOICELOCK, CONFUSE, DESTINYBOND,
      DISABLE, ENCORE, FLASHFIRE, FLINCH, FORECAST, GEM, KINGSSHIELD,
      LEECHSEED, LOCKEDMOVE, MAGICCOAT, MAGNETRISE, PARENTALBOND,
@@ -25,35 +25,28 @@ class Volatile(object):
      SHEERFORCE, SLOWSTART, SPIKYSHIELD, STALL, SUBSTITUTE, TAUNT,
      TRANSFORMED, TRAPPED, TRUANT, TWOTURNMOVE, UNBURDEN, VANISHED, YAWN) = [()]*37
 
-class SideCondition(object):
-    __metaclass__ = EnumMeta
+class SideCondition(EnumBase):
     HEALINGWISH, LIGHTSCREEN, REFLECT, SAFEGUARD, TAILWIND, WISH = [()]*6
 
-class Hazard(object):
-    __metaclass__ = EnumMeta
+class Hazard(EnumBase):
     TOXICSPIKES, SPIKES, STEALTHROCK, STICKYWEB = [()]*4
 
-class PseudoWeather(object):
-    __metaclass__ = EnumMeta
+class PseudoWeather(EnumBase):
     AURABREAK, DARKAURA, ELECTRICTERRAIN, FAIRYAURA, TRICKROOM = [()]*5
 
-class Weather(object):
-    __metaclass__ = EnumMeta
+class Weather(EnumBase):
     (DELTASTREAM, DESOLATELAND, HAIL, PRIMORDIALSEA,
      RAINDANCE, SANDSTORM, SUNNYDAY) = [()]*7
 Weather.TRIO = (Weather.PRIMORDIALSEA, Weather.DESOLATELAND, Weather.DELTASTREAM)
 
-class Cause(object):
-    __metaclass__ = EnumMeta
+class Cause(EnumBase):
     (CONFUSE, CRASH, DIRECT, DRAIN, HAZARD, MOVE,
      OTHER, RECOIL, RESIDUAL, SELFDESTRUCT, WEATHER) = [()]*11
 
-class Decision(object):
-    __metaclass__ = EnumMeta
+class Decision(EnumBase):
     MOVE, MEGAEVO, POSTSWITCH, RESIDUAL, SWITCH = [()]*5
 
-class MoveCategory(object):
-    __metaclass__ = EnumMeta
+class MoveCategory(EnumBase):
     PHYSICAL, SPECIAL, STATUS = [()]*3
 STATUS, PHYSICAL, SPECIAL = MoveCategory.STATUS, MoveCategory.PHYSICAL, MoveCategory.SPECIAL
 
