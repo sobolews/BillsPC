@@ -2064,7 +2064,11 @@ class BattleClient(object):
                                      pokemon, pokemon.ability.name, reqability):
                             pokemon.base_ability = abilitydex[reqability]
 
-                for i, move in enumerate(sorted(reqmon['moves'])):
+                reqmoves = sorted(reqmon['moves'])
+                for i, move in enumerate(reqmoves):
+                    if not check(len(pokemon.moves) > i, "%s is missing moves starting at index %d:"
+                                 "\nmoves: %s\nrequest: %s", pokemon, i, pokemon.moves, reqmoves):
+                        break
                     check(sorted(pokemon.moves)[i].name == move,
                           "%s's move %s doesn't match the request's %s",
                           pokemon, sorted(pokemon.moves)[i].name, move)
