@@ -1479,6 +1479,9 @@ class BattleClient(object):
                       'pursuit', 'struggle', 'trapped', 'deltastream'):
             return
         pokemon = self.get_pokemon_from_msg(msg)
+        if pokemon is None:
+            log.i('No pokemon for msg: %s', msg)
+            return
 
         if effect in ('shedskin', 'aromaveil', 'hydration', 'immunity', 'limber', 'insomnia',
                       'sweetveil', 'vitalspirit', 'waterveil', 'wonderguard', 'stickyhold',
