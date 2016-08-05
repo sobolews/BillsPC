@@ -1749,7 +1749,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(haxorus.has_effect(Volatile.SUBSTITUTE))
 
     @patch('bot.battleclient.BattleClient._validate_my_team', lambda _: None)
-    @patch('bot.cheatsheetengine.CheatSheetEngine.show_my_moves', lambda *_: None)
+    @patch('bot.battlecalculator.BattleCalculator.show_my_moves', lambda *_: None)
     def test_maybe_trapped(self):
         self.handle('|switch|p2a: Wobbuffet|Wobbuffet, L74, M|100/100')
         self.handle('|turn|2')

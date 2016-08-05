@@ -14,7 +14,7 @@ from _logging import log, no_console_log
 rbstats = RandbatsStatistics.from_pickle()
 TABLEFMT = 'psql'
 
-class CheatSheetEngine(Battle):
+class BattleCalculator(Battle):
     """
     Adds some methods to Battle for performing and reporting basic damage calcs for the
     current active pokemon.

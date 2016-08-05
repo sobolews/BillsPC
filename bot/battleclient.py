@@ -7,7 +7,7 @@ from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
 from bot.foeside import FoeBattleSide, FoePokemon
 from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
-from bot.cheatsheetengine import CheatSheetEngine
+from bot.battlecalculator import BattleCalculator
 from mining import create_pokedex
 from mining.statistics import RandbatsStatistics, rbstats_key
 from misc.functions import normalize_name, clamp_int
@@ -60,7 +60,7 @@ class BattleClient(object):
         self.switch_choice = None
 
         self.make_moves = make_moves # send move choices to the server
-        self.battle = CheatSheetEngine.from_battlefield(None)
+        self.battle = BattleCalculator.from_battlefield(None)
 
         def _send(msg):
             self.last_sent = msg
