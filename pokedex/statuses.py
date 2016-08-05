@@ -16,13 +16,13 @@ class BaseStatusEffect(BaseEffect):
 class Paralyze(BaseStatusEffect):
     source = Status.PAR
 
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         if pokemon.ability.name != 'quickfeet':
             return spe * 0.25
         return spe
 
     @priority(1)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         if random.randrange(4) == 0:
             if __debug__: log.i("%s is paralyzed; it can't move!", user)
             return FAIL
@@ -31,7 +31,7 @@ class Freeze(BaseStatusEffect):
     source = Status.FRZ
 
     @priority(10)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         assert user.status is Status.FRZ
         if random.randrange(5) == 0 or move.thaw_user:
             user.cure_status()
@@ -39,11 +39,11 @@ class Freeze(BaseStatusEffect):
             if __debug__: log.i("%s is frozen!", user)
             return FAIL
 
-    def on_after_foe_hit(self, foe, move, target, engine):
+    def on_after_foe_hit(self, foe, move, target, battle):
         if move.type is Type.FIRE or move.thaw_target:
             target.cure_status()
 
-    def on_after_set_status(self, status, pokemon, setter, engine):
+    def on_after_set_status(self, status, pokemon, setter, battle):
         if pokemon.name == 'shayminsky' and pokemon.base_species == 'shayminsky':
             pokemon.forme_change('shaymin')
 
@@ -57,7 +57,7 @@ class Sleep(BaseStatusEffect):
         self.rest = rest
 
     @priority(10)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         assert user.status is Status.SLP
 
         turns_slept = user.turns_slept
@@ -87,25 +87,25 @@ class Burn(BaseStatusEffect):
         return damage
 
     @priority(-9)
-    def on_residual(self, pokemon, foe, engine):
-        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
+    def on_residual(self, pokemon, foe, battle):
+        battle.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
 class Poison(BaseStatusEffect):
     source = Status.PSN
 
     @priority(-9)
-    def on_residual(self, pokemon, foe, engine):
-        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
+    def on_residual(self, pokemon, foe, battle):
+        battle.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
 class Toxic(BaseStatusEffect):
     source = Status.TOX
     stage = 0
 
     @priority(0)
-    def on_switch_out(self, pokemon, incoming, engine):
+    def on_switch_out(self, pokemon, incoming, battle):
         self.stage = 0
 
     @priority(-9)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         self.stage += 1
-        engine.damage(pokemon, ((pokemon.max_hp / 16) * self.stage) or 1, Cause.RESIDUAL, self)
+        battle.damage(pokemon, ((pokemon.max_hp / 16) * self.stage) or 1, Cause.RESIDUAL, self)

@@ -57,14 +57,14 @@ class BattleEngine(object):
     @classmethod
     def from_battlefield(cls, battlefield, dm0=None, dm1=None):
         """ Alternate constructor from an existing battlefield. """
-        engine = cls.__new__(cls)
-        engine.battlefield = battlefield
-        engine.decision_makers = (dm0, dm1)
-        engine.decision_makers = (BaseDecisionMaker(0) if dm0 is None else dm0,
+        battle = cls.__new__(cls)
+        battle.battlefield = battlefield
+        battle.decision_makers = (dm0, dm1)
+        battle.decision_makers = (BaseDecisionMaker(0) if dm0 is None else dm0,
                                   BaseDecisionMaker(1) if dm1 is None else dm1)
-        engine.event_queue = []
-        engine.faint_queue = []
-        return engine
+        battle.event_queue = []
+        battle.faint_queue = []
+        return battle
 
     def get_foe(self, pokemon):
         """ Return the foe opposite to `pokemon`. If the foe is fainted, return None. """

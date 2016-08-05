@@ -33,67 +33,67 @@ class AirBalloon(ItemEffect):
         if thing is Type.GROUND:
             return True
 
-    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
-        pokemon.use_item(engine)
+    def on_after_move_damage(self, battle, pokemon, damage, move, foe):
+        pokemon.use_item(battle)
 
 class AssaultVest(ItemEffect):
     @priority(0)
     def on_get_move_choices(self, pokemon, moves):
         return [move for move in moves if not move.category is MoveCategory.STATUS]
 
-    def on_modify_spd(self, pokemon, move, engine, spd):
+    def on_modify_spd(self, pokemon, move, battle, spd):
         return spd * 1.5
 
 class BlackSludge(ItemEffect):
     @priority(-5.2)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         if Type.POISON in pokemon.types:
-            engine.heal(pokemon, pokemon.max_hp / 16)
+            battle.heal(pokemon, pokemon.max_hp / 16)
         else:
-            engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
+            battle.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
 
 class BlueOrb(ItemEffect):
     removable = False
 
     @priority(-6)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         assert pokemon.base_species == 'kyogre'
 
         if pokemon.name != 'kyogreprimal':
-            pokemon.forme_change('kyogreprimal', engine)
+            pokemon.forme_change('kyogreprimal', battle)
 
 class ChestoBerry(ItemEffect):
     is_berry = True
     single_use = True
 
-    def on_update(self, pokemon, engine):
+    def on_update(self, pokemon, battle):
         if pokemon.status is Status.SLP:
-            pokemon.use_item(engine)
+            pokemon.use_item(battle)
 
     @staticmethod
-    def on_eat(pokemon, engine):
+    def on_eat(pokemon, battle):
         if pokemon.status is Status.SLP:
             pokemon.cure_status()
 
 class ChoiceBand(ItemEffect):
-    def on_modify_atk(self, pokemon, move, engine, atk):
+    def on_modify_atk(self, pokemon, move, battle, atk):
         return atk * 1.5
 
-    def on_modify_move(self, move, user, engine):
+    def on_modify_move(self, move, user, battle):
         user.set_effect(effects.ChoiceLock(move))
 
     def on_lose_item(self, pokemon, item):
         pokemon.remove_effect(Volatile.CHOICELOCK)
 
 class ChoiceScarf(ItemEffect):
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         return spe * 1.5
 
     on_modify_move = ChoiceBand.on_modify_move.__func__
     on_lose_item = ChoiceBand.on_lose_item.__func__
 
 class ChoiceSpecs(ItemEffect):
-    def on_modify_spa(self, pokemon, move, engine, spa):
+    def on_modify_spa(self, pokemon, move, battle, spa):
         return spa * 1.5
 
     on_modify_move = ChoiceBand.on_modify_move.__func__
@@ -103,9 +103,9 @@ class CustapBerry(ItemEffect):
     is_berry = True
     single_use = True
 
-    def on_modify_priority(self, pokemon, move, engine, priority):
+    def on_modify_priority(self, pokemon, move, battle, priority):
         if (pokemon.hp <= pokemon.max_hp / 4.0 and
-            pokemon.use_item(engine) is not FAIL):
+            pokemon.use_item(battle) is not FAIL):
             return priority + 0.1
         return priority
 
@@ -114,12 +114,12 @@ class DampRock(ItemEffect):
     pass
 
 class Eviolite(ItemEffect):
-    def on_modify_def(self, pokemon, move, engine, def_):
+    def on_modify_def(self, pokemon, move, battle, def_):
         if not pokemon.pokedex_entry.fully_evolved:
             return def_ * 1.5
         return def_
 
-    def on_modify_spd(self, pokemon, move, engine, spd):
+    def on_modify_spd(self, pokemon, move, battle, spd):
         if not pokemon.pokedex_entry.fully_evolved:
             return spd * 1.5
         return spd
@@ -135,10 +135,10 @@ class BaseGem(ItemEffect):
     gem_type = None
     single_use = True
 
-    def on_move_hit(self, user, move, engine):
+    def on_move_hit(self, user, move, battle):
         if (move.type is self.gem_type and
             move.category is not MoveCategory.STATUS and
-            user.use_item(engine) is not FAIL
+            user.use_item(battle) is not FAIL
         ):
             user.set_effect(effects.GemVolatile())
 
@@ -147,8 +147,8 @@ class FightingGem(BaseGem):
 
 class FlameOrb(ItemEffect):
     @priority(-26.2)
-    def on_residual(self, pokemon, foe, engine):
-        engine.set_status(pokemon, Status.BRN, pokemon)
+    def on_residual(self, pokemon, foe, battle):
+        battle.set_status(pokemon, Status.BRN, pokemon)
 
 class FlyingGem(BaseGem):
     gem_type = Type.FLYING
@@ -157,11 +157,11 @@ class FocusSash(ItemEffect):
     single_use = True
 
     @priority(0)
-    def on_damage(self, pokemon, cause, source, engine, damage):
+    def on_damage(self, pokemon, cause, source, battle, damage):
         if (pokemon.hp == pokemon.max_hp and
             damage >= pokemon.hp and
             cause in (Cause.MOVE, Cause.CONFUSE) and
-            pokemon.use_item(engine) is not FAIL
+            pokemon.use_item(battle) is not FAIL
         ):
             if __debug__: log.i("%s held on with FocusSash!", pokemon)
             return pokemon.hp - 1
@@ -170,7 +170,7 @@ class FocusSash(ItemEffect):
 class GriseousOrb(ItemEffect):
     removable = False
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if move.type in (Type.GHOST, Type.DRAGON):
             return base_power * 1.2
         return base_power
@@ -181,21 +181,21 @@ class HeatRock(ItemEffect):
 
 class Leftovers(ItemEffect):
     @priority(-5.2)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         if __debug__:
             if pokemon.hp < pokemon.max_hp:
                 log.i('%s restored a little HP using its Leftovers!', pokemon)
-        engine.heal(pokemon, pokemon.max_hp / 16)
+        battle.heal(pokemon, pokemon.max_hp / 16)
 
 class LifeOrb(ItemEffect):
     def on_modify_damage(self, user, move, effectiveness, damage):
         if __debug__: log.d("%s was boosted by %s's LifeOrb", move, user)
         return damage * 1.3
 
-    def on_after_move_secondary(self, user, move, target, engine):
+    def on_after_move_secondary(self, user, move, target, battle):
         if move.category is not MoveCategory.STATUS:
             if __debug__: log.i("%s was hurt by its LifeOrb", user)
-            engine.damage(user, user.max_hp / 10.0, Cause.OTHER, self)
+            battle.damage(user, user.max_hp / 10.0, Cause.OTHER, self)
 
 class LightClay(ItemEffect):
     # Implemented in lightscreen and reflect
@@ -205,17 +205,17 @@ class LumBerry(ItemEffect):
     is_berry = True
     single_use = True
 
-    def on_update(self, pokemon, engine):
+    def on_update(self, pokemon, battle):
         if pokemon.status is not None or pokemon.has_effect(Volatile.CONFUSE):
-            pokemon.use_item(engine)
+            pokemon.use_item(battle)
 
     @staticmethod
-    def on_eat(pokemon, engine):
+    def on_eat(pokemon, battle):
         pokemon.cure_status()
         pokemon.remove_effect(Volatile.CONFUSE)
 
 class LustrousOrb(ItemEffect):
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if user.base_species == 'palkia' and move.type in (Type.WATER, Type.DRAGON):
             return base_power * 1.2
         return base_power
@@ -227,12 +227,12 @@ class PetayaBerry(ItemEffect):
     is_berry = True
     single_use = True
 
-    def on_update(self, pokemon, engine):
+    def on_update(self, pokemon, battle):
         if pokemon.hp <= pokemon.max_hp / 4:
-            pokemon.use_item(engine)
+            pokemon.use_item(battle)
 
     @staticmethod
-    def on_eat(pokemon, engine):
+    def on_eat(pokemon, battle):
         pokemon.apply_boosts(Boosts(spa=1), self_induced=True)
 
 class PowerHerb(ItemEffect):
@@ -242,38 +242,38 @@ class PowerHerb(ItemEffect):
 class RedCard(ItemEffect):
     single_use = True
 
-    def on_after_foe_move_secondary(self, foe, move, target, engine):
+    def on_after_foe_move_secondary(self, foe, move, target, battle):
         if (not target.is_fainted() and
             not foe.is_fainted() and
             move.category is not MoveCategory.STATUS and
             foe.is_active and
             foe.get_switch_choices(forced=True) and
-            target.use_item(engine) is not FAIL
+            target.use_item(battle) is not FAIL
         ):
-            engine.force_random_switch(foe, target)
+            battle.force_random_switch(foe, target)
 
 class RedOrb(ItemEffect):
     removable = False
 
     @priority(-6)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         assert pokemon.base_species == 'groudon'
 
         if pokemon.name != 'groudonprimal':
-            pokemon.forme_change('groudonprimal', engine)
+            pokemon.forme_change('groudonprimal', battle)
 
 class RockyHelmet(ItemEffect):
-    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+    def on_after_move_damage(self, battle, pokemon, damage, move, foe):
         if move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s was damaged by %s's RockyHelmet", foe, pokemon)
-            engine.damage(foe, foe.max_hp / 6.0, Cause.OTHER)
+            battle.damage(foe, foe.max_hp / 6.0, Cause.OTHER)
 
 class ScopeLens(ItemEffect):
-    def on_modify_move(self, move, user, engine):
+    def on_modify_move(self, move, user, battle):
         move.crit_ratio += 1
 
 class SharpBeak(ItemEffect):
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if move.type is Type.FLYING:
             return base_power * 1.2
         return base_power
@@ -282,47 +282,47 @@ class SitrusBerry(ItemEffect):
     is_berry = True
     single_use = True
 
-    def on_update(self, pokemon, engine):
+    def on_update(self, pokemon, battle):
         if pokemon.hp <= pokemon.max_hp / 2:
-            pokemon.use_item(engine)
+            pokemon.use_item(battle)
 
     @staticmethod
-    def on_eat(pokemon, engine):
-        engine.heal(pokemon, pokemon.max_hp / 4)
+    def on_eat(pokemon, battle):
+        battle.heal(pokemon, pokemon.max_hp / 4)
 
 class Stick(ItemEffect):
-    def on_modify_move(self, move, user, engine):
+    def on_modify_move(self, move, user, battle):
         if user.base_species == 'farfetchd':
             move.crit_ratio += 2
 
 class ThickClub(ItemEffect):
-    def on_modify_atk(self, pokemon, move, engine, atk):
+    def on_modify_atk(self, pokemon, move, battle, atk):
         if pokemon.base_species == 'marowak':
             return atk * 2
         return atk
 
 class ToxicOrb(ItemEffect):
     @priority(-26.2)
-    def on_residual(self, pokemon, foe, engine):
-        engine.set_status(pokemon, Status.TOX, pokemon)
+    def on_residual(self, pokemon, foe, battle):
+        battle.set_status(pokemon, Status.TOX, pokemon)
 
 class WeaknessPolicy(ItemEffect):
     single_use = True
 
-    def on_after_foe_hit(self, foe, move, target, engine):
+    def on_after_foe_hit(self, foe, move, target, battle):
         if (move.category is not MoveCategory.STATUS and
             not move.has_damage_callback and
-            engine.get_effectiveness(foe, move, target) > 1 and
-            target.use_item(engine) is not FAIL
+            battle.get_effectiveness(foe, move, target) > 1 and
+            target.use_item(battle) is not FAIL
         ):
             target.apply_boosts(Boosts(atk=2, spa=2), self_induced=True)
 
 class WhiteHerb(ItemEffect):
     single_use = True
 
-    def on_update(self, pokemon, engine):
+    def on_update(self, pokemon, battle):
         stats = [stat for stat, boost in pokemon.boosts.items() if boost < 0]
-        if stats and pokemon.use_item(engine) is not FAIL:
+        if stats and pokemon.use_item(battle) is not FAIL:
             for stat in stats:
                 pokemon.boosts[stat] = 0
 
@@ -344,7 +344,7 @@ class ShockDrive(BaseDrive):
 class BasePlate(ItemEffect):
     removable = False
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if move.type is self.plate_type:
             return base_power * 1.2
         return base_power

@@ -12,10 +12,10 @@ class BaseWeatherEffect(BaseEffect):
         self.duration = duration
 
     @priority(-1)
-    def on_residual(self, pokemon0, pokemon1, engine):
+    def on_residual(self, pokemon0, pokemon1, battle):
         if not self.suppressed:
             for pokemon in filter(None, (pokemon0, pokemon1)):
-                pokemon.activate_effect('on_weather', pokemon, self.source, engine)
+                pokemon.activate_effect('on_weather', pokemon, self.source, battle)
 
     def weather_modify_damage(self, _, damage):
         return damage
@@ -33,7 +33,7 @@ class SunnyDayWeather(BaseWeatherEffect):
                 return 0.5 * damage
         return damage
 
-    def on_set_status(self, status, pokemon, setter, engine):
+    def on_set_status(self, status, pokemon, setter, battle):
         if not self.suppressed and status is Status.FRZ:
             return FAIL
 
@@ -49,7 +49,7 @@ class DesolateLandWeather(BaseWeatherEffect):
             return 1.5 * damage
         return damage
 
-    def on_try_hit(self, user, move, target, engine):
+    def on_try_hit(self, user, move, target, battle):
         if (not self.suppressed and
             move.category is not MoveCategory.STATUS and
             move.type is Type.WATER
@@ -84,7 +84,7 @@ class PrimordialSeaWeather(BaseWeatherEffect):
             return 1.5 * damage
         return damage
 
-    def on_try_hit(self, user, move, target, engine):
+    def on_try_hit(self, user, move, target, battle):
         if (not self.suppressed and
             move.category is not MoveCategory.STATUS and
             move.type is Type.FIRE
@@ -96,28 +96,28 @@ class HailWeather(BaseWeatherEffect):
     source = Weather.HAIL
 
     @priority(-1)
-    def on_residual(self, pokemon0, pokemon1, engine):
-        super(HailWeather, self).on_residual(pokemon0, pokemon1, engine)
+    def on_residual(self, pokemon0, pokemon1, battle):
+        super(HailWeather, self).on_residual(pokemon0, pokemon1, battle)
         if not self.suppressed:
             for pokemon in sorted(filter(None, (pokemon0, pokemon1)),
-                                  key=lambda p: -engine.effective_spe(p)):
+                                  key=lambda p: -battle.effective_spe(p)):
                 if not pokemon.is_fainted():
-                    engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.HAIL)
+                    battle.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER, Weather.HAIL)
 
 class SandstormWeather(BaseWeatherEffect):
     source = Weather.SANDSTORM
 
     @priority(-1)
-    def on_residual(self, pokemon0, pokemon1, engine):
-        super(SandstormWeather, self).on_residual(pokemon0, pokemon1, engine)
+    def on_residual(self, pokemon0, pokemon1, battle):
+        super(SandstormWeather, self).on_residual(pokemon0, pokemon1, battle)
         if not self.suppressed:
             for pokemon in sorted(filter(None, (pokemon0, pokemon1)),
-                                  key=lambda p: -engine.effective_spe(p)):
+                                  key=lambda p: -battle.effective_spe(p)):
                 if not pokemon.is_fainted():
-                    engine.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER,
+                    battle.damage(pokemon, (pokemon.max_hp / 16) or 1, Cause.WEATHER,
                                   Weather.SANDSTORM)
 
-    def on_modify_spd(self, pokemon, move, engine, spd):
+    def on_modify_spd(self, pokemon, move, battle, spd):
         if not self.suppressed and Type.ROCK in pokemon.types:
             if __debug__: log.i("Sandstorm boosted %s's spd!", pokemon)
             return 1.5 * spd

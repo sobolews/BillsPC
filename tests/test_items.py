@@ -185,7 +185,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.assertDamageTaken(self.espeon, 69)
 
-        self.engine.heal(self.vaporeon, 400)
+        self.battle.heal(self.vaporeon, 400)
         self.choose_move(self.espeon, 'voltswitch')
         self.choose_move(self.vaporeon, 'struggle')
         self.run_turn()
@@ -347,7 +347,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, 204)
         self.assertItem(self.vaporeon, None)
 
-        self.engine.heal(self.leafeon, 300)
+        self.battle.heal(self.leafeon, 300)
         self.choose_move(self.vaporeon, 'focusblast')
         self.run_turn()
 
@@ -547,8 +547,8 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 185)
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 10)
 
-        self.engine.heal(self.vaporeon, 400)
-        self.engine.heal(self.leafeon, 400)
+        self.battle.heal(self.vaporeon, 400)
+        self.battle.heal(self.leafeon, 400)
         self.choose_move(self.vaporeon, 'seismictoss')
         self.run_turn()
 
@@ -587,8 +587,8 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 10)
         self.assertDamageTaken(self.vaporeon, 185)
 
-        self.engine.heal(self.vaporeon, 400)
-        self.engine.heal(self.leafeon, 400)
+        self.battle.heal(self.vaporeon, 400)
+        self.battle.heal(self.leafeon, 400)
         self.choose_move(self.vaporeon, 'flamecharge')
         self.run_turn()
 
@@ -647,7 +647,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.assertDamageTaken(self.vaporeon, 324)
         self.assertDamageTaken(self.palkia, 136)
 
-        self.engine.heal(self.vaporeon, 400)
+        self.battle.heal(self.vaporeon, 400)
         self.choose_move(self.palkia, 'earthquake')
         self.run_turn()
 
@@ -831,7 +831,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
 
         self.new_battle(p0_item='scopelens', p0_ability='superluck',
                         p1_ability='angerpoint')
-        self.engine.get_critical_hit = get_critical_hit
+        self.battle.get_critical_hit = get_critical_hit
         self.choose_move(self.vaporeon, 'nightslash')
         self.run_turn()
 
@@ -880,7 +880,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         self.run_turn()
         self.choose_move(self.vaporeon, 'leechseed')
         self.run_turn()
-        self.engine.heal(self.jolteon, 400)
+        self.battle.heal(self.jolteon, 400)
         self.choose_move(self.vaporeon, 'toxic')
         self.run_turn()
         self.jolteon.get_effect(Status.TOX).stage = 4
@@ -919,7 +919,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
             return BattleEngine.get_critical_hit(crit_ratio)
 
         self.new_battle('vaporeon', 'farfetchd', p0_item='stick', p1_item='stick')
-        self.engine.get_critical_hit = get_critical_hit
+        self.battle.get_critical_hit = get_critical_hit
         self.choose_move(self.farfetchd, 'leafblade')
         self.run_turn()
 

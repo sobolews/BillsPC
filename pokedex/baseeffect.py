@@ -63,14 +63,14 @@ class BaseEffect(object):
     source = None   # must be overriden
     duration = None # default: effect does not expire
 
-    def on_end(self, pokemon, engine):
+    def on_end(self, pokemon, battle):
         """ Called when an effect ends, regardless of cause """
 
-    def on_start(self, pokemon, engine):
+    def on_start(self, pokemon, battle):
         """ Called on abilities only when they activate """
 
     @priority(0)
-    def on_timeout(self, pokemon, engine):
+    def on_timeout(self, pokemon, battle):
         """ Called when the effect wears off (by self.duration hitting 0) """
 
     @priority(0)
@@ -82,29 +82,29 @@ class BaseEffect(object):
         """ Called just before each player makes decisions for the turn """
 
     @priority(0)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         """ Called before a move is attempted. Return FAIL to cause move to fail. """
 
-    def on_after_move_secondary(self, user, move, target, engine):
+    def on_after_move_secondary(self, user, move, target, battle):
         """ This executes only if the move was successful, and is negated by Volatile.SHEERFORCE """
 
-    def on_after_foe_move_secondary(self, foe, move, target, engine):
+    def on_after_foe_move_secondary(self, foe, move, target, battle):
         """
         This executes only if the foe's move was successful, and is negated by
         Volatile.SHEERFORCE.
         """
 
-    def on_try_hit(self, user, move, target, engine):
+    def on_try_hit(self, user, move, target, battle):
         """ Called before hitting the opponent with a move. Return FAIL to fail the move """
 
     @priority(0)
-    def on_foe_try_hit(self, foe, move, target, engine):
+    def on_foe_try_hit(self, foe, move, target, battle):
         """
         Called when the foe tries to hit this effect's pokemon with a move.
         Return FAIL to fail the move.
         """
 
-    def on_move_hit(self, user, move, engine):
+    def on_move_hit(self, user, move, battle):
         """
         Called at the beginning of move_hit, immediately before substitute check and damage
         calculation, and after success, try_hit, accuracy, and immunity checks.
@@ -115,46 +115,46 @@ class BaseEffect(object):
         Called if user successfully hits target with a move.
         """
 
-    def on_after_foe_hit(self, foe, move, target, engine):
+    def on_after_foe_hit(self, foe, move, target, battle):
         """ Called when the foe sucessfully hits this effect's pokemon with a move """
 
-    def on_modify_move(self, move, user, engine):
+    def on_modify_move(self, move, user, battle):
         """
         Called when a move is about to be used. `move` is a copy; modifications to it will persist
         until the end of run_move
         """
 
-    def on_modify_foe_move(self, move, user, engine):
+    def on_modify_foe_move(self, move, user, battle):
         """
         Called when the foe's move is about to be used. `move` is a copy; modifications to it will
         persist until the end of run_move
         """
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         """
         Return a value calculated from `base_power`. Do not round float results, as this value may
         be passed into other effects' on_modify_base_power handlers.
         """
         return base_power
 
-    def on_faint(self, pokemon, cause, source, engine):
+    def on_faint(self, pokemon, cause, source, battle):
         """
         Called when a pokemon faints, after it is put in the faint queue.
         """
 
-    def on_foe_faint(self, pokemon, cause, source, foe, engine):
+    def on_foe_faint(self, pokemon, cause, source, foe, battle):
         """
         Called when `pokemon`s foe faints
         """
 
-    def on_accuracy(self, user, move, target, engine, accuracy):
+    def on_accuracy(self, user, move, target, battle, accuracy):
         """
         Called when user is attacking foe.  Return accuracy in [0, 100] or None to skip accuracy
         check.
         """
         return accuracy
 
-    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+    def on_foe_accuracy(self, foe, move, target, battle, accuracy):
         """
         Called when pokemon (target) with this effect is being attacked by foe.
         Return accuracy in [0, 100] or None to skip accuracy check.
@@ -164,28 +164,28 @@ class BaseEffect(object):
     def on_modify_effectiveness(self, user, move, target, effectiveness):
         return effectiveness
 
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         """ Return modified spe """
         return spe
 
-    def on_modify_spd(self, pokemon, move, engine, spd):
+    def on_modify_spd(self, pokemon, move, battle, spd):
         """ Return modified spd """
         return spd
 
-    def on_modify_spa(self, pokemon, move, engine, spa):
+    def on_modify_spa(self, pokemon, move, battle, spa):
         """ Return modified spa """
         return spa
 
-    def on_modify_atk(self, pokemon, move, engine, atk):
+    def on_modify_atk(self, pokemon, move, battle, atk):
         """ Return modified atk """
         return atk
 
-    def on_modify_def(self, pokemon, move, engine, def_):
+    def on_modify_def(self, pokemon, move, battle, def_):
         """ Return modified def """
         return def_
 
     @priority(0)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         """
         Called when a pokemon or side with this effect switches in a new pokemon for any reason.
         The pokemon passed in is the new one.
@@ -193,7 +193,7 @@ class BaseEffect(object):
         """
 
     @priority(0)
-    def on_switch_out(self, pokemon, incoming, engine):
+    def on_switch_out(self, pokemon, incoming, battle):
         """ Called immediately before a pokemon clears its volatiles/boosts and switches out """
 
     def on_trap_check(self, pokemon):
@@ -201,7 +201,7 @@ class BaseEffect(object):
         return False
 
     @priority(0)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         """
         Called during the residual stage of each turn (between turns).
 
@@ -228,7 +228,7 @@ class BaseEffect(object):
         """
 
     @priority(0)
-    def on_damage(self, pokemon, cause, source, engine, damage):
+    def on_damage(self, pokemon, cause, source, battle, damage):
         """ Return a modified amount of damage, or FAIL """
         return damage
 
@@ -239,7 +239,7 @@ class BaseEffect(object):
         """
         return boosts
 
-    def on_after_move_damage(self, engine, pokemon, damage, move, foe):
+    def on_after_move_damage(self, battle, pokemon, damage, move, foe):
         """
         Called after pokemon is damaged by a foe's move.
 
@@ -247,38 +247,38 @@ class BaseEffect(object):
         time that it is valid for hp <= 0 but status != FNT.
         """
 
-    def on_foe_heal(self, foe, hp, cause, engine):
+    def on_foe_heal(self, foe, hp, cause, battle):
         """
         Called before the foe heals. Return FAIL to prevent healing.
         """
 
-    def on_set_status(self, status, pokemon, setter, engine):
+    def on_set_status(self, status, pokemon, setter, battle):
         """
         Called before `status` is set on `pokemon`. Return FAIL to prevent it.
         """
 
-    def on_after_set_status(self, status, pokemon, setter, engine):
+    def on_after_set_status(self, status, pokemon, setter, battle):
         """
         Called after `status is successfully set on `pokemon`
         """
 
-    def on_weather(self, pokemon, weather, engine):
+    def on_weather(self, pokemon, weather, battle):
         """ Called by weather effects in their on_residual handler """
 
-    def on_modify_priority(self, pokemon, move, engine, priority):
+    def on_modify_priority(self, pokemon, move, battle, priority):
         """
         Return a modified priority.
         e.g. GaleWings returns priority+1 for flying moves
         """
         return priority
 
-    def on_update(self, pokemon, engine):
+    def on_update(self, pokemon, battle):
         """
-        Called after each event from engine.event_queue is run, and immediately before
+        Called after each event from battle.event_queue is run, and immediately before
         on_switch_out.
         """
 
-    def on_break_mold(self, target, engine):
+    def on_break_mold(self, target, battle):
         """
         Called whenever a move is used, and when an opponent is being forced to switch in. target is
         guaranteed not None.
@@ -290,12 +290,12 @@ class BaseEffect(object):
         """
 
     @staticmethod
-    def on_eat(pokemon, engine):
+    def on_eat(pokemon, battle):
         """
         Called when an item is used/consumed by a pokemon.
         """
 
-    def on_use_item(self, pokemon, item, engine):
+    def on_use_item(self, pokemon, item, battle):
         """
         Called when a pokemon uses its item
         """
@@ -305,7 +305,7 @@ class BaseEffect(object):
         Called when a pokemon loses its item, by using it or by theft.
         """
 
-    def on_hit_substitute(self, foe, move, target, engine):
+    def on_hit_substitute(self, foe, move, target, battle):
         """
         Called on the Substitute effect when it is hit by a move
         """

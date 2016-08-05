@@ -24,222 +24,222 @@ class BattleEngineMovesTestCase(TestCase):
         self.leafeon = BattlePokemon(pokedex['leafeon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
         self.palkia = BattlePokemon(pokedex['palkia'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
         self.sylveon = BattlePokemon(pokedex['sylveon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
-        self.engine = BattleEngine([self.vaporeon], [self.flareon, self.sylveon, self.leafeon,
+        self.battle = BattleEngine([self.vaporeon], [self.flareon, self.sylveon, self.leafeon,
                                                      self.golem, self.espeon, self.palkia])
-        self.engine.init_battle()
+        self.battle.init_battle()
         # make it deterministic
-        self.engine.get_critical_hit = lambda crit: False
-        self.engine.damage_randomizer = lambda: 100 # max damage
+        self.battle.get_critical_hit = lambda crit: False
+        self.battle.damage_randomizer = lambda: 100 # max damage
 
 class TestBattleEngineCalculateDamage(BattleEngineMovesTestCase):
     def test_damage_calculation_physical_simple_max(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.flareon)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.flareon)
         self.assertEqual(damage, 73)
 
     def test_damage_calculation_physical_simple_min(self):
-        self.engine.damage_randomizer = lambda: 85 # min damage
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.flareon)
+        self.battle.damage_randomizer = lambda: 85 # min damage
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.flareon)
         self.assertEqual(damage, 62)
 
     def test_damage_calculation_special_simple(self):
-        damage = self.engine.calculate_damage(self.flareon, movedex['dazzlinggleam'], self.vaporeon)
+        damage = self.battle.calculate_damage(self.flareon, movedex['dazzlinggleam'], self.vaporeon)
         self.assertEqual(damage, 69)
 
     def test_damage_calculation_physical_stab_super_effective(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['waterfall'], self.flareon)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['waterfall'], self.flareon)
         self.assertEqual(damage, 218)
 
     def test_damage_calculation_special_stab_double_effective(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['scald'], self.golem)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['scald'], self.golem)
         self.assertEqual(damage, 628)
 
     def test_damage_calculation_resisted(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['earthquake'], self.leafeon)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['earthquake'], self.leafeon)
         self.assertEqual(damage, 24)
 
     def test_damage_calculation_double_resisted(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['waterfall'], self.palkia)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['waterfall'], self.palkia)
         self.assertEqual(damage, 18)
 
     def test_damage_calculation_immune(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.sylveon)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.sylveon)
         self.assertEqual(damage, FAIL)
 
     def test_damage_calculation_damage_callback(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['nightshade'], self.flareon)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['nightshade'], self.flareon)
         self.assertEqual(damage, 100)
 
     def test_damage_calculation_get_base_power(self):
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['eruption'], self.sylveon)
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['eruption'], self.sylveon)
         self.assertEqual(damage, 110)
 
     def test_damage_calculation_full_spectrum(self):
         damages = []
         for i in range(85, 101):
-            self.engine.damage_randomizer = lambda: i
-            damages.append(self.engine.calculate_damage(self.vaporeon, movedex['hydropump'],
+            self.battle.damage_randomizer = lambda: i
+            damages.append(self.battle.calculate_damage(self.vaporeon, movedex['hydropump'],
                                                         self.flareon))
         self.assertListEqual(damages, [236, 240, 242, 246, 248, 252, 254, 258,
                                        260, 264, 266, 270, 272, 276, 278, 282])
 
     def test_damage_calculation_boosted_atk(self):
         self.leafeon.boosts.update(Boosts(atk=3))
-        damage = self.engine.calculate_damage(self.leafeon, movedex['dragonclaw'], self.flareon)
+        damage = self.battle.calculate_damage(self.leafeon, movedex['dragonclaw'], self.flareon)
         self.assertEqual(damage, 277)
 
     def test_damage_calculation_boosted_spd(self):
         self.flareon.boosts.update(Boosts(spd=6))
-        damage = self.engine.calculate_damage(self.leafeon, movedex['hypervoice'], self.flareon)
+        damage = self.battle.calculate_damage(self.leafeon, movedex['hypervoice'], self.flareon)
         self.assertEqual(damage, 13)
 
     def test_damage_calculation_mix_boost_and_lowered(self):
         self.flareon.boosts.update(Boosts(def_=1, atk=3, spe=-4))
         self.leafeon.boosts.update(Boosts(atk=-2, spa=3, spe=-3))
-        damage = self.engine.calculate_damage(self.leafeon, movedex['waterfall'], self.flareon)
+        damage = self.battle.calculate_damage(self.leafeon, movedex['waterfall'], self.flareon)
         self.assertEqual(damage, 76)
 
     def test_damage_calculation_crit(self):
-        self.engine.get_critical_hit = lambda crit: True
-        damage = self.engine.calculate_damage(self.leafeon, movedex['xscissor'], self.vaporeon)
+        self.battle.get_critical_hit = lambda crit: True
+        damage = self.battle.calculate_damage(self.leafeon, movedex['xscissor'], self.vaporeon)
         self.assertEqual(damage, 168)
 
     def test_crit_breaks_through_def_boost(self):
-        self.engine.get_critical_hit = lambda crit: True
+        self.battle.get_critical_hit = lambda crit: True
         self.vaporeon.boosts.update(Boosts(def_=4))
-        damage = self.engine.calculate_damage(self.leafeon, movedex['dragonclaw'], self.vaporeon)
+        damage = self.battle.calculate_damage(self.leafeon, movedex['dragonclaw'], self.vaporeon)
         self.assertEqual(damage, 168)
 
     def test_crit_doesnt_override_spa_boost(self):
-        self.engine.get_critical_hit = lambda crit: True
+        self.battle.get_critical_hit = lambda crit: True
         self.flareon.boosts.update(Boosts(spa=2))
-        damage = self.engine.calculate_damage(self.flareon, movedex['fireblast'], self.vaporeon)
+        damage = self.battle.calculate_damage(self.flareon, movedex['fireblast'], self.vaporeon)
         self.assertEqual(damage, 209)
 
     def test_crit_breaks_through_atk_drop(self):
-        self.engine.get_critical_hit = lambda crit: True
+        self.battle.get_critical_hit = lambda crit: True
         self.leafeon.boosts.update(Boosts(atk=-1))
-        damage = self.engine.calculate_damage(self.leafeon, movedex['dragonclaw'], self.vaporeon)
+        damage = self.battle.calculate_damage(self.leafeon, movedex['dragonclaw'], self.vaporeon)
         self.assertEqual(damage, 168)
 
     def test_crit_ratio_3_always_crits(self):
-        self.engine.get_critical_hit = BattleEngine.get_critical_hit
+        self.battle.get_critical_hit = BattleEngine.get_critical_hit
         dragonclaw = movedex['dragonclaw']
         with patch.object(dragonclaw, 'crit_ratio', 3):
-            damage = self.engine.calculate_damage(self.leafeon, dragonclaw, self.vaporeon)
+            damage = self.battle.calculate_damage(self.leafeon, dragonclaw, self.vaporeon)
             self.assertEqual(damage, 168)
 
     def test_damage_calculation_with_different_levels(self):
         self.vaporeon = BattlePokemon(pokedex['vaporeon'], level=80, evs=(0,)*6, ivs=(31,)*6)
         self.flareon = BattlePokemon(pokedex['flareon'], level=70, evs=(0,)*6, ivs=(31,)*6)
-        self.engine = BattleEngine([self.vaporeon], [self.flareon])
-        self.engine.init_battle()
-        self.engine.get_critical_hit = lambda crit: False
-        self.engine.damage_randomizer = lambda: 100
-        damage = self.engine.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.flareon)
+        self.battle = BattleEngine([self.vaporeon], [self.flareon])
+        self.battle.init_battle()
+        self.battle.get_critical_hit = lambda crit: False
+        self.battle.damage_randomizer = lambda: 100
+        damage = self.battle.calculate_damage(self.vaporeon, movedex['dragonclaw'], self.flareon)
         self.assertEqual(damage, 67)
 
 class TestBattleEngineMoveHit(BattleEngineMovesTestCase):
     def test_move_hit_deals_damage(self):
-        damage = self.engine.move_hit(self.vaporeon, movedex['dragonclaw'], self.flareon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['dragonclaw'], self.flareon)
         self.assertEqual(damage, 73)
         self.assertEqual(self.flareon.hp, self.flareon.max_hp - 73)
         self.assertEqual(self.vaporeon.damage_done_this_turn, 73)
 
     def test_move_hit_causes_faint(self):
         self.vaporeon.boosts.update(Boosts(atk=6))
-        damage = self.engine.move_hit(self.vaporeon, movedex['dragonclaw'], self.flareon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['dragonclaw'], self.flareon)
         self.assertEqual(damage, self.flareon.max_hp) # OHKO
         self.assertEqual(self.flareon.hp, 0)
         self.assertIs(self.flareon.status, Status.FNT)
 
     def test_move_hit_immune_fails(self):
-        damage = self.engine.move_hit(self.vaporeon, movedex['dragonclaw'], self.sylveon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['dragonclaw'], self.sylveon)
         self.assertEqual(damage, FAIL)
 
     def test_move_hit_drain_move(self):
         self.vaporeon.hp = 200
-        damage = self.engine.move_hit(self.vaporeon, movedex['drainpunch'], self.flareon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['drainpunch'], self.flareon)
         self.assertEqual(damage, 69)
         self.assertEqual(self.flareon.hp, self.flareon.max_hp - 69)
         self.assertEqual(self.vaporeon.hp, 200 + 35)
 
     def test_move_hit_status_move_success(self):
-        damage = self.engine.move_hit(self.vaporeon, movedex['willowisp'], self.sylveon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['willowisp'], self.sylveon)
         self.assertIsNone(damage)
         self.assertIs(self.sylveon.status, Status.BRN)
 
     def test_move_hit_status_move_already_statused(self):
-        self.engine.set_status(self.sylveon, Status.SLP, None)
-        damage = self.engine.move_hit(self.vaporeon, movedex['willowisp'], self.sylveon)
+        self.battle.set_status(self.sylveon, Status.SLP, None)
+        damage = self.battle.move_hit(self.vaporeon, movedex['willowisp'], self.sylveon)
         self.assertEqual(damage, FAIL)
         self.assertIs(self.sylveon.status, Status.SLP)
 
     def test_move_hit_status_type_immunity(self):
-        damage = self.engine.move_hit(self.vaporeon, movedex['willowisp'], self.flareon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['willowisp'], self.flareon)
         self.assertEqual(damage, FAIL)
         self.assertIsNone(self.flareon.status)
 
     def test_move_hit_powder_immunity(self):
-        damage = self.engine.move_hit(self.vaporeon, movedex['sleeppowder'], self.leafeon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['sleeppowder'], self.leafeon)
         self.assertEqual(damage, FAIL)
         self.assertIsNone(self.leafeon.status)
 
     def test_move_hit_boosts(self):
-        damage = self.engine.move_hit(self.vaporeon, movedex['calmmind'], self.flareon)
+        damage = self.battle.move_hit(self.vaporeon, movedex['calmmind'], self.flareon)
         self.assertIsNone(damage)
         self.assertEqual(self.vaporeon.boosts, Boosts(spa=1, spd=1))
 
     def test_move_hit_negative_user_boosts(self):
-        self.engine.move_hit(self.vaporeon, movedex['leafstorm'], self.flareon)
+        self.battle.move_hit(self.vaporeon, movedex['leafstorm'], self.flareon)
         self.assertEqual(self.vaporeon.boosts, Boosts(spa=-2))
 
     def test_move_hit_negative_user_boosts_successful_when_bottomed_out(self):
         self.vaporeon.boosts.update(Boosts(spa=-6))
-        self.engine.move_hit(self.vaporeon, movedex['leafstorm'], self.flareon)
+        self.battle.move_hit(self.vaporeon, movedex['leafstorm'], self.flareon)
         self.assertEqual(self.vaporeon.boosts, Boosts(spa=-6))
 
     def test_move_hit_secondary_effect_self_boost(self):
-        self.engine.move_hit(self.vaporeon, movedex['flamecharge'], self.flareon)
+        self.battle.move_hit(self.vaporeon, movedex['flamecharge'], self.flareon)
         self.assertEqual(self.vaporeon.boosts, Boosts(spe=1))
 
     def test_move_hit_secondary_effect_status(self):
-        self.engine.move_hit(self.vaporeon, movedex['nuzzle'], self.flareon)
+        self.battle.move_hit(self.vaporeon, movedex['nuzzle'], self.flareon)
         self.assertIs(self.flareon.status, Status.PAR)
 
     def test_move_hit_secondary_effect_volatile(self):
-        self.engine.move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
+        self.battle.move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
         self.assertTrue(self.flareon.has_effect(Volatile.CONFUSE))
 
     def test_move_hit_set_must_switch_flag(self):
-        self.engine.move_hit(self.vaporeon, movedex['voltswitch'], self.flareon)
+        self.battle.move_hit(self.vaporeon, movedex['voltswitch'], self.flareon)
         self.assertTrue(self.vaporeon.must_switch)
 
 class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
     @patch('random.randrange', lambda _: 99) # miss
     def test_try_move_hit_miss(self):
-        damage = self.engine.try_move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
+        damage = self.battle.try_move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
         self.assertEqual(damage, FAIL)
 
     @patch('random.randrange', lambda _: 0) # hit
     def test_try_move_hit_no_miss(self):
-        damage = self.engine.try_move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
+        damage = self.battle.try_move_hit(self.vaporeon, movedex['dynamicpunch'], self.flareon)
         self.assertEqual(damage, 91)
 
     def test_try_move_hit_fails_check_success(self):
         dragonclaw = movedex['dragonclaw']
         with patch.object(dragonclaw, 'check_success', lambda *_: FAIL):
-            damage = self.engine.try_move_hit(self.vaporeon, dragonclaw, self.flareon)
+            damage = self.battle.try_move_hit(self.vaporeon, dragonclaw, self.flareon)
             self.assertEqual(damage, FAIL)
 
     def test_try_move_hit_immune(self):
         with patch.object(self.flareon, 'types', (Type.FAIRY, None)):
-            damage = self.engine.try_move_hit(self.vaporeon, movedex['dragonclaw'], self.flareon)
+            damage = self.battle.try_move_hit(self.vaporeon, movedex['dragonclaw'], self.flareon)
             self.assertEqual(damage, FAIL)
 
     def test_try_move_hit_multihit(self):
         bulletseed = movedex['bulletseed']
         with patch.object(bulletseed, 'multihit', (5,)): # hit 5 times
-            total_damage = self.engine.try_move_hit(self.vaporeon, movedex['bulletseed'],
+            total_damage = self.battle.try_move_hit(self.vaporeon, movedex['bulletseed'],
                                                             self.flareon)
             self.assertEqual(self.flareon.hp, self.flareon.max_hp - total_damage)
 
@@ -249,33 +249,33 @@ class TestBattleEngineTryMoveHit(BattleEngineMovesTestCase):
         self.leafeon.apply_boosts(Boosts(acc=1))
 
         with patch('random.randrange', lambda _: 92): # accuracy is 93.3333, floors to 93
-            damage = self.engine.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
+            damage = self.battle.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
             self.assertEqual(damage, 71)
 
         with patch('random.randrange', lambda _: 93):
-            damage = self.engine.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
+            damage = self.battle.try_move_hit(self.leafeon, movedex['focusblast'], self.vaporeon)
             self.assertEqual(damage, FAIL)
 
     def test_evn_boost(self):
         self.leafeon.is_active = True
         self.leafeon.set_effect(self.leafeon.ability())
         self.vaporeon.is_active = True
-        self.engine.battlefield.sides[0].active_pokemon = self.vaporeon
-        self.engine.battlefield.sides[1].active_pokemon = self.leafeon
+        self.battle.battlefield.sides[0].active_pokemon = self.vaporeon
+        self.battle.battlefield.sides[1].active_pokemon = self.leafeon
         self.leafeon.apply_boosts(Boosts(evn=-1))
 
         with patch('random.randrange', lambda _: 99): # miss if possible
-            damage = self.engine.try_move_hit(self.vaporeon, movedex['stoneedge'], self.leafeon)
+            damage = self.battle.try_move_hit(self.vaporeon, movedex['stoneedge'], self.leafeon)
             self.assertEqual(damage, 49)
 
 class TestBattleEngineUseMove(BattleEngineMovesTestCase):
     def test_use_move_recoil_damage(self):
-        self.engine.use_move(self.vaporeon, movedex['doubleedge'], self.flareon)
+        self.battle.use_move(self.vaporeon, movedex['doubleedge'], self.flareon)
         self.assertEqual(self.flareon.hp, self.flareon.max_hp - 109)
         self.assertEqual(self.vaporeon.hp, self.vaporeon.max_hp - 36)
 
     def test_use_selfdestruction_move(self):
-        self.engine.use_move(self.vaporeon, movedex['explosion'], self.flareon)
+        self.battle.use_move(self.vaporeon, movedex['explosion'], self.flareon)
         self.assertEqual(self.flareon.hp, self.flareon.max_hp - 225)
         self.assertTrue(self.vaporeon.is_fainted())
 
@@ -283,8 +283,8 @@ class TestBattleEngineUseMove(BattleEngineMovesTestCase):
         dragonclaw = movedex['dragonclaw']
         with patch.object(dragonclaw.__class__, 'check_success', lambda *_: FAIL):
             with patch.object(dragonclaw.__class__, 'on_move_fail') as move:
-                self.engine.use_move(self.vaporeon, dragonclaw, self.flareon)
-                move.assert_called_with(self.vaporeon, self.engine)
+                self.battle.use_move(self.vaporeon, dragonclaw, self.flareon)
+                move.assert_called_with(self.vaporeon, self.battle)
 
 class TestBattleEngineRunMove(TestCase):
     def setUp(self):
@@ -300,24 +300,24 @@ class TestBattleEngineRunMove(TestCase):
                                             movedex['facade'],
                                             movedex['protect']),
                                      ability=abilitydex['_none_'])
-        self.engine = BattleEngine([self.vaporeon], [self.flareon])
+        self.battle = BattleEngine([self.vaporeon], [self.flareon])
         # make it deterministic
-        self.engine.get_critical_hit = lambda crit: False
-        self.engine.damage_randomizer = lambda: 100 # max damage
+        self.battle.get_critical_hit = lambda crit: False
+        self.battle.damage_randomizer = lambda: 100 # max damage
 
     def test_run_move_decrements_pp(self):
-        self.engine.init_battle()
+        self.battle.init_battle()
         self.vaporeon.will_move_this_turn = True
-        self.engine.run_move(self.vaporeon, movedex['scald'], self.flareon)
+        self.battle.run_move(self.vaporeon, movedex['scald'], self.flareon)
         self.assertEqual(self.vaporeon.pp[movedex['scald']],
                          movedex['scald'].max_pp - 1)
 
     def test_run_move_sets_last_move_used(self):
-        self.engine.init_battle()
+        self.battle.init_battle()
         self.vaporeon.will_move_this_turn = True
-        self.engine.run_move(self.vaporeon, movedex['scald'], self.flareon)
+        self.battle.run_move(self.vaporeon, movedex['scald'], self.flareon)
         self.assertEqual(self.vaporeon.last_move_used, movedex['scald'])
-        self.assertEqual(self.engine.battlefield.last_move_used, movedex['scald'])
+        self.assertEqual(self.battle.battlefield.last_move_used, movedex['scald'])
 
 class TestBattleEngineMultiTurn(MultiMoveTestCase):
     def test_force_random_switch_into_hazards(self):
@@ -355,12 +355,12 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         Regression: Moves with user_boosts tried to boost the user even if it fainted
         """
         self.new_battle(p0_ability='aftermath')
-        self.engine.apply_boosts = Mock()
+        self.battle.apply_boosts = Mock()
         self.vaporeon.hp = self.leafeon.hp = 1
         self.choose_move(self.leafeon, 'closecombat')
         self.run_turn()
 
-        self.assertFalse(self.engine.apply_boosts.called)
+        self.assertFalse(self.battle.apply_boosts.called)
 
     def test_battlefield_weather_attribute_is_removed(self):
         """
@@ -381,7 +381,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'willowisp')
         self.run_turn()         # would raise TypeError: <None> * 1.5
 
-        self.assertEqual(self.engine.battlefield.weather, Weather.SUNNYDAY)
+        self.assertEqual(self.battle.battlefield.weather, Weather.SUNNYDAY)
         self.assertEqual(self.leafeon.status, Status.BRN)
 
     def test_status_effects_still_work_after_switch_out_and_in(self):
@@ -390,7 +390,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         corresponding effect.
         """
         self.add_pokemon('umbreon', 0)
-        self.engine.set_status(self.vaporeon, Status.SLP, None)
+        self.battle.set_status(self.vaporeon, Status.SLP, None)
         self.choose_switch(self.vaporeon, self.umbreon)
         self.run_turn()
         self.choose_switch(self.umbreon, self.vaporeon)
@@ -405,7 +405,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'scald')
-        self.engine.run_turn()
+        self.battle.run_turn()
 
         self.assertEqual(self.vaporeon.status, Status.FNT)
         self.assertIsNone(self.leafeon.status)
@@ -416,7 +416,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'scald')
-        self.engine.run_turn()
+        self.battle.run_turn()
 
         self.assertEqual(self.leafeon.status, Status.FNT)
         self.assertIsNone(self.vaporeon.status)
@@ -426,7 +426,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, 'return')
         self.choose_move(self.vaporeon, 'quickattack')
-        self.engine.run_turn()
+        self.battle.run_turn()
 
         self.assertEqual(self.leafeon.status, Status.FNT)
         self.assertIsNone(self.vaporeon.status)
@@ -436,7 +436,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.vaporeon.hp = 1
         self.choose_move(self.leafeon, 'circlethrow')
         self.choose_move(self.vaporeon, 'scald')
-        self.engine.run_turn()
+        self.battle.run_turn()
 
         self.assertEqual(self.leafeon.status, Status.FNT)
         self.assertIsNone(self.vaporeon.status)
@@ -446,16 +446,16 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         self.add_pokemon('umbreon', 0)
         self.choose_move(self.leafeon, 'circlethrow')
         self.choose_move(self.vaporeon, 'return')
-        self.engine.run_turn()
+        self.battle.run_turn()
 
-        self.assertEqual(self.engine.battlefield.sides[0].active_pokemon, self.umbreon)
+        self.assertEqual(self.battle.battlefield.sides[0].active_pokemon, self.umbreon)
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_force_random_switch_on_last_pokemon(self):
-        self.engine.init_turn()
-        damage = self.engine.use_move(self.vaporeon, movedex['circlethrow'], self.leafeon)
+        self.battle.init_turn()
+        damage = self.battle.use_move(self.vaporeon, movedex['circlethrow'], self.leafeon)
         self.assertEqual(damage, 30)
-        self.assertEqual(self.engine.battlefield.sides[1].active_pokemon, self.leafeon)
+        self.assertEqual(self.battle.battlefield.sides[1].active_pokemon, self.leafeon)
 
     @patch('random.randrange', lambda _: 0) # no miss
     def test_force_random_switch_with_higher_priority_skips_outgoings_move(self):
@@ -464,9 +464,9 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
         with patch.object(dragonclaw, 'priority', -7):
             self.choose_move(self.leafeon, dragonclaw)
             self.choose_move(self.vaporeon, 'circlethrow')
-            self.engine.run_turn()
+            self.battle.run_turn()
 
-            self.assertEqual(self.engine.battlefield.sides[1].active_pokemon, self.umbreon)
+            self.assertEqual(self.battle.battlefield.sides[1].active_pokemon, self.umbreon)
             self.assertEqual(self.vaporeon.hp, self.vaporeon.max_hp)
 
     @patch('random.randrange', lambda *_: 0) # two-turn outrage
@@ -576,7 +576,7 @@ class TestBattleEngineMultiTurn(MultiMoveTestCase):
 
         self.assertFainted(self.leafeon)
         self.assertFalse(self.leafeon.has_effect(Volatile.CONFUSE))
-        self.engine.init_turn()
+        self.battle.init_turn()
         self.assertActive(self.jolteon)
 
     @patch('random.randint', lambda *_: 3) # three turns of confusion
@@ -716,7 +716,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'healingwish')
         self.choose_move(self.leafeon, 'spikes')
         self.run_turn()
-        self.engine.init_turn()
+        self.battle.init_turn()
 
         self.assertDamageTaken(self.umbreon, self.umbreon.max_hp / 8)
 
@@ -747,7 +747,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                   movedex['crunch'], movedex['xscissor']))
-        self.engine.set_status(self.leafeon, Status.SLP, None)
+        self.battle.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, 'sleeptalk')
         self.choose_move(self.vaporeon, 'disable')
         self.run_turn()
@@ -790,7 +790,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                   movedex['extremespeed'], movedex['xscissor']))
-        self.engine.set_status(self.leafeon, Status.SLP, None)
+        self.battle.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, 'sleeptalk')
         self.choose_move(self.vaporeon, 'encore')
         self.run_turn()
@@ -806,7 +806,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.new_battle(p0_name='vaporeon', p1_name='leafeon',
                         p1_moves=(movedex['dragonclaw'], movedex['sleeptalk'],
                                   movedex['extremespeed'], movedex['crunch']))
-        self.engine.set_status(self.leafeon, Status.SLP, None)
+        self.battle.set_status(self.leafeon, Status.SLP, None)
         self.choose_move(self.leafeon, 'sleeptalk')
         self.choose_move(self.vaporeon, 'copycat')
         self.run_turn()
@@ -862,7 +862,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.leafeon, 'stealthrock')
         self.choose_move(self.vaporeon, 'explosion')
         self.run_turn()
-        self.engine.init_turn()
+        self.battle.init_turn()
 
         # NOTE: relies on AutoDecisionMaker always choosing choices[0]
         self.assertListEqual(self.faint_log, [self.vaporeon, self.jolteon,
@@ -885,7 +885,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'toxic')
         self.choose_move(self.leafeon, 'toxic')
         self.run_turn()
-        self.engine.init_turn()
+        self.battle.init_turn()
 
         self.assertEqual(self.battlefield.weather, Weather.RAINDANCE)
 
@@ -930,7 +930,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.vaporeon.hp = 51
         self.leafeon.hp = 100
 
-        self.engine.set_status(self.vaporeon, Status.PSN, None)
+        self.battle.set_status(self.vaporeon, Status.PSN, None)
         self.choose_move(self.leafeon, 'leechseed')
         self.run_turn()
 
@@ -962,7 +962,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.leafeon.hp = 10
         self.choose_move(self.leafeon, 'dragontail')
         self.run_turn()
-        self.engine.init_turn()
+        self.battle.init_turn()
 
         self.assertFainted(self.leafeon)
         self.assertActive(self.vaporeon)
@@ -976,7 +976,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
             self.vaporeon.hp = 10
             self.choose_move(self.leafeon, 'dragontail')
             self.run_turn()
-            self.engine.init_turn()
+            self.battle.init_turn()
 
         self.assertActive(self.flareon)
 
@@ -1012,9 +1012,9 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.choose_move(self.paras, 'flamethrower')
         self.run_turn()
         self.assertTrue(self.darmanitan.has_effect(Volatile.FLASHFIRE))
-        self.engine.get_critical_hit = lambda crit: True
+        self.battle.get_critical_hit = lambda crit: True
 
-        damage = self.engine.calculate_damage(self.darmanitan, movedex['vcreate'], self.paras)
+        damage = self.battle.calculate_damage(self.darmanitan, movedex['vcreate'], self.paras)
         self.assertEqual(damage, 8703184)
 
     def test_two_turn_move_only_decrements_pp_once(self):
@@ -1035,7 +1035,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.new_battle(p0_ability='arenatrap', p1_ability='shadowtag')
         self.add_pokemon('flareon', 0)
         self.add_pokemon('jolteon', 1)
-        self.engine.init_turn()
+        self.battle.init_turn()
         self.assertTrue(self.vaporeon.has_effect(Volatile.TRAPPED))
         self.assertTrue(self.leafeon.has_effect(Volatile.TRAPPED))
         self.assertSwitchChoices(self.vaporeon, set())

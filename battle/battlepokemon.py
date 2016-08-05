@@ -77,14 +77,14 @@ class BattlePokemon(object, EffectHandlerMixin):
                 not self.has_effect(Volatile.LOCKEDMOVE) and
                 self.item.forme in self.pokedex_entry.mega_formes)
 
-    def mega_evolve(self, engine):
+    def mega_evolve(self, battle):
         if __debug__: log.i('%s is mega-evolving!', self)
         forme = self.item.forme
-        self.forme_change(forme, engine)
+        self.forme_change(forme, battle)
         self.side.has_mega_evolved = True
         self.is_mega = True
 
-    def forme_change(self, forme, engine=None, client=False):
+    def forme_change(self, forme, battle=None, client=False):
         assert not self.is_transformed
 
         self.pokedex_entry = new_forme = POKEDEX[forme]
@@ -94,7 +94,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.types = list(new_forme.types)
         new_ability = abilitydex[new_forme.abilities[0]]
         if new_ability != self.ability and not client:
-            self.change_ability(new_ability, engine)
+            self.change_ability(new_ability, battle)
             self.base_ability = new_ability
         if __debug__: log.i('%s changed forme to %s!', self.base_species, self.name)
 
@@ -130,12 +130,12 @@ class BattlePokemon(object, EffectHandlerMixin):
     def get_effect(self, source):
         return self._effect_index.get(source)
 
-    def remove_effect(self, source, engine=None, force=False):
+    def remove_effect(self, source, battle=None, force=False):
         """
-        `engine` must be passed if there is a possibility that `source`'s effect has an on_end
-        method that uses engine.
+        `battle` must be passed if there is a possibility that `source`'s effect has an on_end
+        method that uses battle.
 
-        `engine` may be omitted if `source` is known to be a move or status, but must be included
+        `battle` may be omitted if `source` is known to be a move or status, but must be included
         for abilities in general.
 
         Return True if effect was removed
@@ -148,7 +148,7 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         if __debug__: log.i('Removed %s from %s', effect, self)
         if not force and 'on_end' in effect.handler_names:
-            effect.on_end(self, engine)
+            effect.on_end(self, battle)
         if source is self.status:
             self.status = None
 
@@ -158,15 +158,15 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.remove_effect(Volatile.PARTIALTRAP)
         self.remove_effect(Volatile.TRAPPED)
 
-    def clear_effects(self, engine):
-        self.activate_effect('on_end', self, engine)
+    def clear_effects(self, battle):
+        self.activate_effect('on_end', self, battle)
 
         self._effect_index.clear()
         self.effect_handlers = {key: list() for key in self.effect_handlers}
 
-    def suppress_ability(self, engine):
+    def suppress_ability(self, battle):
         if __debug__: log.d("Suppressing %s's ability", self)
-        self.remove_effect(ABILITY, engine)
+        self.remove_effect(ABILITY, battle)
         self._suppressed_ability = self.ability
         self.ability = abilitydex['_suppressed_']
         self.set_effect(abilitydex['_suppressed_']())
@@ -383,7 +383,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.set_effect(item())
         self.remove_effect(Volatile.UNBURDEN)
 
-    def use_item(self, engine):
+    def use_item(self, battle):
         """
         Use the item held by this pokemon.
         Return FAIL if item was not used successfully. It is assumed that the item can be used.
@@ -392,31 +392,31 @@ class BattlePokemon(object, EffectHandlerMixin):
         assert item is not None and item.removable and item.single_use
 
         if item.is_berry:
-            if self.eat_berry(engine, item) is FAIL:
+            if self.eat_berry(battle, item) is FAIL:
                 return FAIL
         else:
             if __debug__: log.i("%s used its %s", self, item)
             self.last_berry_used = None
 
-        self.activate_effect('on_use_item', self, item, engine)
+        self.activate_effect('on_use_item', self, item, battle)
         self.activate_effect('on_lose_item', self, item)
         self.remove_effect(ITEM)
         self.item = None
         self.item_used_this_turn = item
 
-    def eat_berry(self, engine, berry, stolen=False):
+    def eat_berry(self, battle, berry, stolen=False):
         """
         Eat a berry, which may be held by this pokemon or stolen from another (via bugbite or pluck)
         """
         assert berry.is_berry
 
         if not stolen:
-            foe = engine.get_foe(self)
+            foe = battle.get_foe(self)
             if foe is not None and foe.ability is abilitydex['unnerve']:
                 return FAIL
 
         if __debug__: log.i("%s ate the %s", self, berry)
-        berry.on_eat(self, engine)
+        berry.on_eat(self, battle)
         self.last_berry_used = berry
 
     @property
@@ -430,7 +430,7 @@ class BattlePokemon(object, EffectHandlerMixin):
 
         return weight
 
-    def transform_into(self, other, engine, client=False):
+    def transform_into(self, other, battle, client=False):
         """
         When client=True, success check and ability end/start effects are skipped. client=True is
         used by the battle client only.
@@ -469,12 +469,12 @@ class BattlePokemon(object, EffectHandlerMixin):
             if self.boosts: log.i('%s copied %r', self, self.boosts)
 
         if other.ability.name not in ('stancechange', 'multitype', 'illusion'):
-            self.remove_effect(ABILITY, engine, force=client)
+            self.remove_effect(ABILITY, battle, force=client)
             self.ability = other.ability
             ability_effect = self.ability()
             self.set_effect(ability_effect)
             if not client:
-                ability_effect.start(self, engine)
+                ability_effect.start(self, battle)
 
     def revert_transform(self):
         """ This should only be done on switch out or on faint """
@@ -489,7 +489,7 @@ class BattlePokemon(object, EffectHandlerMixin):
         self.is_transformed = False
         if __debug__: log.i("%s's transform reverted", self)
 
-    def change_ability(self, new_ability, engine):
+    def change_ability(self, new_ability, battle):
         """
         Change this pokemon's ability. This effect will only last while the pokemon is active.
         This pokemon's original ability remains saved in self.base_ability.
@@ -502,10 +502,10 @@ class BattlePokemon(object, EffectHandlerMixin):
             if __debug__: log.d("Failed to change %s's %s to %s", self, self.ability, new_ability)
             return FAIL
 
-        self.remove_effect(ABILITY, engine)
+        self.remove_effect(ABILITY, battle)
         self.ability = new_ability
         self.set_effect(new_ability())
-        self.get_effect(ABILITY).start(self, engine)
+        self.get_effect(ABILITY).start(self, battle)
 
     def deduct_pp(self, move, target):
         deduction = (2 if (target is not None and
@@ -559,7 +559,7 @@ class BattlePokemon(object, EffectHandlerMixin):
                            for line in rv.splitlines())
         return rv
 
-    def debug_sanity_check(self, engine):
+    def debug_sanity_check(self, battle):
         for effect in self._effect_index.values():
             if effect not in self.effects:
                 log.wtf('%s: %s in _effect_index but not in effects', effect, self)
@@ -578,10 +578,10 @@ class BattlePokemon(object, EffectHandlerMixin):
                 assert not self.has_effect(status)
 
         if self.is_active:
-            assert engine.battlefield.sides[self.side.index].active_pokemon is self
+            assert battle.battlefield.sides[self.side.index].active_pokemon is self
             assert self.side.active_pokemon is self
         else:
-            assert engine.battlefield.sides[self.side.index].active_pokemon is not self
+            assert battle.battlefield.sides[self.side.index].active_pokemon is not self
             assert self in self.side.team
             assert not any([handler_list for handler_list in self.effect_handlers.values()])
 

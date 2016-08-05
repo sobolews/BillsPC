@@ -60,7 +60,7 @@ class BattleClient(object):
         self.switch_choice = None
 
         self.make_moves = make_moves # send move choices to the server
-        self.engine = CheatSheetEngine.from_battlefield(None)
+        self.battle = CheatSheetEngine.from_battlefield(None)
 
         def _send(msg):
             self.last_sent = msg
@@ -285,7 +285,7 @@ class BattleClient(object):
                       '-damage': (1,)}
         if msg[0] in msg_to_eff and len(msg) <= 3:
             reduced = [move for move in possible if
-                       (self.engine.get_effectiveness(pokemon, move, defender) *
+                       (self.battle.get_effectiveness(pokemon, move, defender) *
                         (not defender.is_immune_to_move(pokemon, move))) in msg_to_eff[msg[0]]]
             if len(reduced) == 1:
                 hiddenpower = reduced[0]
@@ -328,7 +328,7 @@ class BattleClient(object):
             effect = normalize_name(msg[2])
             if effect == 'wonderguard':
                 reduced = [move for move in possible if
-                           self.engine.get_effectiveness(pokemon, move, defender) < 2]
+                           self.battle.get_effectiveness(pokemon, move, defender) < 2]
                 if len(reduced) == 1:
                     hiddenpower = reduced[0]
             elif effect == 'deltastream':
@@ -508,7 +508,7 @@ class BattleClient(object):
         if self.battlefield is None and self.my_side and self.foe_side:
             self.battlefield = BattleField(*sorted([self.my_side, self.foe_side],
                                                    key=lambda side: side.index))
-            self.engine.battlefield = self.battlefield
+            self.battle.battlefield = self.battlefield
 
     def handle_request(self, request):
         """
@@ -558,8 +558,8 @@ class BattleClient(object):
             return
 
         if not my_active.is_fainted() and not foe_active.is_fainted():
-            self.engine.show_my_moves(my_active, foe_active)
-            self.engine.show_foe_moves(my_active, foe_active)
+            self.battle.show_my_moves(my_active, foe_active)
+            self.battle.show_foe_moves(my_active, foe_active)
 
         if self.make_moves:
             self.make_random_move(request)
@@ -1031,7 +1031,7 @@ class BattleClient(object):
         if outgoing is not None:
             bp = outgoing.get_effect(Volatile.BATONPASS)
             if bp is not None:
-                bp.on_switch_out(outgoing, incoming=pokemon, engine=None)
+                bp.on_switch_out(outgoing, incoming=pokemon, battle=None)
             foe = self.battlefield.get_foe(pokemon)
             if foe is not None:
                 foe.remove_effect(Volatile.PARTIALTRAP, force=True)
@@ -1496,7 +1496,7 @@ class BattleClient(object):
             assert foe is not None, pokemon
             move = foe.last_move_used
             assert move is not None, foe
-            expected_damage = self.engine.calculate_expected_damage(foe, move, pokemon, self.crit)
+            expected_damage = self.battle.calculate_expected_damage(foe, move, pokemon, self.crit)
             if expected_damage is None or expected_damage > sub.hp:
                 sub.hp = 1      # this normally shouldn't happen
                 log.i("Expected damage for %r attacking %r with %s was %s, "
@@ -1836,7 +1836,7 @@ class BattleClient(object):
         pokemon = self.get_pokemon_from_msg(msg)
         foe = self.get_pokemon_from_msg(msg, 2)
 
-        pokemon.transform_into(foe, engine=None, client=True)
+        pokemon.transform_into(foe, battle=None, client=True)
 
         if self.is_ally(pokemon):
             # The moves might be in the wrong order, so reset them according to the current request.

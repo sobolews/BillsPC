@@ -34,7 +34,7 @@ class BaseEvent(object):
     def __gt__(self, other):
         return self.priority > other.priority
 
-    def run_event(self, engine, queue):
+    def run_event(self, battle, queue):
         raise NotImplementedError
 
 class MoveEvent(BaseEvent):
@@ -45,12 +45,12 @@ class MoveEvent(BaseEvent):
         self.priority = (100 + priority, spe, random())
         self.move = move
 
-    def run_event(self, engine, queue):
+    def run_event(self, battle, queue):
         if self.pokemon.is_fainted() or not self.pokemon.is_active:
             if __debug__: log.i('Skipping move because %s is either fainted or inactive' %
                                 self.pokemon)
             return
-        engine.run_move(self.pokemon, self.move, engine.get_foe(self.pokemon))
+        battle.run_move(self.pokemon, self.move, battle.get_foe(self.pokemon))
 
     def __repr__(self):
         return 'MoveEvent(pokemon=%s, move=%s)' % (self.pokemon, self.move)
@@ -64,9 +64,9 @@ class SwitchEvent(BaseEvent):
         self.priority = (self._priority, spe, random())
         self.incoming = incoming
 
-    def run_event(self, engine, queue):
-        engine.run_switch(self.pokemon, self.incoming)
-        insort(queue, PostSwitchInEvent(self.incoming, engine.effective_spe(self.incoming)))
+    def run_event(self, battle, queue):
+        battle.run_switch(self.pokemon, self.incoming)
+        insort(queue, PostSwitchInEvent(self.incoming, battle.effective_spe(self.incoming)))
 
     def __repr__(self):
         return 'SwitchEvent(pokemon=%s, incoming=%s)' % (self.pokemon, self.incoming)
@@ -81,8 +81,8 @@ class PostSwitchInEvent(BaseEvent):
         self.pokemon = pokemon
         self.priority = (350, spe, random())
 
-    def run_event(self, engine, queue):
-        engine.post_switch_in(self.pokemon)
+    def run_event(self, battle, queue):
+        battle.post_switch_in(self.pokemon)
 
     def __repr__(self):
         return 'PostSwitchInEvent(pokemon=%s)' % self.pokemon
@@ -94,8 +94,8 @@ class MegaEvoEvent(BaseEvent):
         self.pokemon = pokemon
         self.priority = (200, spe, random())
 
-    def run_event(self, engine, queue):
-        self.pokemon.mega_evolve(engine)
+    def run_event(self, battle, queue):
+        self.pokemon.mega_evolve(battle)
 
     def __repr__(self):
         return 'MegaEvoEvent(pokemon=%s)' % self.pokemon
@@ -106,8 +106,8 @@ class ResidualEvent(BaseEvent):
     def __init__(self):
         self.priority = (-1, 0, 0)
 
-    def run_event(self, engine, queue):
-        engine.run_residual()
+    def run_event(self, battle, queue):
+        battle.run_residual()
 
     def __repr__(self):
         return 'ResidualEvent()'

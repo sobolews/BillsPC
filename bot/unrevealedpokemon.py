@@ -18,7 +18,7 @@ class UnrevealedPokemon(BattlePokemon):
     calculate_stat = calculate_initial_stats = _calc_hp = calculate_evs_ivs = \
     is_immune_to_move = is_immune_to = take_item = set_item = use_item = not_implemented
 
-    def _debug_sanity_check(self, engine):
+    def _debug_sanity_check(self, battle):
         pass
 
     def cure_status(self):

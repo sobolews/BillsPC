@@ -41,7 +41,7 @@ class AnyMovePokemon(BattlePokemon):
 
 class LoggingFaintQueue(list):
     """
-    For convenience, this engine.faint_queue stores an ordered history of all pokemon that fainted
+    For convenience, this battle.faint_queue stores an ordered history of all pokemon that fainted
     during the battle (instead of losing this information at the end of each turn).
     """
     def __init__(self, *args, **kwargs):
@@ -88,7 +88,7 @@ class TestingEngine(BattleEngine):
 class TestingDecisionMaker(AutoDecisionMaker):
     """
     Return None from make_move_decision so that no events are added to the queue during
-    engine.start_turn. Tests should add MoveEvents/SwitchEvents to the event_queue manually or
+    battle.start_turn. Tests should add MoveEvents/SwitchEvents to the event_queue manually or
     via choose_move or choose_switch.
     """
     def make_move_decision(self, *args):
@@ -143,16 +143,16 @@ class MultiMoveTestCase(TestCase):
                                             moves=p1_moves,
                                             item=itemdex.get(p1_item),
                                             level=p1_level, gender=p1_gender))
-        self.engine = TestingEngine([getattr(self, p0_name)],
+        self.battle = TestingEngine([getattr(self, p0_name)],
                                     [getattr(self, p1_name)],
                                     dm0=TestingDecisionMaker(0),
                                     dm1=TestingDecisionMaker(1))
 
         # for determinism:
-        self.engine.get_critical_hit = lambda crit: False # no crits
-        self.engine.damage_randomizer = lambda: 100 # max damage
+        self.battle.get_critical_hit = lambda crit: False # no crits
+        self.battle.damage_randomizer = lambda: 100 # max damage
 
-        self.engine.init_battle()
+        self.battle.init_battle()
 
     def reset_items(self, p0_item=None, p1_item=None):
         self.new_battle(p0_item=p0_item, p1_item=p1_item)
@@ -163,7 +163,7 @@ class MultiMoveTestCase(TestCase):
         Other params are like self.new_battle
         """
         moves = [movedex[move] if isinstance(move, str) else move for move in moves]
-        battle_side = self.engine.battlefield.sides[side]
+        battle_side = self.battle.battlefield.sides[side]
         pokemon = AnyMovePokemon(pokedex[name], side=battle_side, evs=(0,)*6, ivs=(31,)*6,
                                  moves=moves, ability=abilitydex[ability],
                                  item=itemdex.get(item))
@@ -175,28 +175,28 @@ class MultiMoveTestCase(TestCase):
         """
         `pokemon` will use `move` next turn.
         """
-        self.engine.testing_decisions.append(('move', pokemon, movedex.get(move) or move))
+        self.battle.testing_decisions.append(('move', pokemon, movedex.get(move) or move))
 
     def choose_switch(self, outgoing, incoming):
         """
         `outgoing` will switch out for `incoming` next turn.
         """
-        self.engine.testing_decisions.append(('switch', outgoing, incoming))
+        self.battle.testing_decisions.append(('switch', outgoing, incoming))
 
     def choose_mega_evo(self, pokemon):
         """
         `pokemon` will mega evolve next turn
         """
         self.assertTrue(pokemon.can_mega_evolve)
-        self.engine.testing_decisions.append(('megaevo', pokemon, None))
+        self.battle.testing_decisions.append(('megaevo', pokemon, None))
 
     def run_turn(self):
-        self.engine.run_turn()
+        self.battle.run_turn()
 
     def tearDown(self):
         for name in self._names:
             delattr(self, name)
-        del self.engine
+        del self.battle
 
     def assertDamageTaken(self, pokemon, damage):
         self.assertEqual(pokemon.hp, pokemon.max_hp - damage)
@@ -252,11 +252,11 @@ class MultiMoveTestCase(TestCase):
 
     @property
     def battlefield(self):
-        return self.engine.battlefield
+        return self.battle.battlefield
 
     @property
     def faint_log(self):
-        return self.engine.faint_queue.log
+        return self.battle.faint_queue.log
 
 class MultiMoveTestCaseWithoutSetup(MultiMoveTestCase):
     """
@@ -265,7 +265,7 @@ class MultiMoveTestCaseWithoutSetup(MultiMoveTestCase):
     """
     def __init__(self, *args, **kwargs):
         self._names = []
-        self.engine = None
+        self.battle = None
         super(MultiMoveTestCaseWithoutSetup, self).__init__(*args, **kwargs)
 
     def setUp(self):

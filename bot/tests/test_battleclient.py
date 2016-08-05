@@ -155,7 +155,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
         self.bc.make_moves = False
-        self.bc.engine.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
+        self.bc.battle.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
         self.set_up_turn_0()
         self.hitmonchan = self.my_side.active_pokemon
         self.goodra = self.foe_side.active_pokemon
@@ -738,7 +738,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         self.handle('|-start|p1a: Hitmonchan|move: Yawn|[of] p2a: Goodra')
         self.handle('|turn|4')
-        self.bc.engine.run_turn()
+        self.bc.battle.run_turn()
 
         self.assertEqual(self.hitmonchan.status, Status.SLP)
         self.assertFalse(self.hitmonchan.has_effect(Volatile.YAWN))
@@ -1002,7 +1002,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
 
         alomomola.moves.clear() # clear its moveset so that it doesn't try use protect again
         self.hitmonchan.moves = {movedex['machpunch']: 5}
-        self.bc.engine.run_turn()
+        self.bc.battle.run_turn()
 
         self.assertFalse(alomomola.has_effect(Volatile.STALL))
 

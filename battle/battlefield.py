@@ -178,10 +178,10 @@ class BattleSide(object, EffectHandlerMixin):
         for hazard in Hazard.values:
             self.remove_effect(hazard)
 
-    def update(self, engine):
+    def update(self, battle):
         pokemon = self.active_pokemon
         if pokemon is not None:
-            pokemon.activate_effect('on_update', pokemon, engine)
+            pokemon.activate_effect('on_update', pokemon, battle)
 
     def get_switch_choices(self, pokemon=None, forced=False):
         if not forced and pokemon is not None:

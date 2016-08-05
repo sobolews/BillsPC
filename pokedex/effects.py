@@ -27,8 +27,8 @@ class Attract(BaseEffect):
         self.mate = mate
 
     @priority(2)
-    def on_before_move(self, user, move, engine):
-        if not self.mate == engine.get_foe(user):
+    def on_before_move(self, user, move, battle):
+        if not self.mate == battle.get_foe(user):
             user.remove_effect(Volatile.ATTRACT)
             return
 
@@ -39,10 +39,10 @@ class Attract(BaseEffect):
 class BaseAuraFieldEffect(BaseEffect):
     aura_type = None
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if move.type is self.aura_type:
             if __debug__: log.i("%s boosted %s's power!", self.source, move)
-            if engine.battlefield.has_effect(PseudoWeather.AURABREAK):
+            if battle.battlefield.has_effect(PseudoWeather.AURABREAK):
                 if __debug__: log.i('Aura Break broke the aura!')
                 return 0.75 * base_power
             return float(0x1547) / 0x1000 * base_power
@@ -74,7 +74,7 @@ class TwoTurnMoveEffect(BaseEffect):
         return True
 
 class Bounce(TwoTurnMoveEffect):
-    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+    def on_foe_accuracy(self, foe, move, target, battle, accuracy):
         if ((move.name in ('thunder', 'hurricane') or
              'noguard' in (foe.ability.name, target.ability.name))):
             return None
@@ -82,7 +82,7 @@ class Bounce(TwoTurnMoveEffect):
 
 class PhantomForce(TwoTurnMoveEffect):
     """ Used for both phantomforce and shadowforce, since they have the same effect """
-    def on_foe_accuracy(self, foe, move, target, engine, accuracy):
+    def on_foe_accuracy(self, foe, move, target, battle, accuracy):
         if 'noguard' in (foe.ability.name, target.ability.name):
             return None
         return 0
@@ -107,7 +107,7 @@ class BatonPass(BaseEffect):
     duration = 1
 
     @priority(0)
-    def on_switch_out(self, pokemon, incoming, engine):
+    def on_switch_out(self, pokemon, incoming, battle):
         incoming.boosts = pokemon.boosts
         for source, effect in pokemon._effect_index.items():
             if source in CAN_BATONPASS:
@@ -156,7 +156,7 @@ class Confuse(BaseEffect):
         self.turns_left = 4
 
     @priority(3)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         turn = 4 - self.turns_left
         if __debug__: log.i("%s's confusion: %d turns left", user, self.turns_left)
         self.turns_left -= 1
@@ -167,7 +167,7 @@ class Confuse(BaseEffect):
             return
         elif roll <= prob[0] + prob[1]:
             if __debug__: log.i('%s hurt itself in its confusion', user)
-            engine.confusion_hit(user)
+            battle.confusion_hit(user)
             return FAIL
         else:
             user.remove_effect(Volatile.CONFUSE)
@@ -179,7 +179,7 @@ class Flinch(BaseEffect):
     duration = 1
 
     @priority(8)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         if __debug__: log.i('FAIL: %s flinched', user)
         return FAIL
 
@@ -187,15 +187,15 @@ class DestinyBond(BaseEffect):
     source = Volatile.DESTINYBOND
 
     @priority(100)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         user.remove_effect(Volatile.DESTINYBOND)
 
-    def on_faint(self, pokemon, cause, source, engine):
+    def on_faint(self, pokemon, cause, source, battle):
         if cause is Cause.MOVE:
-            foe = engine.get_foe(pokemon)
+            foe = battle.get_foe(pokemon)
             if foe is not None:
                 if __debug__: log.i('%s took its foe along with it!', pokemon)
-                engine.faint(engine.get_foe(pokemon), cause=Cause.DIRECT)
+                battle.faint(battle.get_foe(pokemon), cause=Cause.DIRECT)
 
 class Disable(BaseEffect):
     source = Volatile.DISABLE
@@ -209,7 +209,7 @@ class Disable(BaseEffect):
         return [move for move in moves if move != self.move]
 
     @priority(7)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         if move == self.move:
             if __debug__: log.i("%s can't use %s because it was disabled this turn", user, move)
             return FAIL
@@ -218,13 +218,13 @@ class ElectricTerrain(BaseEffect):
     source = PseudoWeather.ELECTRICTERRAIN
     duration = 5
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if move.type is Type.ELECTRIC and not user.is_immune_to(Type.GROUND):
             if __debug__: log.i('Electric terrain boosting power of %s from %s', move, user)
             return 1.5 * base_power
         return base_power
 
-    def on_set_status(self, status, pokemon, setter, engine):
+    def on_set_status(self, status, pokemon, setter, battle):
         if status is Status.SLP and not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i('Electric terrain blocking %s on %s', status, pokemon)
             return FAIL
@@ -242,7 +242,7 @@ class Encore(BaseEffect):
         return self.move
 
     @priority(0)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         if pokemon.pp[self.move] <= 0:
             pokemon.remove_effect(Volatile.ENCORE)
             if __debug__: log.i('Ending Encore on %s because %s has no pp left', pokemon, self.move)
@@ -256,11 +256,11 @@ class HealingWish(BaseEffect):
     duration = 2
 
     @priority(1)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         if pokemon.is_fainted():
             if __debug__: log.w('%s fainted before HealingWish could heal it')
             return
-        engine.heal(pokemon, pokemon.max_hp)
+        battle.heal(pokemon, pokemon.max_hp)
         pokemon.cure_status()
         pokemon.side.remove_effect(SideCondition.HEALINGWISH)
 
@@ -276,9 +276,9 @@ class PartialTrap(BaseEffect):
         return Type.GHOST not in pokemon.types
 
     @priority(-11)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         if __debug__: log.i("%s was hurt by PartialTrap", pokemon)
-        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
+        battle.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self)
         if self.duration == 2 and random.randrange(2) == 0:
             self.duration = 1   # 4 turns
 
@@ -309,7 +309,7 @@ class KingsShield(BaseEffect):
     duration = 1
 
     @priority(3)
-    def on_foe_try_hit(self, foe, move, target, engine):
+    def on_foe_try_hit(self, foe, move, target, battle):
         if move.category is MoveCategory.STATUS or not move.is_protectable:
             return
 
@@ -321,10 +321,10 @@ class LeechSeed(BaseEffect):
     source = Volatile.LEECHSEED
 
     @priority(-8)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         if foe is None or foe.is_fainted():
             return
-        engine.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self, foe, 100)
+        battle.damage(pokemon, pokemon.max_hp / 8.0, Cause.RESIDUAL, self, foe, 100)
 
 class LightScreen(BaseEffect):
     source = SideCondition.LIGHTSCREEN
@@ -361,16 +361,16 @@ class Reflect(BaseEffect):
 
 class MagicBounceBase(BaseEffect):
     @priority(2)
-    def on_foe_try_hit(self, foe, move, target, engine):
+    def on_foe_try_hit(self, foe, move, target, battle):
         if not move.is_bounceable or target == foe:
             return
         if __debug__: log.i('%s was bounced back!', move)
 
         suppress = (foe.ability.name == 'magicbounce')
         if suppress:
-            foe.suppress_ability(engine) # Prevent infinite magicbouncing loop
+            foe.suppress_ability(battle) # Prevent infinite magicbouncing loop
 
-        engine.use_move(target, move, foe) # Reflect the move back at the user
+        battle.use_move(target, move, foe) # Reflect the move back at the user
 
         if suppress:
             foe.unsuppress_ability()
@@ -404,7 +404,7 @@ class LockedMove(BaseEffect):       # outrage, petaldance, etc.
         return True
 
     @priority(0)
-    def on_residual(self, pokemon, foe, engine):
+    def on_residual(self, pokemon, foe, battle):
         if pokemon.status is Status.SLP:
             pokemon.remove_effect(Volatile.LOCKEDMOVE)
         if self.duration == 2 and random.randrange(2) == 0:
@@ -422,15 +422,15 @@ class PerishSong(BaseEffect):
     duration = 4       # 3 moves excluding this turn
 
     @priority(0)
-    def on_timeout(self, pokemon, engine):
-        engine.faint(pokemon, Cause.DIRECT)
+    def on_timeout(self, pokemon, battle):
+        battle.faint(pokemon, Cause.DIRECT)
 
 class Protect(BaseEffect):
     source = Volatile.PROTECT
     duration = 1
 
     @priority(3)
-    def on_foe_try_hit(self, foe, move, target, engine):
+    def on_foe_try_hit(self, foe, move, target, battle):
         if not move.is_protectable:
             return
         return FAIL
@@ -444,7 +444,7 @@ class Pursuit(BaseEffect):
         self.move = move
 
     @priority(1)
-    def on_switch_out(self, pokemon, incoming, engine):
+    def on_switch_out(self, pokemon, incoming, battle):
         assert self.pursuer.is_active or self.pursuer.is_fainted()
 
         if (not self.pursuer.is_fainted() and
@@ -454,14 +454,14 @@ class Pursuit(BaseEffect):
             if __debug__: log.i('%s caught %s switching out with pursuit!', self.pursuer, pokemon)
 
             # mega evolve before attacking
-            for event in engine.event_queue:
+            for event in battle.event_queue:
                 if event.pokemon is self.pursuer and event.type is Decision.MEGAEVO:
-                    self.pursuer.mega_evolve(engine)
+                    self.pursuer.mega_evolve(battle)
                     break
 
-            engine.run_move(self.pursuer, self.move, pokemon)
+            battle.run_move(self.pursuer, self.move, pokemon)
             # Don't let the pursuer move again afterwards
-            engine.event_queue = [event for event in engine.event_queue
+            battle.event_queue = [event for event in battle.event_queue
                                   if not event.pokemon is self.pursuer]
 
 class Roost(BaseEffect):
@@ -483,14 +483,14 @@ class Safeguard(BaseEffect):
     source = SideCondition.SAFEGUARD
     duration = 5
 
-    def on_set_status(self, status, pokemon, setter, engine):
+    def on_set_status(self, status, pokemon, setter, battle):
         if (setter is None or
             setter != pokemon and
             setter.ability.name != 'infiltrator'
         ):
             return FAIL
 
-    def on_foe_try_hit(self, user, move, target, engine):
+    def on_foe_try_hit(self, user, move, target, battle):
         if move.name == 'yawn' and not move.infiltrates:
             return FAIL
 
@@ -503,11 +503,11 @@ class Spikes(BaseEffect):
         self.layers = 1
 
     @priority(0)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         # 1, 2, 3 layers of spikes do 1/8, 1/6, 1/4 damage respectively
         if not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i("%s was damaged by Spikes", pokemon)
-            engine.damage(pokemon, pokemon.max_hp / (None, 8.0, 6.0, 4.0)[self.layers],
+            battle.damage(pokemon, pokemon.max_hp / (None, 8.0, 6.0, 4.0)[self.layers],
                           Cause.HAZARD, self)
 
 class SpikyShield(BaseEffect):
@@ -515,28 +515,28 @@ class SpikyShield(BaseEffect):
     duration = 1
 
     @priority(3)
-    def on_foe_try_hit(self, foe, move, target, engine):
+    def on_foe_try_hit(self, foe, move, target, battle):
         if not move.is_protectable:
             return
 
         if move.makes_contact:
-            engine.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
+            battle.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
         return FAIL
 
 class StealthRock(BaseEffect):
     source = Hazard.STEALTHROCK
 
     @priority(0)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         if __debug__: log.i("%s was damaged by StealthRock", pokemon)
-        engine.damage(pokemon, pokemon.max_hp / (8.0 / effectiveness(Type.ROCK, pokemon)),
+        battle.damage(pokemon, pokemon.max_hp / (8.0 / effectiveness(Type.ROCK, pokemon)),
                       Cause.HAZARD, self)
 
 class StickyWeb(BaseEffect):
     source = Hazard.STICKYWEB
 
     @priority(0)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         if not pokemon.is_immune_to(Type.GROUND):
             if __debug__: log.i("%s was caught in the StickyWeb", pokemon)
             pokemon.apply_boosts(Boosts(spe=-1), self_induced=False)
@@ -547,7 +547,7 @@ class Substitute(BaseEffect):
     def __init__(self, hp):
         self.hp = hp
 
-    def on_hit_substitute(self, foe, move, target, engine):
+    def on_hit_substitute(self, foe, move, target, battle):
         """
         - Return FAIL to fail the move.
         - Return None to continue as though there was no substitute.
@@ -557,7 +557,7 @@ class Substitute(BaseEffect):
         if move.is_sound or move.ignore_substitute or move.infiltrates or foe is target:
             return None
 
-        damage = engine.calculate_damage(foe, move, target)
+        damage = battle.calculate_damage(foe, move, target)
         if damage is FAIL:
             return FAIL
 
@@ -578,18 +578,18 @@ class Substitute(BaseEffect):
         elif move.recoil > 0:
             recoil = round(damage * move.recoil / 100.0)
             if recoil > 0:
-                engine.damage(foe, recoil, Cause.RECOIL)
+                battle.damage(foe, recoil, Cause.RECOIL)
         elif move.drain:
-            engine.heal(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.DRAIN, move, target)
+            battle.heal(foe, int(math.ceil(damage * move.drain / 100.0)), Cause.DRAIN, move, target)
         elif move.on_success_ignores_substitute:
-            move.on_success(foe, target, engine)
+            move.on_success(foe, target, battle)
 
         if target.item is not None and target.item.name == 'airballoon':
-            target.use_item(engine)
+            target.use_item(battle)
 
         for s_effect in move.secondary_effects:
             if s_effect.affects_user:
-                engine.apply_secondary_effect(foe, s_effect, foe)
+                battle.apply_secondary_effect(foe, s_effect, foe)
 
         foe.damage_done_this_turn = damage
         foe.must_switch = move.switch_user
@@ -601,7 +601,7 @@ class Tailwind(BaseEffect):
     source = SideCondition.TAILWIND
     duration = 4
 
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         return 2 * spe
 
 class Taunt(BaseEffect):
@@ -615,7 +615,7 @@ class Taunt(BaseEffect):
         return [move for move in moves if move.category != MoveCategory.STATUS]
 
     @priority(5)
-    def on_before_move(self, user, move, engine):
+    def on_before_move(self, user, move, battle):
         if move.category == MoveCategory.STATUS:
             if __debug__: log.i("%s can't use %s because it was taunted this turn", user, move)
             return FAIL
@@ -624,7 +624,7 @@ class TrickRoom(BaseEffect):
     source = PseudoWeather.TRICKROOM
     duration = 5
 
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         return -spe
 
 class ToxicSpikes(BaseEffect):
@@ -634,7 +634,7 @@ class ToxicSpikes(BaseEffect):
         self.layers = 1
 
     @priority(0)
-    def on_switch_in(self, pokemon, engine):
+    def on_switch_in(self, pokemon, battle):
         assert self.layers in (1, 2)
 
         if not pokemon.is_immune_to(Type.GROUND): # if pokemon is grounded
@@ -643,7 +643,7 @@ class ToxicSpikes(BaseEffect):
                 if __debug__: log.i('The toxicspikes disappeared!')
             else:
                 if __debug__: log.i("%s was poisoned by ToxicSpikes", pokemon)
-                engine.set_status(pokemon, Status.PSN if self.layers == 1 else Status.TOX,
+                battle.set_status(pokemon, Status.PSN if self.layers == 1 else Status.TOX,
                                   setter=None)
 
 class Wish(BaseEffect):
@@ -654,10 +654,10 @@ class Wish(BaseEffect):
         self.hp = hp
 
     @priority(-4)
-    def on_timeout(self, side, engine):
+    def on_timeout(self, side, battle):
         pokemon = side.active_pokemon
         if pokemon is not None and pokemon.hp < pokemon.max_hp:
-            engine.heal(pokemon, self.hp)
+            battle.heal(pokemon, self.hp)
         elif __debug__:
             log.i('Wish failed')
 
@@ -666,9 +666,9 @@ class Yawn(BaseEffect):
     duration = 2
 
     @priority(0)
-    def on_timeout(self, pokemon, engine):
+    def on_timeout(self, pokemon, battle):
         if not pokemon.is_fainted():
-            engine.set_status(pokemon, Status.SLP, setter=pokemon) # unaffected by Safeguard
+            battle.set_status(pokemon, Status.SLP, setter=pokemon) # unaffected by Safeguard
 
 class SheerForceVolatile(BaseEffect):
     """
@@ -678,19 +678,19 @@ class SheerForceVolatile(BaseEffect):
     source = Volatile.SHEERFORCE
     duration = 1
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         return base_power * 1.3
 
 class FlashFireVolatile(BaseEffect):
     source = Volatile.FLASHFIRE
 
-    def on_modify_atk(self, pokemon, move, engine, atk):
+    def on_modify_atk(self, pokemon, move, battle, atk):
         if move.type is Type.FIRE:
             if __debug__: log.i('%s boosted by FlashFire!', move)
             return atk * 1.5
         return atk
 
-    def on_modify_spa(self, pokemon, move, engine, spa):
+    def on_modify_spa(self, pokemon, move, battle, spa):
         if move.type is Type.FIRE:
             if __debug__: log.i('%s boosted by FlashFire!', move)
             return spa * 1.5
@@ -703,7 +703,7 @@ class ParentalBondVolatile(BaseEffect):
     def __init__(self):
         self.first_hit = False
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if not self.first_hit:
             self.first_hit = True
             return base_power
@@ -714,11 +714,11 @@ class SlowStartVolatile(BaseEffect):
     source = Volatile.SLOWSTART
     duration = 5
 
-    def on_modify_atk(self, pokemon, move, engine, atk):
+    def on_modify_atk(self, pokemon, move, battle, atk):
         if __debug__: log.i("%s's atk was halved by SlowStart", pokemon)
         return atk * 0.5
 
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         if __debug__: log.d("%s's spe was halved by SlowStart", pokemon)
         return spe * 0.5
 
@@ -730,14 +730,14 @@ class GemVolatile(BaseEffect):
     source = Volatile.GEM
     duration = 1
 
-    def on_modify_base_power(self, user, move, target, engine, base_power):
+    def on_modify_base_power(self, user, move, target, battle, base_power):
         if __debug__: log.i("%s's power was boosted by the %s gem", move, move.type)
         return base_power * 1.3
 
 class UnburdenVolatile(BaseEffect):
     source = Volatile.UNBURDEN
 
-    def on_modify_spe(self, pokemon, engine, spe):
+    def on_modify_spe(self, pokemon, battle, spe):
         if __debug__: log.d("%s's speed is boosted by Unburden", pokemon)
         return spe * 2
 

@@ -10,7 +10,7 @@ pokedex = create_pokedex()
 
 class TestWeather(MultiMoveTestCase):
     def test_sunnyday_damage_modify(self):
-        self.engine.battlefield.set_weather(Weather.SUNNYDAY)
+        self.battle.battlefield.set_weather(Weather.SUNNYDAY)
         self.choose_move(self.leafeon, 'surf')
         self.choose_move(self.vaporeon, 'flamewheel')
         self.run_turn()
@@ -20,7 +20,7 @@ class TestWeather(MultiMoveTestCase):
 
     @patch('random.randrange', lambda _: 1) # icebeam always freeze, don't thaw
     def test_sunnyday_freeze_immunity(self):
-        self.engine.battlefield.set_weather(Weather.SUNNYDAY)
+        self.battle.battlefield.set_weather(Weather.SUNNYDAY)
         self.choose_move(self.leafeon, 'icebeam')
         self.choose_move(self.vaporeon, 'return')
         self.run_turn()
@@ -28,7 +28,7 @@ class TestWeather(MultiMoveTestCase):
         self.assertIsNone(self.vaporeon.status)
 
     def test_desolateland_stops_water_moves(self):
-        self.engine.battlefield.set_weather(Weather.DESOLATELAND)
+        self.battle.battlefield.set_weather(Weather.DESOLATELAND)
         self.choose_move(self.vaporeon, 'waterfall')
         self.run_turn()
 
@@ -46,7 +46,7 @@ class TestWeather(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 90)
 
     def test_raindance_damage_modify(self):
-        self.engine.battlefield.set_weather(Weather.RAINDANCE)
+        self.battle.battlefield.set_weather(Weather.RAINDANCE)
         self.choose_move(self.leafeon, 'surf')
         self.choose_move(self.vaporeon, 'flamewheel')
         self.run_turn()
@@ -55,7 +55,7 @@ class TestWeather(MultiMoveTestCase):
         self.assertDamageTaken(self.leafeon, 30)
 
     def test_primordialsea_stops_fire_moves(self):
-        self.engine.battlefield.set_weather(Weather.PRIMORDIALSEA)
+        self.battle.battlefield.set_weather(Weather.PRIMORDIALSEA)
         self.choose_move(self.leafeon, 'surf')
         self.choose_move(self.vaporeon, 'flamewheel')
         self.run_turn()
@@ -65,7 +65,7 @@ class TestWeather(MultiMoveTestCase):
 
     def test_hail_damages_both_sides_but_not_ice_types(self):
         self.add_pokemon('glaceon', 0)
-        self.engine.battlefield.set_weather(Weather.HAIL)
+        self.battle.battlefield.set_weather(Weather.HAIL)
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
@@ -78,7 +78,7 @@ class TestWeather(MultiMoveTestCase):
         self.assertDamageTaken(self.glaceon, 0)
 
     def test_hail_stops_after_5_turns(self):
-        self.engine.battlefield.set_weather(Weather.HAIL)
+        self.battle.battlefield.set_weather(Weather.HAIL)
         for _ in range(4):
             self.run_turn()
 
@@ -91,7 +91,7 @@ class TestWeather(MultiMoveTestCase):
         self.add_pokemon('swampert', 1)
         self.add_pokemon('aerodactyl', 0)
         self.add_pokemon('golem', 1)
-        self.engine.battlefield.set_weather(Weather.SANDSTORM)
+        self.battle.battlefield.set_weather(Weather.SANDSTORM)
         self.run_turn()
 
         self.assertDamageTaken(self.leafeon, self.leafeon.max_hp / 16)
@@ -113,7 +113,7 @@ class TestWeather(MultiMoveTestCase):
 
     def test_sandstorm_boosts_spd_rock_types(self):
         self.new_battle('tyranitar', 'leafeon')
-        self.engine.battlefield.set_weather(Weather.SANDSTORM)
+        self.battle.battlefield.set_weather(Weather.SANDSTORM)
         self.choose_move(self.leafeon, 'return')
         self.run_turn()
 
@@ -125,14 +125,14 @@ class TestWeather(MultiMoveTestCase):
 
     def test_hail_kos_shedinja(self):
         self.new_battle('shedinja', 'leafeon', p0_ability='wonderguard')
-        self.engine.battlefield.set_weather(Weather.HAIL)
+        self.battle.battlefield.set_weather(Weather.HAIL)
         self.run_turn()
 
         self.assertEqual(self.shedinja.status, Status.FNT)
 
     def test_sandstorm_kos_shedinja(self):
         self.new_battle('shedinja', 'leafeon', p0_ability='wonderguard')
-        self.engine.battlefield.set_weather(Weather.SANDSTORM)
+        self.battle.battlefield.set_weather(Weather.SANDSTORM)
         self.run_turn()
 
         self.assertEqual(self.shedinja.status, Status.FNT)
@@ -141,14 +141,14 @@ class TestWeather(MultiMoveTestCase):
         for weather in (Weather.SANDSTORM, Weather.HAIL):
             self.new_battle('vaporeon', 'leafeon')
             self.leafeon.hp = self.vaporeon.hp = 1
-            self.engine.battlefield.set_weather(weather)
+            self.battle.battlefield.set_weather(weather)
             self.run_turn()
 
             self.assertEqual(self.vaporeon.side.index, self.battlefield.win)
 
             self.new_battle('vaporeon', 'leafeon')
             self.leafeon.hp = self.vaporeon.hp = 1
-            self.engine.battlefield.set_weather(weather)
+            self.battle.battlefield.set_weather(weather)
             self.choose_move(self.vaporeon, 'autotomize')
             self.run_turn()
 
@@ -159,7 +159,7 @@ class TestWeather(MultiMoveTestCase):
         for weather in (Weather.SANDSTORM, Weather.HAIL):
             self.new_battle('vaporeon', 'leafeon')
             self.add_pokemon('flareon', 0)
-            self.engine.battlefield.set_weather(weather)
+            self.battle.battlefield.set_weather(weather)
             self.vaporeon.apply_boosts(Boosts(def_=-1))
             self.choose_move(self.leafeon, 'leafblade')
             self.run_turn()
@@ -168,7 +168,7 @@ class TestWeather(MultiMoveTestCase):
 
     def test_deltastream_suppresses_moves_supereffective_vs_flying(self):
         self.new_battle('rayquaza', 'leafeon')
-        self.engine.battlefield.set_weather(Weather.DELTASTREAM)
+        self.battle.battlefield.set_weather(Weather.DELTASTREAM)
         self.choose_move(self.leafeon, 'hiddenpowerice')
         self.run_turn()
 
@@ -189,13 +189,13 @@ class TestWeather(MultiMoveTestCase):
         self.choose_move(self.vaporeon, 'raindance')
         self.run_turn()
 
-        self.assertEqual(self.engine.battlefield.weather, Weather.RAINDANCE)
+        self.assertEqual(self.battle.battlefield.weather, Weather.RAINDANCE)
 
         self.run_turn()
         self.choose_move(self.vaporeon, 'raindance')
         self.run_turn()
 
-        self.assertEqual(self.engine.battlefield.get_effect(Weather.RAINDANCE).duration, 2)
+        self.assertEqual(self.battle.battlefield.get_effect(Weather.RAINDANCE).duration, 2)
 
     def test_changing_weather_trio_weather_fails(self):
         for ability, weather in (('desolateland', Weather.DESOLATELAND),

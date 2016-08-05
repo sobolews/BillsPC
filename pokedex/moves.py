@@ -100,11 +100,11 @@ class Move(object):
     def __hash__(self):
         return hash(self.name) ^ hash(self.__class__)
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         """ Override to return base power dynamically, else self.base_power will be used. """
         return self.base_power
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         """
         Does NOT assume that user has not fainted.
 
@@ -115,7 +115,7 @@ class Move(object):
         If self.targets_user, `target` will be None.
         """
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         """
         Return FAIL for move failure. If self.targets_user, `target` will be None.
         """
@@ -127,12 +127,12 @@ class Move(object):
         """ Return a number in {0.25, 0.5, 1, 2, 4}: effectiveness multipler against target """
         return effectiveness(self.type, target)
 
-    def on_move_fail(self, user, engine):
+    def on_move_fail(self, user, battle):
         """
         Called after BattleEngine.try_move_hit fails
         """
 
-    def on_modify_move(self, user, target, engine):
+    def on_modify_move(self, user, target, battle):
         """
         Modifies attributes of self. This should only ever be called on a copy of the move object.
         The target may be None.
@@ -160,7 +160,7 @@ class acrobatics(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         return 110 if user.item is None else 55
 
 class aerialace(Move):
@@ -244,7 +244,7 @@ class aromatherapy(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         for pokemon in user.side.team:
             pokemon.cure_status()
 
@@ -275,7 +275,7 @@ class autotomize(Move):
         self.targets_user = True
         self.user_boosts = Boosts(spe=2)
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         effect = user.get_effect(Volatile.AUTOTOMIZE)
         if effect is None:
             user.set_effect(effects.Autotomize())
@@ -291,7 +291,7 @@ class avalanche(Move):
         self.makes_contact = True
         self.accuracy = 100
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         return 60 if user.was_attacked_this_turn is None else 120
 
 class batonpass(Move):
@@ -303,11 +303,11 @@ class batonpass(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if not user.get_switch_choices(forced=True):
             return FAIL # no possible switches
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.set_effect(effects.BatonPass())
 
 class bellydrum(Move):
@@ -318,15 +318,15 @@ class bellydrum(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if not (user.hp > user.max_hp // 2 and
                 user.boosts['atk'] < 6 and
                 user.max_hp > 1):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         if __debug__: log.i('%s cut its hp and maximized its attack!', user)
-        engine.direct_damage(user, user.max_hp // 2)
+        battle.direct_damage(user, user.max_hp // 2)
         user.boosts['atk'] = 6
 
 class bite(Move):
@@ -359,8 +359,8 @@ class blizzard(Move):
         self.base_power = 110
         self.secondary_effects = SecondaryEffect(10, status=Status.FRZ),
 
-    def on_modify_move(self, user, target, engine):
-        if engine.battlefield.weather is Weather.HAIL:
+    def on_modify_move(self, user, target, battle):
+        if battle.battlefield.weather is Weather.HAIL:
             self.accuracy = None
         else:
             self.accuracy = 70
@@ -423,11 +423,11 @@ class bounce(Move):
         self.is_two_turn = True
         self.secondary_effects = SecondaryEffect(30, status=Status.PAR),
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if user.item is itemdex['powerherb'] and user.use_item(engine) is not FAIL:
+            if user.item is itemdex['powerherb'] and user.use_item(battle) is not FAIL:
                 return
             user.set_effect(effects.Bounce(self))
             return FAIL
@@ -452,7 +452,7 @@ class brickbreak(Move):
         self.base_power = 75
         self.on_success_ignores_substitute = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.side.remove_effect(SideCondition.REFLECT)
         target.side.remove_effect(SideCondition.LIGHTSCREEN)
 
@@ -465,10 +465,10 @@ class bugbite(Move):
         self.makes_contact = True
         self.base_power = 60
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         item = target.item
         if item and item.is_berry and not user.is_fainted() and target.take_item() is not FAIL:
-            user.eat_berry(engine, item, stolen=True)
+            user.eat_berry(battle, item, stolen=True)
 
 class bugbuzz(Move):
     def init_move(self):
@@ -555,8 +555,8 @@ class circlethrow(Move):
         self.base_power = 60
         self.priority = -6
 
-    def on_success(self, user, target, engine):
-        engine.force_random_switch(target, user)
+    def on_success(self, user, target, battle):
+        battle.force_random_switch(target, user)
 
 class clearsmog(Move):
     def init_move(self):
@@ -565,7 +565,7 @@ class clearsmog(Move):
         self.type = Type.POISON
         self.base_power = 50
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.boosts = Boosts() # not affected by clearbody or any Showdown "onBoost" events
 
 class closecombat(Move):
@@ -606,7 +606,7 @@ class confuseray(Move):
         self.accuracy = 100
         self.is_bounceable = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.confuse(self.infiltrates)
 
 class copycat(Move):
@@ -626,8 +626,8 @@ class copycat(Move):
                   'sleeptalk', 'snatch', 'struggle', 'switcheroo', 'thief', 'transform', 'trick',
                   'whirlwind'}
 
-    def on_success(self, user, _, engine):
-        move = engine.battlefield.last_move_used
+    def on_success(self, user, _, battle):
+        move = battle.battlefield.last_move_used
         if move is None or move.name in self.NO_COPYCAT:
             if __debug__:
                 log.i('Copycat failed because the last move (%s) is in NO_COPYCAT or is None', move)
@@ -635,10 +635,10 @@ class copycat(Move):
 
         if __debug__: log.i('Using %s via copycat', move)
         if move.targets_user:
-            engine.fast_use_move(user, move)
+            battle.fast_use_move(user, move)
         else:
             # don't use target; copycat gets executed by fast_use_move so target is None
-            engine.use_move(user, move, engine.get_foe(user))
+            battle.use_move(user, move, battle.get_foe(user))
         user.last_move_used = move
 
 class cosmicpower(Move):
@@ -669,7 +669,7 @@ class counter(Move):
         self.priority = -5
         self.has_damage_callback = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if not (user.was_attacked_this_turn and
                 user.was_attacked_this_turn['damage'] > 0 and
                 user.was_attacked_this_turn['move'].category is PHYSICAL):
@@ -763,7 +763,7 @@ class defog(Move):
         self.is_bounceable = True
         self.ignore_substitute = True # substitute doesn't block hazard-clearing, but does
                                       # block evasion drop
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not target.has_effect(Volatile.SUBSTITUTE) or user.ability.name == 'infiltrator':
             target.apply_boosts(Boosts(evn=-1), False)
 
@@ -781,7 +781,7 @@ class destinybond(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.set_effect(effects.DestinyBond())
 
 class diamondstorm(Move):
@@ -801,7 +801,7 @@ class disable(Move):
         self.ignore_substitute = True
         self.is_bounceable = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         move = target.last_move_used
         if move is None:
             if __debug__: log.i('Disable failed because %s has not used a move', target)
@@ -813,7 +813,7 @@ class disable(Move):
             if __debug__: log.i('Disable failed because %s is already disabled', target)
             return FAIL
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         move = target.last_move_used
         # lasts 4 turns from the pokemon's perspective: increase to 5 if target won't move this turn
         # because then this turn doesn't count.
@@ -895,8 +895,8 @@ class dragontail(Move):
         self.base_power = 60
         self.priority = -6
 
-    def on_success(self, user, target, engine):
-        engine.force_random_switch(target, user)
+    def on_success(self, user, target, battle):
+        battle.force_random_switch(target, user)
 
 class drainingkiss(Move):
     def init_move(self):
@@ -973,15 +973,15 @@ class electricterrain(Move):
         self.is_protectable = False
         self.targets_field = True
 
-    def check_success(self, user, _, engine):
-        if engine.battlefield.terrain is not None:
+    def check_success(self, user, _, battle):
+        if battle.battlefield.terrain is not None:
             if __debug__: log.i('Failing electricterrain because terrain is %s' %
-                                engine.battlefield.terrain)
+                                battle.battlefield.terrain)
             return FAIL
 
-    def on_success(self, user, _, engine):
-        engine.battlefield.terrain = PseudoWeather.ELECTRICTERRAIN
-        engine.battlefield.set_effect(effects.ElectricTerrain())
+    def on_success(self, user, _, battle):
+        battle.battlefield.terrain = PseudoWeather.ELECTRICTERRAIN
+        battle.battlefield.set_effect(effects.ElectricTerrain())
 
 class encore(Move):
     def init_move(self):
@@ -994,7 +994,7 @@ class encore(Move):
 
     NO_ENCORE = {'encore', 'mimic', 'mirrormove', 'sketch', 'struggle', 'transform'}
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         last_move = target.last_move_used
         if (last_move is None or
             last_move.name in self.NO_ENCORE or
@@ -1002,7 +1002,7 @@ class encore(Move):
         ):
             return FAIL
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         duration = 3 if target.will_move_this_turn else 4
         target.set_effect(effects.Encore(target.last_move_used, duration))
 
@@ -1015,7 +1015,7 @@ class endeavor(Move):
         self.makes_contact = True
         self.has_damage_callback = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         return True if target.hp > user.hp else FAIL
 
     def damage_callback(self, user, target):
@@ -1038,7 +1038,7 @@ class eruption(Move):
         self.type = Type.FIRE
         self.accuracy = 100
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         return (150 * user.hp // user.max_hp) or 1
 
 class explosion(Move):
@@ -1077,7 +1077,7 @@ class facade(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         return 70 if user.status in (None, Status.SLP) else 140
     # Negation of power-loss from burn is handled in statuses.Burn.on_base_power
 
@@ -1092,7 +1092,7 @@ class fakeout(Move):
         self.priority = 3
         self.secondary_effects = SecondaryEffect(100, volatile=Volatile.FLINCH),
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.turns_out > 1:
             return FAIL
 
@@ -1220,7 +1220,7 @@ class focuspunch(Move):
         self.is_punch = True
         self.priority = -3
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if (user.was_attacked_this_turn and
             user.was_attacked_this_turn['move'].category is not STATUS and
             user.was_attacked_this_turn['damage'] > 0
@@ -1286,11 +1286,11 @@ class geomancy(Move):
         self.targets_user = True
         self.user_boosts = Boosts(spa=2, spd=2, spe=2)
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if user.item is itemdex['powerherb'] and user.use_item(engine) is not FAIL:
+            if user.item is itemdex['powerherb'] and user.use_item(battle) is not FAIL:
                 return
             user.set_effect(effects.TwoTurnMoveEffect(self))
             return FAIL
@@ -1321,7 +1321,7 @@ class grassknot(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         weight = target.weight
         if weight >= 200:
             return 120
@@ -1343,8 +1343,8 @@ class growth(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        boost = (2 if engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND)
+    def on_success(self, user, _, battle):
+        boost = (2 if battle.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND)
                  else 1)
         user.apply_boosts(Boosts(atk=boost, spa=boost), True)
 
@@ -1366,7 +1366,7 @@ class gyroball(Move):
         self.makes_contact = True
         self.is_bullet = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         power = int(target.calculate_stat('spe') * 25 / user.calculate_stat('spe'))
         return clamp_int(power, 1, 150)
 
@@ -1389,10 +1389,10 @@ class haze(Move):
         self.targets_field = True
         self.is_protectable = False
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         if __debug__: log.i('All stats were reset!')
         user.boosts = Boosts()
-        foe = engine.get_foe(user)
+        foe = battle.get_foe(user)
         if foe is not None:
             foe.boosts = Boosts()
 
@@ -1444,11 +1444,11 @@ class healingwish(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.side.remaining_pokemon_on_bench == 0:
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.side.set_effect(effects.HealingWish())
         user.hp = 0
 
@@ -1460,8 +1460,8 @@ class healorder(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        engine.heal(user, int(round(user.max_hp * 0.5)))
+    def on_success(self, user, _, battle):
+        battle.heal(user, int(round(user.max_hp * 0.5)))
 
 class heatwave(Move):
     def init_move(self):
@@ -1480,7 +1480,7 @@ class heavyslam(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         user_weight = user.weight
         target_weight = target.weight
         if user_weight > target_weight * 5:
@@ -1565,9 +1565,9 @@ class highjumpkick(Move):
         self.base_power = 130
         self.recoil = -1
 
-    def on_move_fail(self, user, engine):
+    def on_move_fail(self, user, battle):
         if not user.is_fainted(): # e.g. by spikyshield
-            engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
+            battle.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class honeclaws(Move):
     def init_move(self):
@@ -1596,8 +1596,8 @@ class hurricane(Move):
         self.base_power = 110
         self.secondary_effects = SecondaryEffect(30, volatile=Volatile.CONFUSE),
 
-    def on_modify_move(self, user, target, engine):
-        weather = engine.battlefield.weather
+    def on_modify_move(self, user, target, battle):
+        weather = battle.battlefield.weather
         if weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA):
             self.accuracy = None
         elif weather in (Weather.SUNNYDAY, Weather.DESOLATELAND):
@@ -1623,7 +1623,7 @@ class hyperspacefury(Move):
         self.is_protectable = False
         self.user_boosts = Boosts(def_=-1)
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.base_species != 'hoopaunbound':
             if __debug__: log.i('hyperspacefury failed because %s is not hoopaunbound', user)
             return FAIL
@@ -1723,7 +1723,7 @@ class infestation(Move):
         self.makes_contact = True
         self.base_power = 20
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not target.is_fainted() and not user.is_fainted():
             target.set_effect(effects.PartialTrap())
 
@@ -1755,7 +1755,7 @@ class judgment(Move):
         self.accuracy = 100
         self.base_power = 100
 
-    def on_modify_move(self, user, target, engine):
+    def on_modify_move(self, user, target, battle):
         if user.item is not None:
             self.type = user.item.plate_type or Type.NORMAL
 
@@ -1769,9 +1769,9 @@ class jumpkick(Move):
         self.base_power = 100
         self.recoil = -1
 
-    def on_move_fail(self, user, engine):
+    def on_move_fail(self, user, battle):
         if not user.is_fainted(): # e.g. by spikyshield
-            engine.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
+            battle.damage(user, user.max_hp / 2.0, Cause.CRASH, self)
 
 class kingsshield(Move):
     def init_move(self):
@@ -1782,14 +1782,14 @@ class kingsshield(Move):
         self.targets_user = True
         self.priority = 4
 
-    def check_success(self, user, _, engine):
-        target = engine.get_foe(user)
+    def check_success(self, user, _, battle):
+        target = battle.get_foe(user)
         if target is None or not target.will_move_this_turn:
             return FAIL
         if user.has_effect(Volatile.STALL):
             return user.get_effect(Volatile.STALL).check_stall_success()
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.set_effect(effects.KingsShield())
         user.set_effect(effects.StallCounter())
 
@@ -1801,13 +1801,13 @@ class knockoff(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         item = target.item
         if item is not None and item.removable:
             return 1.5 * 65
         return 65
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not user.is_fainted():
             target.take_item()
 
@@ -1847,7 +1847,7 @@ class leechseed(Move):
         self.accuracy = 90
         self.is_bounceable = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.set_effect(effects.LeechSeed())
 
 class lightofruin(Move):
@@ -1867,11 +1867,11 @@ class lightscreen(Move):
         self.targets_user = True
         self.is_protectable = False
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.side.has_effect(SideCondition.LIGHTSCREEN):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         duration = 8 if user.item is itemdex['lightclay'] else 5
         user.side.set_effect(effects.LightScreen(duration))
 
@@ -1914,7 +1914,7 @@ class magiccoat(Move):
         self.targets_user = True
         self.priority = 4
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.set_effect(effects.MagicCoat())
 
 class magnetrise(Move):
@@ -1925,7 +1925,7 @@ class magnetrise(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.set_effect(effects.MagnetRise())
 
 class megahorn(Move):
@@ -1944,7 +1944,7 @@ class memento(Move):
         self.type = Type.DARK
         self.accuracy = 100
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.apply_boosts(Boosts(atk=-2, spa=-2), False)
         user.hp = 0
 
@@ -1956,7 +1956,7 @@ class metalburst(Move):
         self.accuracy = 100
         self.has_damage_callback = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if not (user.was_attacked_this_turn and
                 user.was_attacked_this_turn['damage'] > 0 and
                 user.was_attacked_this_turn['move'].category in (PHYSICAL, SPECIAL)):
@@ -1985,8 +1985,8 @@ class milkdrink(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        engine.heal(user, int(round(user.max_hp * 0.5)))
+    def on_success(self, user, _, battle):
+        battle.heal(user, int(round(user.max_hp * 0.5)))
 
 class mirrorcoat(Move):
     def init_move(self):
@@ -1997,7 +1997,7 @@ class mirrorcoat(Move):
         self.priority = -5
         self.has_damage_callback = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if not (user.was_attacked_this_turn and
                 user.was_attacked_this_turn['damage'] > 0 and
                 user.was_attacked_this_turn['move'].category is SPECIAL):
@@ -2024,9 +2024,9 @@ class moonlight(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        engine.heal(user, int(round(user.max_hp *
-                                    _WEATHER_HEAL_FACTOR[engine.battlefield.weather])))
+    def on_success(self, user, _, battle):
+        battle.heal(user, int(round(user.max_hp *
+                                    _WEATHER_HEAL_FACTOR[battle.battlefield.weather])))
 
 class morningsun(Move):
     def init_move(self):
@@ -2105,11 +2105,11 @@ class outrage(Move):
         self.makes_contact = True
         self.base_power = 120
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not user.is_fainted():
             user.set_effect(effects.LockedMove(self))
 
-    def on_move_fail(self, user, engine):
+    def on_move_fail(self, user, battle):
         user.remove_effect(Volatile.LOCKEDMOVE)
 
 class overheat(Move):
@@ -2127,7 +2127,7 @@ class painsplit(Move):
         self.category = STATUS
         self.type = Type.NORMAL
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         average_hp = ((user.hp + target.hp) // 2) or 1
         user.hp = min(user.max_hp, average_hp)
         target.hp = min(target.max_hp, average_hp)
@@ -2143,7 +2143,7 @@ class partingshot(Move):
         self.is_sound = True
         self.is_bounceable = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.apply_boosts(Boosts(atk=-1, spa=-1), False)
 
 class perishsong(Move):
@@ -2155,12 +2155,12 @@ class perishsong(Move):
         self.is_sound = True
         self.targets_field = True
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         if not user.ability.name == 'soundproof':
             user.set_effect(effects.PerishSong())
 
         # Since this is a targets_field move, no target is passed in.
-        foe = engine.get_foe(user)
+        foe = battle.get_foe(user)
         if foe is not None and not foe.ability.name == 'soundproof':
             foe.set_effect(effects.PerishSong())
 
@@ -2187,11 +2187,11 @@ class phantomforce(Move):
         self.is_protectable = False
         self.is_two_turn = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if user.item is itemdex['powerherb'] and user.use_item(engine) is not FAIL:
+            if user.item is itemdex['powerherb'] and user.use_item(battle) is not FAIL:
                 return
             user.set_effect(effects.PhantomForce(self))
             return FAIL
@@ -2281,14 +2281,14 @@ class protect(Move):
         self.targets_user = True
         self.priority = 4
 
-    def check_success(self, user, _, engine):
-        target = engine.get_foe(user)
+    def check_success(self, user, _, battle):
+        target = battle.get_foe(user)
         if target is None or not target.will_move_this_turn:
             return FAIL
         if user.has_effect(Volatile.STALL):
             return user.get_effect(Volatile.STALL).check_stall_success()
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.set_effect(effects.Protect())
         user.set_effect(effects.StallCounter())
 
@@ -2326,12 +2326,12 @@ class psychoshift(Move):
         self.type = Type.PSYCHIC
         self.accuracy = 100
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.status is None or target.status is not None:
             return FAIL
 
-    def on_success(self, user, target, engine):
-        if engine.set_status(target, user.status, user) is not FAIL:
+    def on_success(self, user, target, battle):
+        if battle.set_status(target, user.status, user) is not FAIL:
             user.cure_status()
 
 class psyshock(Move):
@@ -2360,15 +2360,15 @@ class pursuit(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         # if hitting opponent normally (with faster speed): prevent another hit on a foe uturn
         target.remove_effect(Volatile.PURSUIT)
 
-    def on_modify_move(self, user, target, engine):
+    def on_modify_move(self, user, target, battle):
         if target is not None and target.is_switching_out:
             self.accuracy = None
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         return 80 if target.is_switching_out else 40
 
 class quickattack(Move):
@@ -2398,13 +2398,13 @@ class raindance(Move):
         self.is_protectable = False
         self.targets_field = True
 
-    def check_success(self, user, _, engine):
-        if engine.battlefield.weather is Weather.RAINDANCE:
+    def check_success(self, user, _, battle):
+        if battle.battlefield.weather is Weather.RAINDANCE:
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         duration = 8 if user.item is itemdex['damprock'] else 5
-        engine.battlefield.set_weather(Weather.RAINDANCE, duration)
+        battle.battlefield.set_weather(Weather.RAINDANCE, duration)
 
 class rapidspin(Move):
     def init_move(self):
@@ -2416,7 +2416,7 @@ class rapidspin(Move):
         self.base_power = 20
         self.on_success_ignores_substitute = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not user.is_fainted():
             user.remove_effect(Volatile.LEECHSEED)
             user.remove_effect(Volatile.PARTIALTRAP)
@@ -2440,8 +2440,8 @@ class recover(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        engine.heal(user, int(round(user.max_hp * 0.5)))
+    def on_success(self, user, _, battle):
+        battle.heal(user, int(round(user.max_hp * 0.5)))
 
 class reflect(Move):
     def init_move(self):
@@ -2451,11 +2451,11 @@ class reflect(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.side.has_effect(SideCondition.REFLECT):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         duration = 8 if user.item is itemdex['lightclay'] else 5
         user.side.set_effect(effects.Reflect(duration))
 
@@ -2469,7 +2469,7 @@ class relicsong(Move):
         self.is_sound = True
         self.secondary_effects = SecondaryEffect(10, status=Status.SLP),
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not user.is_fainted() and user.base_species == 'meloetta':
             user.forme_change('meloettapirouette' if user.name == 'meloetta' else 'meloetta')
             user.set_effect(effects.PirouetteForme())
@@ -2482,20 +2482,20 @@ class rest(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if (user.hp == user.max_hp or
             user.status is Status.SLP or
             user.is_immune_to(Status.SLP)
         ):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         assert user.hp > 0
         user.cure_status()
         user.status = Status.SLP
         user.set_effect(statuses.Sleep(user, 2))
         user.is_resting = True  # needed for Sleep Clause
-        engine.heal(user, user.max_hp)
+        battle.heal(user, user.max_hp)
 
 class retaliate(Move):
     def init_move(self):
@@ -2505,8 +2505,8 @@ class retaliate(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
-        if (engine.battlefield.turns - 1) == user.side.last_fainted_on_turn:
+    def get_base_power(self, user, target, battle):
+        if (battle.battlefield.turns - 1) == user.side.last_fainted_on_turn:
             if __debug__: log.i("Doubling retaliate's base power: a teammate fainted last turn")
             return 140
         return 70
@@ -2528,7 +2528,7 @@ class reversal(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         ratio = user.hp * 48 / user.max_hp
         if ratio < 2:
             return 200
@@ -2552,8 +2552,8 @@ class roar(Move):
         self.is_bounceable = True
         self.priority = -6
 
-    def on_success(self, user, target, engine):
-        return engine.force_random_switch(target, user)
+    def on_success(self, user, target, battle):
+        return battle.force_random_switch(target, user)
 
 class rockblast(Move):
     def init_move(self):
@@ -2610,12 +2610,12 @@ class roost(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.hp == user.max_hp:
             return FAIL
 
-    def on_success(self, user, target, engine):
-        engine.heal(user, int(round(user.max_hp * 0.5)))
+    def on_success(self, user, target, battle):
+        battle.heal(user, int(round(user.max_hp * 0.5)))
         user.set_effect(effects.Roost(user))
 
 class sacredfire(Move):
@@ -2646,11 +2646,11 @@ class safeguard(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.side.has_effect(SideCondition.SAFEGUARD):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.side.set_effect(effects.Safeguard())
 
 class scald(Move):
@@ -2790,8 +2790,8 @@ class slackoff(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        engine.heal(user, int(round(user.max_hp * 0.5)))
+    def on_success(self, user, _, battle):
+        battle.heal(user, int(round(user.max_hp * 0.5)))
 
 class sleeppowder(Move):
     def init_move(self):
@@ -2815,19 +2815,19 @@ class sleeptalk(Move):
     NO_SLEEP_TALK = {'assist', 'bide', 'chatter', 'copycat', 'focuspunch', 'mefirst', 'metronome',
                      'mimic', 'mirrormove', 'naturepower', 'sketch', 'sleeptalk', 'uproar'}
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.status is not Status.SLP:
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         moves = [move for move in user.moves if
                  move.name not in self.NO_SLEEP_TALK and not move.is_two_turn]
         if __debug__: log.i('sleeptalk choosing randomly from %s', moves)
 
         if moves:
             move = random.choice(moves)
-            engine.use_move(user, move, engine.get_foe(user))
-            engine.battlefield.last_move_used = move
+            battle.use_move(user, move, battle.get_foe(user))
+            battle.battlefield.last_move_used = move
         else:
             return FAIL
 
@@ -2858,8 +2858,8 @@ class softboiled(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def on_success(self, user, _, engine):
-        engine.heal(user, int(round(user.max_hp * 0.5)))
+    def on_success(self, user, _, battle):
+        battle.heal(user, int(round(user.max_hp * 0.5)))
 
 class solarbeam(Move):
     def init_move(self):
@@ -2868,18 +2868,18 @@ class solarbeam(Move):
         self.type = Type.GRASS
         self.accuracy = 100
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if user.remove_effect(Volatile.TWOTURNMOVE):
             return
         else:
-            if (engine.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND) or
-                (user.item == itemdex['powerherb'] and user.use_item(engine) is not FAIL)):
+            if (battle.battlefield.weather in (Weather.SUNNYDAY, Weather.DESOLATELAND) or
+                (user.item == itemdex['powerherb'] and user.use_item(battle) is not FAIL)):
                 return
             user.set_effect(effects.TwoTurnMoveEffect(self))
             return FAIL
 
-    def get_base_power(self, user, target, engine):
-        if engine.battlefield.weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA,
+    def get_base_power(self, user, target, battle):
+        if battle.battlefield.weather in (Weather.RAINDANCE, Weather.PRIMORDIALSEA,
                                           Weather.SANDSTORM, Weather.HAIL):
             return 60
         return 120
@@ -2903,8 +2903,8 @@ class spikes(Move):
         self.ignore_substitute = True
         self.targets_field = True
 
-    def on_success(self, user, _, engine):
-        foe_side = engine.get_foe_side(user)
+    def on_success(self, user, _, battle):
+        foe_side = battle.get_foe_side(user)
         spikes_ = foe_side.get_effect(Hazard.SPIKES)
         if spikes_ is None:
             if __debug__: log.i("Set spikes(layers=1) on %s's side", foe_side.active_pokemon)
@@ -2924,14 +2924,14 @@ class spikyshield(Move):
         self.targets_user = True
         self.priority = 4
 
-    def check_success(self, user, _, engine):
-        target = engine.get_foe(user)
+    def check_success(self, user, _, battle):
+        target = battle.get_foe(user)
         if target is None or not target.will_move_this_turn:
             return FAIL
         if user.has_effect(Volatile.STALL):
             return user.get_effect(Volatile.STALL).check_stall_success()
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         user.set_effect(effects.SpikyShield())
         user.set_effect(effects.StallCounter())
 
@@ -2963,8 +2963,8 @@ class stealthrock(Move):
         self.ignore_substitute = True
         self.targets_field = True
 
-    def on_success(self, user, _, engine):
-        foe_side = engine.get_foe_side(user)
+    def on_success(self, user, _, battle):
+        foe_side = battle.get_foe_side(user)
         if not foe_side.has_effect(Hazard.STEALTHROCK):
             if __debug__: log.i('Set up StealthRock on side %d', foe_side.index)
             foe_side.set_effect(effects.StealthRock())
@@ -2992,8 +2992,8 @@ class stickyweb(Move):
         self.ignore_substitute = True
         self.targets_field = True
 
-    def on_success(self, user, _, engine):
-        foe_side = engine.get_foe_side(user)
+    def on_success(self, user, _, battle):
+        foe_side = battle.get_foe_side(user)
         if not foe_side.has_effect(Hazard.STICKYWEB):
             if __debug__: log.i('Set up StickyWeb on side %d', foe_side.index)
             foe_side.set_effect(effects.StickyWeb())
@@ -3016,7 +3016,7 @@ class storedpower(Move):
         self.type = Type.PSYCHIC
         self.accuracy = 100
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         if __debug__: log.i("storedpower's power is %d" %
                             (20+20*sum(boost for boost in user.boosts.values() if boost > 0)))
         return 20 + 20 * sum(boost for boost in user.boosts.values() if boost > 0)
@@ -3040,9 +3040,9 @@ class struggle(Move):
         self.base_power = 50
         self.on_success_ignores_substitute = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if not user.is_fainted():
-            engine.direct_damage(user, user.max_hp / 4.0)
+            battle.direct_damage(user, user.max_hp / 4.0)
 
 class stunspore(Move):
     def init_move(self):
@@ -3062,12 +3062,12 @@ class substitute(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.has_effect(Volatile.SUBSTITUTE) or user.hp <= user.max_hp / 4 or user.hp == 1:
             return FAIL
 
-    def on_success(self, user, _, engine):
-        engine.direct_damage(user, user.max_hp / 4.0)
+    def on_success(self, user, _, battle):
+        battle.direct_damage(user, user.max_hp / 4.0)
         user.set_effect(effects.Substitute(user.max_hp / 4))
         user.remove_effect(Volatile.PARTIALTRAP)
 
@@ -3081,10 +3081,10 @@ class suckerpunch(Move):
         self.base_power = 80
         self.priority = 1
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if not target.will_move_this_turn:
             return FAIL
-        for event in engine.event_queue:
+        for event in battle.event_queue:
             if (event.type is Decision.MOVE and
                 event.pokemon is target and
                 event.move.category is not STATUS
@@ -3100,13 +3100,13 @@ class sunnyday(Move):
         self.is_protectable = False
         self.targets_field = True
 
-    def check_success(self, user, _, engine):
-        if engine.battlefield.weather is Weather.SUNNYDAY:
+    def check_success(self, user, _, battle):
+        if battle.battlefield.weather is Weather.SUNNYDAY:
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         duration = 8 if user.item is itemdex['heatrock'] else 5
-        engine.battlefield.set_weather(Weather.SUNNYDAY, duration)
+        battle.battlefield.set_weather(Weather.SUNNYDAY, duration)
 
 class superfang(Move):
     def init_move(self):
@@ -3146,7 +3146,7 @@ class sweetkiss(Move):
         self.accuracy = 75
         self.is_bounceable = True
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.confuse(self.infiltrates)
 
 class switcheroo(Move):
@@ -3156,14 +3156,14 @@ class switcheroo(Move):
         self.type = Type.DARK
         self.accuracy = 100
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if ((user.item is not None and not user.item.removable) or
             (target.item is not None and not target.item.removable) or
             target.ability.name == 'stickyhold'
         ):
             return FAIL
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         user_item = None if user.item is None else user.take_item()
         target_item = None if target.item is None else target.take_item()
         assert FAIL not in (user_item, target_item)
@@ -3222,11 +3222,11 @@ class tailwind(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.side.has_effect(SideCondition.TAILWIND):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.side.set_effect(effects.Tailwind())
 
 class taunt(Move):
@@ -3238,11 +3238,11 @@ class taunt(Move):
         self.ignore_substitute = True
         self.accuracy = 100
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if target.has_effect(Volatile.TAUNT):
             return FAIL
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         duration = 3 if target.will_move_this_turn else 4
         target.set_effect(effects.Taunt(duration))
 
@@ -3254,7 +3254,7 @@ class technoblast(Move):
         self.accuracy = 100
         self.base_power = 120
 
-    def on_modify_move(self, user, target, engine):
+    def on_modify_move(self, user, target, battle):
         if user.item is not None:
             self.type = user.item.drive_type or Type.NORMAL
 
@@ -3305,7 +3305,7 @@ class toxic(Move):
         self.is_bounceable = True
         self.target_status = Status.TOX
 
-    def on_modify_move(self, user, target, engine):
+    def on_modify_move(self, user, target, battle):
         if Type.POISON in user.types:
             self.accuracy = None
         else:
@@ -3321,8 +3321,8 @@ class toxicspikes(Move):
         self.ignore_substitute = True
         self.targets_field = True
 
-    def on_success(self, user, _, engine):
-        foe_side = engine.get_foe_side(user)
+    def on_success(self, user, _, battle):
+        foe_side = battle.get_foe_side(user)
         toxicspikes_ = foe_side.get_effect(Hazard.TOXICSPIKES)
         if toxicspikes_ is None:
             if __debug__: log.i('Set up ToxicSpikes(layers=1) on side %d', foe_side.index)
@@ -3340,8 +3340,8 @@ class transform(Move):
         self.type = Type.NORMAL
         self.is_protectable = False
 
-    def on_success(self, user, foe, engine):
-        if user.transform_into(foe, engine) is FAIL:
+    def on_success(self, user, foe, battle):
+        if user.transform_into(foe, battle) is FAIL:
             return FAIL
         else:
             user.set_effect(effects.Transformed())
@@ -3357,9 +3357,9 @@ class triattack(Move):
 
     STATUS = [Status.BRN, Status.PAR, Status.FRZ]
 
-    def secondary(self, target, user, engine):
+    def secondary(self, target, user, battle):
         roll = random.randrange(3)
-        engine.apply_secondary_effect(target, SecondaryEffect(100, status=self.STATUS[roll]),
+        battle.apply_secondary_effect(target, SecondaryEffect(100, status=self.STATUS[roll]),
                                       user)
 
 class trick(Move):
@@ -3381,8 +3381,8 @@ class trickroom(Move):
         self.targets_field = True
         self.priority = -7
 
-    def on_success(self, user, _, engine):
-        battlefield = engine.battlefield
+    def on_success(self, user, _, battle):
+        battlefield = battle.battlefield
         if battlefield.has_effect(PseudoWeather.TRICKROOM):
             battlefield.remove_effect(PseudoWeather.TRICKROOM)
         else:
@@ -3434,12 +3434,12 @@ class wakeupslap(Move):
         self.accuracy = 100
         self.makes_contact = True
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         if target.status is Status.SLP:
             return 140
         return 70
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         if target.status is Status.SLP:
             target.cure_status()
 
@@ -3470,7 +3470,7 @@ class waterspout(Move):
         self.type = Type.WATER
         self.accuracy = 100
 
-    def get_base_power(self, user, target, engine):
+    def get_base_power(self, user, target, battle):
         return (150 * float(user.hp) / user.max_hp) or 1
 
 class weatherball(Move):
@@ -3489,13 +3489,13 @@ class weatherball(Move):
                     Weather.HAIL: Type.ICE,
                     None: Type.NORMAL}
 
-    def get_base_power(self, user, target, engine):
-        if engine.battlefield.weather:
+    def get_base_power(self, user, target, battle):
+        if battle.battlefield.weather:
             return 100
         return 50
 
-    def on_modify_move(self, user, target, engine):
-        self.type = self.WEATHER_TYPE[engine.battlefield.weather]
+    def on_modify_move(self, user, target, battle):
+        self.type = self.WEATHER_TYPE[battle.battlefield.weather]
 
 class whirlwind(Move):
     def init_move(self):
@@ -3507,8 +3507,8 @@ class whirlwind(Move):
         self.ignore_substitute = True
         self.priority = -6
 
-    def on_success(self, user, target, engine):
-        return engine.force_random_switch(target, user)
+    def on_success(self, user, target, battle):
+        return battle.force_random_switch(target, user)
 
 class wildcharge(Move):
     def init_move(self):
@@ -3537,11 +3537,11 @@ class wish(Move):
         self.is_protectable = False
         self.targets_user = True
 
-    def check_success(self, user, _, engine):
+    def check_success(self, user, _, battle):
         if user.side.has_effect(SideCondition.WISH):
             return FAIL
 
-    def on_success(self, user, _, engine):
+    def on_success(self, user, _, battle):
         user.side.set_effect(effects.Wish(user.max_hp / 2))
 
 class woodhammer(Move):
@@ -3571,11 +3571,11 @@ class yawn(Move):
         self.is_protectable = True
         self.is_bounceable = True
 
-    def check_success(self, user, target, engine):
+    def check_success(self, user, target, battle):
         if target.status is not None or target.is_immune_to(Status.SLP):
             return FAIL
 
-    def on_success(self, user, target, engine):
+    def on_success(self, user, target, battle):
         target.set_effect(effects.Yawn())
 
 class zenheadbutt(Move):

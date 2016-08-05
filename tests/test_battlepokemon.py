@@ -105,7 +105,7 @@ class TestAbilityChange(MultiMoveTestCase):
     def test_change_ability(self):
         self.new_battle(p0_ability='levitate')
         self.add_pokemon('espeon', 0)
-        self.vaporeon.change_ability(abilitydex['motordrive'], self.engine)
+        self.vaporeon.change_ability(abilitydex['motordrive'], self.battle)
         self.choose_move(self.leafeon, 'earthquake')
         self.run_turn()
 
