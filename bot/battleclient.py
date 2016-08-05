@@ -562,13 +562,11 @@ class BattleClient(object):
             self.engine.show_foe_moves(my_active, foe_active)
 
         if self.make_moves:
-            self.make_move(request)
+            self.make_random_move(request)
 
-    def make_move(self, request, switch_rejected=False):
+    def make_random_move(self, request, switch_rejected=False):
         """
         Temporary random implementation of moves for testing interaction with server
-
-        TODO: Use an AI module for move selection
         """
         self.switch_choice = None
         if (not switch_rejected and
@@ -1922,7 +1920,7 @@ class BattleClient(object):
         """
         if msg[1] == 'trapped':
             log.e("Tried to switch out while trapped: switch choice was rejected")
-            self.make_move(self.request, switch_rejected=True)
+            self.make_random_move(self.request, switch_rejected=True)
         else:
             log.e("Unhandled |callback| message: %s", msg)
 
