@@ -3,7 +3,7 @@ Each Effect class that inherits from BaseEffect typically overrides a few (about
 order to cause an effect or interrupt execution at certain points in the battle loop.
 
 The 'effects' attribute of BattlePokemon, BattleSide, and BattleField contains a set of these
-Effects. At certain points in the battle, the BattleEngine will call handlers on these effects. For
+Effects. At certain points in the battle, the Battle will call handlers on these effects. For
 example (during damage calculation):
 
     for effector in (user, self.battlefield):

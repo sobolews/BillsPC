@@ -673,7 +673,7 @@ class Yawn(BaseEffect):
 class SheerForceVolatile(BaseEffect):
     """
     Acts as a flag indicating that abilitydex['sheerforce'] suppressed secondary effects this turn.
-    Used in BattleEngine.use_move to detect whether to suppress after_move_secondary* handlers.
+    Used in Battle.use_move to detect whether to suppress after_move_secondary* handlers.
     """
     source = Volatile.SHEERFORCE
     duration = 1

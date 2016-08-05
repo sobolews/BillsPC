@@ -129,7 +129,7 @@ class Move(object):
 
     def on_move_fail(self, user, battle):
         """
-        Called after BattleEngine.try_move_hit fails
+        Called after Battle.try_move_hit fails
         """
 
     def on_modify_move(self, user, target, battle):

@@ -13,9 +13,9 @@ class BattleField(object, EffectHandlerMixin):
     """
     Encapsulates the entire state of a battle. At any point in the battle (but only at the decision
     points in between turns), it should be possible to (de)serialize a BattleField, inject it into a
-    BattleEngine, and continue the battle.
+    Battle, and continue the battle.
 
-    Note: the BattleEngine does maintain some intra-turn state.
+    Note: the Battle does maintain some intra-turn state.
     """
     def __init__(self, side0=None, side1=None):
         self._weather = None

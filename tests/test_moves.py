@@ -1,7 +1,7 @@
 from mock import patch
 from unittest import TestCase
 
-from battle.battleengine import BattleEngine
+from battle.battleengine import Battle
 from pokedex import effects
 from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile, Hazard,
                            PseudoWeather, SideCondition, Type)
@@ -2534,7 +2534,7 @@ class TestMoves(MultiMoveTestCase):
         self.assertFainted(self.vaporeon)
 
     def test_stormthrow_always_crit(self):
-        self.battle.get_critical_hit = BattleEngine.get_critical_hit
+        self.battle.get_critical_hit = Battle.get_critical_hit
         self.choose_move(self.vaporeon, 'stormthrow')
         self.choose_move(self.leafeon, 'stormthrow')
         self.run_turn()

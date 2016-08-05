@@ -1,4 +1,4 @@
-from battle.battleengine import BattleEngine
+from battle.battleengine import Battle
 from mining.statistics import RandbatsStatistics, rbstats_key
 from pokedex import effects
 from pokedex.enums import FAIL, Volatile, Type
@@ -14,9 +14,9 @@ from _logging import log, no_console_log
 rbstats = RandbatsStatistics.from_pickle()
 TABLEFMT = 'psql'
 
-class CheatSheetEngine(BattleEngine):
+class CheatSheetEngine(Battle):
     """
-    Adds some methods to BattleEngine for performing and reporting basic damage calcs for the
+    Adds some methods to Battle for performing and reporting basic damage calcs for the
     current active pokemon.
     """
     def describe_my_moves(self, my_active, foe):
@@ -118,8 +118,8 @@ class CheatSheetEngine(BattleEngine):
         self.damage_randomizer = lambda: 100 # max damage
         maxdamage = self.calculate_damage(attacker, move, defender)
 
-        self.get_critical_hit = BattleEngine.get_critical_hit
-        self.damage_randomizer = BattleEngine.damage_randomizer
+        self.get_critical_hit = Battle.get_critical_hit
+        self.damage_randomizer = Battle.damage_randomizer
         if attacker.has_effect(Volatile.SHEERFORCE):
             attacker.remove_effect(Volatile.SHEERFORCE)
 
@@ -139,8 +139,8 @@ class CheatSheetEngine(BattleEngine):
         self.damage_randomizer = lambda: 93 # average damage
         damage = self.calculate_damage(attacker, move, defender)
 
-        self.get_critical_hit = BattleEngine.get_critical_hit
-        self.damage_randomizer = BattleEngine.damage_randomizer
+        self.get_critical_hit = Battle.get_critical_hit
+        self.damage_randomizer = Battle.damage_randomizer
         attacker.remove_effect(Volatile.SHEERFORCE)
 
         return damage

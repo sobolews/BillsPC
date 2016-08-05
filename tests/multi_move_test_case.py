@@ -6,7 +6,7 @@ and classes.
 from collections import defaultdict
 from unittest import TestCase
 
-from battle.battleengine import BattleEngine
+from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import AutoDecisionMaker
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
@@ -51,13 +51,13 @@ class LoggingFaintQueue(list):
         super(LoggingFaintQueue, self).insert(pos, obj, *args, **kwargs)
         self.log.append(obj)
 
-class TestingEngine(BattleEngine):
+class TestingBattle(Battle):
     """
     Overrides get_move_decisions to allow the test to inject decisions for each player between
     turns.
     """
     def __init__(self, *args, **kwargs):
-        super(TestingEngine, self).__init__(*args, **kwargs)
+        super(TestingBattle, self).__init__(*args, **kwargs)
         self.testing_decisions = []
         self.faint_queue = LoggingFaintQueue()
 
@@ -82,7 +82,7 @@ class TestingEngine(BattleEngine):
         return decisions
 
     def init_turn(self):
-        super(TestingEngine, self).init_turn()
+        super(TestingBattle, self).init_turn()
         self.testing_decisions = []
 
 class TestingDecisionMaker(AutoDecisionMaker):
@@ -143,7 +143,7 @@ class MultiMoveTestCase(TestCase):
                                             moves=p1_moves,
                                             item=itemdex.get(p1_item),
                                             level=p1_level, gender=p1_gender))
-        self.battle = TestingEngine([getattr(self, p0_name)],
+        self.battle = TestingBattle([getattr(self, p0_name)],
                                     [getattr(self, p1_name)],
                                     dm0=TestingDecisionMaker(0),
                                     dm1=TestingDecisionMaker(1))

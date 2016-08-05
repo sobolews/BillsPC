@@ -1,7 +1,7 @@
 from unittest import TestCase
 from mock import patch, Mock
 
-from battle.battleengine import BattleEngine
+from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from mining.pokedexmaker import create_pokedex
 from pokedex import effects
@@ -24,8 +24,8 @@ class BattleEngineMovesTestCase(TestCase):
         self.leafeon = BattlePokemon(pokedex['leafeon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
         self.palkia = BattlePokemon(pokedex['palkia'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
         self.sylveon = BattlePokemon(pokedex['sylveon'], evs=(0,)*6, ivs=(31,)*6,  ability=_none_)
-        self.battle = BattleEngine([self.vaporeon], [self.flareon, self.sylveon, self.leafeon,
-                                                     self.golem, self.espeon, self.palkia])
+        self.battle = Battle([self.vaporeon], [self.flareon, self.sylveon, self.leafeon,
+                                               self.golem, self.espeon, self.palkia])
         self.battle.init_battle()
         # make it deterministic
         self.battle.get_critical_hit = lambda crit: False
@@ -122,7 +122,7 @@ class TestBattleEngineCalculateDamage(BattleEngineMovesTestCase):
         self.assertEqual(damage, 168)
 
     def test_crit_ratio_3_always_crits(self):
-        self.battle.get_critical_hit = BattleEngine.get_critical_hit
+        self.battle.get_critical_hit = Battle.get_critical_hit
         dragonclaw = movedex['dragonclaw']
         with patch.object(dragonclaw, 'crit_ratio', 3):
             damage = self.battle.calculate_damage(self.leafeon, dragonclaw, self.vaporeon)
@@ -131,7 +131,7 @@ class TestBattleEngineCalculateDamage(BattleEngineMovesTestCase):
     def test_damage_calculation_with_different_levels(self):
         self.vaporeon = BattlePokemon(pokedex['vaporeon'], level=80, evs=(0,)*6, ivs=(31,)*6)
         self.flareon = BattlePokemon(pokedex['flareon'], level=70, evs=(0,)*6, ivs=(31,)*6)
-        self.battle = BattleEngine([self.vaporeon], [self.flareon])
+        self.battle = Battle([self.vaporeon], [self.flareon])
         self.battle.init_battle()
         self.battle.get_critical_hit = lambda crit: False
         self.battle.damage_randomizer = lambda: 100
@@ -300,7 +300,7 @@ class TestBattleEngineRunMove(TestCase):
                                             movedex['facade'],
                                             movedex['protect']),
                                      ability=abilitydex['_none_'])
-        self.battle = BattleEngine([self.vaporeon], [self.flareon])
+        self.battle = Battle([self.vaporeon], [self.flareon])
         # make it deterministic
         self.battle.get_critical_hit = lambda crit: False
         self.battle.damage_randomizer = lambda: 100 # max damage

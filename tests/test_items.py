@@ -2,7 +2,7 @@ from mock import patch
 
 from mining.statistics import RandbatsStatistics
 from misc.functions import normalize_name
-from battle.battleengine import BattleEngine
+from battle.battleengine import Battle
 from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition
 from pokedex.items import itemdex
 from pokedex.moves import movedex
@@ -827,7 +827,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         crit = [None]
         def get_critical_hit(crit_ratio):
             crit[0] = crit_ratio
-            return BattleEngine.get_critical_hit(crit_ratio)
+            return Battle.get_critical_hit(crit_ratio)
 
         self.new_battle(p0_item='scopelens', p0_ability='superluck',
                         p1_ability='angerpoint')
@@ -916,7 +916,7 @@ class TestItems(MultiMoveTestCaseWithoutSetup):
         crit = [None]
         def get_critical_hit(crit_ratio):
             crit[0] = crit_ratio
-            return BattleEngine.get_critical_hit(crit_ratio)
+            return Battle.get_critical_hit(crit_ratio)
 
         self.new_battle('vaporeon', 'farfetchd', p0_item='stick', p1_item='stick')
         self.battle.get_critical_hit = get_critical_hit

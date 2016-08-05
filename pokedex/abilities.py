@@ -42,7 +42,7 @@ class Adaptability(AbilityEffect):
 
 class Aftermath(AbilityEffect):
     def on_after_move_damage(self, battle, pokemon, damage, move, foe):
-        # not using pokemon.is_fainted() as BattleEngine.faint hasn't run yet
+        # not using pokemon.is_fainted() as Battle.faint hasn't run yet
         if pokemon.hp <= 0 and move.makes_contact and not foe.is_fainted():
             if __debug__: log.i("%s was damaged by %s's Aftermath", foe, pokemon)
             battle.damage(foe, foe.max_hp / 4.0, Cause.OTHER)
@@ -111,7 +111,7 @@ class BadDreams(AbilityEffect):
             battle.damage(foe, foe.max_hp / 8.0, Cause.OTHER)
 
 class BattleArmor(AbilityEffect):
-    pass # implemented in BattleEngine.modify_critical_hit
+    pass # implemented in Battle.modify_critical_hit
 
 class Blaze(AbilityEffect):
     def on_modify_atk(self, pokemon, move, battle, atk):
@@ -273,7 +273,7 @@ class Drought(AbilityEffect):
         battle.battlefield.set_weather(Weather.SUNNYDAY, duration)
 
 class DrySkin(AbilityEffect):
-    # Fire vulnerability implemented in BattleEngine.modify_base_power
+    # Fire vulnerability implemented in Battle.modify_base_power
     @priority(0)
     def on_foe_try_hit(self, foe, move, target, battle):
         if move.type is Type.WATER:
@@ -941,10 +941,10 @@ class SheerForce(AbilityEffect):
         pokemon.remove_effect(Volatile.SHEERFORCE)
 
 class ShellArmor(AbilityEffect):
-    pass # implemented in BattleEngine.modify_critical_hit
+    pass # implemented in Battle.modify_critical_hit
 
 class ShieldDust(AbilityEffect):
-    pass # implemented in BattleEngine.apply_secondary_effect
+    pass # implemented in Battle.apply_secondary_effect
 
 class Simple(AbilityEffect):
     def on_boost(self, pokemon, boosts, self_induced):
@@ -953,7 +953,7 @@ class Simple(AbilityEffect):
         return boosts
 
 class SkillLink(AbilityEffect):
-    pass # implemented in BattleEngine.try_move_hit
+    pass # implemented in Battle.try_move_hit
 
 class SlowStart(AbilityEffect):
     def on_start(self, pokemon, battle):
@@ -1074,7 +1074,7 @@ class Sturdy(AbilityEffect):
         return damage
 
 class SuctionCups(AbilityEffect):
-    pass # Implemented in BattleEngine.force_random_switch
+    pass # Implemented in Battle.force_random_switch
 
 class SuperLuck(AbilityEffect):
     def on_modify_move(self, move, user, battle):

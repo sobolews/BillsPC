@@ -1,6 +1,6 @@
 """
-The event classes in this module are used by the BattleEngine to organize discrete parts of a
-turn. (Note: a turn has begun once BattleEngine.init_turn has been called)
+The event classes in this module are used by the Battle to organize discrete parts of a
+turn. (Note: a turn has begun once Battle.init_turn has been called)
 
 Generally, a turn proceeds in this order:
 - Hard switches

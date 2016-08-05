@@ -32,7 +32,7 @@ STATUS_EFFECTS = {
 
 Residual = namedtuple('Residual', ['holder', 'effect', 'call'])
 
-class BattleEngine(object):
+class Battle(object):
     """
     Encapsulates the logic required to run each turn of a full battle. All battle state is
     encapsulated within the BattleField (except for intra-turn state), so it is possible to swap out
@@ -242,7 +242,7 @@ class BattleEngine(object):
         if damage is not None:
             damage = self.damage(target, damage, Cause.MOVE, move, user, move.drain)
             if damage is FAIL:
-                if __debug__: log.i('Move failed in BattleEngine.damage: returned %s', damage)
+                if __debug__: log.i('Move failed in Battle.damage: returned %s', damage)
                 return FAIL
 
         user.damage_done_this_turn = damage
@@ -520,7 +520,7 @@ class BattleEngine(object):
                 cause is Cause.MOVE else True)
 
         if damage == 0:
-            if __debug__: log.w('BattleEngine.damage called with damage=0') # this shouldn't happen
+            if __debug__: log.w('Battle.damage called with damage=0') # this shouldn't happen
             return 0
 
         if cause is Cause.WEATHER and pokemon.is_immune_to(source):
