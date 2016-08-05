@@ -841,10 +841,12 @@ class Battle(object):
             self.post_switch_in(lead)
         self.run_update()
 
-    def run_battle(self):
+    def run_new_battle(self):
         """ Return winner's side (0 or 1) """
         self.init_battle()
+        return self.run_battle()
 
+    def run_battle(self):
         while self.battlefield.win is None:
             self.run_turn()
 
@@ -852,7 +854,20 @@ class Battle(object):
 
     def run_turn(self):
         self.init_turn()
+        if self.battlefield.win is not None:
+            return
+        self.run_initialized_turn()
 
+    def run_initialized_turn(self):
+        self.queue_events_for_turn()
+        self.run_queued_events()
+
+    def queue_events_for_turn(self):
+        self.event_queue.extend(self.get_move_decisions())
+        self.event_queue.append(ResidualEvent())
+        self.event_queue.sort()
+
+    def run_queued_events(self):
         while self.event_queue:
             if __debug__: log.d('Event Queue: %r', self.event_queue)
             if __debug__: log.d('Next event: %s', self.event_queue[-1])
@@ -877,8 +892,7 @@ class Battle(object):
 
     def init_turn(self):
         """
-        Get switches if pokemon fainted, reset flags, get decisions + residual event, set pursuit,
-        and sort queue.
+        Get switches if pokemon fainted, and increment turn counts
         """
         sides = self.battlefield.sides
         # Loop until both sides have an active pokemon: (needs a loop because of the possibility of
@@ -929,10 +943,6 @@ class Battle(object):
         if __debug__:
             log.i('\nTurn %d', self.battlefield.turns)
             self._debug_sanity_check()
-
-        self.event_queue.extend(self.get_move_decisions())
-        self.event_queue.append(ResidualEvent())
-        self.event_queue.sort()
 
     def resolve_faint_queue(self):
         while self.faint_queue:

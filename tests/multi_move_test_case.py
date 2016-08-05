@@ -81,8 +81,8 @@ class TestingBattle(Battle):
 
         return decisions
 
-    def init_turn(self):
-        super(TestingBattle, self).init_turn()
+    def run_turn(self):
+        super(TestingBattle, self).run_turn()
         self.testing_decisions = []
 
 class TestingDecisionMaker(AutoDecisionMaker):
