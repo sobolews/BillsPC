@@ -103,7 +103,7 @@ class MultiMoveTestCase(TestCase):
     injected.
     """
     def setUp(self):
-        """ By default, start with vaporeon vs. flareon with no moveset """
+        """ By default, start with vaporeon vs. leafeon with no moveset """
         self.new_battle('vaporeon', 'leafeon', tearDown=False)
 
     def new_battle(self, p0_name='vaporeon', p1_name='leafeon',
