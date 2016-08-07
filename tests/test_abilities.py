@@ -1,4 +1,3 @@
-
 from mock import patch
 
 if __debug__: from _logging import log
