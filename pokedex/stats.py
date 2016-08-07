@@ -11,6 +11,9 @@ class PokemonStats(dict):
     def __setitem__(self, key, value):
         raise KeyError("A BattlePokemon's stats cannot change")
 
+    def __deepcopy__(self, memo):
+        return self.from_dict(self)
+
     @classmethod
     def from_dict(cls, dct):
         self = cls(*(None,)*6)

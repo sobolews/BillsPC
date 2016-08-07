@@ -6,7 +6,11 @@ class EnumMeta(type):
         dct['values'] = {k: v for k, v in dct.items() if not k.startswith('__')}
         return type.__new__(mcs, name, bases, dct)
 
-class EnumBase(object):
+class NoCopy(object):
+    def __deepcopy__(self, memo):
+        return self
+
+class EnumBase(NoCopy):
     __metaclass__ = EnumMeta
 
 class Type(EnumBase):
@@ -50,7 +54,11 @@ class MoveCategory(EnumBase):
     PHYSICAL, SPECIAL, STATUS = [()]*3
 STATUS, PHYSICAL, SPECIAL = MoveCategory.STATUS, MoveCategory.PHYSICAL, MoveCategory.SPECIAL
 
-FAIL = type('', (object,), {'__repr__': lambda _: '<FAIL>'})()
-ABILITY = type('', (object,), {'__repr__': lambda _: '<ABILITY>'})()
-ITEM = type('', (object,), {'__repr__': lambda _: '<ITEM>'})()
-POWDER = type('', (object,), {'__repr__': lambda _: '<POWDER>'})()
+class SingletonEnum(NoCopy):
+    def __repr__(self):
+        return self.__class__.__name__.join(('<', '>'))
+
+FAIL = type('FAIL', (SingletonEnum,), {})()
+ABILITY = type('ABILITY', (SingletonEnum,), {})()
+ITEM = type('ITEM', (SingletonEnum,), {})()
+POWDER = type('POWDER', (SingletonEnum,), {})()

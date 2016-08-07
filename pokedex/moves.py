@@ -91,6 +91,12 @@ class Move(object):
     def init_move(self):
         raise NotImplementedError
 
+    def __deepcopy__(self, memo):
+        """
+        The base moves contained in the movedex are not modified, so there is no need to copy them.
+        """
+        return self
+
     def __eq__(self, other):
         return isinstance(other, Move) and self.name == other.name
 
