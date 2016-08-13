@@ -1286,7 +1286,8 @@ class BattleClient(object):
 
         self.remove_item(pokemon)
         pokemon.item = item
-        pokemon.set_effect(item())
+        if pokemon.is_active:
+            pokemon.set_effect(item())
         pokemon.remove_effect(Volatile.UNBURDEN, force=True)
         pokemon.remove_effect(Volatile.CHOICELOCK, force=True)
 
@@ -1336,7 +1337,8 @@ class BattleClient(object):
 
         pokemon.remove_effect(ABILITY, force=True)
         pokemon.ability = ability
-        pokemon.set_effect(ability())
+        if pokemon.is_active:
+            pokemon.set_effect(ability())
 
         if pokemon.base_ability == abilitydex['_unrevealed_'] and not pokemon.is_transformed:
             self.set_base_ability(pokemon, ability)
