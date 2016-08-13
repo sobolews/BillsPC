@@ -429,38 +429,38 @@ class BattleClient(object):
 
             log.d("Updating foe: %s" % pokemon)
 
-            known_info = [move.name for move in pokemon.moves
+            known_attrs = [move.name for move in pokemon.moves
                           if move.type != Type.NOTYPE]
             if pokemon.original_item != itemdex['_unrevealed_']:
-                known_info.append(pokemon.original_item.name)
+                known_attrs.append(pokemon.original_item.name)
             if (pokemon.base_ability != abilitydex['_unrevealed_'] and not
                 (pokemon.is_mega or pokemon.name.endswith('primal'))):
-                known_info.append(pokemon.base_ability.name)
+                known_attrs.append(pokemon.base_ability.name)
 
-            log.d("known_info: %s", known_info)
-            if len(known_info) == 6 or (pokemon.is_mega and len(known_info) == 5):
+            log.d("known_attrs: %s", known_attrs)
+            if len(known_attrs) == 6 or (pokemon.is_mega and len(known_attrs) == 5):
                 continue        # all info is known
 
             rb_index = rbstats_key(pokemon)
             if pokemon.item == itemdex['_unrevealed_']:
                 for item in rbstats[rb_index]['item']:
-                    if rbstats.attr_probability(rb_index, item, known_info) == 1:
-                        log.i("%s must have %s, given %s", pokemon.name, item, known_info)
+                    if rbstats.attr_probability(rb_index, item, known_attrs) == 1:
+                        log.i("%s must have %s, given %s", pokemon.name, item, known_attrs)
                         self.reveal_foe_original_item(pokemon, itemdex[item])
                         self.set_item(pokemon, itemdex[item])
 
             if pokemon.ability == abilitydex['_unrevealed_']:
                 for ability in rbstats[rb_index]['ability']:
-                    if rbstats.attr_probability(rb_index, ability, known_info) == 1:
-                        log.i("%s must have %s, given %s", pokemon.name, ability, known_info)
+                    if rbstats.attr_probability(rb_index, ability, known_attrs) == 1:
+                        log.i("%s must have %s, given %s", pokemon.name, ability, known_attrs)
                         self.set_ability(pokemon, abilitydex[ability])
 
             if len(pokemon.moves) < 4:
                 for move in rbstats[rb_index]['moves']:
-                    if (move not in known_info and
-                        rbstats.attr_probability(rb_index, move, known_info) == 1
+                    if (move not in known_attrs and
+                        rbstats.attr_probability(rb_index, move, known_attrs) == 1
                     ):
-                        log.i("%s must have %s, given %s", pokemon.name, move, known_info)
+                        log.i("%s must have %s, given %s", pokemon.name, move, known_attrs)
                         self.reveal_move(pokemon, movedex[move])
                         assert len(pokemon.moves) <= 4, (pokemon, pokemon.moves)
 
