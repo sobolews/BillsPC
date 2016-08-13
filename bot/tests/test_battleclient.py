@@ -18,6 +18,7 @@ rbstats = RandbatsStatistics.from_pickle()
 class TestBattleClientBase(TestCase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
+        self.bc.make_moves = False
 
     REQUEST = '|request|{"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Hitmonchan","details":"Hitmonchan, L79, M","condition":"209/209","active":true,"stats":{"atk":211,"def":170,"spa":101,"spd":219,"spe":166},"moves":["solarbeam","machpunch","rapidspin","hiddenpowerice"],"baseAbility":"ironfist","item":"assaultvest","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Zekrom","details":"Zekrom, L73","condition":"266/266","active":false,"stats":{"atk":261,"def":218,"spa":218,"spd":188,"spe":174},"moves":["outrage","roost","voltswitch","boltstrike"],"baseAbility":"regenerator","item":"leftovers","pokeball":"pokeball","canMegaEvo":false},{"ident":"p1: Altaria","details":"Altaria, L75, M","condition":"236/236","active":false,"stats":{"atk":149,"def":179,"spa":149,"spd":201,"spe":164},"moves":["return","dragondance","earthquake","roost"],"baseAbility":"naturalcure","item":"altarianite","pokeball":"pokeball","canMegaEvo":true},{"ident":"p2: Ditto","details":"Ditto, L83","condition":"215/215","active":true,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["transform"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"},{"ident":"p2: Giratina","details":"Giratina-Origin, L73","condition":"339/339","active":false,"stats":{"atk":218,"def":188,"spa":218,"spd":188,"spe":174},"moves":["defog","dragontail","taunt","shadowsneak"],"baseAbility":"mummy","item":"griseousorb","pokeball":"pokeball"},{"ident":"p1: Dunsparce","details":"Dunsparce, L83, M","condition":"302/302","active":false,"stats":{"atk":164,"def":164,"spa":156,"spd":156,"spe":122},"moves":["roost","coil","rockslide","headbutt"],"baseAbility":"trace","item":"leftovers","pokeball":"pokeball","canMegaEvo":false}]}}'
     REQUEST = json.loads(REQUEST.split('|')[2])
@@ -64,7 +65,6 @@ class TestBattleClientBase(TestCase):
 class TestBattleClientInitialRequestBase(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
-        self.bc.make_moves = False
 
     def initial_request(self, request):
         self.handle('|player|p1|test-BillsPC|200')
@@ -154,7 +154,6 @@ class TestBattleClient(TestBattleClientBase):
 class TestBattleClientPostTurn0(TestBattleClientBase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
-        self.bc.make_moves = False
         self.bc.battle.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
         self.set_up_turn_0()
         self.hitmonchan = self.my_side.active_pokemon
