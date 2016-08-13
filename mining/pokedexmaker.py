@@ -18,6 +18,7 @@ SHOWDOWN_DIR = abspath(join(dirname(__file__), 'Pokemon-Showdown'))
 POKEDEX_JS_PATH = join(SHOWDOWN_DIR, 'data', 'pokedex.js')
 
 _pokedex = {}
+type_index = {}
 
 def create_pokedex():
     if not _pokedex:
@@ -61,6 +62,9 @@ def parse_pokedex_js(pokedex):
             pokemon, species, weight, mega_formes, fully_evolved, types, base_stats, abilities)
         pokedex[pokemon[:18]] = pokedex[pokemon] # workaround: the showdown server
                                                  # cuts names off at 18 chars
+        types = sorted(types)
+        type_index.setdefault(tuple(types), []).append(pokemon)
+        type_index.setdefault(tuple(reversed(types)), []).append(pokemon)
 
 
 class PokedexEntry(object):
