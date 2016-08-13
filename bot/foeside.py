@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from battle.battlefield import BattleSide
 from battle.battlepokemon import BattlePokemon
 from bot.unrevealedpokemon import UNREVEALED, UnrevealedPokemon
+from pokedex.enums import Type
+from pokedex.abilities import abilitydex
 from pokedex.items import itemdex
 from _logging import log
 
@@ -65,6 +67,28 @@ class FoePokemon(BattlePokemon):
         self.item = self.pre_switch_state.item
         self.original_item = self.pre_switch_state.original_item
         self.pre_switch_state = None
+
+    def known_attrs(self):
+        """
+        Return the names of the known move/item/ability attributes of this foe pokemon:
+        [moves..., ability, item]
+
+        Do not return the base_ability of a mega/primal pokemon, since rbstats only tracks the
+        base_ability of the pre-formechange pokemon, so lookups will fail using the post-change
+        ability. This doesn't reduce the accuracy of lookups, since if the pokemon is mega/primal
+        this is seen uniquely in the item.
+        """
+        attrs = [move.name for move in self.moves if move.type != Type.NOTYPE]
+        if self.original_item != itemdex['_unrevealed_']:
+            attrs.append(self.original_item.name)
+        if (self.base_ability != abilitydex['_unrevealed_'] and not
+            (self.is_mega or self.name.endswith('primal'))):
+            attrs.append(self.base_ability.name)
+        log.d("attrs: %s", attrs)
+
+        all_known = (len(attrs) == 6 or
+                     ((self.is_mega or self.name.endswith('primal')) and len(attrs) == 5))
+        return attrs, all_known
 
 class FoePreSwitchState(object):
     def __init__(self, hp, status, turns_slept, moves, item, original_item):

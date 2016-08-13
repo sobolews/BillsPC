@@ -426,20 +426,11 @@ class BattleClient(object):
         for pokemon in self.foe_side.team:
             if pokemon.is_fainted() or pokemon.name == UNREVEALED or pokemon.is_transformed:
                 continue
-
             log.d("Updating foe: %s" % pokemon)
 
-            known_attrs = [move.name for move in pokemon.moves
-                          if move.type != Type.NOTYPE]
-            if pokemon.original_item != itemdex['_unrevealed_']:
-                known_attrs.append(pokemon.original_item.name)
-            if (pokemon.base_ability != abilitydex['_unrevealed_'] and not
-                (pokemon.is_mega or pokemon.name.endswith('primal'))):
-                known_attrs.append(pokemon.base_ability.name)
-
-            log.d("known_attrs: %s", known_attrs)
-            if len(known_attrs) == 6 or (pokemon.is_mega and len(known_attrs) == 5):
-                continue        # all info is known
+            known_attrs, all_known = pokemon.known_attrs()
+            if all_known:
+                continue
 
             rb_index = rbstats_key(pokemon)
             if pokemon.item == itemdex['_unrevealed_']:
