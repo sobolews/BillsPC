@@ -36,7 +36,7 @@ class BattleClient(object):
     Purposefully unimplemented message types (because they don't occur in randbats):
     {-swapboost, -copyboost, -invertboost, -ohko, -mustrecharge}
     """
-    def __init__(self, name, room, send, make_moves=False):
+    def __init__(self, name, room, send, make_moves=False, show_calcs=False):
         """
         name: (str) client's username
         room: (str) the showdown room that battle messages should be sent to
@@ -60,6 +60,7 @@ class BattleClient(object):
         self.switch_choice = None
 
         self.make_moves = make_moves # send move choices to the server
+        self.show_calcs = show_calcs
         self.battle = BattleCalculator.from_battlefield(None)
 
         def _send(msg):
@@ -548,7 +549,7 @@ class BattleClient(object):
         if request.get('wait'): # The opponent has more decisions to make
             return
 
-        if not my_active.is_fainted() and not foe_active.is_fainted():
+        if self.show_calcs and not my_active.is_fainted() and not foe_active.is_fainted():
             self.battle.show_my_moves(my_active, foe_active)
             self.battle.show_foe_moves(my_active, foe_active)
 

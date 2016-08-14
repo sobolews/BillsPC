@@ -28,7 +28,7 @@ class Bot(WebSocketClient):
     priority.
     """
     def __init__(self, username=None, password=None, accept_challenges=False, make_moves=False,
-                 *args, **kwargs):
+                 show_calcs=False, *args, **kwargs):
         super(Bot, self).__init__(*args, **kwargs)
         self.username = ((username or raw_input('Showdown username: '))
                          .decode('utf-8').encode('ascii', 'ignore'))
@@ -36,6 +36,7 @@ class Bot(WebSocketClient):
         self.challenging = None
         self.accept_challenges = accept_challenges
         self.make_moves = make_moves
+        self.show_calcs = show_calcs
         self.latest_request = None
         self.battleclient = None
         self.battleroom = None
@@ -75,7 +76,7 @@ class Bot(WebSocketClient):
                 if msg_block[1] == '|init|battle':
                     self.battleroom = msg_block[0][1:]
                     self.battleclient = BattleClient(self.username, self.battleroom, self.send,
-                                                     self.make_moves)
+                                                     self.make_moves, self.show_calcs)
                     self.latest_request = None
                     self.challenging = None
                 else:
