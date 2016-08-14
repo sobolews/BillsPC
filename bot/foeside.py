@@ -87,7 +87,9 @@ class FoePokemon(BattlePokemon):
         log.d("attrs: %s", attrs)
 
         all_known = (len(attrs) == 6 or
-                     ((self.is_mega or self.name.endswith('primal')) and len(attrs) == 5))
+                     (len(attrs) == 5 and (self.is_mega or self.name.endswith('primal'))) or
+                     (len(attrs) == 3 and self.base_species == 'ditto'))
+
         return attrs, all_known
 
 class FoePreSwitchState(object):
