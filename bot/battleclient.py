@@ -1173,6 +1173,7 @@ class BattleClient(object):
         decoy.boosts = Boosts()
         foe_zoroark.hp = int(round((float(decoy.hp) / decoy.max_hp) * foe_zoroark.max_hp))
         foe_zoroark.illusion = not break_illusion
+        foe_zoroark.set_effect(foe_zoroark.ability())
         self.foe_side.active_illusion = not break_illusion
 
         for move in decoy.moves:
