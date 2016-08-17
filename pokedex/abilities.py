@@ -569,7 +569,7 @@ class LiquidOoze(AbilityEffect):
             battle.damage(foe, hp, Cause.OTHER)
             return FAIL
 
-class MagicBounce(effects.MagicBounceBase, BaseAbility):
+class MagicBounce(effects.BaseMagicBounce, BaseAbility):
     source = ABILITY
 
 class MagicGuard(AbilityEffect):

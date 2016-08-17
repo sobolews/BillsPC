@@ -359,7 +359,7 @@ class Reflect(BaseEffect):
             return damage * 0.5
         return damage
 
-class MagicBounceBase(BaseEffect):
+class BaseMagicBounce(BaseEffect):
     @priority(2)
     def on_foe_try_hit(self, foe, move, target, battle):
         if not move.is_bounceable or target == foe:
@@ -377,7 +377,7 @@ class MagicBounceBase(BaseEffect):
 
         return FAIL
 
-class MagicCoat(MagicBounceBase):
+class MagicCoat(BaseMagicBounce):
     source = Volatile.MAGICCOAT
     duration = 1
 

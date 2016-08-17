@@ -11,7 +11,7 @@ class TestEffectDefinitions(TestCase):
                             issubclass(effect_cls, baseeffect.BaseEffect) and
                             effect_cls not in (baseeffect.BaseEffect,
                                                effects.BaseAuraFieldEffect,
-                                               effects.MagicBounceBase,
+                                               effects.BaseMagicBounce,
                                                statuses.BaseStatusEffect,
                                                weather.BaseWeatherEffect)]
 

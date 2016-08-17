@@ -15,7 +15,7 @@ from pokedex.moves import movedex
 
 rbstats = RandbatsStatistics.from_pickle()
 
-class TestBattleClientBase(TestCase):
+class BaseTestBattleClient(TestCase):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
         self.bc.make_moves = False
@@ -62,7 +62,7 @@ class TestBattleClientBase(TestCase):
         self.handle('|turn|1')
 
 
-class TestBattleClientInitialRequestBase(TestBattleClientBase):
+class BaseTestBattleClientInitialRequest(BaseTestBattleClient):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
 
@@ -72,7 +72,7 @@ class TestBattleClientInitialRequestBase(TestBattleClientBase):
         self.handle('|player|p2|other-player|200')
 
 
-class TestBattleClientDittoLead(TestBattleClientInitialRequestBase):
+class TestBattleClientDittoLead(BaseTestBattleClientInitialRequest):
     def test_start_with_ditto_turn_0(self):
         request = '|request|{"active":[{"moves":[{"move":"Volt Switch","id":"voltswitch","pp":5,"maxpp":5,"target":"normal","disabled":false},{"move":"Ice Punch","id":"icepunch","pp":5,"maxpp":5,"target":"normal","disabled":false},{"move":"Wild Charge","id":"wildcharge","pp":5,"maxpp":5,"target":"normal","disabled":false},{"move":"Cross Chop","id":"crosschop","pp":5,"maxpp":5,"target":"normal","disabled":false}]}],"side":{"name":"test-BillsPC","id":"p1","pokemon":[{"ident":"p1: Ditto","details":"Ditto, L83","condition":"215/215","active":true,"stats":{"atk":127,"def":127,"spa":127,"spd":127,"spe":127},"moves":["voltswitch","icepunch","wildcharge","crosschop"],"baseAbility":"imposter","item":"choicescarf","pokeball":"pokeball"},{"ident":"p1: Unfezant","details":"Unfezant, L83, M","condition":"267/267","active":false,"stats":{"atk":239,"def":180,"spa":156,"spd":139,"spe":202},"moves":["pluck","uturn","tailwind","roost"],"baseAbility":"superluck","item":"scopelens","pokeball":"pokeball"},{"ident":"p1: Dugtrio","details":"Dugtrio, L79, F","condition":"185/185","active":false,"stats":{"atk":172,"def":125,"spa":125,"spd":156,"spe":235},"moves":["stealthrock","suckerpunch","reversal","earthquake"],"baseAbility":"arenatrap","item":"focussash","pokeball":"pokeball"},{"ident":"p1: Typhlosion","details":"Typhlosion, L79, M","condition":"253/253","active":false,"stats":{"atk":137,"def":169,"spa":218,"spd":180,"spe":204},"moves":["focusblast","eruption","extrasensory","fireblast"],"baseAbility":"flashfire","item":"choicescarf","pokeball":"pokeball"},{"ident":"p1: Kyogre","details":"Kyogre, L73","condition":"266/266","active":false,"stats":{"atk":151,"def":174,"spa":261,"spd":247,"spe":174},"moves":["waterspout","icebeam","scald","thunder"],"baseAbility":"drizzle","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Manaphy","details":"Manaphy, L75","condition":"274/274","active":false,"stats":{"atk":155,"def":194,"spa":194,"spd":194,"spe":194},"moves":["surf","energyball","psychic","tailglow"],"baseAbility":"hydration","item":"leftovers","pokeball":"pokeball"}]},"rqid":1}'
         self.initial_request(json.loads(request.split('|')[2]))
@@ -99,7 +99,7 @@ class TestBattleClientDittoLead(TestBattleClientInitialRequestBase):
         self.bc._validate_my_team()
 
 
-class TestBattleClient(TestBattleClientBase):
+class TestBattleClient(BaseTestBattleClient):
     def handle(self, msg):
         if msg.startswith('|switch|p1a: '):
             self.bc.switch_choice = normalize_name(msg[1:].split('|')[1])
@@ -151,7 +151,7 @@ class TestBattleClient(TestBattleClientBase):
         self.assertEqual(self.foe_name, 'other-player')
 
 
-class TestBattleClientPostTurn0(TestBattleClientBase):
+class TestBattleClientPostTurn0(BaseTestBattleClient):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None)
         self.bc.battle.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
@@ -1850,7 +1850,7 @@ class TestBattleClientPostTurn0(TestBattleClientBase):
         self.assertTrue(ferrothorn.is_fainted())
 
 
-class TestBattleClientZoroark(TestBattleClientInitialRequestBase):
+class TestBattleClientZoroark(BaseTestBattleClientInitialRequest):
     def setUp(self):
         super(TestBattleClientZoroark, self).setUp()
         request = '|request|{"active":[{"moves":[{"move":"Avalanche","id":"avalanche","pp":16,"maxpp":16,"target":"normal","disabled":false},{"move":"Toxic","id":"toxic","pp":16,"maxpp":16,"target":"normal","disabled":false},{"move":"Roar","id":"roar","pp":32,"maxpp":32,"target":"normal","disabled":false},{"move":"Rapid Spin","id":"rapidspin","pp":64,"maxpp":64,"target":"normal","disabled":false}]}],"side":{"name":"0raichu","id":"p1","pokemon":[{"ident":"p1: Avalugg","details":"Avalugg, L83, F","condition":"293/293","active":true,"stats":{"atk":242,"def":353,"spa":121,"spd":124,"spe":94},"moves":["avalanche","toxic","roar","rapidspin"],"baseAbility":"sturdy","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Zoroark","details":"Zoroark, L78, M","condition":"222/222","active":false,"stats":{"atk":168,"def":139,"spa":232,"spd":139,"spe":209},"moves":["nastyplot","flamethrower","focusblast","darkpulse"],"baseAbility":"illusion","item":"lifeorb","pokeball":"pokeball"},{"ident":"p1: Klinklang","details":"Klinklang, L81","condition":"230/230","active":false,"stats":{"atk":209,"def":233,"spa":160,"spd":184,"spe":192},"moves":["wildcharge","shiftgear","substitute","geargrind"],"baseAbility":"clearbody","item":"leftovers","pokeball":"pokeball"},{"ident":"p1: Gothitelle","details":"Gothitelle, L74, F","condition":"226/226","active":false,"stats":{"atk":86,"def":184,"spa":183,"spd":206,"spe":138},"moves":["shadowball","thunderbolt","psyshock","hiddenpowerfire60"],"baseAbility":"shadowtag","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Heliolisk","details":"Heliolisk, L77, F","condition":"222/222","active":false,"stats":{"atk":89,"def":125,"spa":212,"spd":189,"spe":212},"moves":["hypervoice","voltswitch","thunderbolt","surf"],"baseAbility":"dryskin","item":"choicespecs","pokeball":"pokeball"},{"ident":"p1: Wobbuffet","details":"Wobbuffet, L74, F","condition":"403/403","active":false,"stats":{"atk":53,"def":129,"spa":92,"spd":129,"spe":92},"moves":["mirrorcoat","destinybond","encore","counter"],"baseAbility":"shadowtag","item":"custapberry","pokeball":"pokeball"}]},"rqid":1}'

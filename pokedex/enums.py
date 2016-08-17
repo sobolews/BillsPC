@@ -1,14 +1,14 @@
-from misc.enum import EnumBase, NoCopy
+from misc.enum import BaseEnum, NoCopy
 
-class Type(EnumBase):
+class Type(BaseEnum):
     (NORMAL, FIGHTING, FLYING, POISON, GROUND, ROCK,
      BUG, GHOST, STEEL, FIRE, WATER, GRASS, ELECTRIC,
      PSYCHIC, ICE, DRAGON, DARK, FAIRY, NOTYPE) = [()]*19
 
-class Status(EnumBase):
+class Status(BaseEnum):
     BRN, FNT, FRZ, PAR, PSN, SLP, TOX = [()]*7
 
-class Volatile(EnumBase):
+class Volatile(BaseEnum):
     (ATTRACT, AUTOTOMIZE, BATONPASS, CHOICELOCK, CONFUSE, DESTINYBOND,
      DISABLE, ENCORE, FLASHFIRE, FLINCH, FORECAST, GEM, KINGSSHIELD,
      LEECHSEED, LOCKEDMOVE, MAGICCOAT, MAGNETRISE, PARENTALBOND,
@@ -16,28 +16,28 @@ class Volatile(EnumBase):
      SHEERFORCE, SLOWSTART, SPIKYSHIELD, STALL, SUBSTITUTE, TAUNT,
      TRANSFORMED, TRAPPED, TRUANT, TWOTURNMOVE, UNBURDEN, VANISHED, YAWN) = [()]*37
 
-class SideCondition(EnumBase):
+class SideCondition(BaseEnum):
     HEALINGWISH, LIGHTSCREEN, REFLECT, SAFEGUARD, TAILWIND, WISH = [()]*6
 
-class Hazard(EnumBase):
+class Hazard(BaseEnum):
     TOXICSPIKES, SPIKES, STEALTHROCK, STICKYWEB = [()]*4
 
-class PseudoWeather(EnumBase):
+class PseudoWeather(BaseEnum):
     AURABREAK, DARKAURA, ELECTRICTERRAIN, FAIRYAURA, TRICKROOM = [()]*5
 
-class Weather(EnumBase):
+class Weather(BaseEnum):
     (DELTASTREAM, DESOLATELAND, HAIL, PRIMORDIALSEA,
      RAINDANCE, SANDSTORM, SUNNYDAY) = [()]*7
 Weather.TRIO = (Weather.PRIMORDIALSEA, Weather.DESOLATELAND, Weather.DELTASTREAM)
 
-class Cause(EnumBase):
+class Cause(BaseEnum):
     (CONFUSE, CRASH, DIRECT, DRAIN, HAZARD, MOVE,
      OTHER, RECOIL, RESIDUAL, SELFDESTRUCT, WEATHER) = [()]*11
 
-class Decision(EnumBase):
+class Decision(BaseEnum):
     MOVE, MEGAEVO, POSTSWITCH, RESIDUAL, SWITCH = [()]*5
 
-class MoveCategory(EnumBase):
+class MoveCategory(BaseEnum):
     PHYSICAL, SPECIAL, STATUS = [()]*3
 STATUS, PHYSICAL, SPECIAL = MoveCategory.STATUS, MoveCategory.PHYSICAL, MoveCategory.SPECIAL
 

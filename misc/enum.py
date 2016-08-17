@@ -10,5 +10,5 @@ class NoCopy(object):
     def __deepcopy__(self, memo):
         return self
 
-class EnumBase(NoCopy):
+class BaseEnum(NoCopy):
     __metaclass__ = EnumMeta
