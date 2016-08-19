@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nosetests --logging-clear-handlers --processes=-1
+BILLSPC_TEST=1 nosetests --logging-clear-handlers --processes=-1
