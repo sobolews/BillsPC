@@ -50,7 +50,8 @@ class Bot(WebSocketClient):
         self.logged_in = False
         self.connect()
         if not interactive:
-            self.run_forever()
+            self.run_forever()  # block until connection closes
+            self.logged_in = False
         while not self.logged_in:
             time.sleep(0.1)
 
