@@ -58,6 +58,8 @@ def silence_console():
     if len(log.handlers) < 2:
         return
     log.handlers[1].setLevel(logging.WARNING)
+if testing:
+    silence_console()
 
 def no_console_log(method):
     """
