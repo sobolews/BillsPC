@@ -75,8 +75,6 @@ class InstaSwitchEvent(SwitchEvent):
     _priority = 400
 
 class PostSwitchInEvent(BaseEvent):
-    type = Decision.POSTSWITCH
-
     def __init__(self, pokemon, spe):
         self.pokemon = pokemon
         self.priority = (350, spe, random())
@@ -101,8 +99,6 @@ class MegaEvoEvent(BaseEvent):
         return 'MegaEvoEvent(pokemon=%s)' % self.pokemon
 
 class ResidualEvent(BaseEvent):
-    type = Decision.RESIDUAL
-
     def __init__(self):
         self.priority = (-1, 0, 0)
 

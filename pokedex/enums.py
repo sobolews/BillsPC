@@ -116,8 +116,6 @@ class Cause(BaseEnum):
 class Decision(BaseEnum):
     MOVE = ()
     MEGAEVO = ()
-    POSTSWITCH = ()
-    RESIDUAL = ()
     SWITCH = ()
 
 class MoveCategory(BaseEnum):
