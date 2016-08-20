@@ -4,7 +4,8 @@ from unittest import TestCase
 from mock import patch
 
 from battle.decisionmakers import AutoDecisionMaker
-from bot.battleclient import BattleClient
+# rbstats must be imported from battleclient for use with patch.dict
+from bot.battleclient import BattleClient, rbstats
 from mining.statistics import RandbatsStatistics
 from misc.functions import normalize_name
 from pokedex.abilities import abilitydex
@@ -12,8 +13,6 @@ from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideC
                            PseudoWeather)
 from pokedex.items import itemdex
 from pokedex.moves import movedex
-
-rbstats = RandbatsStatistics.from_pickle()
 
 class BaseTestBattleClient(TestCase):
     def setUp(self):
@@ -2091,7 +2090,7 @@ class TestBattleClientZoroark(BaseTestBattleClientInitialRequest):
         self.assertTrue(vaporeon.is_active, Status.TOX)
         self.assertEqual(vaporeon.name, 'vaporeon')
 
-    @patch.dict(rbstats['yveltalL73'],
+    @patch.dict(rbstats['yveltalL73']['sets'],
                 {('darkpulse', 'hurricane', 'suckerpunch', 'uturn', 'darkaura', 'leftovers'): 1})
     def test_learn_fifth_move_because_of_illusion_shenanigans(self):
         self.bc.switch_choice = 'zoroark'
