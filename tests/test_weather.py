@@ -1,6 +1,6 @@
 from mock import patch
 
-from mining.pokedexmaker import pokedex
+from mining import pokedex
 from pokedex.enums import Status, Weather
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase

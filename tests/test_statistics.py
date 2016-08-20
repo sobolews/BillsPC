@@ -2,7 +2,7 @@ from random import randint
 from unittest import TestCase
 
 from mining import statistics
-from mining.pokedexmaker import pokedex
+from mining import pokedex
 from tests.test_statistics_data import TEAM1, TEAM2, TEAM3
 
 

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mining.pokedexmaker import pokedex
+from mining import pokedex
 from pokedex.enums import Type
 
 class TestDataminer(TestCase):
