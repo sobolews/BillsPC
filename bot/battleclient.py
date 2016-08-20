@@ -1,8 +1,8 @@
 from __future__ import absolute_import
-import random
 import string
 import traceback
 
+import AI
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
 from bot.foeside import FoeBattleSide, FoePokemon
@@ -14,7 +14,7 @@ from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
-                           PseudoWeather)
+                           PseudoWeather, Decision)
 from pokedex.items import itemdex
 from pokedex.moves import movedex
 from pokedex.types import type_effectiveness, HPivs
@@ -36,7 +36,7 @@ class BattleClient(object):
     Purposefully unimplemented message types (because they don't occur in randbats):
     {-swapboost, -copyboost, -invertboost, -ohko, -mustrecharge}
     """
-    def __init__(self, name, room, send, make_moves=False, show_calcs=False):
+    def __init__(self, name, room, send, show_calcs=False, ai_policy=None):
         """
         name: (str) client's username
         room: (str) the showdown room that battle messages should be sent to
@@ -59,9 +59,9 @@ class BattleClient(object):
         self.previous_msg = ['']
         self.switch_choice = None
 
-        self.make_moves = make_moves # send move choices to the server
         self.show_calcs = show_calcs
         self.battle = BattleCalculator.from_battlefield(None)
+        self.AI = AI.Agent(ai_policy) if ai_policy else None
 
         def _send(msg):
             self.last_sent = msg
@@ -553,33 +553,80 @@ class BattleClient(object):
             self.battle.show_my_moves(my_active, foe_active)
             self.battle.show_foe_moves(my_active, foe_active)
 
-        if self.make_moves:
-            self.make_random_move(request)
+        if self.AI is not None:
+            self.make_move(request)
 
-    def make_random_move(self, request, switch_rejected=False):
-        """
-        Temporary random implementation of moves for testing interaction with server
-        """
-        self.switch_choice = None
-        if (not switch_rejected and
-            (request.get('forceSwitch') or (random.randrange(10) == 0 and
-                                            self.my_side.active_pokemon.get_switch_choices()))):
-            choices = [(i, normalize_name(p['ident']))
-                       for i, p in enumerate(request['side']['pokemon'], 1)
-                       if not p['condition'] == '0 fnt' and not p['active']]
-            index, ident = random.choice(choices)
-            self.switch_choice = ident
-            log.i("switch choices: %s choosing %s (%s)", choices, index, ident)
-            self.send('|'.join([self.room, '/choose switch %d' % index] +
-                               filter(None, [str(self.rqid)])))
+    def make_move(self, request, switch_rejected=False):
+        moves, switches, can_mega = self.get_action_choices(request, switch_rejected)
+        action, mega = self.AI.select_action(self.battlefield, moves, switches, can_mega)
+
+        log.i('Selected action: %s%s', action, ' + mega' if mega else '')
+        if mega and action.action_type == Decision.SWITCH:
+            log.w("%s chose to switch and mega-evolve on the same turn; removing 'mega'", self.AI)
+            mega = False
+
+        command = '%s|%s%s' % (self.room, action.command_string, ' mega' if mega else '')
+        if self.rqid:
+            command += '|%d' % self.rqid
+        self.send(command)
+
+        if action.action_type == Decision.SWITCH:
+            self.switch_choice = action.pokemon_name
         else:
-            choices = [i for i, m in enumerate(request['active'][0]['moves'], 1)
-                       if not m.get('disabled')]
-            log.i("move choices: %s", choices)
-            move = random.choice(choices)
-            mega = (" mega" if request['active'][0].get('canMegaEvo', False) and random.randrange(2)
-                    else "")
-            self.send('%s|/choose move %d%s|%d' % (self.room, move, mega, self.request['rqid']))
+            self.switch_choice = None
+
+    def get_action_choices(self, request, switch_rejected):
+        moves = []
+        switches = []
+        can_mega = False
+        force_switch = request.get('forceSwitch', False)
+        if not switch_rejected and (force_switch or
+                                    self.my_side.active_pokemon.get_switch_choices()):
+            switches = [self.SwitchAction(normalize_name(p['ident']), i)
+                        for i, p in enumerate(request['side']['pokemon'], 1)
+                        if not p['condition'] == '0 fnt' and not p['active']]
+        if not force_switch:
+            can_mega = bool(request['active'][0].get('canMegaEvo'))
+            moves = [self.MoveAction(normalize_name(move['move']), i)
+                     for i, move in enumerate(request['active'][0]['moves'], 1)
+                     if not move.get('disabled')]
+
+        log.d('Choosing from: %s %s, can_mega=%s', moves, switches, can_mega)
+        assert moves or switches, (request, self.my_side.active_pokemon.get_switch_choices())
+        return moves, switches, can_mega
+
+    class Action(object):
+        @property
+        def command_string(self):
+            raise NotImplementedError
+
+    class MoveAction(Action):
+        action_type = Decision.MOVE
+
+        def __init__(self, move, index):
+            self.move_name = move
+            self.index = index
+
+        @property
+        def command_string(self):
+            return '/choose move %d' % self.index
+
+        def __repr__(self):
+            return '(move: %s)' % self.move_name
+
+    class SwitchAction(Action):
+        action_type = Decision.SWITCH
+
+        def __init__(self, pokemon, index):
+            self.pokemon_name = pokemon
+            self.index = index
+
+        @property
+        def command_string(self):
+            return '/choose switch %d' % self.index
+
+        def __repr__(self):
+            return '(switch: %s)' % self.pokemon_name
 
     def handle_move(self, msg):
         """
@@ -1915,7 +1962,8 @@ class BattleClient(object):
         """
         if msg[1] == 'trapped':
             log.e("Tried to switch out while trapped: switch choice was rejected")
-            self.make_random_move(self.request, switch_rejected=True)
+            if self.AI:
+                self.make_move(self.request, switch_rejected=True)
         else:
             log.e("Unhandled |callback| message: %s", msg)
 
