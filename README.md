@@ -41,17 +41,17 @@ Bill's PC is currently in development!
 | implement items                                     | done | :white_check_mark:
 | implement mega evolution                            | done | :white_check_mark:
 | implement forme changes                             | done | :white_check_mark:
-| implement a Showdown battle client/bot              | in progress | :large_blue_diamond: 
-| implement AI (using [Simultaneous-Move](http://mlanctot.info/files/papers/cig14-smmctsggp.pdf) [Monte Carlo Tree Search](http://pubs.doc.ic.ac.uk/survey-mcts-methods/survey-mcts-methods.pdf)) | to do | :white_medium_square:
+| implement a Showdown battle client/bot              | done | :white_check_mark: 
+| implement AI (using [Simultaneous-Move](http://mlanctot.info/files/papers/cig14-smmctsggp.pdf) [Monte Carlo Tree Search](http://pubs.doc.ic.ac.uk/survey-mcts-methods/survey-mcts-methods.pdf) for stacked matrix games and/or LP solutions for Nash equilibria with learned valuation functions) | in progress | :large_blue_diamond:
 | implement remaining non-randbats moves/abilities/items | maybe | :interrobang:
+| Update for Gen 7 - November 2016                    | to do | :white_medium_square:
 
 #### Notes
 
-Bill's PC is largely still just a prototype, and I am fully expecting to have to rewrite it in C++
-to gain enough performance for AI algorithms to be successful. Until then, I am focusing primarily
-on getting the many complexities of the Gen-6 Pokemon game correct. Currently, I only plan to
-implement moves, items, and abilities that appear in Showdown's randbats (random battle). As
-Showdown changes their random movesets, I will try to update Bill's PC with any new aspects that
-need to be implemented. 
-
-I of course welcome any contributions of code, bug reports, compliments, complaints, or suggestions! :)
+Bill's PC is largely still just a prototype, and I am fully expecting to have to
+rewrite it in C++ to gain enough performance for AI algorithms to be
+successful. Currently, I only plan to implement moves, items, and abilities that
+appear in Showdown's randbats (random battle) format, and have the bot exploit
+statistics gained from offline team generation using Showdown's algorithm. As
+Showdown changes their random movesets, I will try to update Bill's PC with any
+new mechanics that need to be implemented.
