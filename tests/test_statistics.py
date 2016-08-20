@@ -163,18 +163,3 @@ class TestStatisticsModule(TestCase):
                         set(pokemon_dict['ivs'].keys()))
 
         self.assertEqual(len(pokemon_dict['moves']), 1 if pokemon_dict['name'] == 'Ditto' else 4)
-
-    # # These tests sometimes hang under nosetests due to the subprocess calls # TODO: fix
-    # def test_collect_team_stats(self):
-    #     counter = statistics.collect_team_stats(100, 4)
-    #     self.assertEqual(sum(counter[pokemon]['number'] for pokemon in counter.counter), 100 * 6)
-    #     pokemon = counter.counter.popitem()
-    #     self.assertEqual(sum(pokemon[1]['item'].values()), pokemon[1]['number'], repr(pokemon))
-    #     self.assertEqual(sum(pokemon[1]['ability'].values()), pokemon[1]['number'], repr(pokemon))
-
-    # def test_collect_team_stats_1_proc(self):
-    #     counter = statistics.collect_team_stats(100, 1)
-    #     self.assertEqual(sum(counter[pokemon]['number'] for pokemon in counter.counter), 100 * 6)
-    #     pokemon = counter.counter.popitem()
-    #     self.assertEqual(sum(pokemon[1]['item'].values()), pokemon[1]['number'], repr(pokemon))
-    #     self.assertEqual(sum(pokemon[1]['ability'].values()), pokemon[1]['number'], repr(pokemon))
