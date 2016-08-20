@@ -2,6 +2,8 @@
 Create a pokedex, which is a dict mapping each pokemon/species name to PokedexEntry, which
 contains information such as the types and base stats of the pokemon.
 """
+from __future__ import absolute_import
+
 import json
 import shlex
 import subprocess

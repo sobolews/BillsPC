@@ -31,7 +31,7 @@ from os.path import dirname, abspath, join, exists
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from mining.pokedexmaker import SHOWDOWN_DIR, NODE_EXECUTABLE, pokedex
+from mining.pokedex import SHOWDOWN_DIR, NODE_EXECUTABLE, pokedex
 from misc.functions import normalize_name
 
 if __debug__: from _logging import log

@@ -3,7 +3,7 @@ from mock import patch, Mock
 
 from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
-from mining.pokedexmaker import pokedex
+from mining import pokedex
 from pokedex import effects
 from pokedex.moves import movedex
 from pokedex.abilities import abilitydex
