@@ -1,7 +1,7 @@
 from mock import patch
 
 if __debug__: from _logging import log
-from mining import create_pokedex
+from mining import pokedex
 from mining.statistics import RandbatsStatistics
 from misc.functions import normalize_name
 from pokedex import statuses
@@ -11,7 +11,6 @@ from pokedex.moves import movedex
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
-pokedex = create_pokedex()
 
 class TestAbilities(MultiMoveTestCaseWithoutSetup):
     def test_all_abilities_in_randbatsstatistics_are_implemented(self):

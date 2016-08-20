@@ -7,7 +7,7 @@ Type a pokemon, get move/ability/item probabilities, weakness/resistances, and s
 import cmd
 import sys
 
-from mining.pokedexmaker import create_pokedex
+from mining import pokedex
 from mining.statistics import RandbatsStatistics
 from misc.multitabulate import multitabulate
 from pokedex.enums import Type
@@ -35,7 +35,6 @@ class CheatSheetCli(cmd.Cmd):
                                       for pokemon in self.completions
                                       for char in [' ', ',', '.', '-', '. ']
                                       if char in pokemon]))
-        self.pokedex = create_pokedex()
 
     def completenames(self, text, *ignore):
         if not text:
@@ -57,22 +56,22 @@ class CheatSheetCli(cmd.Cmd):
             print 'Not found: %s' % line
 
     def pstats(self, pokemon):
-        bs = self.pokedex[pokemon].base_stats
+        bs = pokedex[pokemon].base_stats
         return '\n'.join([('{:<5}'*6).format('HP', 'Atk', 'Def', 'Spa', 'Spd', 'Spe'),
                           ('{:<5}'*6).format(bs['max_hp'], bs['atk'], bs['def'],
                                              bs['spa'], bs['spd'], bs['spe'])])
 
     def pweaknesses(self, pokemon):
         weaknesses = [type_.capitalize() if
-                      effectiveness(type_, self.pokedex[pokemon]) == 2 else
+                      effectiveness(type_, pokedex[pokemon]) == 2 else
                       self.bu(type_.capitalize()) for type_ in Type.values if
-                      effectiveness(type_, self.pokedex[pokemon]) > 1]
+                      effectiveness(type_, pokedex[pokemon]) > 1]
         resistances = [type_.capitalize() if
-                       effectiveness(type_, self.pokedex[pokemon]) == 0.5 else
+                       effectiveness(type_, pokedex[pokemon]) == 0.5 else
                        self.bu(type_.capitalize()) for type_ in Type.values if
-                       0 < effectiveness(type_, self.pokedex[pokemon]) < 1]
+                       0 < effectiveness(type_, pokedex[pokemon]) < 1]
         immunities = [type_.capitalize() for type_ in Type.values if
-                      effectiveness(type_, self.pokedex[pokemon]) == 0]
+                      effectiveness(type_, pokedex[pokemon]) == 0]
         return '\n'.join(['Weaknesses:  ' + ', '.join(weaknesses),
                           'Resistances: ' + ', '.join(resistances),
                           'Immunities:  ' + ', '.join(immunities)])

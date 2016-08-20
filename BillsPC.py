@@ -60,8 +60,7 @@ def get_parser():
 def rbstats_(_):
     from mining.statistics import RandbatsStatistics
     rbstats = r = RandbatsStatistics.from_pickle()
-    from mining import create_pokedex
-    pokedex = create_pokedex()
+    from mining import pokedex, type_index
     import IPython
     IPython.embed()
 
@@ -82,8 +81,7 @@ def interactive(_):
             pass
     t = self = InteractiveMultiMoveTestCase()
     from pokedex.moves import movedex
-    from mining import create_pokedex
-    pokedex = create_pokedex()
+    from mining import pokedex, type_index
     from pokedex import enums
     # ugly hack to embed the entire public pokedex.enums namespace into the local scope
     locals().update({key: val for key, val in enums.__dict__.items()

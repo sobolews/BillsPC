@@ -1,5 +1,5 @@
 from battle.effecthandler import EffectHandlerMixin
-from mining import create_pokedex
+from mining import pokedex
 from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
 from pokedex.baseeffect import BaseEffect
@@ -9,10 +9,8 @@ from pokedex.items import itemdex
 from pokedex.stats import Boosts, PokemonStats
 from pokedex.types import effectiveness, HPivs
 from pokedex.moves import movedex
-
 if __debug__: from _logging import log
 
-POKEDEX = create_pokedex()
 
 class BattlePokemon(object, EffectHandlerMixin):
     """
@@ -87,7 +85,7 @@ class BattlePokemon(object, EffectHandlerMixin):
     def forme_change(self, forme, battle=None, client=False):
         assert not self.is_transformed
 
-        self.pokedex_entry = new_forme = POKEDEX[forme]
+        self.pokedex_entry = new_forme = pokedex[forme]
         self.name = new_forme.name
         self._weight = new_forme.weight
         self.stats = self.calculate_initial_stats(self.evs, self.ivs)
@@ -266,12 +264,12 @@ class BattlePokemon(object, EffectHandlerMixin):
         else: # stealth rock weakness
             forme = self
             if self.item is not None and self.item.is_mega_stone:
-                forme = POKEDEX[self.item.forme]
+                forme = pokedex[self.item.forme]
             elif self.name == 'castform':
                 if self.item == itemdex['heatrock']:
-                    forme = POKEDEX['castformsunny']
+                    forme = pokedex['castformsunny']
                 elif self.item == itemdex['damprock']:
-                    forme = POKEDEX['castformrainy']
+                    forme = pokedex['castformrainy']
             eff = effectiveness(Type.ROCK, forme)
             mod = None
             if eff == 2:

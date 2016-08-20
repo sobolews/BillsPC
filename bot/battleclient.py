@@ -8,7 +8,7 @@ from battle.battlepokemon import BattlePokemon
 from bot.foeside import FoeBattleSide, FoePokemon
 from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
 from bot.battlecalculator import BattleCalculator
-from mining import create_pokedex
+from mining import pokedex
 from mining.statistics import RandbatsStatistics, rbstats_key
 from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
@@ -21,7 +21,6 @@ from pokedex.types import type_effectiveness, HPivs
 from pokedex.stats import Boosts, PokemonStats
 from _logging import log
 
-pokedex = create_pokedex()
 rbstats = RandbatsStatistics.from_pickle()
 
 
