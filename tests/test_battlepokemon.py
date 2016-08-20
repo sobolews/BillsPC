@@ -4,10 +4,9 @@ from battle.battlepokemon import BattlePokemon
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
 from pokedex.items import itemdex
-from mining import create_pokedex
+from mining import pokedex
 from tests.multi_move_test_case import MultiMoveTestCase
 
-pokedex = create_pokedex()
 
 class TestBattlePokemon(TestCase):
     def test_initialize_pp(self):

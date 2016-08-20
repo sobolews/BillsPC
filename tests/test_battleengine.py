@@ -3,7 +3,7 @@ from mock import patch, Mock
 
 from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
-from mining.pokedexmaker import create_pokedex
+from mining.pokedexmaker import pokedex
 from pokedex import effects
 from pokedex.moves import movedex
 from pokedex.abilities import abilitydex
@@ -12,7 +12,6 @@ from pokedex.enums import FAIL, Status, Volatile, Type, Weather
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
 
-pokedex = create_pokedex()
 
 class BattleEngineMovesTestCase(TestCase):
     def setUp(self):

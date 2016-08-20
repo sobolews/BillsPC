@@ -2,10 +2,9 @@ from random import randint
 from unittest import TestCase
 
 from mining import statistics
-from mining.pokedexmaker import create_pokedex
+from mining.pokedexmaker import pokedex
 from tests.test_statistics_data import TEAM1, TEAM2, TEAM3
 
-pokedex = create_pokedex()
 
 class TestRandbatsCounter(TestCase):
     def test_sample(self):

@@ -1,11 +1,9 @@
 from mock import patch
 
-from mining.pokedexmaker import create_pokedex
+from mining.pokedexmaker import pokedex
 from pokedex.enums import Status, Weather
 from pokedex.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
-
-pokedex = create_pokedex()
 
 
 class TestWeather(MultiMoveTestCase):

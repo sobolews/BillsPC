@@ -31,7 +31,7 @@ from os.path import dirname, abspath, join, exists
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from mining.pokedexmaker import SHOWDOWN_DIR, create_pokedex, NODE_EXECUTABLE
+from mining.pokedexmaker import SHOWDOWN_DIR, NODE_EXECUTABLE, pokedex
 from misc.functions import normalize_name
 
 if __debug__: from _logging import log
@@ -48,7 +48,6 @@ class RandbatsStatistics(object):
         self._moves_index = None
         self._ability_index = None
         self._item_index = None
-        self.pokedex = create_pokedex()
 
     def __getitem__(self, index):
         """
@@ -176,7 +175,7 @@ class RandbatsStatistics(object):
         The pokemon are also indexed by level, such that stats for slurpuffL77 are separate from
         stats for slurpuffL79. The stats for "slurpuff" are the union of these.
         """
-        name = self.pokedex[pokemon['species']].name
+        name = pokedex[pokemon['species']].name
         if level:
             name = "%sL%d" % (name, pokemon['level'])
         item = pokemon['item']
@@ -188,7 +187,7 @@ class RandbatsStatistics(object):
             forme = 0 if not item.endswith('Y') else 1
             megapokemon = deepcopy(pokemon)
             megapokemon['species'] = megapokemon['name'] = str(
-                self.pokedex[pokemon['name']].mega_formes[forme])
+                pokedex[pokemon['name']].mega_formes[forme])
             self.sample(megapokemon, mega=True)
 
         if item in ('Red Orb', 'Blue Orb') and not primal and not level:
@@ -311,7 +310,6 @@ def count_teams(n_teams):
     for team in get_json_teams(n_teams):
         for pokemon in team:
             counter.sample(pokemon)
-    del counter.pokedex
     return counter
 
 

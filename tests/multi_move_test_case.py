@@ -10,14 +10,13 @@ from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import AutoDecisionMaker
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
-from mining import create_pokedex
+from mining import pokedex
 from pokedex import effects
 from pokedex.abilities import abilitydex
 from pokedex.items import itemdex
 from pokedex.enums import Status, ABILITY, ITEM
 from pokedex.moves import movedex
 
-pokedex = create_pokedex()
 
 class AnyMovePPDict(dict):
     def get(self, key, default=None):

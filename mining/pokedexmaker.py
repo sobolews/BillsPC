@@ -17,14 +17,6 @@ NODE_EXECUTABLE = 'node' if find_executable('nodejs') is None else 'nodejs'
 SHOWDOWN_DIR = abspath(join(dirname(__file__), 'Pokemon-Showdown'))
 POKEDEX_JS_PATH = join(SHOWDOWN_DIR, 'data', 'pokedex.js')
 
-_pokedex = {}
-type_index = {}
-
-def create_pokedex():
-    if not _pokedex:
-        parse_pokedex_js(_pokedex)
-    return _pokedex
-
 def _js_file_to_dict(path):
     """
     Parse a javascript data file and return the data as a dict.
@@ -33,12 +25,14 @@ def _js_file_to_dict(path):
         '%s -p "JSON.stringify(require(\'%s\'));"' % (NODE_EXECUTABLE, path)))
     return json.loads(json_data)
 
-def parse_pokedex_js(pokedex):
+def parse_pokedex_js(path=POKEDEX_JS_PATH):
     """
     Parse Pokemon-Showdown/data/pokedex.js and get name, types, base stats, and abilities for
-    all pokemon
+    all pokemon. Return the pokedex dict and a type-based index.
     """
-    data = _js_file_to_dict(POKEDEX_JS_PATH)['BattlePokedex']
+    pokedex = {}
+    type_index = {}
+    data = _js_file_to_dict(path)['BattlePokedex']
     for pokemon, attrs in data.items():
         if attrs['num'] <= 0: # This excludes missingno and CAP pokemon
             continue
@@ -66,6 +60,8 @@ def parse_pokedex_js(pokedex):
         type_index.setdefault(tuple(types), []).append(pokemon)
         type_index.setdefault(tuple(reversed(types)), []).append(pokemon)
 
+    return pokedex, type_index
+
 
 class PokedexEntry(object):
     def __init__(self, name, species, weight, mega_formes, fully_evolved,
@@ -81,3 +77,6 @@ class PokedexEntry(object):
 
     def __repr__(self):
         return pformat(self.__dict__)
+
+
+pokedex, type_index = parse_pokedex_js()

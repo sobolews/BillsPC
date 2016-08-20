@@ -1,15 +1,10 @@
-import os
-import tempfile
 from unittest import TestCase
 
-from mining.pokedexmaker import create_pokedex
+from mining.pokedexmaker import pokedex
 from pokedex.enums import Type
-
-REPO_DIR = os.path.join(tempfile.mkdtemp(), 'Pokemon-Showdown')
 
 class TestDataminer(TestCase):
     def test_parse_pokedex_js(self):
-        pokedex = create_pokedex()
         self.assertEqual(pokedex['arcanine'].base_stats['max_hp'], 90)
         self.assertIs(pokedex['poliwag'].types[0], Type.WATER)
         self.assertIsNone(pokedex['poliwhirl'].types[1])
