@@ -1301,6 +1301,8 @@ class TestBattleClientPostTurn0(BaseTestBattleClient):
 
         self.assertIn(movedex['taunt'], self.foe_side.active_pokemon.moves)
 
+    @patch.dict(rbstats['blastoiseL79']['sets'],
+                {('scald', 'icebeam', 'rapidspin', 'dragontail', 'raindish', 'leftovers'): 1})
     def test_heal_reveals_item_ability(self):
         self.handle('|switch|p2a: Blastoise|Blastoise, L79, M|100/100')
         self.handle('|-heal|p2a: Blastoise|100/100|[from] ability: Rain Dish')
