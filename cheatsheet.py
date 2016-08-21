@@ -8,12 +8,10 @@ import cmd
 import sys
 
 from showdowndata import pokedex
-from showdowndata.miner import RandbatsStatistics
 from misc.multitabulate import multitabulate
 from pokedex.enums import Type
 from pokedex.types import effectiveness
 
-RBSTATS_PKL = 'showdowndata/rbstats.pkl'
 
 class CheatSheetCli(cmd.Cmd):
     intro = """
@@ -23,8 +21,10 @@ class CheatSheetCli(cmd.Cmd):
     """
     prompt = 'pokemon> '
 
-    def __init__(self, rbstats):
+    def __init__(self, rbstats=None):
         cmd.Cmd.__init__(self)
+        if rbstats is None:
+            from showdowndata.rbstats import rbstats
         self.rbstats = rbstats
         self.completions = dict([(pokemon, pokemon) for pokemon in self.rbstats.counter])
 
@@ -94,16 +94,12 @@ class CheatSheetCli(cmd.Cmd):
         return string.join(('\033[4m\033[1m', '\033[0m'))
 
 
-def run_cheatsheet_cli(rbstats):
+def main(*args):
     try:
-        CheatSheetCli(rbstats).cmdloop()
+        CheatSheetCli().cmdloop()
     except KeyboardInterrupt:
         print 'quit'
         sys.exit(0)
-
-def main(*args):
-    rbstats = RandbatsStatistics.from_pickle()
-    run_cheatsheet_cli(rbstats)
 
 if __name__ == '__main__':
     main()

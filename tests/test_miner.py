@@ -2,6 +2,7 @@ from random import randint
 from unittest import TestCase
 
 from showdowndata import miner
+from showdowndata.rbstats import rbstats
 from showdowndata import pokedex
 from tests.test_miner_data import TEAM1, TEAM2, TEAM3
 
@@ -114,10 +115,9 @@ class TestRandbatsCounter(TestCase):
         identify its own zoroark in the corner case of a switch-to-zoroark, zoroark gets damaged
         (e.g. by dragontail), then another pokemon is dragged out.
         """
-        counter = miner.RandbatsStatistics.from_pickle()
-        zoroark_levels = counter['zoroark']['level'].keys()
+        zoroark_levels = rbstats['zoroark']['level'].keys()
         zoroark_max_hp = pokedex['zoroark'].base_stats['max_hp']
-        for name, stats in counter.counter.items():
+        for name, stats in rbstats.counter.items():
             if name[-3] == 'L' or name.startswith('zoroark'):
                 continue
             if any(level in zoroark_levels for level in stats['level']):

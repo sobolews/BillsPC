@@ -1,6 +1,6 @@
 from mock import patch
 
-from showdowndata.miner import RandbatsStatistics
+from showdowndata.rbstats import rbstats
 from misc.functions import normalize_name
 from battle.battleengine import Battle
 from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition
@@ -11,7 +11,6 @@ from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestItems(MultiMoveTestCaseWithoutSetup):
     def test_all_items_in_randbatsstatistics_are_implemented(self):
-        rbstats = RandbatsStatistics.from_pickle()
         unimplemented_items = [item for item in rbstats.item_index
                                if normalize_name(item) not in itemdex]
         self.assertListEqual(unimplemented_items, [])

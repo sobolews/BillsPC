@@ -1,17 +1,15 @@
 from battle.battleengine import Battle
-from showdowndata.miner import RandbatsStatistics, rbstats_key
+from showdowndata.rbstats import rbstats, rbstats_key
 from pokedex import effects
 from pokedex.enums import FAIL, Volatile, Type
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
 
 from tabulate import tabulate
-
 from misc.multitabulate import multitabulate
 
 from _logging import log, no_console_log
 
-rbstats = RandbatsStatistics.from_pickle()
 TABLEFMT = 'psql'
 
 class BattleCalculator(Battle):

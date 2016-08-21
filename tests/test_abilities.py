@@ -2,7 +2,7 @@ from mock import patch
 
 if __debug__: from _logging import log
 from showdowndata import pokedex
-from showdowndata.miner import RandbatsStatistics
+from showdowndata.rbstats import rbstats
 from misc.functions import normalize_name
 from pokedex import statuses
 from pokedex.abilities import abilitydex
@@ -14,7 +14,6 @@ from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestAbilities(MultiMoveTestCaseWithoutSetup):
     def test_all_abilities_in_randbatsstatistics_are_implemented(self):
-        rbstats = RandbatsStatistics.from_pickle()
         unimplemented_abilities = [ability for ability in rbstats.ability_index
                                    if normalize_name(ability) not in abilitydex]
         for pokemon in pokedex.values():
