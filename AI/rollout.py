@@ -7,7 +7,7 @@ from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import RandomDecisionMaker
 from bot.unrevealedpokemon import UNREVEALED
 from showdowndata import pokedex, type_index
-from showdowndata.miner import RandbatsStatistics, rbstats_key
+from showdowndata.rbstats import rbstats, rbstats_key
 from pokedex.items import itemdex
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex
@@ -15,7 +15,6 @@ from pokedex.enums import Type
 from pokedex.stats import Boosts
 from _logging import log, no_console_log
 
-rbstats = RandbatsStatistics.from_pickle()
 
 class BattleRoller(object):
     def __init__(self, my_player):

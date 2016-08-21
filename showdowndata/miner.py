@@ -12,9 +12,9 @@ answer questions like:
 - What are the odds my opponent's Lanturn's ability is Volt Absorb vs Water Absorb?
 
 Useful functions:
-stats = collect_team_stats(10000) : return a RandbatsStatistics sampling 10000 teams
-stats.to_pickle() : pickle it
-RandbatsStatistics.from_pickle() : return the latest one, if it exists
+rbstats = collect_team_stats(10000) : return a RandbatsStatistics sampling 10000 teams
+rbstats.to_pickle() : pickle it
+rbstats = RandbatsStatistics.from_pickle() : return the latest one, if it exists
 """
 import json
 import pickle
@@ -33,13 +33,16 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from showdowndata.pokedex import SHOWDOWN_DIR, NODE_EXECUTABLE, pokedex
 from misc.functions import normalize_name
-
 if __debug__: from _logging import log
 
 MINER_FILE = 'getNRandomTeams.js'
 SHOWDOWN_MINER_LOCAL = abspath(join(dirname(__file__), 'js', MINER_FILE))
 SHOWDOWN_MINER = join(SHOWDOWN_DIR, MINER_FILE)
 MAX_TEAMS_PER_PROCESS = 1000
+
+class RbstatsNotFound(Exception):
+    pass
+
 
 class RandbatsStatistics(object):
     def __init__(self):
@@ -75,10 +78,11 @@ class RandbatsStatistics(object):
     @classmethod
     def from_pickle(cls, path='showdowndata/rbstats.pkl'):
         if not exists(path):
-            if __debug__:
-                log.i('%s does not exist. Creating one with 5000 teams. For better results, you '
-                      'should mine for at least 100,000 teams', path)
-            count_teams(5000).to_pickle(path)
+            raise RbstatsNotFound('%s does not exist. '
+                                  'Run `./BillsPC.py mine [n]` to create an rbstats.pkl file. '
+                                  'These statistics are used to determine best guesses for hidden '
+                                  'information in the game. '
+                                  'n=100000 is recommended for better results.' % path)
         with open(path) as fin:
             self = pickle.load(fin)
         if not isinstance(self, cls):
@@ -257,16 +261,6 @@ class RandbatsStatistics(object):
         probability = (float(sum(attrs_counter[attrset] for attrset in target_attrs)) /
                        sum(attrs_counter[attrset] for attrset in possible))
         return probability
-
-
-def rbstats_key(battlepokemon):
-    """
-    Get the rbstats key associated with a BattlePokemon. For use by clients of RandbatsStatistics.
-    """
-    if battlepokemon.can_mega_evolve or battlepokemon.is_mega:
-        return battlepokemon.item.forme
-    else:
-        return '%sL%d' % (battlepokemon.base_species, battlepokemon.level)
 
 
 def copy_miner_file():

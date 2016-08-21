@@ -8,7 +8,7 @@ from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile,
 from pokedex.items import itemdex
 from pokedex.moves import movedex, Move, _MAX_PP
 from pokedex.stats import Boosts
-from showdowndata.miner import RandbatsStatistics
+from showdowndata.rbstats import rbstats
 from tests.multi_move_test_case import MultiMoveTestCase
 
 class TestMoveDefinitions(TestCase):
@@ -37,7 +37,6 @@ class TestMoveDefinitions(TestCase):
                               'Found move "%s" with invalid max_pp' % move.name)
 
     def test_all_moves_in_randbatsstatistics_are_implemented(self):
-        rbstats = RandbatsStatistics.from_pickle()
         unimplemented_moves = [move for move in rbstats.moves_index if move not in movedex]
         self.assertListEqual(unimplemented_moves, [])
 
