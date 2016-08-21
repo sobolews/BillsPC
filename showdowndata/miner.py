@@ -38,7 +38,7 @@ if __debug__: from _logging import log
 MINER_FILE = 'getNRandomTeams.js'
 SHOWDOWN_MINER_LOCAL = abspath(join(dirname(__file__), 'js', MINER_FILE))
 SHOWDOWN_MINER = join(SHOWDOWN_DIR, MINER_FILE)
-MAX_TEAMS_PER_PROCESS = 1000
+MAX_TEAMS_PER_PROCESS = 500
 
 class RbstatsNotFound(Exception):
     pass
@@ -277,7 +277,7 @@ def distribute(N, b):
     return [div + mod for div, mod in izip_longest(repeat(N//b, b), repeat(1, N%b), fillvalue=0)]
 
 
-def collect_team_stats(n_teams, max_workers=cpu_count()):
+def collect_team_stats(n_teams, max_workers=cpu_count()/2):
     """
     Sample n_teams teams, or 6 * n_teams pokemon. Return a RandbatsStatistics.
 
