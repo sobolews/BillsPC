@@ -31,7 +31,7 @@ from os.path import dirname, abspath, join, exists
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from mining.pokedex import SHOWDOWN_DIR, NODE_EXECUTABLE, pokedex
+from showdowndata.pokedex import SHOWDOWN_DIR, NODE_EXECUTABLE, pokedex
 from misc.functions import normalize_name
 
 if __debug__: from _logging import log
@@ -73,7 +73,7 @@ class RandbatsStatistics(object):
         return index in self.counter
 
     @classmethod
-    def from_pickle(cls, path='mining/rbstats.pkl'):
+    def from_pickle(cls, path='showdowndata/rbstats.pkl'):
         if not exists(path):
             if __debug__:
                 log.i('%s does not exist. Creating one with 5000 teams. For better results, you '
@@ -85,7 +85,7 @@ class RandbatsStatistics(object):
             print "WARNING: Unpickled type does not match RandbatsStatistics"
         return self
 
-    def to_pickle(self, path='mining/rbstats.pkl'):
+    def to_pickle(self, path='showdowndata/rbstats.pkl'):
         with open(path, 'w') as fout:
             pickle.dump(self, fout)
 

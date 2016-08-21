@@ -1,5 +1,5 @@
 from battle.effecthandler import EffectHandlerMixin
-from mining import pokedex
+from showdowndata import pokedex
 from pokedex import effects, abilities
 from pokedex.abilities import abilitydex
 from pokedex.baseeffect import BaseEffect
