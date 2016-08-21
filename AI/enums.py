@@ -1,5 +1,5 @@
 from misc.enum import BaseEnum
 
-class Policy(BaseEnum):
+class Strategy(BaseEnum):
     RANDOM = ()
     MATRIX = ()

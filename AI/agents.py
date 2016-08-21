@@ -1,15 +1,15 @@
 import random
-from AI.enums import Policy
+from AI.enums import Strategy
 
 
-def Agent(policy, *args, **kwargs): # factory function
-    if policy not in Policy.values:
-        raise TypeError('"%s" is not a valid policy' % policy)
+def Agent(strategy, *args, **kwargs): # factory function
+    if strategy not in Strategy.values:
+        raise TypeError('"%s" is not a valid Strategy' % strategy)
 
     return {
-        Policy.RANDOM: RandomAgent,
-        Policy.MATRIX: MatrixAgent,
-    }[policy](*args, **kwargs)
+        Strategy.RANDOM: RandomAgent,
+        Strategy.MATRIX: MatrixAgent,
+    }[strategy](*args, **kwargs)
 
 
 class BaseAgent(object):
