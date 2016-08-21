@@ -1,5 +1,5 @@
 from battle.battleengine import Battle
-from showdowndata.statistics import RandbatsStatistics, rbstats_key
+from showdowndata.miner import RandbatsStatistics, rbstats_key
 from pokedex import effects
 from pokedex.enums import FAIL, Volatile, Type
 from pokedex.abilities import abilitydex

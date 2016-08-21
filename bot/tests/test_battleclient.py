@@ -6,7 +6,6 @@ from mock import patch
 from battle.decisionmakers import AutoDecisionMaker
 # rbstats must be imported from battleclient for use with patch.dict
 from bot.battleclient import BattleClient, rbstats
-from showdowndata.statistics import RandbatsStatistics
 from misc.functions import normalize_name
 from pokedex.abilities import abilitydex
 from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard,

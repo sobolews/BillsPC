@@ -1,14 +1,14 @@
 from random import randint
 from unittest import TestCase
 
-from showdowndata import statistics
+from showdowndata import miner
 from showdowndata import pokedex
-from tests.test_statistics_data import TEAM1, TEAM2, TEAM3
+from tests.test_miner_data import TEAM1, TEAM2, TEAM3
 
 
 class TestRandbatsCounter(TestCase):
     def test_sample(self):
-        counter = statistics.RandbatsStatistics()
+        counter = miner.RandbatsStatistics()
         for pokemon in TEAM1:
             counter.sample(pokemon)
         self.assertIn('rotomwash', counter)
@@ -75,7 +75,7 @@ class TestRandbatsCounter(TestCase):
                    'name': 'Starmie',
                    'species': 'Starmie',
                    'shiny': False}
-        counter = statistics.RandbatsStatistics()
+        counter = miner.RandbatsStatistics()
         for _ in range(3):
             counter.sample(starmie)
         starmie['moves'][0] = 'rapidspin'
@@ -96,13 +96,13 @@ class TestRandbatsCounter(TestCase):
         """
         Double-sample TEAM1; sample TEAM3 in a separate counter and update from it
         """
-        counter = statistics.RandbatsStatistics()
+        counter = miner.RandbatsStatistics()
         for pokemon in TEAM1:
             counter.sample(pokemon)
             counter.sample(pokemon)
         for pokemon in TEAM2:
             counter.sample(pokemon)
-        counter2 = statistics.RandbatsStatistics()
+        counter2 = miner.RandbatsStatistics()
         for pokemon in TEAM3:
             counter2.sample(pokemon)
         counter.update(counter2)
@@ -114,7 +114,7 @@ class TestRandbatsCounter(TestCase):
         identify its own zoroark in the corner case of a switch-to-zoroark, zoroark gets damaged
         (e.g. by dragontail), then another pokemon is dragged out.
         """
-        counter = statistics.RandbatsStatistics.from_pickle()
+        counter = miner.RandbatsStatistics.from_pickle()
         zoroark_levels = counter['zoroark']['level'].keys()
         zoroark_max_hp = pokedex['zoroark'].base_stats['max_hp']
         for name, stats in counter.counter.items():
@@ -129,13 +129,13 @@ class TestStatisticsModule(TestCase):
     def test_distribute(self):
         N = randint(100, 10000)
         b = randint(2, 100)
-        dist = statistics.distribute(N, b)
+        dist = miner.distribute(N, b)
         self.assertEqual(sum(dist), N)
         self.assertTrue(all(t in (dist[0], dist[0] - 1) for t in dist))
         self.assertTrue(len(dist), b)
 
     def test_distributemax(self):
-        self.assertEqual(statistics.distributemax(34, 10), [9, 9, 8, 8])
+        self.assertEqual(miner.distributemax(34, 10), [9, 9, 8, 8])
 
     def test_json_teams_format(self):
         """
@@ -151,8 +151,8 @@ class TestStatisticsModule(TestCase):
          u'shiny': False,
          u'species': u'Kyurem-Black'},
         """
-        statistics.copy_miner_file()
-        json_team = statistics.get_json_teams(1)[0]
+        miner.copy_miner_file()
+        json_team = miner.get_json_teams(1)[0]
         self.assertEqual(len(json_team), 6)
         pokemon_dict = json_team[0]
         self.assertEqual(set(['ability', 'evs', 'item', 'ivs', 'level', 'moves', 'name', 'shiny',

@@ -8,7 +8,7 @@ import cmd
 import sys
 
 from showdowndata import pokedex
-from showdowndata.statistics import RandbatsStatistics
+from showdowndata.miner import RandbatsStatistics
 from misc.multitabulate import multitabulate
 from pokedex.enums import Type
 from pokedex.types import effectiveness

@@ -9,7 +9,7 @@ from bot.foeside import FoeBattleSide, FoePokemon
 from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
 from bot.battlecalculator import BattleCalculator
 from showdowndata import pokedex
-from showdowndata.statistics import RandbatsStatistics, rbstats_key
+from showdowndata.miner import RandbatsStatistics, rbstats_key
 from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex

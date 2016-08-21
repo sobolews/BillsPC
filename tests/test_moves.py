@@ -8,7 +8,7 @@ from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile,
 from pokedex.items import itemdex
 from pokedex.moves import movedex, Move, _MAX_PP
 from pokedex.stats import Boosts
-from showdowndata.statistics import RandbatsStatistics
+from showdowndata.miner import RandbatsStatistics
 from tests.multi_move_test_case import MultiMoveTestCase
 
 class TestMoveDefinitions(TestCase):
