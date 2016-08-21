@@ -2,7 +2,7 @@ from mock import patch
 
 if __debug__: from _logging import log
 from showdowndata import pokedex
-from showdowndata.statistics import RandbatsStatistics
+from showdowndata.miner import RandbatsStatistics
 from misc.functions import normalize_name
 from pokedex import statuses
 from pokedex.abilities import abilitydex

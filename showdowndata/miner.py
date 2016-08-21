@@ -1,5 +1,5 @@
 """
-The statistics module is for gathering stats on Showdown's team generation for the randombattle
+The miner module is for gathering stats on Showdown's team generation for the randombattle
 format. By running Showdown's randomTeam() function many times and collecting the output, we can
 answer questions like:
 

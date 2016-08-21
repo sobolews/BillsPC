@@ -58,7 +58,7 @@ def get_parser():
     return parser
 
 def rbstats_(_):
-    from showdowndata.statistics import RandbatsStatistics
+    from showdowndata.miner import RandbatsStatistics
     rbstats = r = RandbatsStatistics.from_pickle()
     from showdowndata import pokedex, type_index
     import IPython
