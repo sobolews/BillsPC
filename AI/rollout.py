@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
-from battle.decisionmakers import RandomDecisionMaker
+from battle.rolloutpolicy import RandomRolloutPolicy
 from bot.unrevealedpokemon import UNREVEALED
 from showdowndata import pokedex, type_index
 from showdowndata.rbstats import rbstats, rbstats_key
@@ -55,7 +55,7 @@ class BattleRoller(object):
         If turn_initialized, then skip running Battle.init_turn for the next turn.
         """
         clone = deepcopy(battlefield)
-        battle = Battle.from_battlefield(clone, *[RandomDecisionMaker(i) for i in range(2)])
+        battle = Battle.from_battlefield(clone, *[RandomRolloutPolicy(i) for i in range(2)])
 
         if turn_initialized:
             battle.run_initialized_turn() # run the next turn without initializing it

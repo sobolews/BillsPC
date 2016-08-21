@@ -863,7 +863,7 @@ class TestMiscMultiTurn(MultiMoveTestCase):
         self.run_turn()
         self.battle.init_turn()
 
-        # NOTE: relies on AutoDecisionMaker always choosing choices[0]
+        # NOTE: relies on AutoRolloutPolicy always choosing choices[0]
         self.assertListEqual(self.faint_log, [self.vaporeon, self.jolteon,
                                               self.espeon, self.umbreon])
         self.assertActive(self.flareon)
