@@ -33,7 +33,7 @@ class BattleClient(object):
     Purposefully unimplemented message types (because they don't occur in randbats):
     {-swapboost, -copyboost, -invertboost, -ohko, -mustrecharge}
     """
-    def __init__(self, name, room, send, show_calcs=False, ai_policy=None):
+    def __init__(self, name, room, send, show_calcs=False, ai_strategy=None):
         """
         name: (str) client's username
         room: (str) the showdown room that battle messages should be sent to
@@ -58,7 +58,7 @@ class BattleClient(object):
 
         self.show_calcs = show_calcs
         self.battle = BattleCalculator.from_battlefield(None)
-        self.AI = AI.Agent(ai_policy) if ai_policy else None
+        self.AI = AI.Agent(ai_strategy) if ai_strategy else None
 
         def _send(msg):
             self.last_sent = msg
