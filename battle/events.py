@@ -17,7 +17,7 @@ from random import random
 from bisect import insort
 from functools import total_ordering
 
-from pokedex.enums import Decision
+from battle.enums import Decision
 
 if __debug__: from _logging import log
 

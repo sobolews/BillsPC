@@ -34,7 +34,7 @@ but only one ability at a time is ever in effect on a pokemon.)
 Effects inheriting from BaseEffect are in the effects, abilities, statuses and weather modules.
 """
 from misc.functions import priority
-from pokedex.enums import ABILITY
+from battle.enums import ABILITY
 
 class BaseEffect(object):
     class __metaclass__(type):

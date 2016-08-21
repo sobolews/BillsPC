@@ -4,12 +4,12 @@ from mock import patch, Mock
 from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from showdowndata import pokedex
-from pokedex import effects
-from pokedex.moves import movedex
-from pokedex.abilities import abilitydex
-from pokedex.items import itemdex
-from pokedex.enums import FAIL, Status, Volatile, Type, Weather
-from pokedex.stats import Boosts
+from battle import effects
+from battle.moves import movedex
+from battle.abilities import abilitydex
+from battle.items import itemdex
+from battle.enums import FAIL, Status, Volatile, Type, Weather
+from battle.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
 
 

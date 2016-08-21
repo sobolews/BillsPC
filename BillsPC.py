@@ -80,9 +80,9 @@ def interactive(_):
         def runTest(self):
             pass
     t = self = InteractiveMultiMoveTestCase()
-    from pokedex.moves import movedex
+    from battle.moves import movedex
     from showdowndata import pokedex, type_index
-    from pokedex import enums
+    from battle import enums
     # ugly hack to embed the entire public pokedex.enums namespace into the local scope
     locals().update({key: val for key, val in enums.__dict__.items()
                      if not key.startswith('_')})

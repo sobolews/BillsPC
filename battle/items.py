@@ -6,10 +6,10 @@ import inspect
 
 if __debug__: from _logging import log
 from misc.functions import priority
-from pokedex import effects
-from pokedex.baseeffect import BaseEffect
-from pokedex.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile, FAIL
-from pokedex.stats import Boosts
+from battle import effects
+from battle.baseeffect import BaseEffect
+from battle.enums import ITEM, Type, Cause, MoveCategory, Status, Volatile, FAIL
+from battle.stats import Boosts
 
 class BaseItem(object):
     is_mega_stone = False

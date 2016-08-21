@@ -1,4 +1,4 @@
-from pokedex.enums import FAIL
+from battle.enums import FAIL
 from misc.functions import clamp_int
 
 if __debug__: from _logging import log

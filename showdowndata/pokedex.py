@@ -11,8 +11,8 @@ from distutils.spawn import find_executable
 from os.path import dirname, abspath, join
 from pprint import pformat
 
-from pokedex.stats import PokemonStats
-from pokedex.enums import Type
+from battle.stats import PokemonStats
+from battle.enums import Type
 from misc.functions import normalize_name
 
 NODE_EXECUTABLE = 'node' if find_executable('nodejs') is None else 'nodejs'

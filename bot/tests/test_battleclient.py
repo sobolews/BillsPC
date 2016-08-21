@@ -7,11 +7,11 @@ from battle.rolloutpolicy import AutoRolloutPolicy
 # rbstats must be imported from battleclient for use with patch.dict
 from bot.battleclient import BattleClient, rbstats
 from misc.functions import normalize_name
-from pokedex.abilities import abilitydex
-from pokedex.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard,
-                           PseudoWeather)
-from pokedex.items import itemdex
-from pokedex.moves import movedex
+from battle.abilities import abilitydex
+from battle.enums import (Status, Weather, Volatile, ABILITY, ITEM, Type, SideCondition, Hazard,
+                          PseudoWeather)
+from battle.items import itemdex
+from battle.moves import movedex
 
 class BaseTestBattleClient(TestCase):
     def setUp(self):

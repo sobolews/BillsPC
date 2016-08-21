@@ -9,8 +9,8 @@ import sys
 
 from showdowndata import pokedex
 from misc.multitabulate import multitabulate
-from pokedex.enums import Type
-from pokedex.types import effectiveness
+from battle.enums import Type
+from battle.types import effectiveness
 
 
 class CheatSheetCli(cmd.Cmd):

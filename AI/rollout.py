@@ -8,11 +8,11 @@ from battle.rolloutpolicy import RandomRolloutPolicy
 from bot.unrevealedpokemon import UNREVEALED
 from showdowndata import pokedex, type_index
 from showdowndata.rbstats import rbstats, rbstats_key
-from pokedex.items import itemdex
-from pokedex.abilities import abilitydex
-from pokedex.moves import movedex
-from pokedex.enums import Type
-from pokedex.stats import Boosts
+from battle.items import itemdex
+from battle.abilities import abilitydex
+from battle.moves import movedex
+from battle.enums import Type
+from battle.stats import Boosts
 from _logging import log, no_console_log
 
 

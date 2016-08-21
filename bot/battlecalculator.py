@@ -1,9 +1,9 @@
 from battle.battleengine import Battle
 from showdowndata.rbstats import rbstats, rbstats_key
-from pokedex import effects
-from pokedex.enums import FAIL, Volatile, Type
-from pokedex.abilities import abilitydex
-from pokedex.moves import movedex
+from battle import effects
+from battle.enums import FAIL, Volatile, Type
+from battle.abilities import abilitydex
+from battle.moves import movedex
 
 from tabulate import tabulate
 from misc.multitabulate import multitabulate

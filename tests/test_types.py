@@ -1,8 +1,8 @@
 from unittest import TestCase
 from mock import Mock
 
-from pokedex.enums import Type
-from pokedex.types import effectiveness
+from battle.enums import Type
+from battle.types import effectiveness
 
 class TestTypes(TestCase):
     def setUp(self):

@@ -2,9 +2,9 @@ from __future__ import absolute_import
 from battle.battlefield import BattleSide
 from battle.battlepokemon import BattlePokemon
 from bot.unrevealedpokemon import UNREVEALED, UnrevealedPokemon
-from pokedex.enums import Type
-from pokedex.abilities import abilitydex
-from pokedex.items import itemdex
+from battle.enums import Type
+from battle.abilities import abilitydex
+from battle.items import itemdex
 from _logging import log
 
 class FoeBattleSide(BattleSide):

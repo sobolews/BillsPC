@@ -3,10 +3,10 @@ from copy import deepcopy
 from AI.rollout import BattleRoller
 from bot.tests.test_battleclient import BaseTestBattleClient
 from battle.battlepokemon import BattlePokemon
-from pokedex.items import itemdex
-from pokedex.abilities import abilitydex
-from pokedex.moves import movedex
-from pokedex.enums import ITEM, ABILITY
+from battle.items import itemdex
+from battle.abilities import abilitydex
+from battle.moves import movedex
+from battle.enums import ITEM, ABILITY
 
 class TestRollout(BaseTestBattleClient):
     def setUp(self):

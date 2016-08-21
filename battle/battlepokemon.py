@@ -1,14 +1,14 @@
 from battle.effecthandler import EffectHandlerMixin
 from showdowndata import pokedex
-from pokedex import effects, abilities
-from pokedex.abilities import abilitydex
-from pokedex.baseeffect import BaseEffect
-from pokedex.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
-                           SideCondition, ITEM)
-from pokedex.items import itemdex
-from pokedex.stats import Boosts, PokemonStats
-from pokedex.types import effectiveness, HPivs
-from pokedex.moves import movedex
+from battle import effects, abilities
+from battle.abilities import abilitydex
+from battle.baseeffect import BaseEffect
+from battle.enums import (Volatile, FAIL, Status, MoveCategory, Type, Weather, ABILITY, POWDER,
+                          SideCondition, ITEM)
+from battle.items import itemdex
+from battle.stats import Boosts, PokemonStats
+from battle.types import effectiveness, HPivs
+from battle.moves import movedex
 if __debug__: from _logging import log
 
 

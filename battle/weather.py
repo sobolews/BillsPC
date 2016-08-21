@@ -1,7 +1,7 @@
 from misc.functions import priority
-from pokedex.baseeffect import BaseEffect
-from pokedex.enums import Type, Weather, Status, FAIL, MoveCategory, Cause
-from pokedex.types import type_effectiveness
+from battle.baseeffect import BaseEffect
+from battle.enums import Type, Weather, Status, FAIL, MoveCategory, Cause
+from battle.types import type_effectiveness
 
 if __debug__: from _logging import log
 

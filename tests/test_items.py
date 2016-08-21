@@ -3,10 +3,10 @@ from mock import patch
 from showdowndata.rbstats import rbstats
 from misc.functions import normalize_name
 from battle.battleengine import Battle
-from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition
-from pokedex.items import itemdex
-from pokedex.moves import movedex
-from pokedex.stats import Boosts
+from battle.enums import Status, Volatile, Weather, FAIL, SideCondition
+from battle.items import itemdex
+from battle.moves import movedex
+from battle.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestItems(MultiMoveTestCaseWithoutSetup):

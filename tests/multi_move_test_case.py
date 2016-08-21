@@ -11,11 +11,11 @@ from battle.battlepokemon import BattlePokemon
 from battle.rolloutpolicy import AutoRolloutPolicy
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
 from showdowndata import pokedex
-from pokedex import effects
-from pokedex.abilities import abilitydex
-from pokedex.items import itemdex
-from pokedex.enums import Status, ABILITY, ITEM
-from pokedex.moves import movedex
+from battle import effects
+from battle.abilities import abilitydex
+from battle.items import itemdex
+from battle.enums import Status, ABILITY, ITEM
+from battle.moves import movedex
 
 
 class AnyMovePPDict(dict):
