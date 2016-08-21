@@ -13,11 +13,11 @@ from itertools import chain
 
 if __debug__: from _logging import log
 from misc.functions import priority
-from pokedex.baseeffect import BaseEffect
-from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, SideCondition,
-                           Hazard, PseudoWeather, Decision)
-from pokedex.stats import Boosts
-from pokedex.types import effectiveness
+from battle.baseeffect import BaseEffect
+from battle.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, SideCondition,
+                          Hazard, PseudoWeather, Decision)
+from battle.stats import Boosts
+from battle.types import effectiveness
 
 
 class Attract(BaseEffect):

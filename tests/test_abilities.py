@@ -4,11 +4,11 @@ if __debug__: from _logging import log
 from showdowndata import pokedex
 from showdowndata.rbstats import rbstats
 from misc.functions import normalize_name
-from pokedex import statuses
-from pokedex.abilities import abilitydex
-from pokedex.enums import Status, Weather, Volatile, Hazard, PseudoWeather, Type
-from pokedex.moves import movedex
-from pokedex.stats import Boosts
+from battle import statuses
+from battle.abilities import abilitydex
+from battle.enums import Status, Weather, Volatile, Hazard, PseudoWeather, Type
+from battle.moves import movedex
+from battle.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 

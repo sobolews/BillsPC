@@ -2,7 +2,7 @@
 """
 Pokemon type chart
 """
-from pokedex.enums import Type
+from battle.enums import Type
 
 _TYPE_MATRIX = (                                                                     # v Attack
 #   Nor Fig Fly Poi Gro Roc Bug Gho Ste Fir Wat Gra Ele Psy Ice Dra Dar Fai ??? None # < Defend

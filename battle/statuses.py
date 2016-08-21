@@ -4,8 +4,8 @@ The major status ailments are implemented here as Effects.
 import random
 
 from misc.functions import priority
-from pokedex.baseeffect import BaseEffect
-from pokedex.enums import FAIL, Type, Status, Cause, MoveCategory
+from battle.baseeffect import BaseEffect
+from battle.enums import FAIL, Type, Status, Cause, MoveCategory
 
 if __debug__: from _logging import log
 

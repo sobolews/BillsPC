@@ -9,13 +9,13 @@ import random
 
 if __debug__: from _logging import log
 from misc.functions import priority
-from pokedex.baseeffect import BaseEffect
-from pokedex import effects
-from pokedex.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, PseudoWeather,
-                           ABILITY, Weather, POWDER)
-from pokedex.secondaryeffect import SecondaryEffect
-from pokedex.stats import Boosts
-from pokedex.types import type_effectiveness
+from battle.baseeffect import BaseEffect
+from battle import effects
+from battle.enums import (Volatile, FAIL, Type, Status, Cause, MoveCategory, PseudoWeather,
+                          ABILITY, Weather, POWDER)
+from battle.secondaryeffect import SecondaryEffect
+from battle.stats import Boosts
+from battle.types import type_effectiveness
 
 
 class BaseAbility(object):

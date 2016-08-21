@@ -1,8 +1,8 @@
 from mock import patch
 
-from pokedex.enums import Status, Type
-from pokedex.moves import movedex
-from pokedex.stats import Boosts
+from battle.enums import Status, Type
+from battle.moves import movedex
+from battle.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
 
 class TestStatuses(MultiMoveTestCase):

@@ -4,8 +4,8 @@ from unittest import TestCase
 from mock import patch
 
 from bot.bot import Bot
-from pokedex.enums import Status
-from pokedex.moves import movedex
+from battle.enums import Status
+from battle.moves import movedex
 
 def raise_(*_): raise
 

@@ -1,8 +1,8 @@
 from mock import patch
 
 from showdowndata import pokedex
-from pokedex.enums import Status, Weather
-from pokedex.stats import Boosts
+from battle.enums import Status, Weather
+from battle.stats import Boosts
 from tests.multi_move_test_case import MultiMoveTestCase
 
 

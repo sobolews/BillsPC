@@ -1,5 +1,5 @@
 from bot.battlecalculator import BattleCalculator
-from pokedex.moves import movedex
+from battle.moves import movedex
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestBattleCalculator(MultiMoveTestCaseWithoutSetup):

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from showdowndata import pokedex
-from pokedex.enums import Type
+from battle.enums import Type
 
 class TestDataminer(TestCase):
     def test_parse_pokedex_js(self):

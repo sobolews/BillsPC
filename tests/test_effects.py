@@ -1,7 +1,7 @@
 import inspect
 from unittest import TestCase
 
-from pokedex import effects, abilities, statuses, weather, baseeffect
+from battle import effects, abilities, statuses, weather, baseeffect
 
 class TestEffectDefinitions(TestCase):
     def setUp(self):

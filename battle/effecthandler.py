@@ -1,6 +1,6 @@
 if __debug__: from _logging import log
 
-from pokedex.enums import FAIL
+from battle.enums import FAIL
 
 class EffectHandlerMixin: #pylint: disable=old-style-class
     """

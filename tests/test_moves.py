@@ -2,12 +2,12 @@ from mock import patch
 from unittest import TestCase
 
 from battle.battleengine import Battle
-from pokedex import effects
-from pokedex.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile, Hazard,
-                           PseudoWeather, SideCondition, Type)
-from pokedex.items import itemdex
-from pokedex.moves import movedex, Move, _MAX_PP
-from pokedex.stats import Boosts
+from battle import effects
+from battle.enums import (MoveCategory, Status, Cause, FAIL, Weather, Volatile, Hazard,
+                          PseudoWeather, SideCondition, Type)
+from battle.items import itemdex
+from battle.moves import movedex, Move, _MAX_PP
+from battle.stats import Boosts
 from showdowndata.rbstats import rbstats
 from tests.multi_move_test_case import MultiMoveTestCase
 

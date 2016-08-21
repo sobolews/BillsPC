@@ -7,13 +7,13 @@ import random
 
 if __debug__: from _logging import log
 from misc.functions import clamp_int
-from pokedex import effects, statuses
-from pokedex.enums import (Type, Status, Volatile, SideCondition, STATUS, PHYSICAL, SPECIAL,
-                           FAIL, PseudoWeather, Cause, Weather, Hazard, Decision)
-from pokedex.items import itemdex
-from pokedex.stats import Boosts
-from pokedex.secondaryeffect import SecondaryEffect
-from pokedex.types import effectiveness
+from battle import effects, statuses
+from battle.enums import (Type, Status, Volatile, SideCondition, STATUS, PHYSICAL, SPECIAL,
+                          FAIL, PseudoWeather, Cause, Weather, Hazard, Decision)
+from battle.items import itemdex
+from battle.stats import Boosts
+from battle.secondaryeffect import SecondaryEffect
+from battle.types import effectiveness
 
 _MAX_PP = {
     5: 8,

@@ -3,9 +3,9 @@ from subprocess import check_output
 
 from battle.effecthandler import EffectHandlerMixin
 from misc.bashcolors import strip_ANSI
-from pokedex.baseeffect import BaseEffect
-from pokedex.enums import FAIL, Status, Hazard, Weather
-from pokedex.weather import WEATHER_EFFECTS
+from battle.baseeffect import BaseEffect
+from battle.enums import FAIL, Status, Hazard, Weather
+from battle.weather import WEATHER_EFFECTS
 
 if __debug__: from _logging import log
 

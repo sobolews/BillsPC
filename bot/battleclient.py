@@ -11,14 +11,14 @@ from bot.battlecalculator import BattleCalculator
 from showdowndata import pokedex
 from showdowndata.rbstats import rbstats, rbstats_key
 from misc.functions import normalize_name, clamp_int
-from pokedex import effects, statuses
-from pokedex.abilities import abilitydex
-from pokedex.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
-                           PseudoWeather, Decision)
-from pokedex.items import itemdex
-from pokedex.moves import movedex
-from pokedex.types import type_effectiveness, HPivs
-from pokedex.stats import Boosts, PokemonStats
+from battle import effects, statuses
+from battle.abilities import abilitydex
+from battle.enums import (Status, Weather, Volatile, ITEM, ABILITY, Type, SideCondition, Hazard,
+                          PseudoWeather, Decision)
+from battle.items import itemdex
+from battle.moves import movedex
+from battle.types import type_effectiveness, HPivs
+from battle.stats import Boosts, PokemonStats
 from _logging import log
 
 

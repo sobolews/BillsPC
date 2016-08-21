@@ -1,9 +1,9 @@
 from unittest import TestCase
 
 from battle.battlepokemon import BattlePokemon
-from pokedex.abilities import abilitydex
-from pokedex.moves import movedex
-from pokedex.items import itemdex
+from battle.abilities import abilitydex
+from battle.moves import movedex
+from battle.items import itemdex
 from showdowndata import pokedex
 from tests.multi_move_test_case import MultiMoveTestCase
 

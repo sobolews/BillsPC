@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pokedex.stats import PokemonStats, Boosts
+from battle.stats import PokemonStats, Boosts
 
 class TestStats(TestCase):
     def test_PokemonStats(self):

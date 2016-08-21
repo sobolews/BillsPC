@@ -1,8 +1,8 @@
 from copy import deepcopy
 
-from pokedex import effects
-from pokedex.enums import Weather, SideCondition, Volatile, ABILITY, ITEM
-from pokedex.moves import movedex
+from battle import effects
+from battle.enums import Weather, SideCondition, Volatile, ABILITY, ITEM
+from battle.moves import movedex
 from tests.multi_move_test_case import MultiMoveTestCaseWithoutSetup
 
 class TestDeepcopyBattlefield(MultiMoveTestCaseWithoutSetup):
