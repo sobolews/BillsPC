@@ -7,7 +7,7 @@ from functools import partial
 
 from battle.battlefield import BattleField, BattleSide
 from battle.battlepokemon import BattlePokemon
-from battle.decisionmakers import BaseDecisionMaker
+from battle.rolloutpolicy import RandomRolloutPolicy
 from battle.events import MoveEvent, SwitchEvent, InstaSwitchEvent, ResidualEvent, MegaEvoEvent
 from misc.functions import gf_round
 from pokedex import effects, statuses
@@ -41,27 +41,26 @@ class Battle(object):
     The event_queue and faint_queue are the only members with state besides the battlefield, and
     they are always empty lists between turns.
     """
-    def __init__(self, team0, team1, dm0=None, dm1=None):
+    def __init__(self, team0, team1, policy0=None, policy1=None):
         """
         team is a list of up to 6 BattlePokemon.
-        dm is a DecisionMaker
+        policy is a RolloutPolicy
         """
         assert 0 < len(team0) <= 6
         assert 0 < len(team1) <= 6
         self.battlefield = BattleField(BattleSide(team0, 0), BattleSide(team1, 1))
-        self.decision_makers = (BaseDecisionMaker(0) if dm0 is None else dm0,
-                                BaseDecisionMaker(1) if dm1 is None else dm1)
+        self.rollout_policies = (RandomRolloutPolicy(0) if policy0 is None else policy0,
+                                 RandomRolloutPolicy(1) if policy1 is None else policy1)
         self.event_queue = []   # pop from right
         self.faint_queue = []   # pop from right
 
     @classmethod
-    def from_battlefield(cls, battlefield, dm0=None, dm1=None):
+    def from_battlefield(cls, battlefield, policy0=None, policy1=None):
         """ Alternate constructor from an existing battlefield. """
         battle = cls.__new__(cls)
         battle.battlefield = battlefield
-        battle.decision_makers = (dm0, dm1)
-        battle.decision_makers = (BaseDecisionMaker(0) if dm0 is None else dm0,
-                                  BaseDecisionMaker(1) if dm1 is None else dm1)
+        battle.rollout_policies = (RandomRolloutPolicy(0) if policy0 is None else policy0,
+                                   RandomRolloutPolicy(1) if policy1 is None else policy1)
         battle.event_queue = []
         battle.faint_queue = []
         return battle
@@ -792,16 +791,16 @@ class Battle(object):
 
     def get_move_decisions(self):
         decisions = []
-        for dm in self.decision_makers:
-            side = self.battlefield.sides[dm.index]
+        for policy in self.rollout_policies:
+            side = self.battlefield.sides[policy.index]
             pokemon = side.active_pokemon
             assert pokemon is not None
             assert not pokemon.is_fainted()
 
             spe = self.effective_spe(pokemon)
-            choice, is_move = dm.make_move_decision(pokemon.get_move_choices(),
-                                                    pokemon.get_switch_choices(),
-                                                    self.battlefield)
+            choice, is_move = policy.make_move_decision(pokemon.get_move_choices(),
+                                                        pokemon.get_switch_choices(),
+                                                        self.battlefield)
             if is_move:
                 event = MoveEvent(pokemon, spe, self.modify_priority(pokemon, choice), choice)
                 if choice == movedex['pursuit']:
@@ -812,7 +811,7 @@ class Battle(object):
 
             if (pokemon.can_mega_evolve and
                 is_move and
-                dm.make_mega_evo_decision(self.battlefield)
+                policy.make_mega_evo_decision(self.battlefield)
             ):
                 decisions.append(MegaEvoEvent(pokemon, spe))
 
@@ -823,7 +822,7 @@ class Battle(object):
 
     def get_switch_decision(self, side, forced=False):
         choices = side.get_switch_choices(forced=forced)
-        return self.decision_makers[side.index].make_switch_decision(choices, self.battlefield)
+        return self.rollout_policies[side.index].make_switch_decision(choices, self.battlefield)
 
     def init_battle(self):
         if self.battlefield.turns > 0:

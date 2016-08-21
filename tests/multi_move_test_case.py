@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
-from battle.decisionmakers import AutoDecisionMaker
+from battle.rolloutpolicy import AutoRolloutPolicy
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
 from showdowndata import pokedex
 from pokedex import effects
@@ -84,7 +84,7 @@ class TestingBattle(Battle):
         super(TestingBattle, self).run_turn()
         self.testing_decisions = []
 
-class TestingDecisionMaker(AutoDecisionMaker):
+class TestingRolloutPolicy(AutoRolloutPolicy):
     """
     Return None from make_move_decision so that no events are added to the queue during
     battle.start_turn. Tests should add MoveEvents/SwitchEvents to the event_queue manually or
@@ -98,7 +98,7 @@ class MultiMoveTestCase(TestCase):
     Tests may call new_battle, with two pokemon names, to change the default leads. Additional
     (benched) pokemon are added with add_pokemon(). The test may simulate the battle by populating
     the event_queue then calling run_turn, or by calling individual methods like use_move. Any
-    forced switch decisions will be handled automatically unless a custom DecisionMaker is
+    forced switch decisions will be handled automatically unless a custom RolloutPolicy is
     injected.
     """
     def setUp(self):
@@ -144,8 +144,8 @@ class MultiMoveTestCase(TestCase):
                                             level=p1_level, gender=p1_gender))
         self.battle = TestingBattle([getattr(self, p0_name)],
                                     [getattr(self, p1_name)],
-                                    dm0=TestingDecisionMaker(0),
-                                    dm1=TestingDecisionMaker(1))
+                                    policy0=TestingRolloutPolicy(0),
+                                    policy1=TestingRolloutPolicy(1))
 
         # for determinism:
         self.battle.get_critical_hit = lambda crit: False # no crits

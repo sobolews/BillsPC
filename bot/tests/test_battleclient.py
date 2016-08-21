@@ -3,7 +3,7 @@ import json
 from unittest import TestCase
 from mock import patch
 
-from battle.decisionmakers import AutoDecisionMaker
+from battle.rolloutpolicy import AutoRolloutPolicy
 # rbstats must be imported from battleclient for use with patch.dict
 from bot.battleclient import BattleClient, rbstats
 from misc.functions import normalize_name
@@ -155,7 +155,7 @@ class TestBattleClientPostTurn0(BaseTestBattleClient):
     def setUp(self):
         self.bc = BattleClient('test-BillsPC', 'battle-randombattle-1', lambda *_: None,
                                ai_strategy=None)
-        self.bc.battle.decision_makers = (AutoDecisionMaker(0), AutoDecisionMaker(1))
+        self.bc.battle.decision_makers = (AutoRolloutPolicy(0), AutoRolloutPolicy(1))
         self.set_up_turn_0()
         self.hitmonchan = self.my_side.active_pokemon
         self.goodra = self.foe_side.active_pokemon
