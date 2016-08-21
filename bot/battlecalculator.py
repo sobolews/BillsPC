@@ -1,5 +1,5 @@
 from battle.battleengine import Battle
-from mining.statistics import RandbatsStatistics, rbstats_key
+from showdowndata.statistics import RandbatsStatistics, rbstats_key
 from pokedex import effects
 from pokedex.enums import FAIL, Volatile, Type
 from pokedex.abilities import abilitydex
@@ -25,7 +25,7 @@ class BattleCalculator(Battle):
             active = rbstats_key(my_active)
             for move in my_active.moves:
                 if move.name not in rbstats.probability[active]['moves']:
-                    log.w('%s not in rbstats for %s: Stale mining data?', move.name, my_active)
+                    log.w('%s not in rbstats for %s: Stale showdown data?', move.name, my_active)
 
         return [(move.name, self.calculate_damage_range(my_active, move, foe))
                 for move in my_active.moves]
@@ -51,7 +51,7 @@ class BattleCalculator(Battle):
         for move in foe.moves:
             if (move.name not in rbstats.probability[foe_index]['moves'] and
                 move.type != Type.NOTYPE):
-                log.w('%s not in rbstats for %s: Stale mining data?', move.name, foe)
+                log.w('%s not in rbstats for %s: Stale showdown data?', move.name, foe)
 
         possible_moves = [movedex[move] for move in rbstats[foe_index]['moves']
                           if movedex[move] not in foe.moves]

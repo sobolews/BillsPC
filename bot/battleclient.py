@@ -8,8 +8,8 @@ from battle.battlepokemon import BattlePokemon
 from bot.foeside import FoeBattleSide, FoePokemon
 from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
 from bot.battlecalculator import BattleCalculator
-from mining import pokedex
-from mining.statistics import RandbatsStatistics, rbstats_key
+from showdowndata import pokedex
+from showdowndata.statistics import RandbatsStatistics, rbstats_key
 from misc.functions import normalize_name, clamp_int
 from pokedex import effects, statuses
 from pokedex.abilities import abilitydex

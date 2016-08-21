@@ -6,8 +6,8 @@ from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import RandomDecisionMaker
 from bot.unrevealedpokemon import UNREVEALED
-from mining import pokedex, type_index
-from mining.statistics import RandbatsStatistics, rbstats_key
+from showdowndata import pokedex, type_index
+from showdowndata.statistics import RandbatsStatistics, rbstats_key
 from pokedex.items import itemdex
 from pokedex.abilities import abilitydex
 from pokedex.moves import movedex

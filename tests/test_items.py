@@ -1,6 +1,6 @@
 from mock import patch
 
-from mining.statistics import RandbatsStatistics
+from showdowndata.statistics import RandbatsStatistics
 from misc.functions import normalize_name
 from battle.battleengine import Battle
 from pokedex.enums import Status, Volatile, Weather, FAIL, SideCondition

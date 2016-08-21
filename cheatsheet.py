@@ -7,13 +7,13 @@ Type a pokemon, get move/ability/item probabilities, weakness/resistances, and s
 import cmd
 import sys
 
-from mining import pokedex
-from mining.statistics import RandbatsStatistics
+from showdowndata import pokedex
+from showdowndata.statistics import RandbatsStatistics
 from misc.multitabulate import multitabulate
 from pokedex.enums import Type
 from pokedex.types import effectiveness
 
-RBSTATS_PKL = 'mining/rbstats.pkl'
+RBSTATS_PKL = 'showdowndata/rbstats.pkl'
 
 class CheatSheetCli(cmd.Cmd):
     intro = """

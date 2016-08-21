@@ -10,7 +10,7 @@ from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from battle.decisionmakers import AutoDecisionMaker
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
-from mining import pokedex
+from showdowndata import pokedex
 from pokedex import effects
 from pokedex.abilities import abilitydex
 from pokedex.items import itemdex

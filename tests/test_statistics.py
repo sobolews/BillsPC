@@ -1,8 +1,8 @@
 from random import randint
 from unittest import TestCase
 
-from mining import statistics
-from mining import pokedex
+from showdowndata import statistics
+from showdowndata import pokedex
 from tests.test_statistics_data import TEAM1, TEAM2, TEAM3
 
 

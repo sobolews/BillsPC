@@ -1,4 +1,4 @@
-[submodule "mining/Pokemon-Showdown"]
-	path = mining/Pokemon-Showdown
+[submodule "showdowndata/Pokemon-Showdown"]
+	path = showdowndata/Pokemon-Showdown
 	url = https://github.com/Zarel/Pokemon-Showdown.git
         ignore = untracked
