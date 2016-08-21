@@ -21,6 +21,7 @@ import pickle
 import shlex
 import shutil
 import subprocess
+import sys
 from collections import Counter
 from copy import deepcopy
 from itertools import repeat, izip_longest
@@ -291,12 +292,26 @@ def collect_team_stats(n_teams, max_workers=cpu_count()/2):
     else:
         tasks = distributemax(n_teams, MAX_TEAMS_PER_PROCESS)
 
+    completed = 0
+    print_progress(0, 1)
     with ProcessPoolExecutor(max_workers) as pool:
         futures = map(partial(pool.submit, count_teams), tasks)
         for future in as_completed(futures):
+            completed += 1
+            print_progress(completed, len(tasks))
             counter.update(future.result())
-
+    print
     return counter
+
+
+def print_progress(completed, total):
+    cols = min((int(subprocess.check_output(['stty', 'size']).split()[1]) or 80), 80)
+    fmt = 'progress: [%s%s]'
+    barlen = cols - len(fmt % ('', ''))
+    hashes = '#' * int((barlen * (float(completed) / total)))
+    dots = '.' * (barlen - len(hashes))
+    print '\r' + fmt % (hashes, dots),
+    sys.stdout.flush()
 
 
 def count_teams(n_teams):
