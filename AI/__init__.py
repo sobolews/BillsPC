@@ -1,2 +1,2 @@
-from AI.agents import Agent
+from AI.agent import Agent
 from AI.enums import Strategy
