@@ -42,8 +42,6 @@ class BattleClient(object):
         self.name = name        # str
         self.room = room        # str
         self.foe_name = None    # str
-        self.my_player = None   # 0 or 1
-        self.foe_player = None  # 1 or 0
         self.my_side = None     # BattleSide
         self.foe_side = None    # FoeBattleSide
         self.battlefield = None # BattleField
@@ -75,7 +73,7 @@ class BattleClient(object):
         e.g. |-unboost|p2a: Goodra|spa|2
         """
         identifier = msg[index].replace('[of] ', '')
-        side = self.my_side if int(identifier[1]) - 1 == self.my_player else self.foe_side
+        side = self.my_side if int(identifier[1]) - 1 == self.my_side.index else self.foe_side
         assert side is not None, side
         return side
 
@@ -94,7 +92,7 @@ class BattleClient(object):
         name = normalize_name(msg[index])
 
         # is it referring to an illusioned zoroark?
-        if side.index == self.my_player:
+        if side == self.my_side:
             if msg[0] == 'switch':
                 if self.switch_choice is None:
                     if self.get_zoroark(side) is not None and self.battlefield.turns > 0:
@@ -114,7 +112,7 @@ class BattleClient(object):
                 if active is not None and active.base_species == 'zoroark':
                     name = 'zoroark'
 
-        elif side.index == self.foe_player and side.active_illusion:
+        elif side.active_illusion:
             return self.get_zoroark(side)
 
         for pokemon in side.team:
@@ -136,17 +134,17 @@ class BattleClient(object):
                 assert len(hp_moves) == 1, (hp_moves, pokemon)
                 move = hp_moves[0]
             else:
-                assert pokemon.side.index == self.foe_player, pokemon
+                assert pokemon.side == self.foe_side, pokemon
                 move, _ = self.get_possible_hiddenpowers(pokemon)
         else:
             move = movedex[move_name]
         return move
 
     def is_ally(self, pokemon):
-        return pokemon.side.index == self.my_player
+        return pokemon.side == self.my_side
 
     def is_foe(self, pokemon):
-        return pokemon.side.index == self.foe_player
+        return pokemon.side == self.foe_side
 
     def set_hp_status(self, pokemon, hp_msg):
         """
@@ -183,11 +181,10 @@ class BattleClient(object):
             pokemon.hp = hp
 
     def build_my_side(self, json):
-        side = int(json['side']['id'][1]) - 1
-        assert self.my_player == side, (self.my_player, side)
+        index = int(json['side']['id'][1]) - 1
         j_team = json['side']['pokemon']
         team = [self.my_pokemon_from_json(j_pokemon) for j_pokemon in j_team]
-        self.my_side = BattleSide(team, side, self.name)
+        self.my_side = BattleSide(team, index, self.name)
 
     def my_pokemon_from_json(self, j_pokemon):
         details = j_pokemon['details'].split(', ')
@@ -468,31 +465,17 @@ class BattleClient(object):
         `|player|PLAYER|USERNAME|AVATAR`   e.g. `|player|p1|1BillsPC|294`
         """
         if len(msg) > 2: # ignore msgs of the form `|player|p1`
-            if msg[2] == self.name:
-                if self.my_player is None:
-                    self.my_player = int(msg[1][1]) - 1
-                    self.foe_player = int(not self.my_player)
-                else:
-                    assert self.my_player == int(msg[1][1]) - 1, self.my_player
-                    assert self.foe_player == int(not self.my_player), (self.foe_player,
-                                                                        self.my_player)
-            else:
-                if self.foe_name is not None:
-                    log.w('Received a second (foe) player registration (%s); '
-                          'foe already named as (%s)', msg[2], self.foe_name)
+            if msg[2] != self.name:
                 if self.foe_name is None:
-                    if self.my_player is None:
-                        self.foe_player = int(msg[1][1]) - 1
-                        self.my_player = int(not self.foe_player)
-                    else:
-                        assert self.foe_player == int(msg[1][1]) - 1, (self.foe_player, msg)
-                        assert self.my_player == int(not self.foe_player), (self.my_player,
-                                                                            self.foe_player)
-
+                    foe_index = int(msg[1][1]) - 1
+                    if self.my_side is not None:
+                        assert foe_index != self.my_side.index
                     self.foe_name = msg[2]
                     self.foe_side = FoeBattleSide([UnrevealedPokemon() for _ in range(6)],
-                                                  self.foe_player, self.foe_name)
-
+                                                  foe_index, self.foe_name)
+                else:
+                    log.w('Received a second (foe) player registration (%s); '
+                          'foe already named as (%s)', msg[2], self.foe_name)
 
         if self.battlefield is None and self.my_side and self.foe_side:
             self.battlefield = BattleField(*sorted([self.my_side, self.foe_side],
@@ -661,7 +644,7 @@ class BattleClient(object):
                 assert len(hp_moves) == 1, hp_moves
                 move = hp_moves[0]
             else:
-                assert pokemon.side.index == self.foe_player, pokemon
+                assert pokemon.side == self.foe_side, (pokemon, pokemon.side)
                 move, possible = self.get_possible_hiddenpowers(pokemon)
                 if len(possible) > 1:
                     self.hiddenpower_trigger = (pokemon, possible)
@@ -1117,7 +1100,7 @@ class BattleClient(object):
     handle_drag = handle_switch
 
     def create_foe_pokemon_from_msg(self, side, msg):
-        assert side.index == self.foe_player, (side.index, self.foe_player)
+        assert side == self.foe_side, (side.index, self.foe_side)
         details = msg[2].split(', ')
         if 'shiny' in details:
             details.remove('shiny')
@@ -1154,7 +1137,7 @@ class BattleClient(object):
 
         side = self.get_side_from_msg(msg)
 
-        if side.index == self.my_player:
+        if side == self.my_side:
             pokemon = side.active_pokemon
             assert pokemon.name == 'zoroark', pokemon
             pokemon.illusion = False
@@ -1970,10 +1953,10 @@ class BattleClient(object):
         """
         if msg[1] == self.name:
             log.i('I win!')
-            self.battlefield.win = self.my_player
+            self.battlefield.win = self.my_side.index
         elif msg[1] == self.foe_name:
             log.i('I lost.')
-            self.battlefield.win = self.foe_player
+            self.battlefield.win = self.foe_side.index
         else:
             log.w("The game is over, but I don't know who won: %s", msg)
             self.battlefield.win = -1
@@ -2120,7 +2103,7 @@ class BattleClient(object):
                     check(reqmon['item'] == pokemon.item.name,
                           "%s's %s should be %s", pokemon, pokemon.item, reqmon['item'])
 
-            check(int(request['side']['id'][1]) - 1 == self.my_player, str(self.my_player))
+            check(int(request['side']['id'][1]) - 1 == self.my_side.index, str(self.my_side.index))
             check(request['side']['name'] == self.name, self.name)
 
     def _warn_if_stats_discrepancy(self, pokemon, stats):

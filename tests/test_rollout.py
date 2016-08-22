@@ -12,7 +12,7 @@ class TestRollout(BaseTestBattleClient):
     def setUp(self):
         super(TestRollout, self).setUp()
         self.set_up_turn_0()
-        self.roller = BattleRoller(self.my_player)
+        self.roller = BattleRoller(self.my_side.index)
 
     def test_fill_in_foe_team(self):
         clone = deepcopy(self.battlefield)
