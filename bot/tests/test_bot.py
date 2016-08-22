@@ -55,8 +55,8 @@ class TestBot(TestCase):
 
 
         self.assertEqual(battleclient.foe_name, 'opponent')
-        self.assertEqual(battleclient.my_player, 1)
-        self.assertEqual(battleclient.foe_player, 0)
+        self.assertEqual(battleclient.my_side.index, 1)
+        self.assertEqual(battleclient.foe_side.index, 0)
         self.assertEqual(battleclient.battlefield.turns, 1)
         self.assertEqual(battleclient.my_side.active_pokemon.name, 'haxorus')
         self.assertEqual(battleclient.foe_side.active_pokemon.name, 'beautifly')

@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import json
+from copy import deepcopy
 from unittest import TestCase
 from mock import patch
 
@@ -25,8 +26,6 @@ class BaseTestBattleClient(TestCase):
     my_side = property(lambda self: self.bc.my_side)
     foe_side = property(lambda self: self.bc.foe_side)
     foe_name = property(lambda self: self.bc.foe_name)
-    my_player = property(lambda self: self.bc.my_player)
-    foe_player = property(lambda self: self.bc.foe_player)
     battlefield = property(lambda self: self.bc.battlefield)
 
     def handle(self, msg):
@@ -106,7 +105,6 @@ class TestBattleClient(BaseTestBattleClient):
         super(TestBattleClient, self).handle(msg)
 
     def test_build_my_side_from_request_msg(self):
-        self.bc.my_player = 0
         self.handle_request(self.REQUEST)
 
         side = self.my_side
@@ -126,28 +124,30 @@ class TestBattleClient(BaseTestBattleClient):
     def test_handle_player(self):
         msg = '|player|p1|test-BillsPC|200'
         self.handle(msg)
-
-        self.assertEqual(self.my_player, 0)
-        self.assertEqual(self.foe_player, 1)
+        self.handle_request(self.REQUEST)
+        self.assertEqual(self.my_side.index, 0)
 
         msg = '|player|p2|other-player|200'
         self.handle(msg)
 
-        self.assertEqual(self.my_player, 0)
-        self.assertEqual(self.foe_player, 1)
+        self.assertEqual(self.my_side.index, 0)
+        self.assertEqual(self.foe_side.index, 1)
         self.assertEqual(self.foe_name, 'other-player')
 
     def test_handle_player_foe_first(self):
         msg = '|player|p1|other-player|266'
         self.handle(msg)
+        request = deepcopy(self.REQUEST)
+        request['side']['id'] = 'p2'
+        self.handle_request(request)
 
-        self.assertEqual(self.my_player, 1)
-        self.assertEqual(self.foe_player, 0)
+        self.assertEqual(self.foe_side.index, 0)
         self.assertEqual(self.foe_name, 'other-player')
 
         msg = '|player|p2|test-BillsPC|266'
-        self.assertEqual(self.my_player, 1)
-        self.assertEqual(self.foe_player, 0)
+        self.handle(msg)
+        self.assertEqual(self.my_side.index, 1)
+        self.assertEqual(self.foe_side.index, 0)
         self.assertEqual(self.foe_name, 'other-player')
 
 
