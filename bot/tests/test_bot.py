@@ -45,7 +45,6 @@ class TestBot(TestCase):
                              '|switch|p2a: Haxorus|Haxorus, L77, M|244/244\n'
                              '|-ability|p2a: Haxorus|Mold Breaker\n'
                              '|turn|1')
-        # TODO: patch out the decision making process and go right to handling further messages
 
     def test_trigger_request_after_next_message(self):
         bot = Bot(username='BingsF', password='password')
