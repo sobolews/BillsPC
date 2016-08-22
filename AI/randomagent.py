@@ -1,19 +1,5 @@
 import random
-from AI.enums import Strategy
-
-
-def Agent(strategy, *args, **kwargs): # factory function
-    if strategy not in Strategy.values:
-        raise TypeError('"%s" is not a valid Strategy' % strategy)
-
-    return {
-        Strategy.RANDOM: RandomAgent,
-        Strategy.MATRIX: MatrixAgent,
-    }[strategy](*args, **kwargs)
-
-
-class BaseAgent(object):
-    pass
+from AI.baseagent import BaseAgent
 
 
 class RandomAgent(BaseAgent):
@@ -29,7 +15,3 @@ class RandomAgent(BaseAgent):
 
         mega = can_mega and random.choice((True, False))
         return random.choice(moves), mega
-
-
-class MatrixAgent(BaseAgent):
-    pass
