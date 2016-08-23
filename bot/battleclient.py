@@ -510,7 +510,6 @@ class BattleClient(object):
 
         If this is the first request (beginning of game), "active" and "rqid" are omitted
         """
-        self.request = request
         self.rqid = request.get('rqid')
 
         my_active = self.my_side.active_pokemon
@@ -533,8 +532,12 @@ class BattleClient(object):
             self.battle.show_my_moves(my_active, foe_active)
             self.battle.show_foe_moves(my_active, foe_active)
 
-        if self.AI is not None:
+        if self.AI:
             self.make_move(request)
+        else:
+            self.bench_order = [normalize_name(p['ident']) for p in self.request['side']['pokemon']]
+
+        self.request = request
 
     def make_move(self, request, switch_rejected=False):
         moves, switches, can_mega = self.get_action_choices(request, switch_rejected)
@@ -556,7 +559,7 @@ class BattleClient(object):
             self.switch_choice = None
 
     def get_action_choices(self, request, switch_rejected):
-        moves = []
+        moves = None
         switches = []
         can_mega = False
         force_switch = request.get('forceSwitch', False)
@@ -607,6 +610,23 @@ class BattleClient(object):
 
         def __repr__(self):
             return '(switch: %s)' % self.pokemon_name
+
+    def handle_choice(self, msg):
+        """
+        In case moves are being made manually, we need to watch for |choice| messages to know what
+        switch was requested by the player. This is required if the player has a zoroark to
+        determine whether the zoroark or its decoy is being switched in.
+
+        If the move was made by the AI module via self.make_move, then we already track this choice.
+        |choice|switch 2|
+        """
+        if self.AI:
+            return
+
+        if msg[1].startswith('switch'):
+            bench_index = int(msg[1][-1]) - 1
+            self.switch_choice = self.bench_order[bench_index]
+            log.i('set switch = %s', self.switch_choice)
 
     def handle_move(self, msg):
         """

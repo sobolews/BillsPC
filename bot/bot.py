@@ -139,7 +139,7 @@ class Bot(WebSocketClient):
         'cant', '-item', '-enditem', '-ability', '-transform', '-start', '-end', '-activate',
         'callback', '-singleturn', '-singlemove', '-sidestart', '-sideend', '-fieldstart',
         '-fieldend', '-formechange', 'detailschange', '-mega', '-supereffective', '-resisted',
-        '-miss', '-immune', '-fail', '-crit', 'win', 'tie', 'prematureend', 'replace'
+        '-miss', '-immune', '-fail', '-crit', 'win', 'tie', 'prematureend', 'replace', 'choice',
     }
 
     IGNORE_MSGS = {
@@ -149,7 +149,7 @@ class Bot(WebSocketClient):
         'chatmsg-raw', 'raw', 'html', 'pm', 'askreg', 'inactiveoff', 'join', 'j', 'leave', 'l', 'L',
         'spectator', 'spectatorleave', 'clearpoke', 'poke', 'teampreview', 'swap', 'done', '',
         'error', 'warning', 'gen', 'debug', 'unlink', 'users', ':', 'c:', 'expire', 'seed',
-        'choice', '-endability', '-fieldactivate', '-primal', 'n'
+        '-endability', '-fieldactivate', '-primal', 'n'
     }
 
     def handle_challstr(self, msg):
