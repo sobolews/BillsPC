@@ -481,6 +481,8 @@ class BattleClient(object):
             self.battlefield = BattleField(*sorted([self.my_side, self.foe_side],
                                                    key=lambda side: side.index))
             self.battle.battlefield = self.battlefield
+            if self.AI is not None:
+                self.AI.set_my_player(self.my_side.index)
 
     def handle_request(self, request):
         """
