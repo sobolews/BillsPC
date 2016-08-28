@@ -3,6 +3,7 @@ import string
 import traceback
 
 import AI
+from AI.actions import MoveAction, SwitchAction
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
 from bot.foeside import FoeBattleSide, FoePokemon
@@ -567,51 +568,18 @@ class BattleClient(object):
         force_switch = request.get('forceSwitch', False)
         if not switch_rejected and (force_switch or
                                     self.my_side.active_pokemon.get_switch_choices()):
-            switches = [self.SwitchAction(normalize_name(p['ident']), i)
+            switches = [SwitchAction(normalize_name(p['ident']), i)
                         for i, p in enumerate(request['side']['pokemon'], 1)
                         if not p['condition'] == '0 fnt' and not p['active']]
         if not force_switch:
             can_mega = bool(request['active'][0].get('canMegaEvo'))
-            moves = [self.MoveAction(normalize_name(move['move']), i)
+            moves = [MoveAction(normalize_name(move['move']), i)
                      for i, move in enumerate(request['active'][0]['moves'], 1)
                      if not move.get('disabled')]
 
         log.d('Choosing from: %s %s, can_mega=%s', moves, switches, can_mega)
         assert moves or switches, (request, self.my_side.active_pokemon.get_switch_choices())
         return moves, switches, can_mega
-
-    class Action(object):
-        @property
-        def command_string(self):
-            raise NotImplementedError
-
-    class MoveAction(Action):
-        action_type = Decision.MOVE
-
-        def __init__(self, move, index):
-            self.move_name = move
-            self.index = index
-
-        @property
-        def command_string(self):
-            return '/choose move %d' % self.index
-
-        def __repr__(self):
-            return '(move: %s)' % self.move_name
-
-    class SwitchAction(Action):
-        action_type = Decision.SWITCH
-
-        def __init__(self, pokemon, index):
-            self.pokemon_name = pokemon
-            self.index = index
-
-        @property
-        def command_string(self):
-            return '/choose switch %d' % self.index
-
-        def __repr__(self):
-            return '(switch: %s)' % self.pokemon_name
 
     def handle_choice(self, msg):
         """
