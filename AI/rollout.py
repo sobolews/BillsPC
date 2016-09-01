@@ -24,18 +24,7 @@ class BattleRoller(object):
     def rollout_battles(self, battlefield, num_rollouts, turn_initialized):
         clone = deepcopy(battlefield)
         self.fill_in_unrevealed(clone)
-
-        # sanitize state for Battle assumptions
-        for side in clone.sides:
-            if side.active_pokemon.is_fainted():
-                side.active_pokemon = None
-            for pokemon in side.team:
-                if pokemon.is_fainted():
-                    if pokemon._effect_index:
-                        pokemon._effect_index.clear()
-                        pokemon.effect_handlers = {key: list() for key in pokemon.effect_handlers}
-                    pokemon.boosts = Boosts()
-                    pokemon.is_active = False
+        sanitize_battle_state(clone)
 
         log.i('Rolling out battle: my_player=%d, turn_initialized=%s, turn=%d',
               self.my_player, turn_initialized, battlefield.turns)
@@ -88,6 +77,17 @@ class BattleRoller(object):
             self._cache.clear()
             self._cache[foe_names] = deepcopy(foe_team)
 
+def sanitize_battle_state(battlefield):
+    for side in battlefield.sides:
+        if side.active_pokemon.is_fainted():
+            side.active_pokemon = None
+        for pokemon in side.team:
+            if pokemon.is_fainted():
+                if pokemon._effect_index:
+                    pokemon._effect_index.clear()
+                    pokemon.effect_handlers = {key: list() for key in pokemon.effect_handlers}
+                pokemon.boosts = Boosts()
+                pokemon.is_active = False
 
 def fill_in_unrevealed_attrs(foe):
     attrs, all_known = foe.known_attrs()
