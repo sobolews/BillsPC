@@ -50,7 +50,7 @@ class BattleRoller(object):
             battle.run_initialized_turn() # run the next turn without initializing it
         return battle.run_battle()        # complete the battle and return the winner
 
-    def fill_in_unrevealed(self, battlefield):
+    def fill_in_unrevealed(self, battlefield, max_fill=6):
         """
         Fill in the unrevealed moves/abilities/item of known foe pokemon with their most probable
         values (based on rbstats). Generate remaining unrevealed foe pokemon with a type that
@@ -60,11 +60,15 @@ class BattleRoller(object):
         foe_team = foe_side.team
         foe_names = tuple(foe.name for foe in foe_side.team)
         cached = self._cache.get(foe_names)
+        filled_in = 0
 
         for i, foe in enumerate(foe_team):
             if foe.is_fainted():
                 continue
             if foe.name == UNREVEALED:
+                if filled_in == max_fill:
+                    continue
+                filled_in += 1
                 if cached:
                     foe_team[i] = deepcopy(cached[i])
                     foe_team[i].side = foe_side
