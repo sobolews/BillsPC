@@ -438,10 +438,10 @@ class Protect(BaseEffect):
 class Pursuit(BaseEffect):
     source = Volatile.PURSUIT
     duration = 1
+    pursuit = None # this is set to movedex['pursuit'] in moves.py
 
-    def __init__(self, pursuer, move):
+    def __init__(self, pursuer):
         self.pursuer = pursuer
-        self.move = move
 
     @priority(1)
     def on_switch_out(self, pokemon, incoming, battle):
@@ -459,7 +459,7 @@ class Pursuit(BaseEffect):
                     self.pursuer.mega_evolve(battle)
                     break
 
-            battle.run_move(self.pursuer, self.move, pokemon)
+            battle.run_move(self.pursuer, self.pursuit, pokemon)
             # Don't let the pursuer move again afterwards
             battle.event_queue = [event for event in battle.event_queue
                                   if not event.pokemon is self.pursuer]

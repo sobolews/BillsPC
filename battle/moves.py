@@ -2376,6 +2376,7 @@ class pursuit(Move):
 
     def get_base_power(self, user, target, battle):
         return 80 if target.is_switching_out else 40
+effects.Pursuit.pursuit = pursuit() # set a copy of the move here to avoid circular import
 
 class quickattack(Move):
     def init_move(self):

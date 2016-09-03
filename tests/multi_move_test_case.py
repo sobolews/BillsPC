@@ -70,7 +70,7 @@ class TestingBattle(Battle):
                 priority = self.modify_priority(pokemon, move)
                 decisions.append(MoveEvent(pokemon, spe, priority, move))
                 if move == movedex['pursuit']:
-                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon, move))
+                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon))
 
             elif decision_type == 'switch':
                 incoming = action

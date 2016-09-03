@@ -804,7 +804,7 @@ class Battle(object):
             if is_move:
                 event = MoveEvent(pokemon, spe, self.modify_priority(pokemon, choice), choice)
                 if choice == movedex['pursuit']:
-                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon, choice))
+                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon))
             else:
                 event = SwitchEvent(pokemon, spe, choice)
             decisions.append(event)
