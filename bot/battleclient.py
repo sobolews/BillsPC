@@ -186,6 +186,7 @@ class BattleClient(object):
         j_team = json['side']['pokemon']
         team = [self.my_pokemon_from_json(j_pokemon) for j_pokemon in j_team]
         self.my_side = BattleSide(team, index, self.name)
+        return self.my_side
 
     def my_pokemon_from_json(self, j_pokemon):
         details = j_pokemon['details'].split(', ')
