@@ -46,7 +46,8 @@ class FoeBattleSide(BattleSide):
     def __init__(self, *args, **kwargs):
         super(FoeBattleSide, self).__init__(*args, **kwargs)
         self.active_pokemon.is_active = False
-        self.active_pokemon = None
+        if self.team[0].name == UNREVEALED:
+            self.active_pokemon = None
         self.active_illusion = False
 
     @property
