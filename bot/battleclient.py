@@ -53,6 +53,7 @@ class BattleClient(object):
         self.hiddenpower_trigger = None
         self.previous_msg = ['']
         self.switch_choice = None
+        self.bench_order = None
 
         self.show_calcs = show_calcs
         self.battle = BattleCalculator.from_battlefield(None)
