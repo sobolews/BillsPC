@@ -557,7 +557,7 @@ class BattleClient(object):
         self.send(command)
 
         if action.action_type == Decision.SWITCH:
-            self.switch_choice = action.pokemon_name
+            self.switch_choice = action.incoming_name
         else:
             self.switch_choice = None
 
