@@ -22,8 +22,8 @@ class MoveAction(Action):
 class SwitchAction(Action):
     action_type = Decision.SWITCH
 
-    def __init__(self, pokemon, index):
-        self.pokemon_name = pokemon
+    def __init__(self, incoming_name, index):
+        self.incoming_name = incoming_name
         self.index = index
 
     @property
@@ -31,4 +31,4 @@ class SwitchAction(Action):
         return '/choose switch %d' % self.index
 
     def __repr__(self):
-        return '(switch: %s)' % self.pokemon_name
+        return '(switch: %s)' % self.incoming_name
