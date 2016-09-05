@@ -1,11 +1,42 @@
 from __future__ import absolute_import
 from battle.battlefield import BattleSide
 from battle.battlepokemon import BattlePokemon
-from bot.unrevealedpokemon import UNREVEALED, UnrevealedPokemon
 from battle.enums import Type
 from battle.abilities import abilitydex
 from battle.items import itemdex
 from _logging import log
+
+
+UNREVEALED = '<unrevealed>'
+
+class UnrevealedPokemon(BattlePokemon):
+    """
+    A placeholder Pokemon object representing an unknown pokemon on the foe's bench.
+    """
+    def __init__(self):
+        self.name = self.base_species = UNREVEALED
+        self.is_active = False
+
+    def not_implemented(self, *args, **kwargs):
+        raise AssertionError('This pokemon has not been revealed yet')
+
+    set_effect = has_effect = get_effect = remove_effect = clear_effects = \
+    suppress_ability = unsuppress_ability = \
+    calculate_stat = calculate_initial_stats = _calc_hp = calculate_evs_ivs = \
+    is_immune_to_move = is_immune_to = take_item = set_item = use_item = not_implemented
+
+    def _debug_sanity_check(self, battle):
+        pass
+
+    def cure_status(self):
+        pass
+
+    def is_fainted(self):
+        return False
+
+    def __repr__(self):
+        return '(unrevealed pokemon)'
+
 
 class FoeBattleSide(BattleSide):
     """
