@@ -5,7 +5,7 @@ from copy import deepcopy
 from battle.battleengine import Battle
 from battle.battlepokemon import BattlePokemon
 from battle.rolloutpolicy import RandomRolloutPolicy
-from bot.unrevealedpokemon import UNREVEALED
+from bot.foeside import UNREVEALED
 from showdowndata import pokedex, type_index
 from showdowndata.rbstats import rbstats, rbstats_key
 from battle.items import itemdex

@@ -6,8 +6,7 @@ import AI
 from AI.actions import MoveAction, SwitchAction
 from battle.battlefield import BattleSide, BattleField
 from battle.battlepokemon import BattlePokemon
-from bot.foeside import FoeBattleSide, FoePokemon
-from bot.unrevealedpokemon import UnrevealedPokemon, UNREVEALED
+from bot.foeside import FoeBattleSide, FoePokemon, UnrevealedPokemon, UNREVEALED
 from bot.battlecalculator import BattleCalculator
 from showdowndata import pokedex
 from showdowndata.rbstats import rbstats, rbstats_key
