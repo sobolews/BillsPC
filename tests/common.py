@@ -10,8 +10,11 @@ class TestCaseCommon(TestCase):
     """
     Test case base class providing helper methods for testing
     """
-    def assertDamageTaken(self, pokemon, damage):
-        self.assertEqual(pokemon.hp, pokemon.max_hp - damage)
+    def assertDamageTaken(self, pokemon, damage=None):
+        if damage is None:
+            self.assertLess(pokemon.hp, pokemon.max_hp)
+        else:
+            self.assertEqual(pokemon.hp, pokemon.max_hp - damage)
 
     def assertStatus(self, pokemon, status):
         self.assertEqual(pokemon.status, status)
