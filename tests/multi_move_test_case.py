@@ -3,7 +3,6 @@ Most tests of the core battling mechanics, including moves, items, abilities, ef
 complex interactions between them should use the MultiMoveTestCase and associated helper functions
 and classes.
 """
-from collections import defaultdict
 from unittest import TestCase
 
 from battle.battleengine import Battle
@@ -11,7 +10,6 @@ from battle.battlepokemon import BattlePokemon
 from battle.rolloutpolicy import AutoRolloutPolicy
 from battle.events import MoveEvent, SwitchEvent, MegaEvoEvent
 from showdowndata import pokedex
-from battle import effects
 from battle.abilities import abilitydex
 from battle.items import itemdex
 from battle.enums import Status, ABILITY, ITEM
