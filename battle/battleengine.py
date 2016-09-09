@@ -803,8 +803,6 @@ class Battle(object):
                                                         self.battlefield)
             if is_move:
                 event = MoveEvent(pokemon, spe, self.modify_priority(pokemon, choice), choice)
-                if choice == movedex['pursuit']:
-                    self.get_foe(pokemon).set_effect(effects.Pursuit(pokemon))
             else:
                 event = SwitchEvent(pokemon, spe, choice)
             decisions.append(event)
@@ -858,11 +856,15 @@ class Battle(object):
         self.run_initialized_turn()
 
     def run_initialized_turn(self):
-        self.queue_events_for_turn()
+        self.queue_events_for_turn(self.get_move_decisions())
         self.run_queued_events()
 
-    def queue_events_for_turn(self):
-        self.event_queue.extend(self.get_move_decisions())
+    def queue_events_for_turn(self, decisions):
+        for decision in decisions:
+            if decision.move == movedex['pursuit']:
+                self.get_foe(decision.pokemon).set_effect(effects.Pursuit(decision.pokemon))
+
+        self.event_queue.extend(decisions)
         self.event_queue.append(ResidualEvent())
         self.event_queue.sort()
 
@@ -880,36 +882,39 @@ class Battle(object):
                     side.active_pokemon.must_switch and # e.g. from voltswitch
                     side.remaining_pokemon_on_bench > 0
                 ):
-                    if __debug__:
-                        log.d('%s must switch: requesting switch decision', side.active_pokemon)
-                    insort(self.event_queue, SwitchEvent(
-                        side.active_pokemon,
-                        0, # spe calculation is unnecessary; this can't run for both sides at once
-                        self.get_switch_decision(side, forced=True)))
+                    self.run_must_switch(side)
 
             self.resolve_faint_queue()
+
+    def run_must_switch(self, side):
+        if __debug__: log.d('%s must switch: requesting switch decision', side.active_pokemon)
+        insort(self.event_queue, SwitchEvent(
+            side.active_pokemon,
+            0, # spe calculation is unnecessary; this can't run for both sides at once
+            self.get_switch_decision(side, forced=True)))
 
     def init_turn(self):
         """
         Get switches if pokemon fainted, and increment turn counts
         """
+        self.before_turn_switches()
+        if self.battlefield.win is not None:
+            return
+        self.before_turn()
+
+    def before_turn_switches(self):
         sides = self.battlefield.sides
         # Loop until both sides have an active pokemon: (needs a loop because of the possibility of
         # having multiple pokemon faint from entry hazards in quick succession)
         while True:
-            switch_queue = []
-            for side in sides:
+            switches_needed = [None, None]
+            for i, side in enumerate(sides):
                 pokemon = side.active_pokemon
                 if pokemon is None:
                     if side.remaining_pokemon_on_bench == 0:
                         assert self.battlefield.win is not None
                         return
-
-                    if __debug__: log.i('No active pokemon on side %d; requesting switch' %
-                                        side.index)
-                    event = InstaSwitchEvent(None, 0, self.get_switch_decision(side, forced=True))
-                    insort(switch_queue, event)
-
+                    switches_needed[i] = side
                 else:
                     assert pokemon.is_active
                     assert not pokemon.is_fainted()
@@ -918,18 +923,25 @@ class Battle(object):
                     pokemon.was_attacked_this_turn = None
                     pokemon.item_used_this_turn = None
 
-            while switch_queue:
-                event = switch_queue.pop()
-                event.run_event(self, switch_queue)
-                if event.type is Decision.SWITCH:
-                    self.get_foe_side(event.incoming).update(self)
+            if any(switches_needed):
+                switch_queue = self.get_instaswitches(switches_needed)
+                self.resolve_switch_queue(switch_queue)
 
             self.resolve_faint_queue()
 
             if sides[0].active_pokemon is None or sides[1].active_pokemon is None:
                 continue
-            break
+            return
 
+    def resolve_switch_queue(self, switch_queue):
+        while switch_queue:
+            event = switch_queue.pop()
+            event.run_event(self, switch_queue)
+            if event.type is Decision.SWITCH:
+                self.get_foe_side(event.incoming).update(self)
+
+    def before_turn(self):
+        sides = self.battlefield.sides
         pokemon0, pokemon1 = sides[0].active_pokemon, sides[1].active_pokemon
         pokemon0.will_move_this_turn = True
         pokemon0.turns_out += 1
@@ -942,6 +954,16 @@ class Battle(object):
         if __debug__:
             log.i('\nTurn %d', self.battlefield.turns)
             self._debug_sanity_check()
+
+    def get_instaswitches(self, sides):
+        switch_queue = []
+        for i, side in enumerate(sides):
+            if side is not None:
+                if __debug__: log.i('No active pokemon on side %d; requesting switch' % i)
+                event = InstaSwitchEvent(None, 0, self.get_switch_decision(side, forced=True))
+                insort(switch_queue, event)
+        assert switch_queue
+        return switch_queue
 
     def resolve_faint_queue(self):
         while self.faint_queue:
