@@ -1,6 +1,6 @@
 from AI.enums import Strategy
 from AI.randomagent import RandomAgent
-from AI.matrixagent import MatrixAgent
+from AI.minimaxagent import MinimaxAgent
 
 
 def Agent(strategy, *args, **kwargs):
@@ -10,5 +10,5 @@ def Agent(strategy, *args, **kwargs):
 
     return {
         Strategy.RANDOM: RandomAgent,
-        Strategy.MATRIX: MatrixAgent,
+        Strategy.MATRIX: MinimaxAgent,
     }[strategy](*args, **kwargs)
