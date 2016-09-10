@@ -89,7 +89,7 @@ dummy-variables-rgx=_$|dummy|ignore|args|kwargs|msg|memo
 
 # List of strings which can identify a callback function by name. A callback
 # name must start or end with one of those strings.
-callbacks=on_,callback,get_base_power,__init__
+callbacks=on_,callback,get_base_power,__init__,make_events
 
 [CLASSES]
 
